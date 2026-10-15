@@ -22,6 +22,9 @@ export const SUMMARY_SOURCES = ["counter", "amount", "toggles", "todo", "rating"
 // The sizes and seeds `./rr measure` runs, from the README.
 export const sizes = [1, 2, 4, 8, 16, 32, 64];
 export const seeds = [1, 2, 3];
+// From this size on every widget kind is present (README), so growth is per instance only; the
+// measurements also fit baseline and slope over these sizes alone.
+export const steadyFrom = 16;
 
 // The scenario's own parameters (beyond --size and --seed), with their defaults.
 export const params = {
