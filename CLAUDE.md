@@ -159,6 +159,7 @@ recommends. The adapter's bytes are reported separately and **excluded from the 
 ```
 scenarios/
   big-table/
+    README.md          the scenario's own contract (see below)
     spec.js            the scenario generator: state, messages, update, render, script; its parameters
     solid.js           the emitter for this scenario in Solid
     vue.js             … in Vue
@@ -186,6 +187,19 @@ reports/               written findings, answer first
 notes/                 a short log of each working session
 ```
 
+- **`scenarios/<scenario>/README.md`** is that scenario's contract, written before its generator:
+  - what kind of app it models and why it grows the way it does;
+  - **what "size" means** for it (always an amount of UI and behaviour, never an amount of
+    data: a table with more rows ships the same code), the sizes and the seeds;
+  - the catalogue of UI shapes it composes, and how instances vary;
+  - its state, its messages (user actions and external `dispatch` events) and the reference
+    `update`/`render` in words;
+  - its `data-key`/`data-role` selectors, and the scenario-specific checks (which elements are
+    keyed, which inputs must keep focus and caret, which snapshots are sent);
+  - the parameters and their defaults.
+
+  The global contract in this file applies to every scenario; a scenario README only adds to it
+  and never relaxes it.
 - **`scenarios/<scenario>/spec.js`** generates the app spec for that scenario;
   **`scenarios/<scenario>/<framework>.js`** is the emitter that writes it in that framework.
 - **`frameworks/<name>/`** holds what every scenario shares for one framework, so a per-scenario
