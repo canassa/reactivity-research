@@ -1,12 +1,12 @@
 # Reactivity research
 
 A standalone research project, about **size only: how many bytes does a reactive browser UI
-ship, and how fast does that grow as the app grows?** It studies every approach to building an
+ship, and how much does it grow as the app grows?** It studies every approach to building an
 app (vanilla, signals and fine-grained reactivity, virtual DOM, the Elm Architecture, compiled
 and reactive-free output, and anything new) under one common contract, on generated scenarios.
 
-Speed is out of scope: nothing here is timed. Implementations must still be correct and fair
-(below), because an incorrect or degenerate implementation can always be made smaller.
+Implementations must be correct and fair (below), because an incorrect or degenerate
+implementation can always be made smaller.
 
 It is independent of any language or framework project. The findings are meant to inform the
 rendering design of a compiled language (beni), but nothing here depends on it.
@@ -19,7 +19,7 @@ Find the approaches whose shipped code comes closest to hand-written vanilla Jav
 - **baseline:** what the smallest app in a scenario family ships (runtime plus wiring);
 - **slope:** the bytes each additional feature adds as the app grows.
 
-Some approaches have a small baseline but grow fast; others the reverse. **We want both low**,
+Some approaches have a small baseline but a steep slope; others the reverse. **We want both low**,
 and we want to know *why* each approach lands where it does: which parts of its output
 (runtime, per-component scaffolding, update code, templates, names) grow with the app.
 
