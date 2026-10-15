@@ -1,0 +1,95 @@
+{
+  "scenario": "dashboard",
+  "date": "2026-10-16",
+  "sizes": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "scenarioOptions": {
+    "kinds": "all",
+    "summaries": "auto"
+  },
+  "variants": {
+    "solid": {
+      "emitter": "solid",
+      "framework": "solid",
+      "label": "Solid 1",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "components": "one reusable component per widget kind, configured by props",
+        "state": "one createStore for the whole dashboard, shared through a context; widgets use path setters on their slice",
+        "externalEvents": "store.receive(msg); serverSet and snapshot through reconcile(…, { key: 'id' })",
+        "lists": "<For>",
+        "conditionals": "<Show>",
+        "derived": "plain functions; createMemo for the filtered list",
+        "events": "onClick/onInput (delegated), onChange for checkboxes and selects",
+        "build": "Vite + vite-plugin-solid, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "bc021bad5461afe5"
+    }
+  },
+  "frameworks": {
+    "solid": {
+      "label": "Solid 1",
+      "track": "framework",
+      "versions": {
+        "solid-js": "1.9.17",
+        "babel-preset-solid": "1.9.16",
+        "babel-plugin-jsx-dom-expressions": "0.40.11",
+        "@babel/core": "7.29.7",
+        "vite-plugin-solid": "2.11.14",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    }
+  },
+  "versions": {
+    "node": "v26.11.1",
+    "brotli": "1.2.0 (node:zlib)",
+    "platform": "linux 6.12.112 x64",
+    "git": {
+      "commit": "12f079a7c057797a2b35e21e0e18590701b63042",
+      "dirty": false
+    }
+  },
+  "compression": {
+    "brotli": {
+      "quality": 11,
+      "lgwin": 24,
+      "mode": "generic"
+    },
+    "html": "not minified",
+    "js": "minified by the framework's production build"
+  },
+  "attribution": "source maps: node_modules → runtime; unmapped bundler output → tooling (counted with runtime); the adapter file → adapter (excluded); everything else → app. Brotli split: runtime = brotli(runtime+tooling); app = brotli(app JS) − runtime.",
+  "reused": 0
+}

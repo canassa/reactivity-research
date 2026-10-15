@@ -1,0 +1,1706 @@
+[
+ {
+  "variant": "solid",
+  "size": 1,
+  "seed": 1,
+  "options": {
+   "size": 1,
+   "seed": 1,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "61ab14c988638155",
+  "html": {
+   "raw": 321,
+   "br": 145
+  },
+  "js": {
+   "raw": 18526,
+   "br": 6438
+  },
+  "total": {
+   "raw": 18847,
+   "br": 6583
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 16522,
+    "tooling": 670,
+    "app": 1334
+   },
+   "br": {
+    "runtime": 5925,
+    "app": 513
+   }
+  },
+  "adapter": {
+   "raw": 242,
+   "br": 124
+  },
+  "bundle": {
+   "raw": 18768,
+   "br": 6562,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 6543,
+   "node_modules/solid-js/web/dist/web.js": 4923,
+   "node_modules/solid-js/store/dist/store.js": 5056,
+   "src/store.js": 350,
+   "src/widgets/Counter.jsx": 772,
+   "src/App.jsx": 212,
+   "src/adapter.jsx": 242
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 1,
+  "seed": 2,
+  "options": {
+   "size": 1,
+   "seed": 2,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "93008c41475ab976",
+  "html": {
+   "raw": 321,
+   "br": 147
+  },
+  "js": {
+   "raw": 18180,
+   "br": 6357
+  },
+  "total": {
+   "raw": 18501,
+   "br": 6504
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 16522,
+    "tooling": 670,
+    "app": 988
+   },
+   "br": {
+    "runtime": 5925,
+    "app": 432
+   }
+  },
+  "adapter": {
+   "raw": 242,
+   "br": 112
+  },
+  "bundle": {
+   "raw": 18422,
+   "br": 6469,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 6543,
+   "node_modules/solid-js/web/dist/web.js": 4923,
+   "node_modules/solid-js/store/dist/store.js": 5056,
+   "src/store.js": 351,
+   "src/widgets/Amount.jsx": 425,
+   "src/App.jsx": 212,
+   "src/adapter.jsx": 242
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 1,
+  "seed": 3,
+  "options": {
+   "size": 1,
+   "seed": 3,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "091c5a3d1db993f5",
+  "html": {
+   "raw": 321,
+   "br": 147
+  },
+  "js": {
+   "raw": 20431,
+   "br": 7176
+  },
+  "total": {
+   "raw": 20752,
+   "br": 7323
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 17709,
+    "tooling": 670,
+    "app": 2052
+   },
+   "br": {
+    "runtime": 6396,
+    "app": 780
+   }
+  },
+  "adapter": {
+   "raw": 242,
+   "br": 113
+  },
+  "bundle": {
+   "raw": 20673,
+   "br": 7289,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 7729,
+   "node_modules/solid-js/web/dist/web.js": 4921,
+   "node_modules/solid-js/store/dist/store.js": 5059,
+   "src/store.js": 591,
+   "src/widgets/Todo.jsx": 1214,
+   "src/App.jsx": 247,
+   "src/adapter.jsx": 242
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 2,
+  "seed": 1,
+  "options": {
+   "size": 2,
+   "seed": 1,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "0dbd7d7ff6c7e6c4",
+  "html": {
+   "raw": 321,
+   "br": 149
+  },
+  "js": {
+   "raw": 20687,
+   "br": 7215
+  },
+  "total": {
+   "raw": 21008,
+   "br": 7364
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 17711,
+    "tooling": 670,
+    "app": 2306
+   },
+   "br": {
+    "runtime": 6388,
+    "app": 827
+   }
+  },
+  "adapter": {
+   "raw": 241,
+   "br": 125
+  },
+  "bundle": {
+   "raw": 20928,
+   "br": 7340,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 7735,
+   "node_modules/solid-js/web/dist/web.js": 4914,
+   "node_modules/solid-js/store/dist/store.js": 5062,
+   "src/store.js": 366,
+   "src/widgets/Counter.jsx": 770,
+   "src/widgets/Tabs.jsx": 642,
+   "src/App.jsx": 528,
+   "src/adapter.jsx": 241
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 2,
+  "seed": 2,
+  "options": {
+   "size": 2,
+   "seed": 2,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "0fac37d1c168781f",
+  "html": {
+   "raw": 321,
+   "br": 152
+  },
+  "js": {
+   "raw": 19048,
+   "br": 6566
+  },
+  "total": {
+   "raw": 19369,
+   "br": 6718
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 16529,
+    "tooling": 670,
+    "app": 1849
+   },
+   "br": {
+    "runtime": 5919,
+    "app": 647
+   }
+  },
+  "adapter": {
+   "raw": 238,
+   "br": 125
+  },
+  "bundle": {
+   "raw": 19286,
+   "br": 6691,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 6551,
+   "node_modules/solid-js/web/dist/web.js": 4915,
+   "node_modules/solid-js/store/dist/store.js": 5063,
+   "src/store.js": 365,
+   "src/widgets/Amount.jsx": 422,
+   "src/widgets/Counter.jsx": 769,
+   "src/App.jsx": 293,
+   "src/adapter.jsx": 238
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 2,
+  "seed": 3,
+  "options": {
+   "size": 2,
+   "seed": 3,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "e44b88ad899cc1fa",
+  "html": {
+   "raw": 321,
+   "br": 151
+  },
+  "js": {
+   "raw": 21387,
+   "br": 7390
+  },
+  "total": {
+   "raw": 21708,
+   "br": 7541
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 17711,
+    "tooling": 670,
+    "app": 3006
+   },
+   "br": {
+    "runtime": 6391,
+    "app": 999
+   }
+  },
+  "adapter": {
+   "raw": 241,
+   "br": 124
+  },
+  "bundle": {
+   "raw": 21628,
+   "br": 7514,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 7732,
+   "node_modules/solid-js/web/dist/web.js": 4917,
+   "node_modules/solid-js/store/dist/store.js": 5062,
+   "src/store.js": 605,
+   "src/widgets/Todo.jsx": 1213,
+   "src/widgets/Filter.jsx": 756,
+   "src/App.jsx": 432,
+   "src/adapter.jsx": 241
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 4,
+  "seed": 1,
+  "options": {
+   "size": 4,
+   "seed": 1,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "d77400ebc74b98ee",
+  "html": {
+   "raw": 321,
+   "br": 150
+  },
+  "js": {
+   "raw": 22666,
+   "br": 7788
+  },
+  "total": {
+   "raw": 22987,
+   "br": 7938
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 17717,
+    "tooling": 670,
+    "app": 4279
+   },
+   "br": {
+    "runtime": 6393,
+    "app": 1395
+   }
+  },
+  "adapter": {
+   "raw": 238,
+   "br": 111
+  },
+  "bundle": {
+   "raw": 22904,
+   "br": 7899,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 7738,
+   "node_modules/solid-js/web/dist/web.js": 4917,
+   "node_modules/solid-js/store/dist/store.js": 5062,
+   "src/store.js": 515,
+   "src/widgets/Counter.jsx": 769,
+   "src/widgets/Tabs.jsx": 641,
+   "src/widgets/Amount.jsx": 422,
+   "src/widgets/Todo.jsx": 1212,
+   "src/App.jsx": 720,
+   "src/adapter.jsx": 238
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 4,
+  "seed": 2,
+  "options": {
+   "size": 4,
+   "seed": 2,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "43b2bd665ffa30bc",
+  "html": {
+   "raw": 321,
+   "br": 150
+  },
+  "js": {
+   "raw": 22179,
+   "br": 7661
+  },
+  "total": {
+   "raw": 22500,
+   "br": 7811
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18030,
+    "tooling": 670,
+    "app": 3479
+   },
+   "br": {
+    "runtime": 6516,
+    "app": 1145
+   }
+  },
+  "adapter": {
+   "raw": 241,
+   "br": 99
+  },
+  "bundle": {
+   "raw": 22420,
+   "br": 7760,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8048,
+   "node_modules/solid-js/web/dist/web.js": 4920,
+   "node_modules/solid-js/store/dist/store.js": 5062,
+   "src/store.js": 405,
+   "src/widgets/Amount.jsx": 422,
+   "src/widgets/Counter.jsx": 769,
+   "src/widgets/Choice.jsx": 727,
+   "src/widgets/Rating.jsx": 558,
+   "src/App.jsx": 598,
+   "src/adapter.jsx": 241
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 4,
+  "seed": 3,
+  "options": {
+   "size": 4,
+   "seed": 3,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "beecd6155421ce47",
+  "html": {
+   "raw": 321,
+   "br": 152
+  },
+  "js": {
+   "raw": 23567,
+   "br": 7991
+  },
+  "total": {
+   "raw": 23888,
+   "br": 8143
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18032,
+    "tooling": 670,
+    "app": 4865
+   },
+   "br": {
+    "runtime": 6513,
+    "app": 1478
+   }
+  },
+  "adapter": {
+   "raw": 241,
+   "br": 98
+  },
+  "bundle": {
+   "raw": 23808,
+   "br": 8089,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8050,
+   "node_modules/solid-js/web/dist/web.js": 4920,
+   "node_modules/solid-js/store/dist/store.js": 5062,
+   "src/store.js": 843,
+   "src/widgets/Todo.jsx": 1211,
+   "src/widgets/Filter.jsx": 754,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 706,
+   "src/widgets/Feed.jsx": 645,
+   "src/App.jsx": 631,
+   "src/adapter.jsx": 241
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 8,
+  "seed": 1,
+  "options": {
+   "size": 8,
+   "seed": 1,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "166033ccf7aa88d7",
+  "html": {
+   "raw": 321,
+   "br": 142
+  },
+  "js": {
+   "raw": 26382,
+   "br": 8681
+  },
+  "total": {
+   "raw": 26703,
+   "br": 8823
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18032,
+    "tooling": 670,
+    "app": 7680
+   },
+   "br": {
+    "runtime": 6509,
+    "app": 2172
+   }
+  },
+  "adapter": {
+   "raw": 241,
+   "br": 97
+  },
+  "bundle": {
+   "raw": 26623,
+   "br": 8778,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8053,
+   "node_modules/solid-js/web/dist/web.js": 4920,
+   "node_modules/solid-js/store/dist/store.js": 5059,
+   "src/store.js": 770,
+   "src/widgets/Counter.jsx": 769,
+   "src/widgets/Tabs.jsx": 640,
+   "src/widgets/Amount.jsx": 422,
+   "src/widgets/Todo.jsx": 1211,
+   "src/widgets/Feed.jsx": 645,
+   "src/widgets/Filter.jsx": 754,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 706,
+   "src/widgets/Summary.jsx": 220,
+   "src/number.js": 52,
+   "src/App.jsx": 1416,
+   "src/adapter.jsx": 241
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 8,
+  "seed": 2,
+  "options": {
+   "size": 8,
+   "seed": 2,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "e1dfa4df1a2d6f89",
+  "html": {
+   "raw": 321,
+   "br": 144
+  },
+  "js": {
+   "raw": 25248,
+   "br": 8480
+  },
+  "total": {
+   "raw": 25569,
+   "br": 8624
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18049,
+    "tooling": 670,
+    "app": 6529
+   },
+   "br": {
+    "runtime": 6524,
+    "app": 1956
+   }
+  },
+  "adapter": {
+   "raw": 241,
+   "br": 128
+  },
+  "bundle": {
+   "raw": 25489,
+   "br": 8608,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8050,
+   "node_modules/solid-js/web/dist/web.js": 4937,
+   "node_modules/solid-js/store/dist/store.js": 5062,
+   "src/store.js": 454,
+   "src/widgets/Amount.jsx": 422,
+   "src/widgets/Counter.jsx": 769,
+   "src/widgets/Choice.jsx": 726,
+   "src/widgets/Rating.jsx": 557,
+   "src/widgets/Tabs.jsx": 640,
+   "src/widgets/Toggles.jsx": 658,
+   "src/widgets/Panel.jsx": 574,
+   "src/widgets/Summary.jsx": 220,
+   "src/App.jsx": 1509,
+   "src/adapter.jsx": 241
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 8,
+  "seed": 3,
+  "options": {
+   "size": 8,
+   "seed": 3,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "c7401e063aea9ac7",
+  "html": {
+   "raw": 321,
+   "br": 149
+  },
+  "js": {
+   "raw": 26556,
+   "br": 8627
+  },
+  "total": {
+   "raw": 26877,
+   "br": 8776
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18034,
+    "tooling": 670,
+    "app": 7852
+   },
+   "br": {
+    "runtime": 6512,
+    "app": 2115
+   }
+  },
+  "adapter": {
+   "raw": 241,
+   "br": 87
+  },
+  "bundle": {
+   "raw": 26797,
+   "br": 8714,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8052,
+   "node_modules/solid-js/web/dist/web.js": 4920,
+   "node_modules/solid-js/store/dist/store.js": 5062,
+   "src/store.js": 898,
+   "src/widgets/Todo.jsx": 1211,
+   "src/widgets/Filter.jsx": 754,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 706,
+   "src/widgets/Feed.jsx": 644,
+   "src/widgets/Choice.jsx": 725,
+   "src/widgets/Counter.jsx": 769,
+   "src/widgets/Field.jsx": 554,
+   "src/widgets/Summary.jsx": 220,
+   "src/App.jsx": 1296,
+   "src/adapter.jsx": 241
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 1,
+  "options": {
+   "size": 16,
+   "seed": 1,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "64a3113eaef4b4a9",
+  "html": {
+   "raw": 321,
+   "br": 148
+  },
+  "js": {
+   "raw": 30903,
+   "br": 9729
+  },
+  "total": {
+   "raw": 31224,
+   "br": 9877
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18051,
+    "tooling": 670,
+    "app": 12182
+   },
+   "br": {
+    "runtime": 6515,
+    "app": 3214
+   }
+  },
+  "adapter": {
+   "raw": 241,
+   "br": 111
+  },
+  "bundle": {
+   "raw": 31144,
+   "br": 9840,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8052,
+   "node_modules/solid-js/web/dist/web.js": 4937,
+   "node_modules/solid-js/store/dist/store.js": 5062,
+   "src/store.js": 907,
+   "src/widgets/Counter.jsx": 769,
+   "src/widgets/Tabs.jsx": 640,
+   "src/widgets/Amount.jsx": 422,
+   "src/widgets/Todo.jsx": 1211,
+   "src/widgets/Feed.jsx": 644,
+   "src/widgets/Filter.jsx": 754,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 706,
+   "src/widgets/Summary.jsx": 220,
+   "src/widgets/Panel.jsx": 573,
+   "src/widgets/Field.jsx": 554,
+   "src/widgets/Toggles.jsx": 658,
+   "src/widgets/Choice.jsx": 725,
+   "src/widgets/Rating.jsx": 557,
+   "src/number.js": 52,
+   "src/App.jsx": 2715,
+   "src/adapter.jsx": 241
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 2,
+  "options": {
+   "size": 16,
+   "seed": 2,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "944426c60f3459bc",
+  "html": {
+   "raw": 321,
+   "br": 141
+  },
+  "js": {
+   "raw": 30824,
+   "br": 9712
+  },
+  "total": {
+   "raw": 31145,
+   "br": 9853
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18051,
+    "tooling": 670,
+    "app": 12103
+   },
+   "br": {
+    "runtime": 6515,
+    "app": 3197
+   }
+  },
+  "adapter": {
+   "raw": 241,
+   "br": 118
+  },
+  "bundle": {
+   "raw": 31065,
+   "br": 9830,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8052,
+   "node_modules/solid-js/web/dist/web.js": 4937,
+   "node_modules/solid-js/store/dist/store.js": 5062,
+   "src/store.js": 928,
+   "src/widgets/Amount.jsx": 422,
+   "src/widgets/Counter.jsx": 769,
+   "src/widgets/Choice.jsx": 725,
+   "src/widgets/Rating.jsx": 557,
+   "src/widgets/Tabs.jsx": 640,
+   "src/widgets/Toggles.jsx": 658,
+   "src/widgets/Panel.jsx": 573,
+   "src/widgets/Summary.jsx": 220,
+   "src/widgets/Todo.jsx": 1211,
+   "src/widgets/Feed.jsx": 644,
+   "src/widgets/Field.jsx": 554,
+   "src/widgets/Filter.jsx": 754,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 706,
+   "src/App.jsx": 2667,
+   "src/adapter.jsx": 241
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 3,
+  "options": {
+   "size": 16,
+   "seed": 3,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "25a3f4b8015d48ce",
+  "html": {
+   "raw": 321,
+   "br": 152
+  },
+  "js": {
+   "raw": 30813,
+   "br": 9652
+  },
+  "total": {
+   "raw": 31134,
+   "br": 9804
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18051,
+    "tooling": 670,
+    "app": 12092
+   },
+   "br": {
+    "runtime": 6515,
+    "app": 3137
+   }
+  },
+  "adapter": {
+   "raw": 241,
+   "br": 136
+  },
+  "bundle": {
+   "raw": 31054,
+   "br": 9788,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8052,
+   "node_modules/solid-js/web/dist/web.js": 4937,
+   "node_modules/solid-js/store/dist/store.js": 5062,
+   "src/store.js": 1024,
+   "src/widgets/Todo.jsx": 1211,
+   "src/widgets/Filter.jsx": 754,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 706,
+   "src/widgets/Feed.jsx": 644,
+   "src/widgets/Choice.jsx": 725,
+   "src/widgets/Counter.jsx": 769,
+   "src/widgets/Field.jsx": 554,
+   "src/widgets/Summary.jsx": 220,
+   "src/widgets/Tabs.jsx": 640,
+   "src/widgets/Amount.jsx": 422,
+   "src/widgets/Toggles.jsx": 658,
+   "src/widgets/Rating.jsx": 557,
+   "src/widgets/Panel.jsx": 573,
+   "src/number.js": 52,
+   "src/App.jsx": 2508,
+   "src/adapter.jsx": 241
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 1,
+  "options": {
+   "size": 32,
+   "seed": 1,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "dff128abcb9a39fb",
+  "html": {
+   "raw": 321,
+   "br": 150
+  },
+  "js": {
+   "raw": 33729,
+   "br": 10444
+  },
+  "total": {
+   "raw": 34050,
+   "br": 10594
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18051,
+    "tooling": 670,
+    "app": 15008
+   },
+   "br": {
+    "runtime": 6515,
+    "app": 3929
+   }
+  },
+  "adapter": {
+   "raw": 245,
+   "br": 102
+  },
+  "bundle": {
+   "raw": 33974,
+   "br": 10546,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8052,
+   "node_modules/solid-js/web/dist/web.js": 4937,
+   "node_modules/solid-js/store/dist/store.js": 5062,
+   "src/store.js": 1368,
+   "src/widgets/Counter.jsx": 769,
+   "src/widgets/Tabs.jsx": 640,
+   "src/widgets/Amount.jsx": 422,
+   "src/widgets/Todo.jsx": 1211,
+   "src/widgets/Feed.jsx": 644,
+   "src/widgets/Filter.jsx": 754,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 706,
+   "src/widgets/Summary.jsx": 219,
+   "src/widgets/Panel.jsx": 573,
+   "src/widgets/Field.jsx": 554,
+   "src/widgets/Toggles.jsx": 658,
+   "src/widgets/Choice.jsx": 725,
+   "src/widgets/Rating.jsx": 557,
+   "src/number.js": 52,
+   "src/App.jsx": 5081,
+   "src/adapter.jsx": 245
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 2,
+  "options": {
+   "size": 32,
+   "seed": 2,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "5757512177f0a672",
+  "html": {
+   "raw": 321,
+   "br": 152
+  },
+  "js": {
+   "raw": 33610,
+   "br": 10385
+  },
+  "total": {
+   "raw": 33931,
+   "br": 10537
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18059,
+    "tooling": 670,
+    "app": 14881
+   },
+   "br": {
+    "runtime": 6512,
+    "app": 3873
+   }
+  },
+  "adapter": {
+   "raw": 241,
+   "br": 115
+  },
+  "bundle": {
+   "raw": 33851,
+   "br": 10500,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8060,
+   "node_modules/solid-js/web/dist/web.js": 4937,
+   "node_modules/solid-js/store/dist/store.js": 5062,
+   "src/store.js": 1357,
+   "src/widgets/Amount.jsx": 422,
+   "src/widgets/Counter.jsx": 769,
+   "src/widgets/Choice.jsx": 725,
+   "src/widgets/Rating.jsx": 557,
+   "src/widgets/Tabs.jsx": 640,
+   "src/widgets/Toggles.jsx": 658,
+   "src/widgets/Panel.jsx": 573,
+   "src/widgets/Summary.jsx": 219,
+   "src/widgets/Todo.jsx": 1211,
+   "src/widgets/Feed.jsx": 644,
+   "src/widgets/Field.jsx": 554,
+   "src/widgets/Filter.jsx": 754,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 705,
+   "src/number.js": 52,
+   "src/App.jsx": 4966,
+   "src/adapter.jsx": 241
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 3,
+  "options": {
+   "size": 32,
+   "seed": 3,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "dae3de12427f3d70",
+  "html": {
+   "raw": 321,
+   "br": 142
+  },
+  "js": {
+   "raw": 33809,
+   "br": 10349
+  },
+  "total": {
+   "raw": 34130,
+   "br": 10491
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18051,
+    "tooling": 670,
+    "app": 15088
+   },
+   "br": {
+    "runtime": 6515,
+    "app": 3834
+   }
+  },
+  "adapter": {
+   "raw": 245,
+   "br": 167
+  },
+  "bundle": {
+   "raw": 34054,
+   "br": 10516,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8052,
+   "node_modules/solid-js/web/dist/web.js": 4937,
+   "node_modules/solid-js/store/dist/store.js": 5062,
+   "src/store.js": 1612,
+   "src/widgets/Todo.jsx": 1211,
+   "src/widgets/Filter.jsx": 754,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 706,
+   "src/widgets/Feed.jsx": 644,
+   "src/widgets/Choice.jsx": 725,
+   "src/widgets/Counter.jsx": 769,
+   "src/widgets/Field.jsx": 554,
+   "src/widgets/Summary.jsx": 219,
+   "src/widgets/Tabs.jsx": 640,
+   "src/widgets/Amount.jsx": 422,
+   "src/widgets/Toggles.jsx": 658,
+   "src/widgets/Rating.jsx": 557,
+   "src/widgets/Panel.jsx": 573,
+   "src/number.js": 52,
+   "src/App.jsx": 4917,
+   "src/adapter.jsx": 245
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 1,
+  "options": {
+   "size": 64,
+   "seed": 1,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "9942c0e4f6e439db",
+  "html": {
+   "raw": 321,
+   "br": 148
+  },
+  "js": {
+   "raw": 39435,
+   "br": 11507
+  },
+  "total": {
+   "raw": 39756,
+   "br": 11655
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18085,
+    "tooling": 670,
+    "app": 20680
+   },
+   "br": {
+    "runtime": 6517,
+    "app": 4990
+   }
+  },
+  "adapter": {
+   "raw": 245,
+   "br": 143
+  },
+  "bundle": {
+   "raw": 39680,
+   "br": 11650,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8070,
+   "node_modules/solid-js/web/dist/web.js": 4942,
+   "node_modules/solid-js/store/dist/store.js": 5073,
+   "src/store.js": 2360,
+   "src/widgets/Counter.jsx": 769,
+   "src/widgets/Tabs.jsx": 639,
+   "src/widgets/Amount.jsx": 421,
+   "src/widgets/Todo.jsx": 1211,
+   "src/widgets/Feed.jsx": 643,
+   "src/widgets/Filter.jsx": 754,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 705,
+   "src/widgets/Summary.jsx": 219,
+   "src/widgets/Panel.jsx": 573,
+   "src/widgets/Field.jsx": 553,
+   "src/widgets/Toggles.jsx": 657,
+   "src/widgets/Choice.jsx": 724,
+   "src/widgets/Rating.jsx": 556,
+   "src/number.js": 52,
+   "src/App.jsx": 9769,
+   "src/adapter.jsx": 245
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 2,
+  "options": {
+   "size": 64,
+   "seed": 2,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "fdd159d6e484ced3",
+  "html": {
+   "raw": 321,
+   "br": 143
+  },
+  "js": {
+   "raw": 39796,
+   "br": 11497
+  },
+  "total": {
+   "raw": 40117,
+   "br": 11640
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18081,
+    "tooling": 670,
+    "app": 21045
+   },
+   "br": {
+    "runtime": 6522,
+    "app": 4975
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 124
+  },
+  "bundle": {
+   "raw": 40046,
+   "br": 11621,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8067,
+   "node_modules/solid-js/web/dist/web.js": 4941,
+   "node_modules/solid-js/store/dist/store.js": 5073,
+   "src/store.js": 2720,
+   "src/widgets/Amount.jsx": 421,
+   "src/widgets/Counter.jsx": 768,
+   "src/widgets/Choice.jsx": 725,
+   "src/widgets/Rating.jsx": 556,
+   "src/widgets/Tabs.jsx": 639,
+   "src/widgets/Toggles.jsx": 658,
+   "src/widgets/Panel.jsx": 573,
+   "src/widgets/Summary.jsx": 219,
+   "src/widgets/Todo.jsx": 1210,
+   "src/widgets/Feed.jsx": 644,
+   "src/widgets/Field.jsx": 555,
+   "src/widgets/Filter.jsx": 754,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 705,
+   "src/number.js": 52,
+   "src/App.jsx": 9771,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 3,
+  "options": {
+   "size": 64,
+   "seed": 3,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "5272f3a2aa2ff2f6",
+  "html": {
+   "raw": 321,
+   "br": 142
+  },
+  "js": {
+   "raw": 39370,
+   "br": 11440
+  },
+  "total": {
+   "raw": 39691,
+   "br": 11582
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18080,
+    "tooling": 670,
+    "app": 20620
+   },
+   "br": {
+    "runtime": 6511,
+    "app": 4929
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 160
+  },
+  "bundle": {
+   "raw": 39620,
+   "br": 11600,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8066,
+   "node_modules/solid-js/web/dist/web.js": 4941,
+   "node_modules/solid-js/store/dist/store.js": 5073,
+   "src/store.js": 2576,
+   "src/widgets/Todo.jsx": 1211,
+   "src/widgets/Filter.jsx": 753,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 705,
+   "src/widgets/Feed.jsx": 643,
+   "src/widgets/Choice.jsx": 724,
+   "src/widgets/Counter.jsx": 768,
+   "src/widgets/Field.jsx": 554,
+   "src/widgets/Summary.jsx": 219,
+   "src/widgets/Tabs.jsx": 640,
+   "src/widgets/Amount.jsx": 421,
+   "src/widgets/Toggles.jsx": 657,
+   "src/widgets/Rating.jsx": 556,
+   "src/widgets/Panel.jsx": 573,
+   "src/number.js": 52,
+   "src/App.jsx": 9493,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 1,
+  "options": {
+   "size": 128,
+   "seed": 1,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "df66f5c57c563506",
+  "html": {
+   "raw": 321,
+   "br": 142
+  },
+  "js": {
+   "raw": 51486,
+   "br": 13379
+  },
+  "total": {
+   "raw": 51807,
+   "br": 13521
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18096,
+    "tooling": 670,
+    "app": 32720
+   },
+   "br": {
+    "runtime": 6523,
+    "app": 6856
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 111
+  },
+  "bundle": {
+   "raw": 51736,
+   "br": 13490,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8072,
+   "node_modules/solid-js/web/dist/web.js": 4946,
+   "node_modules/solid-js/store/dist/store.js": 5078,
+   "src/store.js": 4601,
+   "src/widgets/Counter.jsx": 768,
+   "src/widgets/Tabs.jsx": 639,
+   "src/widgets/Amount.jsx": 421,
+   "src/widgets/Todo.jsx": 1210,
+   "src/widgets/Feed.jsx": 644,
+   "src/widgets/Filter.jsx": 753,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 705,
+   "src/widgets/Summary.jsx": 219,
+   "src/widgets/Panel.jsx": 573,
+   "src/widgets/Field.jsx": 554,
+   "src/widgets/Toggles.jsx": 657,
+   "src/widgets/Choice.jsx": 725,
+   "src/widgets/Rating.jsx": 556,
+   "src/number.js": 52,
+   "src/App.jsx": 19568,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 2,
+  "options": {
+   "size": 128,
+   "seed": 2,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "8460308ae66f83ef",
+  "html": {
+   "raw": 321,
+   "br": 143
+  },
+  "js": {
+   "raw": 51529,
+   "br": 13297
+  },
+  "total": {
+   "raw": 51850,
+   "br": 13440
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18102,
+    "tooling": 670,
+    "app": 32757
+   },
+   "br": {
+    "runtime": 6520,
+    "app": 6777
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 162
+  },
+  "bundle": {
+   "raw": 51779,
+   "br": 13459,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8072,
+   "node_modules/solid-js/web/dist/web.js": 4952,
+   "node_modules/solid-js/store/dist/store.js": 5078,
+   "src/store.js": 4673,
+   "src/widgets/Amount.jsx": 421,
+   "src/widgets/Counter.jsx": 768,
+   "src/widgets/Choice.jsx": 725,
+   "src/widgets/Rating.jsx": 556,
+   "src/widgets/Tabs.jsx": 639,
+   "src/widgets/Toggles.jsx": 657,
+   "src/widgets/Panel.jsx": 573,
+   "src/widgets/Summary.jsx": 219,
+   "src/widgets/Todo.jsx": 1210,
+   "src/widgets/Feed.jsx": 644,
+   "src/widgets/Field.jsx": 554,
+   "src/widgets/Filter.jsx": 753,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 705,
+   "src/number.js": 51,
+   "src/App.jsx": 19534,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 3,
+  "options": {
+   "size": 128,
+   "seed": 3,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "ad15b848b7b12d52",
+  "html": {
+   "raw": 321,
+   "br": 152
+  },
+  "js": {
+   "raw": 51258,
+   "br": 13350
+  },
+  "total": {
+   "raw": 51579,
+   "br": 13502
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18102,
+    "tooling": 670,
+    "app": 32486
+   },
+   "br": {
+    "runtime": 6520,
+    "app": 6830
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 142
+  },
+  "bundle": {
+   "raw": 51508,
+   "br": 13492,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8072,
+   "node_modules/solid-js/web/dist/web.js": 4952,
+   "node_modules/solid-js/store/dist/store.js": 5078,
+   "src/store.js": 4825,
+   "src/widgets/Todo.jsx": 1210,
+   "src/widgets/Filter.jsx": 753,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 705,
+   "src/widgets/Feed.jsx": 644,
+   "src/widgets/Choice.jsx": 725,
+   "src/widgets/Counter.jsx": 768,
+   "src/widgets/Field.jsx": 554,
+   "src/widgets/Summary.jsx": 219,
+   "src/widgets/Tabs.jsx": 639,
+   "src/widgets/Amount.jsx": 421,
+   "src/widgets/Toggles.jsx": 657,
+   "src/widgets/Rating.jsx": 556,
+   "src/widgets/Panel.jsx": 573,
+   "src/number.js": 51,
+   "src/App.jsx": 19111,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 1,
+  "options": {
+   "size": 256,
+   "seed": 1,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "f5c3a6cd02c3437d",
+  "html": {
+   "raw": 321,
+   "br": 143
+  },
+  "js": {
+   "raw": 76341,
+   "br": 16597
+  },
+  "total": {
+   "raw": 76662,
+   "br": 16740
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18102,
+    "tooling": 670,
+    "app": 57569
+   },
+   "br": {
+    "runtime": 6528,
+    "app": 10069
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 157
+  },
+  "bundle": {
+   "raw": 76591,
+   "br": 16754,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8072,
+   "node_modules/solid-js/web/dist/web.js": 4946,
+   "node_modules/solid-js/store/dist/store.js": 5084,
+   "src/store.js": 8971,
+   "src/widgets/Counter.jsx": 768,
+   "src/widgets/Tabs.jsx": 639,
+   "src/widgets/Amount.jsx": 421,
+   "src/widgets/Todo.jsx": 1210,
+   "src/widgets/Feed.jsx": 644,
+   "src/widgets/Filter.jsx": 753,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 705,
+   "src/widgets/Summary.jsx": 219,
+   "src/widgets/Panel.jsx": 573,
+   "src/widgets/Field.jsx": 554,
+   "src/widgets/Toggles.jsx": 657,
+   "src/widgets/Choice.jsx": 725,
+   "src/widgets/Rating.jsx": 556,
+   "src/number.js": 51,
+   "src/App.jsx": 40048,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 2,
+  "options": {
+   "size": 256,
+   "seed": 2,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "4886084a9772096e",
+  "html": {
+   "raw": 321,
+   "br": 151
+  },
+  "js": {
+   "raw": 75101,
+   "br": 16436
+  },
+  "total": {
+   "raw": 75422,
+   "br": 16587
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18102,
+    "tooling": 670,
+    "app": 56329
+   },
+   "br": {
+    "runtime": 6520,
+    "app": 9916
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 175
+  },
+  "bundle": {
+   "raw": 75351,
+   "br": 16611,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8072,
+   "node_modules/solid-js/web/dist/web.js": 4952,
+   "node_modules/solid-js/store/dist/store.js": 5078,
+   "src/store.js": 8916,
+   "src/widgets/Amount.jsx": 421,
+   "src/widgets/Counter.jsx": 768,
+   "src/widgets/Choice.jsx": 725,
+   "src/widgets/Rating.jsx": 556,
+   "src/widgets/Tabs.jsx": 639,
+   "src/widgets/Toggles.jsx": 657,
+   "src/widgets/Panel.jsx": 573,
+   "src/widgets/Summary.jsx": 219,
+   "src/widgets/Todo.jsx": 1210,
+   "src/widgets/Feed.jsx": 644,
+   "src/widgets/Field.jsx": 554,
+   "src/widgets/Filter.jsx": 753,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 705,
+   "src/number.js": 51,
+   "src/App.jsx": 38863,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 3,
+  "options": {
+   "size": 256,
+   "seed": 3,
+   "kinds": "all",
+   "summaries": "auto"
+  },
+  "inputs": "87898bfaa40b7822",
+  "html": {
+   "raw": 321,
+   "br": 142
+  },
+  "js": {
+   "raw": 75404,
+   "br": 16632
+  },
+  "total": {
+   "raw": 75725,
+   "br": 16774
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18102,
+    "tooling": 670,
+    "app": 56632
+   },
+   "br": {
+    "runtime": 6528,
+    "app": 10104
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 98
+  },
+  "bundle": {
+   "raw": 75654,
+   "br": 16730,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8072,
+   "node_modules/solid-js/web/dist/web.js": 4946,
+   "node_modules/solid-js/store/dist/store.js": 5084,
+   "src/store.js": 9398,
+   "src/widgets/Todo.jsx": 1210,
+   "src/widgets/Filter.jsx": 753,
+   "src/time.js": 75,
+   "src/widgets/Clock.jsx": 705,
+   "src/widgets/Feed.jsx": 644,
+   "src/widgets/Choice.jsx": 725,
+   "src/widgets/Counter.jsx": 768,
+   "src/widgets/Field.jsx": 554,
+   "src/widgets/Summary.jsx": 219,
+   "src/widgets/Tabs.jsx": 639,
+   "src/widgets/Amount.jsx": 421,
+   "src/widgets/Toggles.jsx": 657,
+   "src/widgets/Rating.jsx": 556,
+   "src/widgets/Panel.jsx": 573,
+   "src/number.js": 51,
+   "src/App.jsx": 38684,
+   "src/adapter.jsx": 250
+  }
+ }
+]
