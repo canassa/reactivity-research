@@ -10,7 +10,7 @@
     in {
       devShells = forAll (pkgs: {
         default = pkgs.mkShell {
-          packages = [ pkgs.nodejs_latest pkgs.brotli pkgs.jq ];
+          packages = [ pkgs.nodejs_latest pkgs.brotli pkgs.jq pkgs.cloudflared ];
         };
       });
     };

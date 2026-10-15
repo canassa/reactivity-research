@@ -209,9 +209,34 @@ notes/                 a short log of each working session
   their options and the pinned versions. What is committed is the measurements in `results/`,
   with the generator options and versions that produced them.
 
+## The CLI
+
+One command line tool, `./rr` (Node, no global installs), drives everything. Every subcommand takes
+the same selection: a scenario, a framework (or `all`), and the generator's options (`--size`,
+`--seed`, and the scenario's and framework's own parameters, with their defaults from the
+scenario README).
+
+```sh
+./rr generate dashboard solid --size 16 --seed 1   # write generated/dashboard/n16-s1/solid/
+./rr build    dashboard solid --size 16 --seed 1   # generate + the production build
+./rr check    dashboard all   --size 16            # run the contract checks; report pass/fail per step
+./rr measure  dashboard all                        # every size and seed: sizes into results/
+./rr serve    dashboard solid --size 16 --seed 1   # build, serve, and expose through cloudflared
+```
+
+**`./rr serve`** is for a person to see that a generated app really works:
+- it builds the production version, serves it on a local port, and opens a **cloudflared quick
+  tunnel** (`cloudflared tunnel --url http://127.0.0.1:<port>`), then prints the public URL;
+- the page shows the app as built, plus a small panel, outside the app's root and not counted in
+  any size, that can send the scenario's external events through `dispatch` (including a
+  whole-state snapshot), run the contract checks live and show their result, and reset;
+- `--local` serves without the tunnel; `Ctrl-C` stops both the server and the tunnel;
+- several frameworks can be served side by side (`./rr serve dashboard solid,vue,react`), one
+  page per framework from the same spec, so they can be compared by eye.
+
 ## Working here
 
-- The toolchain is pinned by `flake.nix`: Node (latest), brotli and jq. `direnv allow` puts
+- The toolchain is pinned by `flake.nix`: Node (latest), brotli, jq and cloudflared. `direnv allow` puts
   them on `PATH`, or run `nix develop`.
 - Use npm with a committed lockfile per package, and exact pinned versions.
 - Keep a short log of each working session in `notes/` (date, what was done, what was learned).
