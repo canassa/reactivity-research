@@ -1,4 +1,4 @@
-// ./rr measure <scenario> <framework|all|a,b> [--sizes 1,2 --seeds 1,2] [emitter options]
+// ./rr measure <scenario> <framework|all|a,b> [--sizes 1,2 --seeds 1,2] [--force] [emitter options]
 //
 // For every size × seed × framework variant: generate, build, then measure what the browser
 // downloads. HTML: not minified, brotli 11. JavaScript: the production (minified) bundle,
@@ -7,12 +7,14 @@
 // the app's size. Results go to results/<date>-<scenario>/.
 //
 // Emitter options accept comma-separated lists (e.g. --granularity kind,instance) and every
-// combination is measured.
+// combination is measured. A record whose inputs (see codeHash) match a committed result is
+// reused instead of rebuilt; --force measures everything again.
 
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import zlib from "node:zlib";
+import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { parseArgs, loadScenario, loadEmitters, splitOptions, variantName, ROOT, RESULTS } from "./selection.js";
 import { buildApp } from "./generate.js";
@@ -34,7 +36,7 @@ export function brotli(text) {
 
 const bytes = (s) => Buffer.byteLength(s || "");
 
-function combinations(params, args) {
+export function combinations(params, args) {
   let combos = [{}];
   for (const [k, p] of Object.entries(params || {})) {
     const values = String(args[k] ?? p.default).split(",");
@@ -160,45 +162,119 @@ ${rows.join("\n")}
 `;
 }
 
-export async function measureCommand(rest) {
-  const args = parseArgs(rest);
-  const [scenarioName, which] = args._;
-  const scenario = await loadScenario(scenarioName);
-  const emitters = await loadEmitters(scenario.name, which || "all");
-  const { scenarioOptions } = splitOptions(args, scenario, emitters, ["sizes", "seeds", "out"]);
-  delete scenarioOptions.size;
-  delete scenarioOptions.seed;
-  const sizes = args.sizes ? String(args.sizes).split(",").map(Number) : scenario.mod.sizes;
-  const seeds = args.seeds ? String(args.seeds).split(",").map(Number) : scenario.mod.seeds;
+// Everything that can change a measurement, hashed: the scenario generator, the emitter, the
+// framework's shared files and lockfile, shared emitter helpers, the harness code that builds
+// and measures, and the Node and brotli versions. Options, size and seed are added per record.
+const HASHED_HARNESS = ["harness/generate.js", "harness/measure.js", "harness/sourcemap.js"];
 
+function filesUnder(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((d) => {
+    if (d.name === "node_modules") return [];
+    const f = path.join(dir, d.name);
+    return d.isDirectory() ? filesUnder(f) : [f];
+  });
+}
+
+export function codeHash(scenario, emitter) {
+  const files = [
+    scenario.specFile, emitter.file,
+    ...filesUnder(emitter.frameworkDir), ...filesUnder(path.join(ROOT, "frameworks", "shared")),
+    ...HASHED_HARNESS.map((f) => path.join(ROOT, f)),
+  ].sort();
+  const h = crypto.createHash("sha256");
+  for (const f of files) h.update(path.relative(ROOT, f) + "\0").update(fs.readFileSync(f)).update("\0");
+  h.update(process.version + "\0" + process.versions.brotli);
+  return h.digest("hex");
+}
+
+function inputsHash(code, scenarioOptions, emitterOptions) {
+  return crypto.createHash("sha256").update(code).update(JSON.stringify({ scenarioOptions, emitterOptions })).digest("hex").slice(0, 16);
+}
+
+// Previously measured records of a scenario, by inputs hash, from every committed run.
+function previousRecords(scenarioName) {
+  const out = new Map();
+  if (!fs.existsSync(RESULTS)) return out;
+  for (const d of fs.readdirSync(RESULTS).sort((a, b) => a.localeCompare(b, "en", { numeric: true }))) {
+    const runFile = path.join(RESULTS, d, "run.json");
+    if (!fs.existsSync(runFile)) continue;
+    const run = JSON.parse(fs.readFileSync(runFile, "utf8"));
+    if (run.scenario !== scenarioName) continue;
+    for (const r of JSON.parse(fs.readFileSync(path.join(RESULTS, d, "measurements.json"), "utf8"))) {
+      if (r.inputs) out.set(r.inputs, { record: r, variant: run.variants[r.variant], frameworks: run.frameworks });
+    }
+  }
+  return out;
+}
+
+function latestRun(scenarioName) {
+  if (!fs.existsSync(RESULTS)) return null;
+  const dirs = fs.readdirSync(RESULTS).filter((d) => {
+    const f = path.join(RESULTS, d, "run.json");
+    return fs.existsSync(f) && JSON.parse(fs.readFileSync(f, "utf8")).scenario === scenarioName;
+  }).sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+  return dirs.length ? path.join(RESULTS, dirs[dirs.length - 1]) : null;
+}
+
+// Measure a set of runs of one scenario: [{ emitter, emitterOptions, sizes, seeds }].
+// Records whose inputs hash matches a committed result are reused unless `force`.
+// Writes a results directory unless `onlyIfChanged` and the latest one already holds exactly
+// these records. Returns the directory written (or null) and the fits.
+export async function measureScenario(scenario, scenarioOptions, plan, { force = false, out = null, onlyIfChanged = false } = {}) {
+  const previous = force ? new Map() : previousRecords(scenario.name);
   const records = [];
   const variants = {};
-  for (const emitter of emitters) {
-    for (const opts of combinations(emitter.mod.params, args)) {
-      const variant = variantName(emitter, opts);
-      for (const size of sizes) {
-        for (const seed of seeds) {
-          const out = await buildApp(scenario, emitter, { ...scenarioOptions, size, seed }, opts);
-          const m = measureBuild(out.built, emitter.framework);
-          variants[variant] = {
-            emitter: emitter.name, framework: emitter.mod.framework, label: emitter.framework.label,
-            track: emitter.framework.track, emitterOptions: opts, style: out.info.style,
-          };
-          records.push({ variant, size, seed, options: out.spec.options, ...m });
+  const frameworks = {};
+  let fresh = 0;
+  for (const { emitter, emitterOptions: opts, sizes, seeds } of plan) {
+    const variant = variantName(emitter, opts);
+    const code = codeHash(scenario, emitter);
+    frameworks[emitter.mod.framework] = { label: emitter.framework.label, track: emitter.framework.track, versions: emitter.framework.versions() };
+    for (const size of sizes) {
+      for (const seed of seeds) {
+        const options = scenario.mod.normalizeOptions({ ...scenarioOptions, size, seed });
+        const inputs = inputsHash(code, options, opts);
+        const hit = previous.get(inputs);
+        let record, style;
+        if (hit) {
+          record = { ...hit.record, variant };
+          style = hit.variant?.style;
+          console.log(`${variant} n=${size} s=${seed}: unchanged, reusing ${record.total.br} B br`);
+        } else {
+          const built = await buildApp(scenario, emitter, options, opts);
+          const m = measureBuild(built.built, emitter.framework);
+          record = { variant, size, seed, options: built.spec.options, inputs, ...m };
+          style = built.info.style;
+          fresh++;
           console.log(`${variant} n=${size} s=${seed}: total ${m.total.br} B br (html ${m.html.br}, js ${m.js.br}; runtime ${m.attribution.br.runtime}, app ${m.attribution.br.app}; adapter ${m.adapter.br} excluded)`);
         }
+        records.push(record);
+        variants[variant] ||= {
+          emitter: emitter.name, framework: emitter.mod.framework, label: emitter.framework.label,
+          track: emitter.framework.track, emitterOptions: opts, style, sizes, seeds, code: code.slice(0, 16),
+        };
       }
     }
   }
+  const fits = fitAll(records, scenario.mod.steadyFrom);
 
-  const frameworks = {};
-  for (const e of emitters) frameworks[e.mod.framework] = { label: e.framework.label, track: e.framework.track, versions: e.framework.versions() };
+  if (onlyIfChanged && !force) {
+    const latest = latestRun(scenario.name);
+    const key = (rs) => rs.map((r) => `${r.variant}|${r.size}|${r.seed}|${r.inputs}`).sort().join("\n");
+    if (latest && key(JSON.parse(fs.readFileSync(path.join(latest, "measurements.json"), "utf8"))) === key(records)) {
+      console.log(`${scenario.name}: nothing changed since ${path.relative(ROOT, latest)}/`);
+      return { dir: null, fits, fresh };
+    }
+  }
+
+  const union = (k) => [...new Set(plan.flatMap((p) => p[k]))].sort((a, b) => a - b);
   const run = {
     scenario: scenario.name,
     date: today(),
-    sizes,
-    seeds,
-    scenarioOptions: { ...scenario.mod.normalizeOptions({ ...scenarioOptions, size: sizes[0], seed: seeds[0] }), size: undefined, seed: undefined },
+    sizes: union("sizes"),
+    seeds: union("seeds"),
+    scenarioOptions: (({ size, seed, ...rest }) => rest)(scenario.mod.normalizeOptions({ ...scenarioOptions, size: 1, seed: 1 })),
     variants,
     frameworks,
     versions: {
@@ -209,15 +285,15 @@ export async function measureCommand(rest) {
     },
     compression: { brotli: BROTLI, html: "not minified", js: "minified by the framework's production build" },
     attribution: "source maps: node_modules → runtime; unmapped bundler output → tooling (counted with runtime); the adapter file → adapter (excluded); everything else → app. Brotli split: runtime = brotli(runtime+tooling); app = brotli(app JS) − runtime.",
+    reused: records.length - fresh,
   };
-  const fits = fitAll(records, scenario.mod.steadyFrom);
-  const dir = args.out ? path.resolve(args.out) : resultsDir(scenario.name);
+  const dir = out ? path.resolve(out) : resultsDir(scenario.name);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, "run.json"), JSON.stringify(run, null, 2) + "\n");
   fs.writeFileSync(path.join(dir, "measurements.json"), JSON.stringify(records, null, 1) + "\n");
   fs.writeFileSync(path.join(dir, "fit.json"), JSON.stringify(fits, null, 2) + "\n");
   fs.writeFileSync(path.join(dir, "README.md"), readme(run, fits));
-  console.log(`\nwrote ${path.relative(ROOT, dir)}/`);
+  console.log(`\nwrote ${path.relative(ROOT, dir)}/ (${fresh} measured, ${records.length - fresh} reused)`);
   for (const [v, f] of Object.entries(fits)) {
     for (const which of ["all", "steady"]) {
       if (!f[which]) continue;
@@ -225,4 +301,19 @@ export async function measureCommand(rest) {
       console.log(`${v} (${which === "all" ? "all sizes" : "N ≥ " + f.steady.from}): baseline ${t.baseline.toFixed(0)} B + ${t.slope.toFixed(1)} B/widget (R² ${t.r2.toFixed(3)})`);
     }
   }
+  return { dir, fits, fresh };
+}
+
+export async function measureCommand(rest) {
+  const args = parseArgs(rest, ["force"]);
+  const [scenarioName, which] = args._;
+  const scenario = await loadScenario(scenarioName);
+  const emitters = await loadEmitters(scenario.name, which || "all");
+  const { scenarioOptions } = splitOptions(args, scenario, emitters, ["sizes", "seeds", "out", "force"]);
+  delete scenarioOptions.size;
+  delete scenarioOptions.seed;
+  const sizes = args.sizes ? String(args.sizes).split(",").map(Number) : scenario.mod.sizes;
+  const seeds = args.seeds ? String(args.seeds).split(",").map(Number) : scenario.mod.seeds;
+  const plan = emitters.flatMap((emitter) => combinations(emitter.mod.params, args).map((emitterOptions) => ({ emitter, emitterOptions, sizes, seeds })));
+  await measureScenario(scenario, scenarioOptions, plan, { force: !!args.force, out: args.out });
 }
