@@ -6,6 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
+const PINNED = JSON.parse(fs.readFileSync(path.join(HERE, "package.json"), "utf8"));
 
 export const name = "solid";
 export const label = "Solid 1";
@@ -15,7 +16,8 @@ export const track = "framework";
 export function templateFiles({ name, title }) {
   const read = (f) => fs.readFileSync(path.join(HERE, "template", f), "utf8");
   return {
-    "package.json": read("package.json").replace("%NAME%", name),
+    "package.json": read("package.json").replace("%NAME%", name)
+      .replace(/%([\w@/-]+)%/g, (_, dep) => PINNED.dependencies[dep]),
     "index.html": read("index.html").replace("%TITLE%", title),
     "vite.config.js": read("vite.config.js"),
     "src/adapter.jsx": read("adapter.jsx"),
