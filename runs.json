@@ -1,0 +1,10 @@
+{
+  "$comment": "The predefined runs of ./rr report: per scenario, per emitter, the sizes, seeds and options. A list in options measures every value as its own variant. Omitted sizes/seeds default to the scenario's own lists.",
+  "dashboard": {
+    "solid": {
+      "sizes": [1, 2, 4, 8, 16, 32, 64],
+      "seeds": [1, 2, 3],
+      "options": { "granularity": ["kind", "instance"] }
+    }
+  }
+}

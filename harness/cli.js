@@ -12,10 +12,12 @@ commands:
   measure    build every size and seed and write sizes into results/
   serve      build, serve with the dispatch panel, expose through cloudflared
   plots      build the plots page from results/ and serve it
+  report     measure every run in runs.json (only what changed), then serve the plots
 
 selection options:
   --size N --seed S                    (generate, build, serve)
   --sizes 1,2,4 --seeds 1,2            (measure; default: the scenario's own lists)
+  --force                              (measure, report) remeasure even if nothing changed
   plus the scenario's options and each emitter's own options (./rr help <scenario>)
 
 serve/plots options:
@@ -36,6 +38,8 @@ export async function main(argv) {
         return await (await import("./measure.js")).measureCommand(rest);
       case "serve":
         return await (await import("./serve.js")).serveCommand(rest);
+      case "report":
+        return await (await import("./report.js")).reportCommand(rest);
       case "plots":
         return await (await import("./plots.js")).plotsCommand(rest);
       case "help":
