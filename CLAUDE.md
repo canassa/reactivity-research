@@ -52,8 +52,9 @@ dispose()         // remove everything: nodes, listeners, timers, subscriptions
   "server sent page 3", "here is a whole new state"), never a state diff and never "the new
   model".
 **What must hold after every step.** Correctness is verified **manually by the owner**, through
-`./rr serve` (below); there is no automated checker. Every implementation must still meet all of
-this, because an incorrect or degenerate implementation can always be made smaller:
+`./rr serve` (below); `./rr check` is a quick aid for fast iteration, not the verdict. Every
+implementation must still meet all of this, because an incorrect or degenerate implementation can
+always be made smaller:
 
 1. **Same page.** What the page shows matches `render(state)` for the state the reference
    `update` reaches (ignoring attribute order, framework marker comments and whitespace).
@@ -187,7 +188,8 @@ notes/                 a short log of each working session
 - **`scenarios/<scenario>/README.md`** is that scenario's contract, written before its generator:
   - what kind of app it models and why it grows the way it does;
   - **what "size" means** for it (always an amount of UI and behaviour, never an amount of
-    data: a table with more rows ships the same code), the sizes and the seeds;
+    data: a table with more rows ships the same code); the sizes and seeds measured are set per
+    framework in `runs.json`, not in the README;
   - the catalogue of UI shapes it composes, and how instances vary;
   - its state, its messages (user actions and external `dispatch` events) and the reference
     `update`/`render` in words;
@@ -220,6 +222,7 @@ scenario README).
 ./rr serve    dashboard solid --size 16 --seed 1   # build, serve, and expose through cloudflared
 ./rr plots    dashboard                          # build the plots page from results/, serve it through cloudflared
 ./rr report                                      # measure every run in runs.json that changed, then serve the plots
+./rr check    dashboard solid                    # quick aid: run the script on one small build in headless Chrome
 ```
 
 **`./rr serve`** is for a person to see that a generated app really works:
@@ -231,6 +234,12 @@ scenario README).
 - `--local` serves without the tunnel; `Ctrl-C` stops both the server and the tunnel;
 - several frameworks can be served side by side (`./rr serve dashboard solid,vue,react`), one
   page per framework from the same spec, so they can be compared by eye.
+
+**`./rr check`** builds one small app per framework (by default the scenario's quick-check size, seed 1),
+serves it with the panel and runs the whole interaction script in headless Chrome, reporting per step
+any mismatch with the reference render, replaced keyed node, lost focus or caret, and anything left
+after dispose. It takes about a second, for iterating on generators; it never replaces the owner's
+check by hand.
 
 **`./rr report`** runs the predefined measurements in **`runs.json`** (per scenario, per emitter: sizes,
 seeds and options; a list of option values measures each as a variant), then serves the plots:
