@@ -16,7 +16,8 @@ of feature pulls in.
 
 ## What "size" means
 
-**Size is the number of widgets, N.** Sizes: **1, 2, 4, 8, 16, 32, 64**. Seeds: **1, 2, 3** per size.
+**Size is the number of widgets, N.** Which sizes and seeds are measured is chosen per framework
+in `runs.json` at the repository root, not here.
 
 - The amount of data stays small. Lists inside widgets hold a handful of items, because more
   data would not change the shipped code.
