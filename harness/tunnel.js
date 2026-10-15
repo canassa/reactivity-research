@@ -35,7 +35,8 @@ export function openTunnel(localUrl) {
     const timer = setTimeout(() => reject(new Error(`cloudflared gave no URL in 60 s:\n${output}`)), 60000);
     const onData = (chunk) => {
       output += chunk;
-      const m = output.match(/https:\/\/[a-z0-9-]+\.trycloudflare\.com/);
+      // The tunnel's own URL; cloudflared also logs its API address (api.trycloudflare.com).
+      const m = [...output.matchAll(/https:\/\/([a-z0-9-]+)\.trycloudflare\.com/g)].find((x) => x[1] !== "api");
       if (m) {
         clearTimeout(timer);
         resolve({ url: m[0], child });
