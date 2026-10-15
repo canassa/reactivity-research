@@ -219,6 +219,7 @@ scenario README).
 ./rr measure  dashboard all                        # every size and seed: sizes into results/
 ./rr serve    dashboard solid --size 16 --seed 1   # build, serve, and expose through cloudflared
 ./rr plots    dashboard                          # build the plots page from results/, serve it through cloudflared
+./rr report                                      # measure every run in runs.json that changed, then serve the plots
 ```
 
 **`./rr serve`** is for a person to see that a generated app really works:
@@ -230,6 +231,13 @@ scenario README).
 - `--local` serves without the tunnel; `Ctrl-C` stops both the server and the tunnel;
 - several frameworks can be served side by side (`./rr serve dashboard solid,vue,react`), one
   page per framework from the same spec, so they can be compared by eye.
+
+**`./rr report`** runs the predefined measurements in **`runs.json`** (per scenario, per emitter: sizes,
+seeds and options; a list of option values measures each as a variant), then serves the plots:
+- every measurement stores a hash of its inputs (spec generator, emitter, `frameworks/<name>/` and its
+  lockfile, shared helpers, the measuring harness, Node and brotli versions, options, size, seed); a
+  committed result with the same hash is reused instead of rebuilt, and `--force` remeasures;
+- a new `results/` directory is written only for a scenario whose measurements changed.
 
 **`./rr plots`** turns the measurements into a page of plots:
 - it reads `results/` (all scenarios, or the ones named), builds one self-contained HTML page
