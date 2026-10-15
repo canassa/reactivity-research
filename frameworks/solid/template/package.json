@@ -1,0 +1,5 @@
+{
+  "name": "%NAME%",
+  "private": true,
+  "type": "module"
+}
