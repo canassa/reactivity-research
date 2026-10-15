@@ -1,0 +1,27 @@
+/* The serve panel only; the app itself ships no CSS. */
+body.rr-served { margin: 8px 420px 8px 8px; }
+#rr-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; width: 400px; overflow: auto;
+  box-sizing: border-box; padding: 10px 12px; background: #f6f6f4; color: #222;
+  border-left: 1px solid #ccc; font: 13px/1.4 system-ui, sans-serif; z-index: 10;
+}
+#rr-panel header { margin-bottom: 8px; }
+#rr-panel h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #666; margin: 14px 0 6px; }
+#rr-panel button { font: inherit; padding: 3px 8px; margin: 2px 4px 2px 0; }
+#rr-panel .rr-small { font-size: 11px; padding: 1px 6px; text-transform: none; letter-spacing: 0; }
+#rr-panel select { font: inherit; max-width: 230px; }
+#rr-panel .rr-step { margin-bottom: 4px; min-height: 2.8em; }
+#rr-panel .rr-checks { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 0; }
+#rr-panel .rr-checks dt { color: #555; }
+#rr-panel .rr-checks dd { margin: 0; }
+#rr-panel .rr-bad { color: #b00020; font-weight: 600; }
+#rr-panel .rr-diff { font-size: 11px; background: #fff; border: 1px solid #ddd; padding: 6px; overflow: auto; max-height: 300px; }
+#rr-panel .rr-log { padding-left: 1.6em; margin: 0; font-size: 12px; max-height: 260px; overflow: auto; }
+#rr-panel .rr-ref { background: #fff; border: 1px dashed #bbb; padding: 6px; max-height: 400px; overflow: auto; font-size: 12px; }
+#rr-panel .rr-ref section { margin-bottom: 6px; }
+@media (prefers-color-scheme: dark) {
+  #rr-panel { background: #1f1f1d; color: #ddd; border-color: #444; }
+  #rr-panel h3, #rr-panel .rr-checks dt { color: #999; }
+  #rr-panel .rr-diff, #rr-panel .rr-ref { background: #111; border-color: #444; color: #ddd; }
+  #rr-panel .rr-bad { color: #ff6b81; }
+}
