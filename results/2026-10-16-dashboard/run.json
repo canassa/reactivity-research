@@ -38,7 +38,22 @@
         "derived": "plain functions; createMemo for the filtered list",
         "events": "onClick/onInput (delegated), onChange for checkboxes and selects",
         "build": "Vite + vite-plugin-solid, production defaults, hidden source maps"
-      }
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "bbc8c760ae01cdaa"
     },
     "solid-granularity=instance": {
       "emitter": "solid",
@@ -58,7 +73,22 @@
         "derived": "plain functions; createMemo for the filtered list",
         "events": "onClick/onInput (delegated), onChange for checkboxes and selects",
         "build": "Vite + vite-plugin-solid, production defaults, hidden source maps"
-      }
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "bbc8c760ae01cdaa"
     }
   },
   "frameworks": {
@@ -81,7 +111,7 @@
     "brotli": "1.2.0 (node:zlib)",
     "platform": "linux 6.12.112 x64",
     "git": {
-      "commit": "a4aceac6d01f826543ee8805bddec171721f2dfd",
+      "commit": "cf7c5ec235461e0c4e89bf8f58088b38d1a44344",
       "dirty": false
     }
   },
@@ -94,5 +124,6 @@
     "html": "not minified",
     "js": "minified by the framework's production build"
   },
-  "attribution": "source maps: node_modules → runtime; unmapped bundler output → tooling (counted with runtime); the adapter file → adapter (excluded); everything else → app. Brotli split: runtime = brotli(runtime+tooling); app = brotli(app JS) − runtime."
+  "attribution": "source maps: node_modules → runtime; unmapped bundler output → tooling (counted with runtime); the adapter file → adapter (excluded); everything else → app. Brotli split: runtime = brotli(runtime+tooling); app = brotli(app JS) − runtime.",
+  "reused": 0
 }
