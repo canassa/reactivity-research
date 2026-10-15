@@ -20,12 +20,6 @@ export function literal(value, indent = "") {
   return `{\n${entries.map((e) => inner + e + ",").join("\n")}\n${indent}}`;
 }
 
-// Text as a JSX child: written as is when it needs no escaping, else as a string expression.
-export function jsxText(s) {
-  s = String(s);
-  return /[{}<>&]|^\s|\s$/.test(s) ? `{${JSON.stringify(s)}}` : s;
-}
-
 // A JSX attribute value: a plain string literal, or an expression for anything else.
 export function jsxAttr(v, indent = "") {
   if (typeof v === "string" && !/["&\\{}]/.test(v)) return `"${v}"`;

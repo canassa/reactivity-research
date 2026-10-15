@@ -7,7 +7,7 @@
 // (unmapped bundler output), app code and the contract adapter; the adapter is excluded from
 // the app's size. Results go to results/<date>-<scenario>/.
 //
-// Emitter options accept comma-separated lists (e.g. --granularity kind,instance) and every
+// Emitter options accept comma-separated lists (e.g. --some-option a,b) and every
 // combination is measured. A record whose inputs (see codeHash) match a committed result is
 // reused instead of rebuilt; --force measures everything again.
 

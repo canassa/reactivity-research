@@ -10,18 +10,15 @@
 //   derived list is read twice (the filter).
 // - Events as JSX handlers: `onClick`/`onInput` (Solid delegates them), `onChange` for
 //   checkboxes and selects.
-// - `granularity`: `kind` (default) writes one reusable component per widget kind, configured by
-//   props, which is how Solid's docs present components; `instance` writes one component per
-//   widget with its parameters inlined, as if each widget were a separate hand-written feature.
+// - One reusable component per widget kind, configured by props (function props for each
+//   widget's own rules), which is how Solid's docs present components.
 
 import { templateFiles } from "../../frameworks/solid/framework.js";
-import { literal, jsxText, jsxAttr, tplText, pascal, camelCase } from "../../frameworks/shared/jsx.js";
+import { literal, jsxAttr, tplText, camelCase } from "../../frameworks/shared/jsx.js";
 
 export const framework = "solid";
 
-export const params = {
-  granularity: { default: "kind", choices: ["kind", "instance"], help: "one component per widget kind, or per widget instance" },
-};
+export const params = {};
 
 const KIND_COMPONENT = {
   counter: "Counter", toggles: "Toggles", field: "Field", todo: "Todo", tabs: "Tabs", panel: "Panel",
@@ -29,7 +26,7 @@ const KIND_COMPONENT = {
   summary: "Summary",
 };
 
-// The per-instance parameters each kind takes, beyond id and label.
+// The props each kind takes, beyond id and label.
 const PARAMS = {
   counter: ["step", "min", "max", "start"],
   toggles: ["items"],
@@ -63,77 +60,39 @@ const FUNCTIONS = {
   },
 };
 
-// How a component template refers to its parameters: through props (one component per kind),
-// or as values written into the component (one component per instance), where lists and
-// functions become module constants.
-function propsRefs() {
-  return {
-    signature: "props",
-    id: "props.id",
-    idAttr: "{props.id}",
-    expr: (name) => `props.${name}`,
-    attr: (name) => `{props.${name}}`,
-    text: (name) => `{props.${name}}`,
-    fn: (name) => `props.${name}`,
-  };
-}
-
-function inlineRefs(w, consts) {
-  const value = (name) => (name === "label" ? w.label : w[name]);
-  return {
-    signature: "",
-    id: JSON.stringify(w.id),
-    idAttr: `"${w.id}"`,
-    expr(name) {
-      const v = value(name);
-      if (v !== null && typeof v === "object") {
-        consts.set(name, `const ${name} = ${literal(v)};`);
-        return name;
-      }
-      return literal(v);
-    },
-    attr: (name) => jsxAttr(value(name)),
-    text: (name) => jsxText(value(name)),
-    fn(name) {
-      consts.set(name, `const ${name} = ${FUNCTIONS[name](w)};`);
-      return name;
-    },
-  };
-}
-
-// Component bodies, per kind. `p` is one of the refs above. Each returns the solid-js imports
-// it needs, its other imports, and the function body.
+// Component bodies, per kind. Each returns the solid-js imports it needs, its other imports,
+// and the function body.
 const TEMPLATES = {
-  counter: (p) => ({
+  counter: () => ({
     body: `
-  const [counter, set] = useWidget(${p.id});
+  const [counter, set] = useWidget(props.id);
   return (
-    <section data-key=${p.idAttr} data-role="widget-counter">
-      <h2>${p.text("label")}</h2>
+    <section data-key={props.id} data-role="widget-counter">
+      <h2>{props.label}</h2>
       <output data-role="value">{counter.value}</output>
-      <button data-role="dec" disabled={counter.value <= ${p.expr("min")}} onClick={() => set("value", (value) => Math.max(${p.expr("min")}, value - ${p.expr("step")}))}>
-        -${p.text("step")}
+      <button data-role="dec" disabled={counter.value <= props.min} onClick={() => set("value", (value) => Math.max(props.min, value - props.step))}>
+        -{props.step}
       </button>
-      <button data-role="inc" disabled={counter.value >= ${p.expr("max")}} onClick={() => set("value", (value) => Math.min(${p.expr("max")}, value + ${p.expr("step")}))}>
-        +${p.text("step")}
+      <button data-role="inc" disabled={counter.value >= props.max} onClick={() => set("value", (value) => Math.min(props.max, value + props.step))}>
+        +{props.step}
       </button>
-      <button data-role="reset" onClick={() => set("value", ${p.expr("start")})}>
+      <button data-role="reset" onClick={() => set("value", props.start)}>
         Reset
       </button>
     </section>
   );`,
   }),
 
-  toggles: (p) => ({
+  toggles: () => ({
     solid: ["For"],
     body: `
-  const [toggles, set] = useWidget(${p.id});
+  const [toggles, set] = useWidget(props.id);
   const count = () => toggles.on.filter(Boolean).length;
   return (
-    <section data-key=${p.idAttr} data-role="widget-toggles">
-      <h2>${p.text("label")}</h2>
+    <section data-key={props.id} data-role="widget-toggles">
+      <h2>{props.label}</h2>
       <ul>
-        <For each={${p.expr("items")}}>
+        <For each={props.items}>
           {(name, i) => (
             <li>
               <label>
@@ -145,30 +104,30 @@ const TEMPLATES = {
         </For>
       </ul>
       <p data-role="count">
-        {count()} of {${p.expr("items")}.length} on
+        {count()} of {props.items.length} on
       </p>
     </section>
   );`,
   }),
 
-  field: (p) => ({
+  field: () => ({
     solid: ["Show"],
     body: `
-  const [field, set] = useWidget(${p.id});
-  const error = () => ${p.fn("validate")}(field.text);
+  const [field, set] = useWidget(props.id);
+  const error = () => props.validate(field.text);
   return (
-    <section data-key=${p.idAttr} data-role="widget-field">
-      <h2>${p.text("label")}</h2>
-      <input type="text" data-role="input" placeholder=${p.attr("placeholder")} value={field.text} onInput={(e) => set("text", e.currentTarget.value)} />
+    <section data-key={props.id} data-role="widget-field">
+      <h2>{props.label}</h2>
+      <input type="text" data-role="input" placeholder={props.placeholder} value={field.text} onInput={(e) => set("text", e.currentTarget.value)} />
       <Show when={error()}>{(message) => <p data-role="error">{message()}</p>}</Show>
     </section>
   );`,
   }),
 
-  todo: (p) => ({
+  todo: () => ({
     solid: ["For"],
     body: `
-  const [todo, set] = useWidget(${p.id});
+  const [todo, set] = useWidget(props.id);
   const left = () => todo.items.filter((item) => !item.done).length;
   const add = () => {
     const text = todo.draft.trim();
@@ -177,11 +136,11 @@ const TEMPLATES = {
     set((todo) => ({ items: [...todo.items, { id, text, done: false }], draft: "" }));
   };
   return (
-    <section data-key=${p.idAttr} data-role="widget-todo">
-      <h2>${p.text("label")}</h2>
-      <input type="text" data-role="draft" placeholder=${p.attr("placeholder")} value={todo.draft} onInput={(e) => set("draft", e.currentTarget.value)} />
+    <section data-key={props.id} data-role="widget-todo">
+      <h2>{props.label}</h2>
+      <input type="text" data-role="draft" placeholder={props.placeholder} value={todo.draft} onInput={(e) => set("draft", e.currentTarget.value)} />
       <button data-role="add" onClick={add}>
-        ${p.text("addText")}
+        {props.addText}
       </button>
       <ul>
         <For each={todo.items}>
@@ -190,7 +149,7 @@ const TEMPLATES = {
               <input type="checkbox" data-role="toggle" checked={item.done} onChange={() => set("items", (it) => it.id === item.id, "done", (done) => !done)} />
               <span>{item.text}</span>
               <button data-role="remove" onClick={() => set("items", (items) => items.filter((it) => it.id !== item.id))}>
-                ${p.text("removeText")}
+                {props.removeText}
               </button>
             </li>
           )}
@@ -201,15 +160,15 @@ const TEMPLATES = {
   );`,
   }),
 
-  tabs: (p) => ({
+  tabs: () => ({
     solid: ["For"],
     body: `
-  const [selected, set] = useWidget(${p.id});
+  const [selected, set] = useWidget(props.id);
   return (
-    <section data-key=${p.idAttr} data-role="widget-tabs">
-      <h2>${p.text("label")}</h2>
+    <section data-key={props.id} data-role="widget-tabs">
+      <h2>{props.label}</h2>
       <div role="tablist">
-        <For each={${p.expr("tabs")}}>
+        <For each={props.tabs}>
           {(tab, i) => (
             <button role="tab" data-role="tab" data-key={i()} aria-selected={selected.active === i() ? "true" : "false"} onClick={() => set("active", i())}>
               {tab.title}
@@ -218,52 +177,52 @@ const TEMPLATES = {
         </For>
       </div>
       <p role="tabpanel" data-role="tab-content">
-        {${p.expr("tabs")}[selected.active].content}
+        {props.tabs[selected.active].content}
       </p>
     </section>
   );`,
   }),
 
-  panel: (p) => ({
+  panel: () => ({
     solid: ["Show"],
     body: `
-  const [panel, set] = useWidget(${p.id});
+  const [panel, set] = useWidget(props.id);
   return (
-    <section data-key=${p.idAttr} data-role="widget-panel">
-      <h2>${p.text("label")}</h2>
+    <section data-key={props.id} data-role="widget-panel">
+      <h2>{props.label}</h2>
       <button data-role="toggle" aria-expanded={panel.open ? "true" : "false"} onClick={() => set("open", (open) => !open)}>
-        {panel.open ? ${p.expr("hideText")} : ${p.expr("showText")}}
+        {panel.open ? props.hideText : props.showText}
       </button>
       <Show when={panel.open}>
-        <p data-role="body">${p.text("body")}</p>
+        <p data-role="body">{props.body}</p>
       </Show>
     </section>
   );`,
   }),
 
-  choice: (p) => ({
+  choice: () => ({
     solid: ["For", "Show"],
     body: `
-  const [choice, set] = useWidget(${p.id});
+  const [choice, set] = useWidget(props.id);
   return (
-    <section data-key=${p.idAttr} data-role="widget-choice">
-      <h2>${p.text("label")}</h2>
+    <section data-key={props.id} data-role="widget-choice">
+      <h2>{props.label}</h2>
       <select data-role="select" value={choice.option} onChange={(e) => set("option", e.currentTarget.value)}>
-        <For each={${p.expr("options")}}>{(option) => <option value={option.value}>{option.label}</option>}</For>
+        <For each={props.options}>{(option) => <option value={option.value}>{option.label}</option>}</For>
       </select>
-      <Show when={${p.expr("extraFor")}.includes(choice.option)}>
-        <input type="text" data-role="extra" placeholder=${p.attr("extraPlaceholder")} value={choice.extra} onInput={(e) => set("extra", e.currentTarget.value)} />
+      <Show when={props.extraFor.includes(choice.option)}>
+        <input type="text" data-role="extra" placeholder={props.extraPlaceholder} value={choice.extra} onInput={(e) => set("extra", e.currentTarget.value)} />
       </Show>
     </section>
   );`,
   }),
 
-  amount: (p) => ({
+  amount: () => ({
     body: `
-  const [amount, set] = useWidget(${p.id});
+  const [amount, set] = useWidget(props.id);
   return (
-    <section data-key=${p.idAttr} data-role="widget-amount">
-      <h2>${p.text("label")}</h2>
+    <section data-key={props.id} data-role="widget-amount">
+      <h2>{props.label}</h2>
       <input
         type="number"
         data-role="input"
@@ -273,23 +232,23 @@ const TEMPLATES = {
           if (!Number.isNaN(value)) set("value", value);
         }}
       />
-      <output data-role="formatted">{${p.fn("format")}(amount.value)}</output>
+      <output data-role="formatted">{props.format(amount.value)}</output>
     </section>
   );`,
   }),
 
-  filter: (p) => ({
+  filter: () => ({
     solid: ["For", "createMemo"],
     body: `
-  const [filter, set] = useWidget(${p.id});
+  const [filter, set] = useWidget(props.id);
   const shown = createMemo(() => {
     const query = filter.query.toLowerCase();
-    return ${p.expr("items")}.filter((item) => item.text.toLowerCase().includes(query));
+    return props.items.filter((item) => item.text.toLowerCase().includes(query));
   });
   return (
-    <section data-key=${p.idAttr} data-role="widget-filter">
-      <h2>${p.text("label")}</h2>
-      <input type="text" data-role="query" placeholder=${p.attr("placeholder")} value={filter.query} onInput={(e) => set("query", e.currentTarget.value)} />
+    <section data-key={props.id} data-role="widget-filter">
+      <h2>{props.label}</h2>
+      <input type="text" data-role="query" placeholder={props.placeholder} value={filter.query} onInput={(e) => set("query", e.currentTarget.value)} />
       <ul>
         <For each={shown()}>{(item) => <li data-key={item.id}>{item.text}</li>}</For>
       </ul>
@@ -298,14 +257,14 @@ const TEMPLATES = {
   );`,
   }),
 
-  rating: (p) => ({
+  rating: () => ({
     solid: ["For"],
     body: `
-  const [rating, set] = useWidget(${p.id});
-  const stars = Array.from({ length: ${p.expr("stars")} }, (_, i) => i + 1);
+  const [rating, set] = useWidget(props.id);
+  const stars = Array.from({ length: props.stars }, (_, i) => i + 1);
   return (
-    <section data-key=${p.idAttr} data-role="widget-rating">
-      <h2>${p.text("label")}</h2>
+    <section data-key={props.id} data-role="widget-rating">
+      <h2>{props.label}</h2>
       <div>
         <For each={stars}>
           {(n) => (
@@ -315,53 +274,53 @@ const TEMPLATES = {
           )}
         </For>
       </div>
-      <p data-role="rating-label">{${p.expr("labels")}[rating.stars]}</p>
+      <p data-role="rating-label">{props.labels[rating.stars]}</p>
     </section>
   );`,
   }),
 
-  feed: (p) => ({
+  feed: () => ({
     solid: ["For", "Show"],
     body: `
-  const [feed, set] = useWidget(${p.id});
+  const [feed, set] = useWidget(props.id);
   return (
-    <section data-key=${p.idAttr} data-role="widget-feed">
-      <h2>${p.text("label")}</h2>
+    <section data-key={props.id} data-role="widget-feed">
+      <h2>{props.label}</h2>
       <ul>
         <For each={feed.entries}>
           {(entry) => (
             <li data-key={entry.id}>
               <span>{entry.text}</span>
               <button data-role="dismiss" onClick={() => set("entries", (entries) => entries.filter((e) => e.id !== entry.id))}>
-                ${p.text("dismissText")}
+                {props.dismissText}
               </button>
             </li>
           )}
         </For>
       </ul>
       <Show when={feed.entries.length === 0}>
-        <p data-role="empty">${p.text("emptyText")}</p>
+        <p data-role="empty">{props.emptyText}</p>
       </Show>
     </section>
   );`,
   }),
 
-  clock: (p) => ({
+  clock: () => ({
     imports: ['import { formatTime } from "../time";'],
     body: `
-  const [clock, set] = useWidget(${p.id});
+  const [clock, set] = useWidget(props.id);
   return (
-    <section data-key=${p.idAttr} data-role="widget-clock">
-      <h2>${p.text("label")}</h2>
+    <section data-key={props.id} data-role="widget-clock">
+      <h2>{props.label}</h2>
       <output data-role="time">{formatTime(clock.seconds)}</output>
       <button data-role="start" disabled={clock.running} onClick={() => set("running", true)}>
-        ${p.text("startText")}
+        {props.startText}
       </button>
       <button data-role="stop" disabled={!clock.running} onClick={() => set("running", false)}>
-        ${p.text("stopText")}
+        {props.stopText}
       </button>
       <button data-role="reset" onClick={() => set({ seconds: 0, running: false })}>
-        ${p.text("resetText")}
+        {props.resetText}
       </button>
     </section>
   );`,
@@ -480,17 +439,16 @@ export function useAppState() {
 ` : ""}`;
 }
 
-function component(name, kind, p, consts = new Map(), extraImports = []) {
-  const t = TEMPLATES[kind](p);
+function component(name, kind) {
+  const t = TEMPLATES[kind]();
   const solid = t.solid || [];
   const imports = [];
   if (solid.length) imports.push(`import { ${solid.join(", ")} } from "solid-js";`);
   imports.push(`import { useWidget } from "../store";`);
-  imports.push(...(t.imports || []), ...extraImports);
-  const constBlock = consts.size ? "\n" + [...consts.values()].join("\n\n") + "\n" : "";
+  imports.push(...(t.imports || []));
   return `${imports.join("\n")}
-${constBlock}
-export default function ${name}(${p.signature}) {${t.body}
+
+export default function ${name}(props) {${t.body}
 }
 `;
 }
@@ -516,12 +474,12 @@ const SUMMARY_KIND_FILE = `export default function Summary(props) {
 }
 `;
 
-function emitByKind(spec) {
+function emitComponents(spec) {
   const files = {};
   const kinds = [...new Set(spec.widgets.map((w) => w.kind))];
   for (const kind of kinds) {
     const name = KIND_COMPONENT[kind];
-    files[`src/widgets/${name}.jsx`] = kind === "summary" ? SUMMARY_KIND_FILE : component(name, kind, propsRefs());
+    files[`src/widgets/${name}.jsx`] = kind === "summary" ? SUMMARY_KIND_FILE : component(name, kind);
   }
 
   // Filters read by a summary share their items through a constant.
@@ -564,80 +522,18 @@ ${elements.join("\n")}
   return files;
 }
 
-function emitByInstance(spec) {
-  const files = {};
-  const names = new Map();
-  const used = new Set();
-  for (const w of spec.widgets) {
-    let name = pascal(w.label);
-    if (used.has(name)) name += w.id.toUpperCase();
-    used.add(name);
-    names.set(w.id, name);
-  }
-  for (const w of spec.widgets) {
-    const name = names.get(w.id);
-    if (w.kind === "summary") {
-      const imports = [];
-      const itemsName = (src) => {
-        const local = `${camelCase(src.label)}Items`;
-        imports.push(`import { items as ${local} } from "./${names.get(src.id)}";`);
-        return local;
-      };
-      const body = summaryBody(spec, w, itemsName, "    ");
-      if (body.includes("formatNumber(")) imports.push(`import { formatNumber } from "../number";`);
-      files[`src/widgets/${name}.jsx`] = `${[`import { useAppState } from "../store";`, ...imports].join("\n")}
-
-export default function ${name}() {
-  const state = useAppState();
-  const text = () => {
-${body}
-  };
-  return (
-    <section data-key="${w.id}" data-role="widget-summary">
-      <h2>${jsxText(w.label)}</h2>
-      <p data-role="summary">{text()}</p>
-    </section>
-  );
-}
-`;
-      continue;
-    }
-    const consts = new Map();
-    let src = component(name, w.kind, inlineRefs(w, consts), consts);
-    // Filters export their items, so summaries can count matches.
-    if (w.kind === "filter") src = src.replace("const items =", "export const items =");
-    files[`src/widgets/${name}.jsx`] = src;
-  }
-  const imports = [`import { AppContext } from "./store";`, ...spec.widgets.map((w) => `import ${names.get(w.id)} from "./widgets/${names.get(w.id)}";`)];
-  files["src/App.jsx"] = `${imports.join("\n")}
-
-export default function App(props) {
-  return (
-    <AppContext.Provider value={props.store}>
-      <div data-role="dashboard">
-${spec.widgets.map((w) => `        <${names.get(w.id)} />`).join("\n")}
-      </div>
-    </AppContext.Provider>
-  );
-}
-`;
-  return files;
-}
-
-export function emit(spec, options) {
-  const granularity = options.granularity;
+export function emit(spec) {
   const files = {
     ...templateFiles({ name: "dashboard", title: "Dashboard" }),
     "src/store.js": storeFile(spec),
-    ...(granularity === "kind" ? emitByKind(spec) : emitByInstance(spec)),
+    ...emitComponents(spec),
   };
   if (spec.widgets.some((w) => w.kind === "clock")) files["src/time.js"] = TIME_FILE;
   if (needsFormatNumber(spec)) files["src/number.js"] = NUMBER_FILE;
   return {
     files,
     style: {
-      granularity,
-      components: granularity === "kind" ? "one reusable component per widget kind, configured by props" : "one component per widget, parameters inlined",
+      components: "one reusable component per widget kind, configured by props",
       state: "one createStore for the whole dashboard, shared through a context; widgets use path setters on their slice",
       externalEvents: "store.receive(msg); serverSet and snapshot through reconcile(…, { key: 'id' })",
       lists: "<For>",
