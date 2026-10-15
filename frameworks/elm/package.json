@@ -2,12 +2,12 @@
   "name": "rr-framework-elm",
   "private": true,
   "type": "module",
-  "description": "Pinned Elm 0.19.1 toolchain shared by every Elm emitter",
+  "description": "Pinned Elm 0.19.3 toolchain shared by every Elm emitter",
   "scripts": {
     "postinstall": "node install.js"
   },
   "dependencies": {
-    "elm": "0.19.1-6",
+    "elm": "0.19.3-0",
     "uglify-js": "3.19.3"
   }
 }

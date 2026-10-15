@@ -1,14 +1,20 @@
-# Elm 0.19.1
+# Elm 0.19.3
 
 Shared by every Elm emitter (`scenarios/*/elm.js`).
 
-- **Compiler:** the `elm` npm installer, pinned in `package.json` and `package-lock.json`. It
-  brings the platform's binary as `@elm_binaries/<platform>_<arch>`, which `framework.js`
-  runs directly.
+- **Compiler:** Elm 0.19.3 (released 2026-10-02, "no language changes";
+  [release notes](https://github.com/elm/compiler/releases/tag/0.19.3)), through the `elm` npm
+  installer `0.19.3-0` (its `latest` dist-tag), pinned in `package.json` and
+  `package-lock.json`. It brings the platform's binary as `@elm_binaries/<platform>_<arch>`,
+  which `framework.js` runs directly.
 - **Minifier:** `uglify-js`, pinned likewise, with the two passes from the Elm guide's
-  [asset size page](https://guide.elm-lang.org/optimization/asset_size.html).
+  [asset size page](https://guide.elm-lang.org/optimization/asset_size.html) (still its
+  recommendation in 2026).
 - **Elm packages:** pinned with exact versions in `template/elm.json`, which every generated
-  app gets.
+  app gets: the latest release of each (elm/core 1.0.5, browser 1.0.2, html 1.0.1, json 1.1.4,
+  regex 1.0.0; indirect time 1.0.0, url 1.0.0, virtual-dom 1.0.5), checked against
+  `https://package.elm-lang.org/packages/elm/<name>/releases.json`. Their `elm.json` ranges
+  (`0.19.0 <= v < 0.20.0`) accept 0.19.3.
 
 ## Install (needs the network once)
 
@@ -18,10 +24,11 @@ npm ci      # in frameworks/elm/
 
 The `postinstall` script (`install.js`) then compiles a throwaway program against
 `template/elm.json`, so the compiler downloads every pinned package and builds it into
-`node_modules/.elm-home/`. Every build runs with `ELM_HOME` set to that directory: it finds
-everything there and never touches the network. Builds only read it, so the harness's
-parallel workers (up to 32) share it safely. `npm ci` wipes `node_modules/` and runs the
-pre-fetch again. After changing a package version in `template/elm.json`, run `node install.js`.
+`node_modules/.elm-home/0.19.3/packages/`. Every build runs with `ELM_HOME` set to
+`node_modules/.elm-home`: it finds everything there and never touches the network. Builds only
+read it, so the harness's parallel workers (up to 32) share it safely. `npm ci` wipes
+`node_modules/` and runs the pre-fetch again. After changing a package version in
+`template/elm.json`, run `node install.js`.
 
 ## Build
 

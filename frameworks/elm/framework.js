@@ -1,4 +1,4 @@
-// Elm 0.19.1, as it ships: `elm make --optimize`, then the two-pass uglify-js minification the
+// Elm 0.19.3, as it ships: `elm make --optimize`, then the two-pass uglify-js minification the
 // Elm guide recommends (https://guide.elm-lang.org/optimization/asset_size.html): a compress
 // pass with `pure_funcs` over Elm's F2…F9/A2…A9 helpers, then a mangle pass. Compiler, minifier
 // and Elm packages are pinned (package.json + package-lock.json, template/elm.json); the
@@ -28,7 +28,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 
 export const name = "elm";
-export const label = "Elm 0.19.1";
+export const label = "Elm 0.19.3";
 export const track = "framework";
 
 // Where install.js puts the pinned Elm packages. Under node_modules: installed, not committed,
@@ -62,7 +62,7 @@ export function classify(source) {
 }
 
 export async function prepare() {
-  if (!fs.existsSync(path.join(ELM_HOME, "0.19.1", "packages", "registry.dat"))) {
+  if (!fs.existsSync(path.join(ELM_HOME, "0.19.3", "packages", "registry.dat"))) {
     throw new Error(`Elm packages are not installed: run npm ci in ${path.relative(process.cwd(), HERE)} (see its README.md)`);
   }
 }
