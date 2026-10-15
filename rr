@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+// The reactivity-research CLI. See CLAUDE.md, "The CLI".
+import("./harness/cli.js").then((m) => m.main(process.argv.slice(2)));
