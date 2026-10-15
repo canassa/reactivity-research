@@ -251,3 +251,5 @@ scenario README).
   them on `PATH`, or run `nix develop`.
 - Use npm with a committed lockfile per package, and exact pinned versions.
 - Keep a short log of each working session in `notes/` (date, what was done, what was learned).
+- **Commits go straight to `main`, with no pull requests,** in the house style: use the `commit` skill
+  (`.claude/skills/commit/`). Commit in small, focused steps and push each one.
