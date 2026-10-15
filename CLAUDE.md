@@ -13,7 +13,7 @@ It is independent of any language or framework project.
 ## The goal
 
 Find the approaches whose shipped code comes closest to hand-written vanilla JavaScript in
-**size**, measured as brotli bytes of the production build, as two numbers:
+**size**: everything the browser downloads for the app, as two numbers:
 
 - **baseline:** what the smallest app in a scenario family ships (runtime plus wiring);
 - **slope:** the bytes each additional feature adds as the app grows.
@@ -101,9 +101,14 @@ size; each approach's implementation is written or generated from that spec.
    build pipeline). Use real libraries at pinned versions where they exist. No hand-golfing
    that the approach's users wouldn't do: compare what each approach really ships.
    A straw man is worse than no comparison.
-4. **Production builds.** Size is the brotli (quality 11) size of the production build that
-   the approach's own tooling recommends, minified, as one bundle per app unless the approach
-   requires otherwise. Report raw, gzip and brotli; brotli is the headline.
+4. **What is measured: everything shipped to the browser, HTML and JavaScript.**
+   - **HTML** is not minified, only compressed with brotli (quality 11).
+   - **JavaScript** is minified, then compressed with brotli (quality 11). Use the production
+     build the approach's own tooling recommends, as one bundle per app unless the approach
+     requires otherwise.
+   - The size of an app is the sum of its HTML and its JavaScript, each compressed on its own.
+     Report HTML and JavaScript separately as well as the total, and raw sizes beside the
+     compressed ones; the compressed total is the headline.
 5. **Attribute the bytes.** Split every bundle into runtime/library code and app code (source
    maps or deletion accounting), so baseline and slope can be explained, not just reported.
 6. **Separate baseline from slope** in every size result, and fit them over the sizes. A single
