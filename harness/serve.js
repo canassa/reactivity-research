@@ -52,8 +52,8 @@ function comparePage(scenario, options, variants) {
 <main>${frames}</main></body></html>`;
 }
 
-export async function serveCommand(rest) {
-  const { args, scenario, emitters, scenarioOptions, emitterOptions } = await selection(rest, ["local", "port"]);
+// Build each selected app and return the request handler that serves them with the panel.
+export async function prepareServe(scenario, emitters, scenarioOptions, emitterOptions, { quiet = false } = {}) {
   const apps = new Map();
   let spec;
   for (const emitter of emitters) {
@@ -61,7 +61,7 @@ export async function serveCommand(rest) {
     const out = await buildApp(scenario, emitter, scenarioOptions, opts);
     spec = out.spec;
     apps.set(variantName(emitter, opts), out.built.outDir);
-    console.log(`built ${path.relative(ROOT, out.built.outDir)}`);
+    if (!quiet) console.log(`built ${path.relative(ROOT, out.built.outDir)}`);
   }
   const specJson = JSON.stringify(spec);
   const variants = [...apps.keys()];
@@ -95,6 +95,12 @@ export async function serveCommand(rest) {
     if (rel === "index.html") return send(res, 200, injectPanel(fs.readFileSync(file, "utf8")), TYPES[".html"]);
     return sendFile(res, file);
   };
+  return { spec, variants, handler };
+}
+
+export async function serveCommand(rest) {
+  const { args, scenario, emitters, scenarioOptions, emitterOptions } = await selection(rest, ["local", "port"]);
+  const { spec, variants, handler } = await prepareServe(scenario, emitters, scenarioOptions, emitterOptions);
 
   const pages = variants.map((v) => `/${v}/`).join(", ");
   await serveUntilInterrupted(handler, {

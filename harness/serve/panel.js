@@ -349,7 +349,10 @@ async function sendEvent(ev, target) {
 
 const mark = (v) => (v === true ? "✓" : v === false ? "✗" : "—");
 
+let lastReport = null;
+
 function report(r) {
+  lastReport = r;
   const rows = [];
   rows.push(["action", r.label]);
   if (r.error) rows.push(["error", r.error]);
@@ -370,5 +373,11 @@ function report(r) {
 }
 
 // Start mounted: run the script's first step.
-window.rrPanel = { stepOnce, runAll, reset, get tally() { return { ...tally, pos, total: spec.script.length }; } };
+window.rrPanel = {
+  stepOnce, runAll, reset,
+  get tally() { return { ...tally, pos, total: spec.script.length }; },
+  get last() { return lastReport; },
+  ready: false,
+};
 await guard(reset);
+window.rrPanel.ready = true;
