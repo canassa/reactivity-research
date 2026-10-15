@@ -108,6 +108,11 @@ On top of the global contract:
   is correct, and widgets that did not change keep their nodes.
 - **Conditional content:** `panel` bodies, `choice` extra inputs and `field` errors appear and
   disappear without replacing their siblings.
+- **Amount input:** `set(n)` is sent only while the number input holds a valid number. While it
+  does not (empty, a lone `-`, …) no message is sent: the state keeps its last valid value, the
+  formatted output keeps showing it, and the input keeps what the user typed, with focus and
+  caret; it is not reset to the stored value. Until the input holds a number again, its displayed
+  value is exempt from "same page". The interaction script never leaves it in that state.
 
 ## Parameters
 
