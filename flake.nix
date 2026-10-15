@@ -1,5 +1,5 @@
 {
-  description = "Reactivity research: how to build reactive UIs, measured";
+  description = "Reactivity research: how big reactive UIs are, and how fast they grow";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
@@ -10,13 +10,7 @@
     in {
       devShells = forAll (pkgs: {
         default = pkgs.mkShell {
-          packages = [ pkgs.nodejs_latest pkgs.brotli pkgs.jq ]
-            # Headless Chrome for the timing and DOM checks; on macOS use an installed Chrome.
-            ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.chromium ];
-          shellHook = ''
-            ${pkgs.lib.optionalString pkgs.stdenv.isLinux "export CHROME_BIN=${pkgs.chromium}/bin/chromium"}
-            unset LD_LIBRARY_PATH
-          '';
+          packages = [ pkgs.nodejs_latest pkgs.brotli pkgs.jq ];
         };
       });
     };

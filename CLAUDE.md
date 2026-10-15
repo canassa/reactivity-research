@@ -1,26 +1,27 @@
 # Reactivity research
 
-A standalone research project: **what is the best way to build a reactive UI in the browser, in
-speed and in size?** It studies every approach to building an app (vanilla, signals and
-fine-grained reactivity, virtual DOM, the Elm Architecture, compiled and reactive-free output,
-and anything new) under one common contract, on generated scenarios, and measures how each one
-grows as the app grows.
+A standalone research project, about **size only: how many bytes does a reactive browser UI
+ship, and how fast does that grow as the app grows?** It studies every approach to building an
+app (vanilla, signals and fine-grained reactivity, virtual DOM, the Elm Architecture, compiled
+and reactive-free output, and anything new) under one common contract, on generated scenarios.
+
+Speed is out of scope: nothing here is timed. Implementations must still be correct and fair
+(below), because an incorrect or degenerate implementation can always be made smaller.
 
 It is independent of any language or framework project. The findings are meant to inform the
 rendering design of a compiled language (beni), but nothing here depends on it.
 
 ## The goal
 
-Find the approaches that come closest to hand-written vanilla JavaScript on all of:
+Find the approaches whose shipped code comes closest to hand-written vanilla JavaScript in
+**size**, measured as brotli bytes of the production build, as two numbers:
 
-- **Speed:** time per interaction, from the input to a settled DOM.
-- **Size:** brotli bytes of the production build, as two numbers:
-  - **baseline:** what the smallest app in a scenario family ships (runtime plus wiring);
-  - **slope:** the bytes each additional feature adds as the app grows.
+- **baseline:** what the smallest app in a scenario family ships (runtime plus wiring);
+- **slope:** the bytes each additional feature adds as the app grows.
 
-  Some approaches have a small baseline but grow fast; others the reverse. **We want both low.**
-- **Work:** DOM mutations per interaction (counted with a `MutationObserver`; noise-free) and
-  memory.
+Some approaches have a small baseline but grow fast; others the reverse. **We want both low**,
+and we want to know *why* each approach lands where it does: which parts of its output
+(runtime, per-component scaffolding, update code, templates, names) grow with the app.
 
 ## The contract every implementation follows
 
@@ -44,10 +45,11 @@ settled()         // → Promise resolved when the DOM reflects every event so f
 dispose()         // remove everything: nodes, listeners, timers, subscriptions
 ```
 
-**How the harness drives it:**
+**How the harness drives it** (in a DOM implementation running under Node, such as happy-dom or
+jsdom, at a pinned version; no browser is needed for size work):
 
-- **User actions arrive as real DOM events:** clicks, input, keys, dispatched on the real page
-  by selector. Each implementation wires its events its own natural way.
+- **User actions arrive as DOM events:** clicks, input, keys, dispatched by selector. Each
+  implementation wires its events its own natural way.
 - **External events go through `dispatch(msg)`.** Messages describe *intent* ("toggled row 5",
   "server sent page 3", "here is a whole new state"), never a state diff and never "the new
   model".
@@ -61,15 +63,17 @@ dispose()         // remove everything: nodes, listeners, timers, subscriptions
    and includes live properties (`value`, `checked`, `selected`).
 2. **Node identity.** Keyed items keep their DOM node across reorders and edits. Nodes whose
    content did not change are not replaced. An input being typed into keeps focus and caret.
-3. **No leaks.** After `dispose()`, no listeners, timers or subscriptions remain; repeated
-   mount and dispose do not grow the heap.
+   (This rules out the degenerate "rebuild everything with `innerHTML`" implementation, which
+   would be small but wrong.)
+3. **Clean disposal.** After `dispose()`, the root is empty and no listeners, timers or
+   subscriptions the implementation created remain.
 
 **Stable selectors:** the reference render puts `data-key` and `data-role` on interactive and
 keyed elements, and every implementation must emit the same attributes.
 
-**No peeking:** at runtime an implementation must not call the reference `update` or `render`,
-or read harness state. They exist only for checking. (An approach *derived from* a pure
-`update`, such as TEA or a compiler that analyses it, implements its own equivalent.)
+**No peeking:** an implementation must not call the reference `update` or `render`, or read
+harness state. They exist only for checking. (An approach *derived from* a pure `update`, such
+as TEA or a compiler that analyses it, implements its own equivalent.)
 
 ## Scenarios
 
@@ -79,8 +83,7 @@ size; each approach's implementation is written or generated from that spec.
 
 - **Families stress growth differently:** tables and keyed lists, independent widgets and
   dashboards, forms with validation, trees and recursive structures, routing and pages,
-  filtering and derived data, high-frequency updates, whole-state snapshots, and any family
-  that exposes a weakness.
+  filtering and derived data, whole-state snapshots, and any family that exposes a weakness.
 - **Real variety:** a generated app composes genuinely different UI shapes, and no two
   instances of a shape are identical (fields, labels, nesting, which messages touch which
   state). Never grow an app by copying one widget N times: brotli makes duplicates nearly free,
@@ -90,40 +93,39 @@ size; each approach's implementation is written or generated from that spec.
 ## Rules
 
 1. **Measure, don't argue.** Every claim rests on a reproducible measurement: the script, the
-   raw results and the versions of everything (browser, Node, libraries, machine). No
-   conclusion from a single run or a single scenario.
+   raw results and the versions of everything (Node, libraries, build tools, compressors). No
+   conclusion from a single build or a single scenario.
 2. **The contract is checked, never trusted.** An implementation that fails a check after any
    step is excluded from the numbers until fixed, and the failure is reported.
 3. **Fair implementations.** Each approach is written as an expert in that approach would
-   write it, idiomatically, with its own best practices (keyed lists, memoisation, batching
-   where the approach offers them). Use real libraries at pinned versions where they exist.
+   write it, idiomatically, with its own best practices (keyed lists, components, its normal
+   build pipeline). Use real libraries at pinned versions where they exist. No hand-golfing
+   that the approach's users wouldn't do: compare what each approach really ships.
    A straw man is worse than no comparison.
 4. **Production builds.** Size is the brotli (quality 11) size of the production build that
-   the approach's own tooling recommends, minified. Report raw, gzip and brotli; brotli is the
-   headline.
-5. **Timing protocol.** Headless Chrome, CPU throttling off unless stated, fresh page per
-   sample, enough samples to report the median and the interquartile range, never a
-   geometric mean of sub-millisecond ratios. Timed runs go on a quiet machine with pinned cores
-   when the result matters; local runs are labelled indicative.
-6. **Report dead ends.** An approach or idea that loses is a result: record it with its
+   the approach's own tooling recommends, minified, as one bundle per app unless the approach
+   requires otherwise. Report raw, gzip and brotli; brotli is the headline.
+5. **Attribute the bytes.** Split every bundle into runtime/library code and app code (source
+   maps or deletion accounting), so baseline and slope can be explained, not just reported.
+6. **Separate baseline from slope** in every size result, and fit them over the sizes. A single
+   bundle size is not a result.
+7. **Report dead ends.** An approach or idea that loses is a result: record it with its
    numbers and why it lost.
-7. **Separate baseline from slope** in every size result. A single bundle size is not a result.
 8. **No network at measurement time.** Dependencies are installed and pinned before a run.
 
 ## Layout (to grow into)
 
 ```
-harness/       the contract checker, the DOM normaliser, the timing and size runners
+harness/       the contract checker, the DOM normaliser, the size runner
 scenarios/     the generators and the reference update/render per family
 impl/<name>/   one directory per approach: vanilla, solid, svelte, vue-vapor, react, elm-like, …
-results/       raw measurements, one directory per run, with versions and machine
+results/       raw measurements, one directory per run, with versions
 reports/       written findings, answer first
 ```
 
 ## Working here
 
-- The toolchain is pinned by `flake.nix`: Node (latest), brotli, jq, and Chromium on Linux.
-  `direnv allow` puts them on `PATH`, or run `nix develop`. On Linux, Chromium runs with
-  `LD_LIBRARY_PATH` unset (the shell does it).
+- The toolchain is pinned by `flake.nix`: Node (latest), brotli and jq. `direnv allow` puts
+  them on `PATH`, or run `nix develop`.
 - Use npm with a committed lockfile per package, and exact pinned versions.
 - Keep a short log of each working session in `notes/` (date, what was done, what was learned).
