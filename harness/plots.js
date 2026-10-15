@@ -2,7 +2,8 @@
 //
 // Reads results/, keeps for every scenario and framework variant its latest run, and writes one
 // self-contained HTML page (data embedded, charts drawn as inline SVG by an inline script, no
-// network). Served locally and through a cloudflared quick tunnel unless --out is given.
+// network). Served locally and through a cloudflared quick tunnel unless --out is given; the
+// served page is rebuilt from results/ on every request.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -131,9 +132,11 @@ export async function plotsCommand(rest) {
     console.log(`wrote ${path.relative(ROOT, path.resolve(args.out)) || args.out}`);
     return;
   }
+  // Rebuilt from results/ on every request, so new results appear on reload.
   await serveUntilInterrupted((req, res) => {
+    const fresh = collect(only);
     res.writeHead(200, { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" });
-    res.end(html);
+    res.end(fresh.length ? page({ scenarios: fresh }) : html);
   }, {
     port: args.port ?? 0,
     local: !!args.local,
