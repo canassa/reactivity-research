@@ -166,7 +166,7 @@ const TEMPLATES = {
   }),
 
   todo: (p) => ({
-    solid: ["For", "batch"],
+    solid: ["For"],
     body: `
   const [todo, set] = useWidget(${p.id});
   const left = () => todo.items.filter((item) => !item.done).length;
@@ -174,10 +174,7 @@ const TEMPLATES = {
     const text = todo.draft.trim();
     if (!text) return;
     const id = todo.items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
-    batch(() => {
-      set("items", (items) => [...items, { id, text, done: false }]);
-      set("draft", "");
-    });
+    set((todo) => ({ items: [...todo.items, { id, text, done: false }], draft: "" }));
   };
   return (
     <section data-key=${p.idAttr} data-role="widget-todo">
