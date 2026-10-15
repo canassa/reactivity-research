@@ -66,10 +66,10 @@ this, because an incorrect or degenerate implementation can always be made small
 
 **Stable selectors:** the reference render puts `data-key` and `data-role` on interactive and
 keyed elements, and every implementation must emit the same attributes.
+
 **No peeking:** an implementation must not call the reference `update` or `render`; they are the
 specification, not part of the app. (An approach *derived from* a pure `update`, such as TEA or a
 compiler that analyses it, implements its own equivalent.)
-as TEA or a compiler that analyses it, implements its own equivalent.)
 
 ## Everything is generated
 
