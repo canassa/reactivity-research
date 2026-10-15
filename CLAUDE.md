@@ -82,7 +82,7 @@ generators, joined by one intermediate description:
 - **The scenario generator** produces an **app spec**: a framework-neutral description of one
   app (its state, messages, the reference `update` and `render`, the UI shapes it composes,
   the interaction script), for a given family, size, seed and options.
-- **One emitter per approach** turns an app spec into that approach's source code (React,
+- **Emitters, one per scenario and approach** (`scenarios/<scenario>/<framework>.js`, sharing `frameworks/<name>/`), turn an app spec into that approach's source code (React,
   Vue, Svelte, Solid, Elm, vanilla, a prototype strategy, …), plus its contract adapter and its
   build configuration. Emitters, not people, write every implementation.
 
