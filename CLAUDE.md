@@ -218,6 +218,7 @@ scenario README).
 ./rr build    dashboard solid --size 16 --seed 1   # generate + the production build
 ./rr measure  dashboard all                        # every size and seed: sizes into results/
 ./rr serve    dashboard solid --size 16 --seed 1   # build, serve, and expose through cloudflared
+./rr plots    dashboard                          # build the plots page from results/, serve it through cloudflared
 ```
 
 **`./rr serve`** is for a person to see that a generated app really works:
@@ -229,6 +230,20 @@ scenario README).
 - `--local` serves without the tunnel; `Ctrl-C` stops both the server and the tunnel;
 - several frameworks can be served side by side (`./rr serve dashboard solid,vue,react`), one
   page per framework from the same spec, so they can be compared by eye.
+
+**`./rr plots`** turns the measurements into a page of plots:
+- it reads `results/` (all scenarios, or the ones named), builds one self-contained HTML page
+  (charts drawn as inline SVG or with a vendored, pinned charting library; no network needed to
+  view it), serves it locally and through a **cloudflared quick tunnel**, and prints the URL.
+  `--local` skips the tunnel; `--out <file>` only writes the page;
+- for each scenario, at least:
+  - **size against N** for every framework: compressed total, with HTML and JavaScript as
+    separate series, raw size available on toggle, seeds shown as spread around the median;
+  - **the fitted baseline and slope** per framework, as a table and as the fitted lines;
+  - **where the bytes go:** runtime/library code against app code (and HTML) per framework, at
+    each size, stacked;
+  - the **ratio to vanilla** at each size;
+- every chart says which results run, versions and generator options it comes from.
 
 ## Working here
 
