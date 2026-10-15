@@ -3,3 +3,4 @@ results/tmp/
 .direnv/
 *.log
 generated/
+.claude/worktrees/
