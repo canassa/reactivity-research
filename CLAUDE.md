@@ -27,12 +27,12 @@ and we want to know *why* each approach lands where it does: which parts of its 
 The contract fixes **what happens**, never **how state is stored or how the UI updates**.
 Signals, virtual DOM, TEA, compiled output, vanilla and anything else must all fit inside it.
 
-**The harness provides, per scenario (the reference, the single source of truth):**
+**Each scenario's spec provides (the reference, the single source of truth):**
 
 ```js
 initialState                    // plain data
 update(state, msg) → newState   // pure reference reducer; immutable, with structural sharing
-render(state) → reference DOM   // the correctness oracle
+render(state) → reference DOM   // what the page must show
 ```
 
 **Every implementation provides:**
@@ -44,22 +44,19 @@ settled()         // → Promise resolved when the DOM reflects every event so f
 dispose()         // remove everything: nodes, listeners, timers, subscriptions
 ```
 
-**How the harness drives it** (in a DOM implementation running under Node, such as happy-dom or
-jsdom, at a pinned version; no browser is needed for size work):
+**How it is driven:**
 
-- **User actions arrive as DOM events:** clicks, input, keys, dispatched by selector. Each
-  implementation wires its events its own natural way.
+- **User actions arrive as DOM events:** clicks, input, keys. Each implementation wires its
+  events its own natural way.
 - **External events go through `dispatch(msg)`.** Messages describe *intent* ("toggled row 5",
   "server sent page 3", "here is a whole new state"), never a state diff and never "the new
   model".
-- The harness applies the same intents to the reference `update` to know what the page must
-  show.
+**What must hold after every step.** Correctness is verified **manually by the owner**, through
+`./rr serve` (below); there is no automated checker. Every implementation must still meet all of
+this, because an incorrect or degenerate implementation can always be made smaller:
 
-**What must hold after every step** (checked by the harness after awaiting `settled()`):
-
-1. **Same DOM.** The page's normalized DOM equals `render(state)`. Normalization ignores
-   attribute order, framework marker comments, empty text nodes and insignificant whitespace,
-   and includes live properties (`value`, `checked`, `selected`).
+1. **Same page.** What the page shows matches `render(state)` for the state the reference
+   `update` reaches (ignoring attribute order, framework marker comments and whitespace).
 2. **Node identity.** Keyed items keep their DOM node across reorders and edits. Nodes whose
    content did not change are not replaced. An input being typed into keeps focus and caret.
    (This rules out the degenerate "rebuild everything with `innerHTML`" implementation, which
@@ -69,9 +66,9 @@ jsdom, at a pinned version; no browser is needed for size work):
 
 **Stable selectors:** the reference render puts `data-key` and `data-role` on interactive and
 keyed elements, and every implementation must emit the same attributes.
-
-**No peeking:** an implementation must not call the reference `update` or `render`, or read
-harness state. They exist only for checking. (An approach *derived from* a pure `update`, such
+**No peeking:** an implementation must not call the reference `update` or `render`; they are the
+specification, not part of the app. (An approach *derived from* a pure `update`, such as TEA or a
+compiler that analyses it, implements its own equivalent.)
 as TEA or a compiler that analyses it, implements its own equivalent.)
 
 ## Everything is generated
@@ -131,8 +128,8 @@ recommends. The adapter's bytes are reported separately and **excluded from the 
 1. **Measure, don't argue.** Every claim rests on a reproducible measurement: the script, the
    raw results and the versions of everything (Node, libraries, build tools, compressors). No
    conclusion from a single build or a single scenario.
-2. **The contract is checked, never trusted.** An implementation that fails a check after any
-   step is excluded from the numbers until fixed, and the failure is reported.
+2. **Only working implementations count.** The owner checks each one by hand through
+   `./rr serve`. One that misbehaves is excluded from the numbers until fixed.
 3. **Fair implementations.** Each emitter writes its approach as an expert would,
    idiomatically, with its own best practices (keyed lists, components, its normal build
    pipeline). Use real libraries at pinned versions where they exist. No golfing that the
@@ -181,7 +178,7 @@ generated/             emitter output: gitignored, reproducible from the generat
       vue/
     n64-s1/
       …
-harness/               the contract checker, the DOM normaliser, the size runner
+harness/               the size runner and the serve page
 results/               raw measurements, one directory per run, with versions (committed)
 reports/               written findings, answer first
 notes/                 a short log of each working session
@@ -194,7 +191,7 @@ notes/                 a short log of each working session
   - the catalogue of UI shapes it composes, and how instances vary;
   - its state, its messages (user actions and external `dispatch` events) and the reference
     `update`/`render` in words;
-  - its `data-key`/`data-role` selectors, and the scenario-specific checks (which elements are
+  - its `data-key`/`data-role` selectors, and the scenario-specific expectations (which elements are
     keyed, which inputs must keep focus and caret, which snapshots are sent);
   - the parameters and their defaults.
 
@@ -219,7 +216,6 @@ scenario README).
 ```sh
 ./rr generate dashboard solid --size 16 --seed 1   # write generated/dashboard/n16-s1/solid/
 ./rr build    dashboard solid --size 16 --seed 1   # generate + the production build
-./rr check    dashboard all   --size 16            # run the contract checks; report pass/fail per step
 ./rr measure  dashboard all                        # every size and seed: sizes into results/
 ./rr serve    dashboard solid --size 16 --seed 1   # build, serve, and expose through cloudflared
 ```
@@ -229,7 +225,7 @@ scenario README).
   tunnel** (`cloudflared tunnel --url http://127.0.0.1:<port>`), then prints the public URL;
 - the page shows the app as built, plus a small panel, outside the app's root and not counted in
   any size, that can send the scenario's external events through `dispatch` (including a
-  whole-state snapshot), run the contract checks live and show their result, and reset;
+  whole-state snapshot), step through the scenario's interaction script, and reset;
 - `--local` serves without the tunnel; `Ctrl-C` stops both the server and the tunnel;
 - several frameworks can be served side by side (`./rr serve dashboard solid,vue,react`), one
   page per framework from the same spec, so they can be compared by eye.

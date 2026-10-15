@@ -93,9 +93,10 @@ Generated from the app, the same for every framework:
 5. a final round of user actions on widgets the snapshot changed;
 6. dispose.
 
-The harness checks the global contract after every step.
+Every step must leave the page as the global contract requires; the owner verifies it by hand
+through `./rr serve`.
 
-## Scenario-specific checks
+## Scenario-specific expectations
 
 On top of the global contract:
 - **Keyed lists** (`todo`, `filter`, `feed`): items keep their DOM node across adds, removes,
