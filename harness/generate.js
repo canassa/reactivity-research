@@ -17,7 +17,11 @@ export async function generateApp(scenario, emitter, scenarioOptions, emitterOpt
   const dir = appDir(scenario, spec.options, emitter, emitterOptions);
   if (!dir.startsWith(GENERATED + path.sep)) throw new Error(`refusing to write outside generated/: ${dir}`);
   fs.mkdirSync(path.dirname(dir), { recursive: true });
-  fs.writeFileSync(path.join(path.dirname(dir), "spec.json"), JSON.stringify(spec, null, 1) + "\n");
+  // Several workers may write this same (identical) file at once: write, then rename.
+  const specFile = path.join(path.dirname(dir), "spec.json");
+  const tmp = `${specFile}.${process.pid}.tmp`;
+  fs.writeFileSync(tmp, JSON.stringify(spec, null, 1) + "\n");
+  fs.renameSync(tmp, specFile);
 
   const { files, style } = emitter.mod.emit(spec, emitterOptions);
   fs.rmSync(dir, { recursive: true, force: true });

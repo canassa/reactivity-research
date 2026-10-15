@@ -1,4 +1,5 @@
-// ./rr measure <scenario> <framework|all|a,b> [--sizes 1,2 --seeds 1,2] [--force] [emitter options]
+// ./rr measure <scenario> <framework|all|a,b> [--sizes 1,2 --seeds 1,2] [--force] [--jobs N]
+//                [emitter options]
 //
 // For every size × seed × framework variant: generate, build, then measure what the browser
 // downloads. HTML: not minified, brotli 11. JavaScript: the production (minified) bundle,
@@ -17,9 +18,10 @@ import zlib from "node:zlib";
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { parseArgs, loadScenario, loadEmitters, splitOptions, variantName, ROOT, RESULTS } from "./selection.js";
-import { buildApp } from "./generate.js";
+import { runJobs, defaultJobs, timingText } from "./pool.js";
 import { bucketer, bytesPerSource } from "./sourcemap.js";
 import { fitLine } from "./fit.js";
+import { readConfig } from "./report.js";
 
 export const BROTLI = { quality: 11, lgwin: 24, mode: "generic" };
 
@@ -221,12 +223,10 @@ function latestRun(scenarioName) {
 // Records whose inputs hash matches a committed result are reused unless `force`.
 // Writes a results directory unless `onlyIfChanged` and the latest one already holds exactly
 // these records. Returns the directory written (or null) and the fits.
-export async function measureScenario(scenario, scenarioOptions, plan, { force = false, out = null, onlyIfChanged = false } = {}) {
+export async function measureScenario(scenario, scenarioOptions, plan, { force = false, out = null, onlyIfChanged = false, jobs = defaultJobs() } = {}) {
   const previous = force ? new Map() : previousRecords(scenario.name);
-  const records = [];
-  const variants = {};
+  const slots = [];
   const frameworks = {};
-  let fresh = 0;
   for (const { emitter, emitterOptions: opts, sizes, seeds } of plan) {
     const variant = variantName(emitter, opts);
     const code = codeHash(scenario, emitter);
@@ -235,27 +235,39 @@ export async function measureScenario(scenario, scenarioOptions, plan, { force =
       for (const seed of seeds) {
         const options = scenario.mod.normalizeOptions({ ...scenarioOptions, size, seed });
         const inputs = inputsHash(code, options, opts);
-        const hit = previous.get(inputs);
-        let record, style;
-        if (hit) {
-          record = { ...hit.record, variant };
-          style = hit.variant?.style;
-          console.log(`${variant} n=${size} s=${seed}: unchanged, reusing ${record.total.br} B br`);
-        } else {
-          const built = await buildApp(scenario, emitter, options, opts);
-          const m = measureBuild(built.built, emitter.framework);
-          record = { variant, size, seed, options: built.spec.options, inputs, ...m };
-          style = built.info.style;
-          fresh++;
-          console.log(`${variant} n=${size} s=${seed}: total ${m.total.br} B br (html ${m.html.br}, js ${m.js.br}; runtime ${m.attribution.br.runtime}, app ${m.attribution.br.app}; adapter ${m.adapter.br} excluded)`);
-        }
-        records.push(record);
-        variants[variant] ||= {
-          emitter: emitter.name, framework: emitter.mod.framework, label: emitter.framework.label,
-          track: emitter.framework.track, emitterOptions: opts, style, sizes, seeds, code: code.slice(0, 16),
-        };
+        slots.push({ emitter, opts, variant, code, sizes, seeds, size, seed, options, inputs, hit: previous.get(inputs) });
       }
     }
+  }
+  for (const s of slots.filter((s) => s.hit)) console.log(`${s.variant} n=${s.size} s=${s.seed}: unchanged, reusing ${s.hit.record.total.br} B br`);
+
+  // Build and measure what is not cached, in parallel worker processes.
+  const todo = slots.filter((s) => !s.hit);
+  if (todo.length) console.log(`building and measuring ${todo.length} app(s) with up to ${Math.min(jobs, todo.length)} parallel jobs`);
+  const results = await runJobs(todo.map((s) => ({
+    scenario: scenario.name, emitter: s.emitter.name, variant: s.variant, scenarioOptions: s.options, emitterOptions: s.opts, measure: true,
+  })), {
+    jobs,
+    onDone: (job, r) => {
+      const m = r.measurement;
+      console.log(`${job.variant} n=${job.scenarioOptions.size} s=${job.scenarioOptions.seed}: total ${m.total.br} B br (html ${m.html.br}, js ${m.js.br}; runtime ${m.attribution.br.runtime}, app ${m.attribution.br.app}; adapter ${m.adapter.br} excluded) [${timingText(r.timing)}]`);
+    },
+  });
+  todo.forEach((s, k) => { s.result = results[k]; });
+  const fresh = todo.length;
+
+  const records = [];
+  const variants = {};
+  for (const s of slots) {
+    const record = s.hit
+      ? { ...s.hit.record, variant: s.variant }
+      : { variant: s.variant, size: s.size, seed: s.seed, options: s.result.options, inputs: s.inputs, ...s.result.measurement };
+    records.push(record);
+    variants[s.variant] ||= {
+      emitter: s.emitter.name, framework: s.emitter.mod.framework, label: s.emitter.framework.label,
+      track: s.emitter.framework.track, emitterOptions: s.opts, style: s.hit ? s.hit.variant?.style : s.result.style,
+      sizes: s.sizes, seeds: s.seeds, code: s.code.slice(0, 16),
+    };
   }
   const fits = fitAll(records, scenario.mod.steadyFrom);
 
@@ -309,11 +321,18 @@ export async function measureCommand(rest) {
   const [scenarioName, which] = args._;
   const scenario = await loadScenario(scenarioName);
   const emitters = await loadEmitters(scenario.name, which || "all");
-  const { scenarioOptions } = splitOptions(args, scenario, emitters, ["sizes", "seeds", "out", "force"]);
+  const { scenarioOptions } = splitOptions(args, scenario, emitters, ["sizes", "seeds", "out", "force", "jobs"]);
   delete scenarioOptions.size;
   delete scenarioOptions.seed;
-  const sizes = args.sizes ? String(args.sizes).split(",").map(Number) : scenario.mod.sizes;
-  const seeds = args.seeds ? String(args.seeds).split(",").map(Number) : scenario.mod.seeds;
-  const plan = emitters.flatMap((emitter) => combinations(emitter.mod.params, args).map((emitterOptions) => ({ emitter, emitterOptions, sizes, seeds })));
-  await measureScenario(scenario, scenarioOptions, plan, { force: !!args.force, out: args.out });
+  // Sizes and seeds: from the flags, else from the emitter's entry in runs.json.
+  const config = readConfig()[scenario.name] || {};
+  const listOf = (flag, emitter, key) => {
+    const v = args[flag] ?? config[emitter.name]?.[key];
+    if (v == null) throw new Error(`no ${key} for ${scenario.name}/${emitter.name}: pass --${flag} or add it to runs.json`);
+    return Array.isArray(v) ? v : String(v).split(",").map(Number);
+  };
+  const plan = emitters.flatMap((emitter) => combinations(emitter.mod.params, args).map((emitterOptions) => ({
+    emitter, emitterOptions, sizes: listOf("sizes", emitter, "sizes"), seeds: listOf("seeds", emitter, "seeds"),
+  })));
+  await measureScenario(scenario, scenarioOptions, plan, { force: !!args.force, out: args.out, jobs: Number(args.jobs || defaultJobs()) });
 }

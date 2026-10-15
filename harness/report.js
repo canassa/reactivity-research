@@ -1,4 +1,4 @@
-// ./rr report [scenario,…] [--force] [--local] [--port P] [--out FILE]
+// ./rr report [scenario,…] [--force] [--jobs N] [--local] [--port P] [--out FILE]
 //
 // Reads runs.json (per scenario, per emitter: sizes, seeds, options), measures every run,
 // reusing committed results whose inputs have not changed, writes results/ for each scenario
@@ -8,6 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { parseArgs, loadScenario, loadEmitter, ROOT } from "./selection.js";
 import { measureScenario, combinations } from "./measure.js";
+import { defaultJobs } from "./pool.js";
 import { plotsCommand } from "./plots.js";
 
 export function readConfig() {
@@ -33,10 +34,11 @@ export async function reportCommand(rest) {
       const options = Object.fromEntries(Object.entries(entry.options || {}).map(([k, v]) => [k, Array.isArray(v) ? v.join(",") : v]));
       for (const k of Object.keys(options)) if (!(k in (emitter.mod.params || {}))) throw new Error(`runs.json: ${scenarioName}/${emitterName}: unknown option ${k}`);
       for (const emitterOptions of combinations(emitter.mod.params, options)) {
-        plan.push({ emitter, emitterOptions, sizes: entry.sizes || scenario.mod.sizes, seeds: entry.seeds || scenario.mod.seeds });
+        if (!entry.sizes || !entry.seeds) throw new Error(`runs.json: ${scenarioName}/${emitterName} needs sizes and seeds`);
+        plan.push({ emitter, emitterOptions, sizes: entry.sizes, seeds: entry.seeds });
       }
     }
-    await measureScenario(scenario, scenarioOptions, plan, { force: !!args.force, onlyIfChanged: true });
+    await measureScenario(scenario, scenarioOptions, plan, { force: !!args.force, onlyIfChanged: true, jobs: Number(args.jobs || defaultJobs()) });
   }
   const plotArgs = [];
   if (only) plotArgs.push(only.join(","));
