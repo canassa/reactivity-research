@@ -154,16 +154,46 @@ recommends. The adapter's bytes are reported separately and **excluded from the 
    numbers and why it lost.
 8. **No network at measurement time.** Dependencies are installed and pinned before a run.
 
-## Layout (to grow into)
+## Layout
 
 ```
-harness/       the contract checker, the DOM normaliser, the size runner
-spec/          the app-spec format and the scenario generator (families, shapes, options)
-emitters/<n>/  one emitter per approach: vanilla, react, vue, svelte, solid, elm, prototypes …
-generated/     emitter output (reproducible; never edited by hand)
-results/       raw measurements, one directory per run, with versions
-reports/       written findings, answer first
+scenarios/
+  big-table/
+    spec.js            the scenario generator: state, messages, update, render, script; its parameters
+    solid.js           the emitter for this scenario in Solid
+    vue.js             … in Vue
+    react.js
+    vanilla.js
+  dashboard/
+    spec.js
+    solid.js
+    …
+frameworks/
+  solid/               shared by every Solid emitter: adapter, build config, pinned package.json +
+                       lockfile, helpers
+  vue/
+  …
+generated/             emitter output: gitignored, reproducible from the generators, never edited
+  big-table/
+    n16-s1/            size 16, seed 1
+      solid/           the app's source and its production build
+      vue/
+    n64-s1/
+      …
+harness/               the contract checker, the DOM normaliser, the size runner
+results/               raw measurements, one directory per run, with versions (committed)
+reports/               written findings, answer first
+notes/                 a short log of each working session
 ```
+
+- **`scenarios/<scenario>/spec.js`** generates the app spec for that scenario;
+  **`scenarios/<scenario>/<framework>.js`** is the emitter that writes it in that framework.
+- **`frameworks/<name>/`** holds what every scenario shares for one framework, so a per-scenario
+  emitter contains only what is specific to its scenario. If per-scenario emitters start
+  repeating each other, move the shared building blocks (a list, a form, a widget) here.
+- **`generated/`** is not committed. Anything in it must be reproducible from the generators,
+  their options and the pinned versions. What is committed is the measurements in `results/`,
+  with the generator options and versions that produced them.
 
 ## Working here
 
