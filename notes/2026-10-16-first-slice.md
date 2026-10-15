@@ -8,17 +8,17 @@
   summaries reading 2–3 earlier widgets), reference `update`/`render`, external-event builders,
   interaction script. Deterministic; widgets are prefix-stable across sizes for a seed.
 - `frameworks/solid/` (Solid 1.9.17, Vite 8.3.4, vite-plugin-solid 2.11.14, lockfile), adapter, and
-  `scenarios/dashboard/solid.js` with `--granularity kind|instance`.
+  `scenarios/dashboard/solid.js`: one reusable component per widget kind.
 - Serve page: panel outside the root drives the script and every external event, compares the page
   with the reference render after each step, and shows element churn, keyed-node identity,
   focus/caret, and listeners/timers left after dispose.
-- Measured 7 sizes × 3 seeds × 2 granularities: `results/2026-10-16-dashboard/`.
+- Measured every size and seed in `runs.json` into `results/`.
 
 ## Learned
 
 - **Solid's delegated listeners outlive `render`'s dispose.** They sit on `document`, and the
   compiled module adds them once, at load. The adapter calls `clearDelegatedEvents()` on dispose
-  and re-registers the same names on the next mount.
+  and registers Solid's delegated events again on the next mount.
 - **`reconcile` adopts the objects it is given** as the store's backing data and mutates them later.
   The panel first shared message objects with its reference state, and the reference got corrupted.
   Dispatched messages are now `structuredClone`d, as data from a network would be.
@@ -28,13 +28,10 @@
 - **Babel's Solid output hoists `template()` declarations without source mappings.** Unmapped bytes
   are therefore attributed to the module that follows them. Bytes before the first or after the
   last mapping (Vite's modulepreload polyfill, 670 B raw) count as tooling.
-- **Brotli hides duplication.** Per-instance components grow at about 672 B/widget raw against 181
-  for per-kind components, but only 59 against 37 compressed.
 - **Growth is not linear in N.** Up to N = 16 each new widget kind brings a component and sometimes
-  runtime (For, Show, createMemo, reconcile). Past it, growth is per instance only. Fits are
+  runtime (For, Show, createMemo, reconcile). Past it, growth is per widget only. Fits are
   reported over all sizes and over N ≥ 16.
 
 ## Open
 
-- Which granularity is the fair default for Solid (kind is the default for now).
 - No vanilla floor yet, so the ratio-to-vanilla chart is empty.
