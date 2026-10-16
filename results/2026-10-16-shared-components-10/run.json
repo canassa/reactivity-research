@@ -1,0 +1,411 @@
+{
+  "scenario": "shared-components",
+  "date": "2026-10-16",
+  "sizes": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "scenarioOptions": {
+    "kinds": "all",
+    "summaries": "auto"
+  },
+  "variants": {
+    "solid": {
+      "emitter": "solid",
+      "framework": "solid",
+      "label": "Solid 1",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "components": "one reusable component per widget kind, configured by props",
+        "state": "one createStore for the whole dashboard, shared through a context; widgets use path setters on their slice",
+        "externalEvents": "store.receive(msg); serverSet and snapshot through reconcile(…, { key: 'id' })",
+        "lists": "<For>",
+        "conditionals": "<Show>",
+        "derived": "plain functions; createMemo for the filtered list",
+        "events": "onClick/onInput (delegated), onChange for checkboxes and selects",
+        "build": "Vite + vite-plugin-solid, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "cbf6a85f13a9dde2"
+    },
+    "elm": {
+      "emitter": "elm",
+      "framework": "elm",
+      "label": "Elm 0.19.3",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "TEA with Browser.element: one Model record (a field per widget), one update, one view",
+        "components": "shared components: one module per widget kind (Model, Msg, Config, update, view, decoder), written once; per widget only a Config value, a Model field and a Msg constructor wrapping its kind's Msg, routed in update, the decoders and view (Html.map)",
+        "configuration": "a Config record per widget; rules and formats built with the kind module's helpers (Field.required/minLength/matching, Amount.currency/percent/unit)",
+        "externalEvents": "one incoming port; Json.Decode into the app's messages (serverSet → the widget's Replaced, notify → Feed.Notified, tick → Tick, snapshot → GotSnapshot)",
+        "lists": "Html.Keyed for todo, filter and feed",
+        "conditionals": "an optional last child",
+        "derived": "computed in view (summary lines, todo left, filter matches)",
+        "events": "onInput for text inputs and the select, onClick for buttons and checkboxes, a number-only input decoder for the amount",
+        "formatting": "as elm-format 0.8.8 writes it; clean under elm-review's NoUnused, Simplify and elm-review-common rules (exposing lists and elm.json dependencies limited to what the app uses)",
+        "build": "elm make --optimize, then uglify-js compress (pure_funcs) and mangle passes, as the Elm guide recommends"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "8ac88d5f68a2a9f4"
+    },
+    "tea-local": {
+      "emitter": "tea-local",
+      "framework": "tea-local",
+      "label": "tea-local (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "components": "one module per widget kind (message tags, reducer, DOM factory), configured per widget",
+        "state": "each instance's model in its own closure; send(tag, value) runs the kind's reducer arm for that tag and schedules that instance's binding list",
+        "updates": "one patch function per instance, every DOM write skipped when unchanged; batched in a microtask",
+        "crossWidget": "summaries watch the instances they read and recompute when one changes",
+        "externalEvents": "serverSet/snapshot replace instance models; tick and notify are messages to clock and feed instances",
+        "lists": "runtime keyed list by item.id: patch changed rows, one forward placement pass when order or membership changes",
+        "conditionals": "node built once, attached while shown",
+        "events": "addEventListener per element: click for buttons and checkboxes, input for text and number inputs and selects (as the unique widgets' wire)",
+        "build": "Vite production build, no framework plugin, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "071fdddf9ade2ada"
+    },
+    "tea-inline": {
+      "emitter": "tea-inline",
+      "framework": "tea-inline",
+      "label": "TEA inline (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "track": "prototype: no framework implements this strategy",
+        "components": "one factory per widget kind, called with each widget's arguments positionally; DOM built once with createElement",
+        "messages": "erased for DOM events: each update arm is an action that writes model fields in place",
+        "updates": "each action schedules the bindings that read the fields it writes (known at compile time); one microtask flush",
+        "derived": "summaries subscribe once to their sources' readers; sources schedule them when they write a field a summary reads",
+        "lists": "keyed: in-place edits schedule only their rows (add, remove) or the row's binding (toggle); replaced or derived arrays reconcile by id in one forward pass",
+        "externalEvents": "receive(msg): serverSet and snapshot replace a widget's state and run all its bindings; tick and notify call the widget's external arms",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "75d8288c2f2ec2ec"
+    },
+    "tea-dirtybits": {
+      "emitter": "tea-dirtybits",
+      "framework": "tea-dirtybits",
+      "label": "TEA + dirty bits (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "components": "one module per widget kind (reducer + DOM factory), configured per widget by a plain object",
+        "state": "one immutable TEA model; the app reducer routes messages to the widgets' reducers",
+        "updates": "reducers are tables of arms by message tag; each arm returns the compile-time dirty bits of the fields it writes with the new slice; a static patch per kind runs only the bindings whose bits are set, batched in a microtask",
+        "externalEvents": "through the same reducer (send); serverSet and snapshot mark every bit of the widgets they replace",
+        "lists": "keyed by id: changed rows patched, gone rows removed, misplaced nodes moved in one walk",
+        "conditionals": "built once with the template, swapped for an empty comment while hidden",
+        "derived": "summaries recomputed when a dirty bit they read is set (static dependencies)",
+        "events": "addEventListener on each element, sending a message (numeric tags) built when wired, or carrying the control's value",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "71372f1670c1131b"
+    },
+    "digest": {
+      "emitter": "digest",
+      "framework": "digest",
+      "label": "digest (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "approach": "compiled dirty checking, per widget: an event re-runs the bindings of the widget it touched (and of the summaries reading it), writing a DOM property only when its value changed",
+        "components": "one factory per widget kind present in the app; one data row per instance, the labels in a table of their own",
+        "state": "plain mutable variables of the kind's factory, one set per widget; external replacements go through a setter the factory hands the runtime; a feed's entries sit on a record notify pushes into",
+        "templates": "HTML strings with the instance's constants (escaped at build time), no end tags at their end, parsed once per widget or list item",
+        "lists": "keyed by id, reconciled in place by the runtime",
+        "conditionals": "a binding that swaps one node with an empty text node",
+        "events": "one delegated click and input listener; handlers given to the controls in document order (an expando the listener reads)",
+        "derived": "plain functions read by bindings; a summary's binding sits in each source's list; no memoization",
+        "build": "Vite production build, no plugin, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "976201b838f1889a"
+    },
+    "beni-tea": {
+      "emitter": "beni-tea",
+      "framework": "beni-tea",
+      "label": "beni browser-tea (6a1b567fa)",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "The Elm Architecture: Tea.element, one Model record, one update, one view (markup)",
+        "components": "one module per widget kind (Config, Model, Msg, update, view, replace); Main holds per-widget Config data",
+        "routing": "one Msg constructor per widget wrapping its kind's Msg, plus Pushed for host events; Html.map in view",
+        "lists": "keyed For (.id) for todo, filter, feed; positional For for toggles, tabs",
+        "conditional": "case/if holes with an empty fragment",
+        "derived": "computed in view (summary lines with interpolation, todo left, filter matches)",
+        "externalEvents": "project platform layer Push.onPush (Sub.on over a window event), read with a schema declaration and derived codecs",
+        "inputs": "controlled inputs; amount keeps its typed text beside its last valid number",
+        "build": "beni build --release --source-maps (beni's own minifier)"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "c1205b59e5f63616"
+    },
+    "beni-direct": {
+      "emitter": "beni-direct",
+      "framework": "beni-direct",
+      "label": "beni browser-direct (6a1b567fa)",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "The Elm Architecture: Tea.element, one Model record, one update, one view (markup)",
+        "components": "one module per widget kind (Config, Model, Msg, update, view, replace); Main holds per-widget Config data",
+        "routing": "one Msg constructor per widget wrapping its kind's Msg, plus Pushed for host events; Html.map in view",
+        "lists": "keyed For (.id) for todo, filter, feed; positional For for toggles, tabs",
+        "conditional": "case/if holes with an empty fragment",
+        "derived": "computed in view (summary lines with interpolation, todo left, filter matches)",
+        "externalEvents": "project platform layer Push.onPush (Sub.on over a window event), read with a schema declaration and derived codecs",
+        "inputs": "controlled inputs; amount keeps its typed text beside its last valid number",
+        "build": "beni build --release --source-maps (beni's own minifier)"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "0ae0fc615f29102c"
+    }
+  },
+  "frameworks": {
+    "solid": {
+      "label": "Solid 1",
+      "track": "framework",
+      "versions": {
+        "solid-js": "1.9.17",
+        "babel-preset-solid": "1.9.16",
+        "babel-plugin-jsx-dom-expressions": "0.40.11",
+        "@babel/core": "7.29.7",
+        "vite-plugin-solid": "2.11.14",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "elm": {
+      "label": "Elm 0.19.3",
+      "track": "framework",
+      "versions": {
+        "elm (compiler, npm installer)": "0.19.3-0",
+        "@elm_binaries/linux_x64": "0.19.3-0",
+        "uglify-js": "3.19.3",
+        "elm/browser": "1.0.2",
+        "elm/core": "1.0.5",
+        "elm/html": "1.0.1",
+        "elm/json": "1.1.4",
+        "elm/regex": "1.0.0",
+        "elm/time": "1.0.0",
+        "elm/url": "1.0.0",
+        "elm/virtual-dom": "1.0.5"
+      }
+    },
+    "tea-local": {
+      "label": "tea-local (prototype)",
+      "track": "prototype",
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-inline": {
+      "label": "TEA inline (prototype)",
+      "track": "prototype",
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-dirtybits": {
+      "label": "TEA + dirty bits (prototype)",
+      "track": "prototype",
+      "versions": {
+        "tea-dirtybits runtime": "prototype (frameworks/tea-dirtybits/template)",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "digest": {
+      "label": "digest (prototype)",
+      "track": "prototype",
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "beni-tea": {
+      "label": "beni browser-tea (6a1b567fa)",
+      "track": "framework",
+      "versions": {
+        "beni (commit)": "6a1b567fad5410fe80c8bc4e0a1f6733279fd908",
+        "beni version (build id)": "beni 0.1.0-m1 ee040d874c1f0f73e43a0e7ef109007d",
+        "beni binary sha256": "c50cd632b076a5d2c2f75b7ba6a41e0897556d3f2adc20a52a396bfc49632dcc",
+        "zig, node (beni's flake.lock at that commit)": "zig 0.17.0, node 24",
+        "platform": "browser-tea"
+      }
+    },
+    "beni-direct": {
+      "label": "beni browser-direct (6a1b567fa)",
+      "track": "framework",
+      "versions": {
+        "beni (commit)": "6a1b567fad5410fe80c8bc4e0a1f6733279fd908",
+        "beni version (build id)": "beni 0.1.0-m1 ee040d874c1f0f73e43a0e7ef109007d",
+        "beni binary sha256": "c50cd632b076a5d2c2f75b7ba6a41e0897556d3f2adc20a52a396bfc49632dcc",
+        "zig, node (beni's flake.lock at that commit)": "zig 0.17.0, node 24",
+        "platform": "browser-direct"
+      }
+    }
+  },
+  "versions": {
+    "node": "v26.11.1",
+    "brotli": "1.2.0 (node:zlib)",
+    "platform": "linux 6.12.112 x64",
+    "git": {
+      "commit": "ae06d7f6c7236329b8147e23f0bf40fecafac7d6",
+      "dirty": false
+    }
+  },
+  "compression": {
+    "brotli": {
+      "quality": 11,
+      "lgwin": 24,
+      "mode": "generic"
+    },
+    "html": "not minified",
+    "js": "minified by the framework's production build"
+  },
+  "attribution": "source maps: node_modules → runtime; unmapped bundler output → tooling (counted with runtime); the adapter file → adapter (excluded); everything else → app. Brotli split: runtime = brotli(runtime+tooling); app = brotli(app JS) − runtime.",
+  "reused": 78
+}
