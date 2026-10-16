@@ -18,7 +18,7 @@
 //   `serverDelete`, `replace` for a snapshot) and `view` (markup, the row written inline in the
 //   keyed `For`, every cell and computed expression written out in place). Table 1 is
 //   js-framework-benchmark's app in beni: its word lists, `Run`/`RunLots`/`Add`/`Update`/`Clear`/
-//   `SwapRows`/`Select`/`Remove`, built the way beni's own `Main.beni` builds it.
+//   `SwapRows`/`Select`/`Remove`, built in the spirit of beni's own `Main.beni` (which swaps with `List.indexedMap`; this uses `List.swap`).
 // - Operations are written the way a developer writes them: a new list built from `model.rows`
 //   (`List.indexedMap` for every k-th row, `List.swap`, `List.sortWith` with a comparison, a
 //   filter, `++` for append). Nothing is a table that a routine interprets.
@@ -36,13 +36,17 @@
 //   (`List.copy`) where the model takes it, as beni's ownership checker asks (browser-direct
 //   edits lists in place); decoding in `update`, rather than in the subscription's function, is
 //   also what that checker accepts.
-// - ARIA: beni's Html vocabulary declares `aria-*` as a `String` attribute, written with
-//   `setAttribute` and never removed, and a `Maybe String` attribute is refused ("declared to take
-//   String"), so a marker that must be absent when unselected cannot be a single hole of the row's
-//   `<tr>`. A table whose marker is `aria-selected` writes the row's cells once (`cells row`, a
-//   fragment) and the `<tr>` twice, in an `if` hole on the selection; selecting such a row
-//   therefore replaces its `<tr>`, which `./rr check` reports as a replaced keyed node. This is a limit of the
-//   platform (notes/2026-10-16-beni-big-table.md), not something the generator can write around.
+// - ARIA (a dead end for now, counted at N=1 only): the language and both lowerings support a
+//   `Maybe String` attribute, removed on `Nothing` (beni docs/design/language.md, Rt.beni, Direct.beni),
+//   which is what a marker absent when unselected needs. The blocker is the shipped vocabulary:
+//   platforms/html/Html.beni declares `pub attribute "aria-*" : String`, a project cannot add its own
+//   declaration (the chain uses a single vocabulary module, boundary.md) and element spread is
+//   deferred. An upstream one-line change, `pub attribute "aria-selected" : Maybe String` (the exact
+//   name outranks the wildcard), plus a new compiler pin, would let this emitter write a single
+//   `<tr aria-selected={if ... then Just "true" else Nothing}>`. Until then a table whose marker is
+//   `aria-selected` writes the row's cells once (`cells row`, a fragment) and the `<tr>` twice, in an
+//   `if` hole on the selection; selecting such a row replaces its `<tr>`, which `./rr check` reports
+//   as a replaced keyed node. See notes/2026-10-16-beni-big-table.md.
 // - Production build: `beni build --release --source-maps` (frameworks/beni/beni.js).
 
 import { beniString, beniValue } from "../../shared-components/shared/beni.js";
@@ -666,7 +670,8 @@ find changes id =
             if change.id == id then Just change.value else find rest id
 
 
---| The rows with each change applied to the row it names.
+--| The rows with each change applied to the row it names. A list that names an id twice
+--| applies the first (the reference applies the last); the generated events never do.
 pub patch : List row, List (Change a), (row → Int), (row, a → row) → List row
 patch rows changes idOf set = List.map rows λrow →
     case find changes (idOf row) of

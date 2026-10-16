@@ -9,7 +9,7 @@
   `selected`, `nextId`, `rng`), `init`, `Msg` (one constructor per operation and per row control),
   `update`, row builder, server events (`serverRows`, `serverUpdate`, `serverDelete`, `replace` for a
   snapshot) and `view`; `Main` only routes (`Html.map`, one-line branches, the `Event` schema).
-  Table 1 follows beni's own js-framework-benchmark app (`bench/ui/apps/beni/Main.beni`): its three
+  Table 1 is in the spirit of beni's own js-framework-benchmark app (it swaps with `List.swap`, theirs with `List.indexedMap`) (`bench/ui/apps/beni/Main.beni`): its three
   word lists, a recursive `buildFrom` pushing at the end, `List.indexedMap` for every 10th row,
   `List.swap`, a keyed `For` with the row's markup inline, `class` read from `model.selected` in the
   row. Other tables write the same shapes for their own columns: `Fmt` calls for formats, computed
@@ -34,18 +34,24 @@
   4, 8, 15 (see the limit below).
 - Builds are byte-identical on rebuild (tea 16 and 64, direct 8).
 
-## Limit 1: `aria-selected` cannot be absent
+## Limit 1 (dead end for now, counted at N=1 only): `aria-selected` needs an upstream vocabulary change
 
-beni's Html vocabulary declares `aria-*` as a `String` attribute, written with `setAttribute` and
-never removed; a `Maybe String` attribute is refused ("`aria-selected` is declared to take String"),
-and declaring one in the project's platform layer is not picked up either. The contract wants the
-attribute absent on an unselected row. A single `<tr>` hole cannot do that, so a table with this marker
-(a third of the tables with select) writes the `<tr>` twice in an `if` on the selection, with the cells
-shared as a fragment (`cells row`). The page is right at every step; selecting such a row replaces
-its `<tr>` (and deselecting the old one replaces that), which is the check's failure, and costs the
-work of a new row (`t4: select a row`: 6 132 calls on tea and 12 157 on direct, against 111 and 105 for a
-class marker). Table 1 (class `danger`), and so the N=1 bench point, is not affected. Not written
-around: nothing in beni's shipped markup can do it.
+The language and both lowerings support a `Maybe String` attribute, removed on `Nothing`
+(`docs/design/language.md` 1655, 1663, 2201; `Rt.beni` 1912; `Direct.beni` 283). The blocker is the
+shipped vocabulary: `platforms/html/Html.beni` 645 declares `pub attribute "aria-*" : String`
+(written with `setAttribute`, never removed). A project cannot add its own declaration (the chain uses a
+single vocabulary module, `boundary.md` 1352, 4630; my attempt in the platform layer was not picked up),
+and element spread is deferred (`language.md` 1704). An upstream one-line change,
+`pub attribute "aria-selected" : Maybe String` (the exact name outranks the wildcard), plus a new compiler
+pin, would let the emitter write one `<tr aria-selected={if ... then Just "true" else Nothing}>`.
+
+Until then a table with this marker (a third of the tables with select) writes the `<tr>` twice in an
+`if` on the selection, with the cells shared as a fragment (`cells row`). The page is right at every
+step; selecting such a row replaces its `<tr>` (and deselecting the old one replaces that), which is the
+check's failure, and costs the work of a new row (`t4: select a row`: 6 132 calls on tea and 12 157 on
+direct, against 111 and 105 for a class marker). Table 1 (class `danger`), and so the N=1 bench point,
+is not affected. `runs.json` therefore counts both beni entries at N=1 only (tea 12 412 B, direct
+13 904 B brotli, medians of seeds 1-3); the larger sizes above are measured but do not count.
 
 ## Limit 2: browser-direct's ownership checker from 16 tables
 
@@ -88,3 +94,6 @@ written per table. The runtime is flat (9.2 to 13.6 kB tea).
   finish in 30 minutes of the no-JIT counting run): select and clear flat (105, 83), update every
   10th 2.9x (3 699 -> 10 899), swap 2.8x, remove 2.8x, toggle 2.7x, create and append 3.0x, sort
   3.0x to 3.4x, `serverUpdate` 2.9x. Linear in the rows, like tea.
+
+`Change.patch` applies the first change for an id where the reference applies the last; harmless, since the
+generated events never name an id twice.
