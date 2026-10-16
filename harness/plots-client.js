@@ -73,16 +73,27 @@
   const hideTip = () => { tip.style.display = "none"; };
 
   // ---- line chart on a log2 N axis, with seed spread as whiskers and optional fitted curves.
-  function lineChart({ series, curves = [], yMax, unit = "B", width = 560, height = 260, pointsOnly = false, yFmt = fmt, xLabel = "N (widgets, log scale)" }) {
+  function lineChart({ series, curves = [], yMax, unit = "B", width = 560, height = 260, pointsOnly = false, yLog = false, yFmt = fmt, xLabel = "N (widgets, log scale)" }) {
     const W = width, H = height, L = 56, R = 14, T = 24, B = 34;
     const xs = [...new Set(series.flatMap((s) => s.points.map((p) => p.x)))].sort((a, b) => a - b);
     const lx = (x) => Math.log2(x);
     const x0 = lx(xs[0]), x1 = lx(xs[xs.length - 1]) || 1;
     const X = (x) => L + ((lx(x) - x0) / (x1 - x0 || 1)) * (W - L - R);
     const max = yMax ?? Math.max(...series.flatMap((s) => s.points.map((p) => p.hi)), ...curves.flatMap((c) => xs.map((x) => c.fn(x))));
-    const ticks = niceTicks(max);
-    const top = ticks[ticks.length - 1];
-    const Y = (y) => T + (1 - y / top) * (H - T - B);
+    // A log y axis (yLog) has a gridline at every power of ten from just below the smallest value.
+    let ticks, top, Y, bottom = 0;
+    if (yLog) {
+      const min = Math.min(...series.flatMap((s) => s.points.map((p) => p.lo)));
+      const e0 = Math.floor(Math.log10(Math.max(min, 1))), e1 = Math.max(e0 + 1, Math.ceil(Math.log10(max)));
+      ticks = [];
+      for (let e = e0; e <= e1; e++) ticks.push(10 ** e);
+      bottom = ticks[0];
+      Y = (y) => T + (1 - (Math.log10(Math.max(y, bottom)) - e0) / (e1 - e0)) * (H - T - B);
+    } else {
+      ticks = niceTicks(max);
+      top = ticks[ticks.length - 1];
+      Y = (y) => T + (1 - y / top) * (H - T - B);
+    }
     const svg = sv("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
     for (const t of ticks) {
       svg.append(sv("line", { class: "gridline", x1: L, x2: W - R, y1: Y(t), y2: Y(t) }));
@@ -91,7 +102,7 @@
     for (const x of xs) svg.append(sv("text", { x: X(x), y: H - B + 16, "text-anchor": "middle", text: String(x) }));
     svg.append(sv("text", { x: (L + W - R) / 2, y: H - 4, "text-anchor": "middle", text: xLabel }));
     svg.append(sv("text", { x: L - 6, y: 11, "text-anchor": "end", text: unit }));
-    svg.append(sv("line", { class: "axis", x1: L, x2: W - R, y1: Y(0), y2: Y(0) }));
+    svg.append(sv("line", { class: "axis", x1: L, x2: W - R, y1: Y(bottom), y2: Y(bottom) }));
     for (const c of curves) {
       const pts = [];
       const from = c.from ?? xs[0], to = c.to ?? xs[xs.length - 1];
@@ -204,6 +215,60 @@
     return el("section", { class: "card" }, el("h3", { text: title }), note ? el("p", { class: "note", text: note }) : null, body, sourceLine(variants));
   }
 
+  // ---- work per event: JavaScript function calls one action costs, against N.
+  let workAction = "";   // "" = the median of the local actions
+  function workCard(sc) {
+    const w = sc.work;
+    if (!w) return card("Work per event against N", null, el("p", { class: "note", text: "No work results for this scenario yet. Run ./rr work " + sc.name + " all: it counts the JavaScript function calls one event costs, at several sizes, and this chart appears here." }), sc.variants);
+    const names = sc.variants.map((v) => v.name).filter((n) => w.run.variants[n]);
+    const colorOf = (n) => SLOTS[sc.variants.findIndex((v) => v.name === n) % SLOTS.length];
+    const acts = w.run.actions.filter((a) => !a.setup);
+    const locals = acts.filter((a) => a.scope === "local").map((a) => a.name);
+    const rowsOf = (n) => {
+      if (workAction) return w.records.filter((r) => r.variant === n && r.action === workAction).map((r) => ({ size: r.size, seed: r.seed, calls: r.calls }));
+      // The median over the local actions, per size and seed.
+      const out = [];
+      for (const size of w.run.sizes) for (const seed of w.run.seeds) {
+        const cs = w.records.filter((r) => r.variant === n && r.size === size && r.seed === seed && locals.includes(r.action)).map((r) => r.calls);
+        if (cs.length) out.push({ size, seed, calls: median(cs) });
+      }
+      return out;
+    };
+    const series = names.map((n) => ({ name: n + (w.run.variants[n].track === "prototype" ? " (prototype)" : ""), color: colorOf(n), points: bySize(rowsOf(n), (r) => r.calls), endLabel: true }));
+    const chart = el("div", { class: "chart" });
+    chart.append(lineChart({ series, unit: "calls", width: 1060, height: 380, yLog: true }));
+    const select = el("select", { onchange: (e) => { workAction = e.target.value; render(); } },
+      el("option", { value: "", text: "median of the local actions" }),
+      ...acts.map((a) => el("option", { value: a.name, text: a.name + (a.scope === "global" ? " (global by nature)" : ""), ...(workAction === a.name ? { selected: "" } : {}) })));
+    if (!workAction) select.firstChild.selected = true;
+    // Growth from the smallest to the largest size, per variant: median and worst local action.
+    const lo = w.run.sizes[0], hi = w.run.sizes[w.run.sizes.length - 1];
+    const growth = names.map((n) => {
+      const ratios = w.run.seeds.flatMap((seed) => locals.map((a) => {
+        const at = (size) => w.records.find((r) => r.variant === n && r.seed === seed && r.size === size && r.action === a)?.calls;
+        return at(hi) / at(lo);
+      }));
+      return [n, median(ratios).toFixed(2), Math.max(...ratios).toFixed(2)];
+    });
+    const versions = Object.entries(w.run.variants).map(([n, v]) => `${n}: ${Object.entries(v.versions || {}).map(([k, x]) => `${k} ${x}`).join(", ")}`);
+    const gitInfo = w.run.versions.git;
+    return el("section", { class: "card" }, el("h3", { text: "Work per event against N" }),
+      el("p", { class: "note", text: "JavaScript function calls the app's own code makes to handle one action and settle, counted with Chrome's precise coverage, on the same early widgets at every size (the generator is prefix-stable). Flat means the work is local to what changed; a line that climbs with N does work proportional to the whole page. Median of the seeds, spread as a pale bar; both axes logarithmic. The mount is not counted; the serve panel and the reference code are not counted." }),
+      el("div", { class: "controls" }, el("label", {}, "action ", select)),
+      hoverLegend(series.map((s) => [s.name, s.color]), chart), chart,
+      details("Table", table(["variant", "action", ...w.run.sizes.map((n) => "N=" + n), `×${hi / lo}`],
+        names.flatMap((n) => acts.filter((a) => !workAction || a.name === workAction).map((a) => {
+          const vals = w.run.sizes.map((size) => median(w.records.filter((r) => r.variant === n && r.action === a.name && r.size === size).map((r) => r.calls)));
+          return [n, a.name + (a.scope === "global" ? " *" : ""), ...vals.map(fmt), (vals[vals.length - 1] / vals[0]).toFixed(2)];
+        })))),
+      el("h4", { text: `Growth of a local action from N=${lo} to N=${hi}` }),
+      table(["variant", "median ratio", "worst ratio"], growth),
+      el("p", { class: "note", text: "ratio = calls at the largest size ÷ calls at the smallest, over every local action and seed. The size grows " + hi / lo + "×, so 1 means flat and about " + hi / lo + " means work proportional to the whole page. The snapshot (*) is global by nature, it replaces every widget, and is left out of the ratios." }),
+      el("div", { class: "source" },
+        el("div", { text: `Results: results/work/${w.dir} · commit ${gitInfo ? gitInfo.commit.slice(0, 7) + (gitInfo.dirty ? " (dirty)" : "") : "?"} · sizes ${w.run.sizes.join(",")} × seeds ${w.run.seeds.join(",")} · ${w.run.runs} fresh page(s) per count · options ${Object.entries(w.run.scenarioOptions || {}).map(([k, x]) => `${k}=${x}`).join(" ")}` }),
+        el("div", { text: `Node ${w.run.versions.node} · ${w.run.versions.chrome} · V8 flags ${w.run.jsFlags || "(none)"} · ${versions.join(" · ")}` })));
+  }
+
   function renderScenario(sc) {
     const out = [el("h2", { text: `Scenario: ${sc.name}` })];
     const vs = sc.variants;
@@ -288,6 +353,7 @@
       out.push(card("Ratio to vanilla", "Each variant's total divided by vanilla's (medians), per size. 1 = as small as vanilla.",
         [legend(series.map((s) => [s.name, s.color])), lineChart({ series, unit: "× vanilla", width: 1060, height: 300, yFmt: (t) => t.toFixed(1) })], vs));
     }
+    out.push(workCard(sc));
     return out;
   }
 

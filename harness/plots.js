@@ -40,7 +40,20 @@ export function collect(only) {
       });
     }
   }
-  return [...scenarios].map(([name, variants]) => ({ name, variants: [...variants.values()] }));
+  return [...scenarios].map(([name, variants]) => ({ name, variants: [...variants.values()], work: latestWork(name) }));
+}
+
+// The latest ./rr work run of a scenario (results/work/<date>-<scenario>[-n]/), or null.
+function latestWork(scenario) {
+  const base = path.join(RESULTS, "work");
+  if (!fs.existsSync(base)) return null;
+  const dirs = fs.readdirSync(base).filter((d) => fs.existsSync(path.join(base, d, "run.json")) && fs.existsSync(path.join(base, d, "work.json")))
+    .filter((d) => JSON.parse(fs.readFileSync(path.join(base, d, "run.json"), "utf8")).scenario === scenario)
+    .sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+  if (!dirs.length) return null;
+  const dir = dirs[dirs.length - 1];
+  const read = (f) => JSON.parse(fs.readFileSync(path.join(base, dir, f), "utf8"));
+  return { dir, run: read("run.json"), records: read("work.json").map(({ runs, ...r }) => r) };
 }
 
 export function page(data) {
