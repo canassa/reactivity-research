@@ -437,7 +437,6 @@ WIDGETS.${w.id} = [
   // Builds the widget once and returns its static patch.
   (parent, id) => {
     const t = html(${J(trimTemplate(markup))}, parent);
-    t[0].dataset.key = id;
 ${indent(body)}
     return (${args}) => {
 ${indent(patch)}
@@ -522,13 +521,18 @@ ${ticks.join("\n")}
   return route(model, msg.widget, msg);
 }
 
-// Builds every widget once. The returned patch first turns dirty bits that other widgets read
-// into the readers' bits, then runs each dirty widget's patch.
+// Builds every widget once (each view appends its section, which the app keys by the widget id).
+// The returned patch first turns dirty bits that other widgets read into the readers' bits, then
+// runs each dirty widget's patch.
 export function view(root, model) {
   const dash = html("<div data-role=dashboard></div>", root)[0];
   const w = model.widgets;
   const patches = {};
-  for (const id in WIDGETS) (patches[id] = WIDGETS[id][0](dash, id))(w[id], -1, w);
+  for (const id in WIDGETS) {
+    patches[id] = WIDGETS[id][0](dash, id);
+    dash.lastChild.dataset.key = id;
+    patches[id](w[id], -1, w);
+  }
   return (model, dirty) => {
     const w = model.widgets;
 ${edges.join("\n")}
