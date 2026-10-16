@@ -50,15 +50,16 @@ export function section(parent, i, html) {
   return parent.lastChild.querySelectorAll("*");
 }
 
-// Schedule every binding of a widget for its first render, and return its \`load\` for serverSet
-// and snapshot: replace the widget's state (a copy: the message is not ours to edit) and run
-// every binding it has again, and those of the widgets reading it.
-export const loader = (s, all) => (
+// Schedule every binding of a widget for its first render, and return its handle: its load for
+// serverSet and snapshot (replace the widget's state, a copy since the message is not ours to
+// edit, and run every binding it has again, and those of the widgets reading it), carrying its
+// external arms.
+export const loader = (s, all, arms) => (
   schedule(all),
-  (next) => {
+  Object.assign((next) => {
     Object.assign(s, structuredClone(next));
     schedule(all);
-  }
+  }, arms)
 );
 
 // A new list item's id: one more than the largest.
@@ -99,8 +100,8 @@ function inner(e, deps) {
     case "done": return `${go(e[1])}.filter((item) => item.done).length`;
     case "left": return `${go(e[1])}.filter((item) => !item.done).length`;
     case "has": return `${go(e[1])}.includes(${str(e[2])})`;
-    case "==": return `(${go(e[1])} === ${go(e[2])})`;
-    case "!=": return `(${go(e[1])} !== ${go(e[2])})`;
+    case "==": return `(${go(e[1])} == ${go(e[2])})`;
+    case "!=": return `(${go(e[1])} != ${go(e[2])})`;
     case "<": case "<=": case ">": case ">=": return `(${go(e[1])} ${e[0]} ${go(e[2])})`;
     case "and": return `(${go(e[1])} && ${go(e[2])})`;
     case "or": return `(${go(e[1])} || ${go(e[2])})`;
@@ -185,7 +186,7 @@ function widgetFile(w, reads) {
         case "cycle": {
           // The option after the current one, wrapping around: the compiler knows the options.
           const o = f.options;
-          lines.push(`${v} = ${o.map((x, i) => `${v} === ${str(o.at(i - 1))} ? ${str(x)} : `).slice(0, -1).join("")}${str(o.at(-1))};`);
+          lines.push(`${v} = ${o.map((x, i) => `${v} == ${str(o.at(i - 1))} ? ${str(x)} : `).slice(0, -1).join("")}${str(o.at(-1))};`);
           break;
         }
         case "push": case "pushText": {
@@ -389,6 +390,11 @@ function widgetFile(w, reads) {
   // The section itself is written by `section`: the markup is what goes inside, from element 0.
   element("h2", {}, w.label);
   for (const n of w.view) node(n);
+  // Leave out the end tags HTML makes optional: `</option>` before an option or the select's
+  // end, `</p>` before a block element or its parent's end (none of the parents here is one
+  // that keeps it, like `<a>`); the parsed DOM is the same.
+  html = html.replace(/<\/option>(?=<option|<\/select>)/g, "")
+    .replace(/<\/p>(?=<(?:aside|div|fieldset|footer|header|ol|p|section|ul)[\s>]|<\/|$)/g, "");
 
   // The bindings: those reading one field of this widget and nothing else are written inline in
   // that field's group; the others are named and listed in each group they belong to.
@@ -453,10 +459,9 @@ function widgetFile(w, reads) {
     ...(handlerLines.length ? ["", "// The arms of update, as actions."] : []),
     ...handlerLines.flat(),
     "",
-    "return {",
-    `  load: loader(s, [${all.join(", ")}]),`,
-    ...arms.flat().map((l) => "  " + l),
-    "};",
+    ...(arms.length
+      ? [`return loader(s, [${all.join(", ")}], {`, ...arms.flat().map((l) => "  " + l), "});"]
+      : [`return loader(s, [${all.join(", ")}]);`]),
   ];
   const text = body.map((l) => (l ? "  " + l : l)).join("\n");
 
@@ -478,7 +483,7 @@ ${text}
 function appFile(spec, reads) {
   const ticking = spec.widgets.filter((w) => w.fields.some((f) => f.tick));
   const cases = [`      case "serverSet":
-        views[msg.widget.slice(1)].load(msg.state);
+        views[msg.widget.slice(1)](msg.state);
         break;`];
   if (ticking.length) {
     cases.push(`      case "tick":
@@ -491,7 +496,7 @@ ${ticking.map((w) => `        views[${pos(w.id)}].tick();`).join("\n")}
         break;`);
   }
   cases.push(`      case "snapshot":
-        for (const id in msg.state.widgets) views[id.slice(1)].load(msg.state.widgets[id]);
+        for (const id in msg.state.widgets) views[id.slice(1)](msg.state.widgets[id]);
         break;`);
 
   const readers = {};
@@ -513,7 +518,7 @@ export function start(root) {
   const R = ${literal(readers, "  ")};
   // Every widget in page order, given its number (widget \`wN\` is number N, its position from 1:
   // its slice of the model is \`model[N]\`, its handle \`views[N]\`; \`map\` skips the hole at 0). A
-  // handle has \`load\` for serverSet and snapshot, and the widget's external arms.
+  // handle is its load for serverSet and snapshot, carrying the widget's external arms.
   const views = W.map((widget, i) => widget(board, model, R, i));
   flush();
 
