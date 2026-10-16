@@ -24,11 +24,12 @@ and its handlers. Here is the counter, as `scenarios/shared-components/digest.js
 ```js
 const counter = (l, st, mn, mx, v0) => {
   let value = v0;                                  // the state: plain variables of the factory
-  widget("counter", l, `<output data-role=value></output><button data-role=dec>-${st}</button>…`, [
+  widget("counter", l, `<output data-role=value></output><button data-role=dec>-${st}</button>…`,
+    (v) => ({ value } = v),                        // the setter external replacements use
     () => value = Math.max(mn, value - st), // dec: the update arms, one per control,
     () => value = Math.min(mx, value + st), // inc  in the template's document order
     () => value = v0, // reset
-  ], (v) => ({ value } = v));                      // the setter external replacements use
+  );
   text(1, () => value);                            // view: one binding per dynamic property,
   bind(2, "disabled", () => value <= mn);          // on the template's element at that position
   bind(3, "disabled", () => value >= mx);          // (0 is the heading)
@@ -41,8 +42,9 @@ fields appear once, in the setter `widget()` stores for external events (`S[id]`
 
 **Handlers go to controls by position, and bindings name elements by position.** The compiler
 knows the template, so it writes the handlers in the order of the template's controls (its
-buttons, inputs and selects), and `widget()` hands them out in that order (`c.h = h[i]`, the
-way Solid stores `$$click` on the element). A binding names its element by its index in the
+buttons, inputs and selects), passes them to `widget()` after the setter, and `widget()` hands
+them out in that order (`c.h = h[i]`, the way Solid stores `$click` on the element), with the
+widget's binding list (`c.b`). A binding names its element by its index in the
 template. Neither needs a `data-role` lookup or repeats a role name in the code; the
 `data-role` attributes stay in the template, where the contract wants them. Where a template
 repeats a control (toggles, tabs, rating stars), the factory computes the positions from the
@@ -74,19 +76,19 @@ feed).
 ### From an event to the DOM
 
 The runtime puts one delegated `click` and one `input` listener on the dashboard element. It
-calls the target's handler with the element, then digests **the target's section's bindings
-only**:
+calls the target's handler with the element, then digests **the bindings of the target's
+widget only**:
 
 ```js
 const onEvent = ({ target: t }) => {
-  if (t.h) { t.h(t); run(t.closest("section").b); }   // .b: this widget's list
+  if (t.h) { t.h(t); run(t.b); }   // .b: the list of the control's widget
 };
 
 // a binding: write the i-th element's n[k] only when f() changed since the last write
 const bind = (i, k, f, last, n = N[i]) => B.push(() => last !== (last = f()) && (n[k] = last));
 ```
 
-`widget()` starts a fresh list for each section (`W[id] = x.b = B = []`), so every binding the
+`widget()` starts a fresh list for each section (`W[id] = B = []`), so every binding the
 factory creates lands in its own widget's list. A click on a counter runs the counter's three
 bindings, whatever the size of the page. `run` is a plain `for…of` over the list, so a binding
 costs one call.
@@ -266,6 +268,54 @@ event made before, so the counts stay level.
 - **On shared-components the state lived in per-kind code,** so variables shrink the baseline
   (−35 B from N=16) and leave the slope at the rows' data floor.
 
+### Call shapes and range facts (fourth pass)
+
+A fourth pass changed the shape of the calls the compiled code makes and used two facts the
+compiler knows, not the strategy:
+- **Handlers are `widget()`'s last arguments** (`widget(html, set, ...h)`), after the setter, so
+  no widget writes an array around them, and a feed widget puts its record in `O` itself instead
+  of every other widget passing a placeholder for it (unique). The dashboard kinds do the same.
+- **A control carries its widget's binding list** (`c.b`, set with its handler), so the
+  delegated listener runs `t.b` instead of looking the widget up with `closest()`.
+- **An int add checks only the bound it can pass** (unique): an int field always lies within
+  its range (ops clamp, the number input checks, external states send in-range values), so
+  `+3` becomes `Math.min(x + 3, max)` and `-2` becomes `Math.max(x - 2, min)`, as the dashboard
+  counter already did. The two-sided `cl` helper is gone, and with it one call per click.
+- **Comparisons are loose** (unique): both sides of a typed comparison have the same type, so
+  `==` is `===`.
+- **Handlers are expressions where they can be:** a push keeps its trimmed draft in the click
+  handler's unused parameter (`(t) => (t = d.trim()) && (add(l, t), d = "")`), every new item
+  starts not done (the helper needs no `done` argument), the amount check, filter item and
+  clock reset have no block, and an initial list's items are `L`'s arguments.
+- **Small spellings on shared-components:** the reflected ARIA properties and an input's value
+  take a boolean or a number as it is (no `"" +`), a rating star's character goes through
+  `text`, a summary rounds its total only where it shows it (a list summary no longer computes
+  it), and the feed's record keeps its entries under `e`.
+
+Brotli totals, adapter excluded, `runs.json` sizes (1 to 256) and seeds (1 to 3), medians:
+
+| | N=1 | N=16 | N=64 | N=256 | fit, all sizes | fit, N ≥ 16 |
+|---|---|---|---|---|---|---|
+| shared-components, before | 1,053 B | 3,154 B | 4,399 B | 7,634 B | 2,088 + 23.78 B/widget | 3,062 + 18.29 B/widget |
+| shared-components, after | **1,045 B** | **3,110 B** | **4,359 B** | **7,580 B** | **2,061 + 23.68** | **3,019 + 18.28** |
+| unique-components, before | 1,420 B | 5,068 B | 13,029 B | 38,790 B | 2,400 + 146.7 B/widget | 3,680 + 139.5 B/widget |
+| unique-components, after | **1,382 B** | **4,997 B** | **12,925 B** | **38,437 B** | **2,356 + 145.4** | **3,623 + 138.2** |
+
+Every size's median is lower on both scenarios (sizes 1 to 256). Calls (`./rr work`, seed 1,
+sizes 16 to 256), record by record: none higher; 12,054 → 11,806 in total (shared-components:
+a list summary skips its total, so every action that digests a summary costs a few calls
+less), 19,967 → 19,962 (unique-components: an int click no longer calls `cl`).
+
+- **What is left is mostly data and contract.** Removing offline, from the N=256 seed 1
+  unique-components bundle (38.7 KB br): every `data-role` attribute −5.0 KB, every setter
+  (the field names of the external protocol) −3.1 KB, every heading −1.4 KB. The code skeleton
+  without any string costs 15.2 KB, of which 7 KB are identifiers.
+- **A runtime change moves the app's bytes by up to ±120 B at N=256,** because the minifier
+  names the app's module variables (the read fields) after the runtime's: one fewer runtime
+  name renames every read field. Sizes of N ≥ 128 are noisy by that much for any change, so a
+  change is kept only when it is smaller by construction and the sum over all sizes and seeds
+  agrees.
+
 ## Locality
 
 `./rr check` holds prototypes to a locality rule: the calls one local action costs may grow at
@@ -346,6 +396,35 @@ marked):
 | The item role from the field name in the runtime (`role + "Item"`) (unique) | +8 B at N=16, −58 B at N=128 | dropped: noise |
 | The heading written by the runtime (`"<h2>" + …`) (unique) | +3 B at N=256 (offline) | dropped |
 
+Fourth pass (`runs.json` sizes and seeds, each against the step before, or offline where
+marked):
+
+| Idea | Effect | Verdict |
+|---|---|---|
+| Handlers as `widget()`'s rest arguments after the setter (both) | unique −12 to −116 B at every size; shared −10 to −26 B from N=4 | kept |
+| An int add checks only the bound it can pass, `Math.min`/`Math.max` inline (unique) | −7 B at N=1, −20 B at N=16, −127 B at N=256 | kept |
+| The same through imported `min`/`max` aliases | +2 B at N=1, +10 B at N=64, −146 B at N=256 | replaced by `Math.min`/`Math.max` inline |
+| The same with the bound first (`Math.min(max, x + k)`), or the tick's `Math.min` reordered to match | +3 to +54 B, or ±24 B | dropped: worse, or noise |
+| A control carries its widget's binding list (`c.b`), no `closest()` (both) | −7 B at N=1 (unique), −8 B (shared) | kept |
+| Loose equality for typed comparisons (unique) | −10 B at N=16, −60 B at N=256 | kept |
+| Push as one expression on the handler's parameter, new items always not done (unique) | −30 to −74 B from N=32, ±5 B below | kept |
+| Initial list items as `L`'s arguments (unique) | sum over all builds −160 B, +6 B at N=2 | kept |
+| Dashboard handlers as expressions, summary total only where shown (shared) | −22 B at N=16, −14 B at N=4 | kept |
+| ARIA states and the amount value without `"" +`, stars through `text`, numbers joined as numbers (shared) | −6 to −26 B from N=8 | kept |
+| The feed record's entries as `e` (shared) | −29 B at N=256, +13 B at N=32, sum −138 B | kept |
+| Static text prefix in the template, a text node of its own for the expression (`<p>Total: </p>` + `tail(…)`) (unique) | +8 B at N=1, +42 B at N=256 | dropped: brotli already codes `` `Total: ${`` well in the code, and the prefix in the template breaks other matches |
+| `dis`/`chk` helpers beside the default property (unique) | +9 B at N=1, +18 B at N=256 | dropped |
+| Enum cycles as a chain of comparisons (tea-dirtybits' idea) (unique) | +45 B at N=16, +257 B at N=256 | dropped: every option written twice |
+| `!x.length` for "count is 0" (unique) | sum +211 B | dropped |
+| `x % 1 == 0` for `Number.isInteger(x)` (unique) | +13 B at N=16, −41 B at N=256 | dropped: mixed, and golfing |
+| `done` as 0/1 in initial items, no `!!` (unique) | sum +44 B | dropped |
+| The item's `<li data-role>` in its template instead of set by the runtime (unique) | +45 B at N=64 | dropped |
+| `nx(v, ...options)` instead of an options array (unique) | +6 B at N=4 and N=8, −48 B at N=256 | dropped: mixed |
+| A todo's items and a feed's entries as the row's last arguments (shared) | +14 B at N=4, +9 B at N=16 | dropped |
+| A one-field setter as an assignment (`(v) => x = v.x`) (both) | ±10 B, mixed by size | dropped: noise |
+| Rows flattened into one argument stream, split by each factory's arity (shared) | −9 B at N=256 before the decoder (offline) | dropped: no gain, and fragile (a minifier may drop unused parameters) |
+| `onclick`/`oninput` properties instead of `addEventListener` | not built | dropped: the serve page counts listeners through `addEventListener`, so the dispose check could no longer see them |
+
 ## Honest limits
 
 - **An event re-runs all of its widget's bindings,** with no memoization: about five, plus a
@@ -363,6 +442,10 @@ marked):
   A different spec would need explicit ids in the rows: a few bytes per widget.
 - **External replacements assign every field through the widget's setter.** This assumes
   `serverSet` and `snapshot` send a widget's whole state, as the scenario specifies.
+- **An int add trusts the field's range.** It checks only the bound its step can pass, which is
+  exact while the field is within `[min, max]`: every op and the number input keep it there,
+  and the scenario's external states send in-range values. An out-of-range `serverSet` value
+  would be clamped on one side only (the dashboard counter has always worked this way).
 - **unique-components keeps a read field in a module variable,** which works because every
   widget there is used once. A widget used twice would need its read fields on a per-instance
   record, as before.
@@ -385,12 +468,10 @@ time-driven field, its tick function. Only initial values and texts are data.
 
 It uses `runtime-unique.js` instead of `runtime.js`: the same strategy (binding closures that
 write on change, a local digest, handlers and bindings by position), but it knows nothing about
-widget kinds. `widget(html, h, set, o)` builds the section, hands `h` to its controls in
-document order, keeps the setter (and a feed's record `o`), and makes its elements the ones
+widget kinds. `widget(html, set, ...h)` builds the section, hands `h` to its controls in
+document order, keeps the setter (a feed widget puts its record in `O` itself), and makes its elements the ones
 bindings refer to, each by its distance from the previous binding's element (`text(3, …)`).
 Differences from `runtime.js`:
-- the delegated listener finds the widget by `data-role=widget`, because a conditional section
-  may itself be a `<section>`;
 - a list item is `<li data-key data-role>` (the item role is `{field}Item`);
 - a reader widget copies its bindings into each source's list (`dep`, a compile-time fact, the
   sources as distances back), so a source's change digests the readers too, and nothing else;

@@ -11,7 +11,7 @@
 //   widget are its initial values and its texts (the template).
 // - The runtime (frameworks/digest/runtime-unique.js) is generic: a section built from a
 //   template, bind/text/show, a keyed-list reconciler, one delegated click/input listener, and
-//   small handler helpers (clamp, next option, add an item).
+//   small handler helpers (next option, add an item, an initial list).
 // - Locality: an event runs only its widget's bindings. A widget that reads others subscribes
 //   its binding list to theirs (`dep`, a compile-time fact), external events digest only the
 //   widgets they name, and a tick digests only the fields whose gate is on.
@@ -328,7 +328,7 @@ export function emit(spec) {
       components: "one function per widget, written out in full from that widget's description (state, template, handlers, setter, bindings, tick); no shared per-kind factories, no data rows, no interpreter",
       state: "plain mutable variables: locals of the widget's function, module variables for the fields other widgets read, a record for feed lists; external replacements are deep-copied and assigned through the widget's setter",
       templates: "one static HTML string per widget (texts escaped at build time); nodes are found by their position in the template (a distance from the previous binding's), once",
-      handlers: "one arrow function per control, given to the controls in document order, compiled from the message's ops; small generic helpers (clamp, next option, add an item)",
+      handlers: "one arrow function per control, given to the controls in document order, compiled from the message's ops; small generic helpers (next option, add an item); an int add checks only the bound it can pass",
       lists: "keyed by id, reconciled in place by the runtime; item template and item bindings are the widget's own code",
       conditionals: "a binding that swaps one node with an empty text node",
       events: "one delegated click and input listener that calls the target's handler",
