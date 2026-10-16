@@ -43,27 +43,26 @@ function update(model, msg, c) {          // the reducer, kept as written
 }
 
 export function counter(parent, c, model) {
-  const self = instance(c, model, update, patch);  // the model lives in this closure
-  const root = widget(parent, c, "counter");       // DOM built once
-  const value = text(element(root, "output"));
+  const self = instance(model, update, patch, c);  // the model lives in this closure
+  const root = widget(parent, c, "counter", self); // DOM built once
+  const value = element(root, "output", null, " "); // a dynamic text: a placeholder node
   const dec = element(root, "button", null, "-");
   on(dec, "click", () => self.send(Dec));          // the event goes to this instance only
   // …
   function patch() {                               // this instance's binding list
-    const m = self.model();
+    const m = self.m;
     setText(value, m.value);                       // skipped if the text is unchanged
     setProp(dec, "disabled", m.value <= c.min);    // skipped if already equal
   }
-  patch();
-  return self;
+  return self;                                     // instance() scheduled the first patch
 }
 ```
 
 `send` is tiny and lives in the runtime:
 
 ```js
-send: (msg) => set(update(model, msg, config)),
-set(next) { if (next !== model) { model = next; schedule(patch); /* + watchers */ } },
+send: (msg) => set(update(self.m, msg, config)),
+set(next) { if (next !== self.m) { self.m = next; schedule(patch); /* + watchers */ } },
 ```
 
 `schedule` collects patches in a `Set` and runs them in one microtask, so several messages
@@ -78,12 +77,16 @@ const w1 = counter(main, { id: "w1", label: "Design tickets", step: 5, min: 0, m
 
 ## Lists, summaries and external events
 
-**Keyed lists** (`todo`, `filter`, `feed`) use the runtime's `list(parent, key, row)`. Each
-patch walks the new items by key. A row whose item object changed is patched in place, and a
-new key builds a detached row. If the sequence of rows changed (an add, a remove, filtering, a
-reorder), Solid 2's `reconcileArrays` moves the nodes. It is vendored unchanged, MIT, in
-`template/reconcile.js`. The PR's array edit journal, which comes from beni's owned lists, is
-left out: the first pass already skips unchanged rows.
+**Keyed lists** (`todo`, `filter`, `feed`) use the runtime's `list(parent, row)`, keyed by
+`item.id` (which it writes as the row's `data-key`). Each patch walks the new items by key. A
+row whose item object changed is patched in place, and a new key builds a detached row. If the
+sequence of rows changed (an add, a remove, filtering, a reorder), the rows that left are
+removed and one forward pass places the rest: a node already in place stays, any other is
+inserted before the first node not yet placed. That moves nothing for adds, removes and
+filtering, and all but one node of a reversed run, like the Solid 2 `reconcileArrays` it
+replaced (vendored until October 2026, about 480 B brotli); its worst case is a rotation,
+which moves every node but one. The PR's array edit journal, which comes from beni's owned
+lists, is left out: the first pass already skips unchanged rows.
 
 **Summaries** read other widgets' state. A summary instance subscribes to the instances it reads
 (`source.watch(patch)`). When one of their models changes, for any reason, the summary's patch
@@ -107,8 +110,8 @@ sits on a node inside it, and the app has no timers or global listeners.
 
 ## The expected trade-off
 
-- **Small baseline.** The runtime is about 1.3 kB brotli at full catalogue, with the keyed
-  reconcile included. There is no reactive graph, scheduler or component system to ship.
+- **Small baseline.** The runtime is about 0.8 kB brotli at full catalogue (Vite's module
+  preload polyfill included). There is no reactive graph, scheduler or component system to ship.
 - **The slope follows the source.** The per-widget cost is the widget's config, its initial
   model and one factory call, which should be close to what a hand-written vanilla app with
   shared components carries. The reducers and binding lists are paid once per kind.
@@ -123,8 +126,13 @@ sits on a node inside it, and the app has no timers or global listeners.
 `scenarios/unique-components/tea-local.js` runs the same strategy when every widget is its own
 component type. Nothing is shared per kind, so each widget gets its own module: its initial
 model, a reducer with one `case` per message (written out from the message's kind and ops, never
-interpreted), and a factory with its own createElement calls, event wiring and `patch` (derived
-texts become template literals). Only generic helpers are shared: this runtime and a small
+interpreted), and a factory with its own static template, event wiring and `patch` (derived
+texts become template literals). The template is the widget's markup as one string (trailing
+end tags left out, as Solid's compiler does); `widget()` puts it in the section and returns its
+elements in document order, which the factory addresses as `e[3]` (indexes compress better than
+names, measured). Events send messages through `onSend(node, self, msg)` (Elm's `onClick msg`),
+`onValue(node, self, tag)` (`onInput Tag`) and `onInt` (a number input decoded as a bounded
+integer). Only generic helpers are shared: this runtime and a small
 `widgets/frame.js` (the widget frame, placing conditional content before its next attached
 sibling, next item id).
 
