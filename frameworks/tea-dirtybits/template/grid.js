@@ -47,8 +47,7 @@ export function grid(body, row, fill, mark) {
     }
     recs = next;
   };
-  return [
-    (s, bits, p) => {
+  return (s, bits, p) => {
       if (bits & 1) sync(s.rows);
       else if (bits & 4) {
         for (const id of p) {
@@ -79,10 +78,11 @@ export function grid(body, row, fill, mark) {
           sel = r;
         }
       }
-    },
-    (el) => recs.get(+el.closest("tr").dataset.key)[1],
-  ];
+  };
 }
+
+// The id of the row an element is in (a row's controls send it with their message).
+export const idOf = (el) => +el.closest("tr").dataset.key;
 
 // A row's static markup, parsed once; each row is a clone, `bind` finds its bound elements.
 export function clone(source, bind) {
@@ -95,18 +95,23 @@ export function clone(source, bind) {
 // ---------------------------------------------------------------------------------------------
 // Row edits the reducers share. Each returns an arm's `[bits, fields, payload]`.
 
-// The index of a row in the table's rows: by identity (one native scan), or by id when the
-// message carries an older version of the row.
-export function at(rows, row) {
-  const i = rows.indexOf(row);
-  return i < 0 ? rows.findIndex((r) => r.id === row.id) : i;
-}
+// The index of the row with this id, or -1 (a click on a row an earlier event of the same tick
+// removed): the row arms do nothing then.
+export const at = (rows, id) => rows.findIndex((r) => r.id === id);
 
 // One row edited: `f(row)` returns its new fields.
-export function edit(s, row, bits, f) {
-  const i = at(s.rows, row);
+export function edit(s, id, bits, f) {
+  const i = at(s.rows, id);
+  if (i < 0) return;
   const next = { ...s.rows[i], ...f(s.rows[i]) };
   return [bits, { rows: s.rows.with(i, next) }, [next]];
+}
+
+// One row removed (and the selection, if it was the row).
+export function cut(s, id) {
+  const i = at(s.rows, id);
+  if (i < 0) return;
+  return [6, { rows: s.rows.toSpliced(i, 1), selected: s.selected === id ? null : s.selected }, [id]];
 }
 
 // Every k-th row (from the first) edited.

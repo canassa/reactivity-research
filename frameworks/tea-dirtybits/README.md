@@ -294,27 +294,34 @@ two scenarios use (bitwise operators are 32-bit). What it adds:
 The emitter for `big-table` (`scenarios/big-table/tea-dirtybits.js`) keeps the strategy with rows
 as dynamic data. What it adds (`template/grid.js`, new, included only here, counted as runtime):
 
-- **Two kinds of dirty bits per table.** The table's: rows 1 (reconcile the whole list),
-  selected 2, gone 4, moved 8, added 16. A row's: one bit per data column from 32 up. An arm returns
-  `[bits, fields, payload]`; the payload names the rows the event touched (ids for gone and moved,
-  row objects for added and edited cells).
-- **Per-row dirtiness.** Select marks two rows (the old and the new, by id), remove drops one
-  node, swap moves two, append builds only the new rows, toggle, bump and `updateEvery` call the
-  row's static patch with the column bit of the cell they wrote (a computed cell tests every column
-  its expression reads). Only create, sort, clear and `serverRows` ask for the keyed reconcile
-  (bit 1: new rows built, changed items patched, gone rows removed, one walk moves misplaced
-  nodes). A second event of one tick files bit 1, which covers both.
-- **A row is one cloned template** (parsed once), its record `[tr, item, …bound cells]`, and its
-  patch is a static function with a test per cell. Events are delegated: one click listener per
-  table, a switch on `data-role` that sends a numbered message. A row's control sends the row's
-  current item with it, so the reducer finds the row with `indexOf` (one native scan, by id if
-  the item is stale), not a callback per row.
-- **External events** `serverRows`, `serverUpdate` and `serverDelete` are handled in `app.js`:
-  they name no column. `serverRows` reconciles, the other two name the rows they touched.
-- **Rows axis (honest accounting).** In JavaScript calls and blocks, select, swap, remove,
-  toggle, bump are flat from 1,000 to 10,000 rows (13 to 22 calls). They are not free of O(rows)
-  work: remove, toggle and bump scan the array natively (`indexOf`) and copy it (`toSpliced`,
-  `with`), swap copies it (`slice`), none of which the call counter sees. `serverUpdate`,
-  `serverDelete` and `removeChecked` scan every row with `findIndex` or `filter` (an id that does
-  not exist forces the full scan), so they grow with the rows; `updateEvery`, create, append,
-  clear, sort and `serverRows` grow with the rows by nature.
+- **Dirty bits.** A table's own: rows 1, selected 2, gone 4, moved 8, added 16. A row's cells:
+  one bit per data column from 32 up, in the same word. An arm returns `[bits, fields, payload]`.
+  The bits are compile-time constants; the payload is a **delta side-channel**: the list of rows
+  the event touched (ids for gone and moved, row objects for added and edited cells), filed under
+  the table for the next patch. It is not state the patch reads: the patch applies the one column
+  word to each listed row, and the model stays the reference's shape.
+- **What each action does.** Select marks the old and the new row (by id); remove drops one node;
+  swap moves two; append builds the new rows; toggle, bump and `updateEvery` call the row's static
+  patch with the column bit of the cell they wrote (a computed cell tests every column its
+  expression reads). Create, sort, clear and `serverRows` run the keyed reconcile of the whole list
+  (bit 1: new rows built, changed items patched, gone rows removed, one walk moves misplaced nodes).
+- **Two events in one tick fall back to a full O(rows) reconcile.** A table already dirty gets
+  bit 1 filed with the second event, because one payload cannot describe both.
+- **A row is one cloned template**, its record `[tr, item, …bound cells]`, its patch a static
+  function with a test per cell. Events are delegated: one click listener per table, a switch on
+  `data-role`. A row's control sends `{table, type, id}`; the arm finds the row with `findIndex`
+  and does nothing if it is gone (a stale click in the same tick).
+- **External events** (`serverRows`, `serverUpdate`, `serverDelete`) are handled in `app.js`
+  (they name no column); the snapshot handler assumes every table is present, as the reference
+  state always has them.
+- **Rows axis** (N=16, 1,000 to 10,000 rows; `./rr work`, calls and blocks):
+  - **O(1) in the rows' DOM work:** select, swap, and the DOM side of remove, toggle and bump
+    (one node or one row's cells).
+  - **O(position) in the reducer:** remove, toggle, bump and select find the row with
+    `findIndex`, so they cost the row's index. The work actions pick rows near the start
+    (index 1 to 7), which is why their counts (17 to 28 calls) do not move between 1,000 and
+    10,000 rows; a row near the end would cost proportionally more. Remove, toggle, bump and swap
+    also copy the rows array (`toSpliced`, `with`, `slice`), natively and O(rows).
+  - **O(rows):** `serverUpdate` (1,767 to 28,890 calls: the message names an id that does not
+    exist, so `findIndex` scans everything), `serverDelete` and `removeChecked` (`filter`),
+    `updateEvery`, create, append, clear, sort and `serverRows`.

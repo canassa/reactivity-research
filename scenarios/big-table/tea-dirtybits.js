@@ -16,8 +16,8 @@
 // - A row is built from one cloned template (parsed once); its static patch tests the column
 //   bits of the cells it writes (a computed cell tests every column its expression reads).
 //   Events are delegated: one click listener per table, whose switch on data-role sends the
-//   message; a row's control sends the row's current item with it, so the reducer finds it with
-//   one native scan.
+//   message; a row's control sends the row's id, and the reducer finds the row with findIndex
+//   (and does nothing if it is gone).
 // - One app module (src/app.js): the tables in page order, the app reducer (routes a message to
 //   its table's reducer, files the bits under the table; the server's rows, updates and deletes
 //   are handled here, as they name no column), and the view whose patch runs the dirty tables'.
@@ -220,14 +220,12 @@ ${fills.map(([mask, stmt]) => `  if (b & ${mask}) ${stmt}`).join("\n")}
   for (const c of ctls) {
     tags.push(c.role);
     switch (c.kind) {
-      case "select": arms.push("(s, { row }) => s.selected !== row.id && [2, { selected: row.id }],"); break;
-      case "toggle": used.add("edit"); arms.push(`(s, { row }) => edit(s, row, ${bit(c.column)}, (r) => ({ ${c.column}: !r.${c.column} })),`); break;
-      case "bump": used.add("edit"); arms.push(`(s, { row }) => edit(s, row, ${bit(c.column)}, (r) => ({ ${c.column}: r.${c.column} + ${c.delta} })),`); break;
+      case "select": used.add("at"); arms.push("(s, { id }) => s.selected !== id && at(s.rows, id) >= 0 && [2, { selected: id }],"); break;
+      case "toggle": used.add("edit"); arms.push(`(s, { id }) => edit(s, id, ${bit(c.column)}, (r) => ({ ${c.column}: !r.${c.column} })),`); break;
+      case "bump": used.add("edit"); arms.push(`(s, { id }) => edit(s, id, ${bit(c.column)}, (r) => ({ ${c.column}: r.${c.column} + ${c.delta} })),`); break;
       case "remove":
-        used.add("at");
-        arms.push(sel
-          ? "(s, { row }) => [6, { rows: s.rows.toSpliced(at(s.rows, row), 1), selected: s.selected === row.id ? null : s.selected }, [row.id]],"
-          : "(s, { row }) => [4, { rows: s.rows.toSpliced(at(s.rows, row), 1) }, [row.id]],");
+        used.add("cut");
+        arms.push("(s, { id }) => cut(s, id),");
         break;
     }
   }
@@ -240,8 +238,8 @@ ${fills.map(([mask, stmt]) => `  if (b & ${mask}) ${stmt}`).join("\n")}
   ctls.forEach((c, i) => cases.push(`case ${J(c.role)}: return go(${t.ops.length + i}, el);`));
   const view = `const view = (page) => {
   const t = html(${J(trimTemplate(tableTags(section)))}, page);
-  const [patch, rowOf] = grid(t[0].lastChild.lastChild, row, fill${mark ? ", mark" : ""});
-  const go = (type, el) => send({ table: ${J(t.id)}, type, row: el && rowOf(el) });
+  const patch = grid(t[0].lastChild.lastChild, row, fill${mark ? ", mark" : ""});
+  const go = (type, el) => send({ table: ${J(t.id)}, type, id: el && idOf(el) });
   t[0].addEventListener("click", (e) => {
     const el = e.target.closest("[data-role]");
     switch (el.dataset.role) {
@@ -262,7 +260,7 @@ ${cases.map((c) => `      ${c}`).join("\n")}
     `// The reducer: its arms by message tag.\nconst arms = [\n${indent(arms)}\n];`, view,
   ].filter(Boolean).join("\n\n");
   const rt = ["html", "send", "setChecked", "setText"].filter((h) => new RegExp(`\\b${h}\\(`).test(body) || (h === "send" && /\bsend\(/.test(body)));
-  const gr = ["at", "clone", "dMon", "drop", "edit", "every", "grid", "group", "mmDd", "monD", "money", "pct", "swap"].filter((h) => new RegExp(`\\b${h}\\(`).test(body));
+  const gr = ["at", "clone", "cut", "dMon", "drop", "edit", "every", "grid", "group", "idOf", "mmDd", "monD", "money", "pct", "swap"].filter((h) => new RegExp(`\\b${h}\\(`).test(body));
   return `import { ${rt.join(", ")} } from "../runtime.js";
 import { ${gr.join(", ")} } from "../grid.js";
 import { TABLES } from "./registry.js";
@@ -333,6 +331,7 @@ export function update(model, msg) {
       return next[2].length ? set(model, msg.table, { ...s, ...next[1] }, next[0], next[2]) : model;
     }
     case "snapshot":
+      // The snapshot carries every table (the reference state always does).
       for (const id in msg.state.tables) dirty[id] = [3];
       return msg.state;
   }
@@ -371,7 +370,7 @@ export function emit(spec) {
       dirtyBits: "per table: rows 1, selected 2, gone 4, moved 8, added 16; per row: one bit per data column from 32 up; an arm returns [bits, fields, payload] with the compile-time bits of what it wrote and the rows it touched; a second event in one tick files bit 1 (reconcile the list)",
       rows: "select marks two rows, remove drops one node, swap moves two, append builds the new rows, toggle, bump and updateEvery patch only the edited rows' cells (the column's bit); create, sort, clear and serverRows reconcile the keyed list (new rows built, changed items patched, gone rows removed, one walk moves misplaced nodes)",
       rowBuilding: "one cloned template per table (parsed once); bound cells found by position; a static row patch with a test per cell",
-      events: "delegated: one click listener per table, a switch on data-role sending a numbered message; a row's control sends the row's current item, so the reducer finds it with one native scan (indexOf), by id when the item is stale",
+      events: "delegated: one click listener per table, a switch on data-role sending a numbered message; a row's control sends the row's id ({table, type, id}); the arm finds the row with findIndex and does nothing when it is gone",
       externalEvents: "through the same send: serverRows reconciles the list, serverUpdate and serverDelete name the rows touched, snapshot files bits 3 for every table",
       build: "Vite with no framework plugin, production defaults, hidden source maps",
     },

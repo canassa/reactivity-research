@@ -26,3 +26,20 @@ remove, toggle, bump flat at 13 to 22 calls and blocks; the rest grow with the r
   other emitters write them: they grow with the rows and the README says so.
 - Carrying the row's current item in the message lets remove/toggle/bump find it with a native
   `indexOf`; that is still an O(rows) scan, only not a JavaScript call.
+
+## Review fixes (same day)
+
+- A stale click (a row removed earlier in the same tick) made `at()` return -1 and the remove arm
+  `toSpliced(-1, 1)` removed the last row. Row arms now do nothing when the row is not found
+  (`at`, `edit`, `cut`, select); `rowOf` is gone, the handler sends the id.
+- Row messages are `{table, type, id}` as the contract says, not the row object; the arms find the
+  row with `findIndex`. This costs 3 to 6 more calls per row action (select 14 to 20, remove 14 to 19,
+  toggle 18 to 21, bump 22 to 28) and makes the reducer cost the row's index, which the rows-axis
+  numbers hide only because the work actions use early rows. The earlier `indexOf` was a native
+  O(rows) scan the call counter did not see.
+- README now says what the payload is (a delta side-channel), that two events in a tick reconcile
+  everything, and lists the rows axis by O(1), O(position) and O(rows).
+- Totals, median of seeds 1-3, before to after: N=1 2,503 to 2,500; N=16 7,629 to 7,581; N=64
+  17,937 to 17,894; N=256 54,596 to 54,493. Fit N >= 4: 4,397 + 197.9 to 4,402 + 197.2.
+- Rechecked: big-table at sizes 1, 4, 16, 64 x seeds 1-3 (locality 1.0x), the other three
+  scenarios; work at N=16 to 256 flat; rows axis above.
