@@ -40,7 +40,7 @@ export function runtimeFile(file) {
 // the runtime file every app gets from the template.
 export function classify(source) {
   if (source.includes("/node_modules/") || source.startsWith("\0") || source.includes("vite/")) return "runtime";
-  if (/(^|\/)src\/(runtime|table|routed)\.js$/.test(source)) return "runtime";
+  if (/(^|\/)src\/(runtime|table|routed|graph)\.js$/.test(source)) return "runtime";
   if (/(^|\/)src\/adapter\.js$/.test(source)) return "adapter";
   return "app";
 }
