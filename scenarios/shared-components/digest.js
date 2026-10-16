@@ -309,8 +309,9 @@ function appFile(spec) {
   // External events: only the branches this app can receive.
   const has = (k) => kinds.includes(k);
   const branches = [
-    `if (m.type == "serverSet") Object.assign(S[m.widget], m.state), up(m.widget);`,
-    `else if (m.type == "snapshot") for (const k in m.state.widgets) Object.assign(S[k], m.state.widgets[k]), up(k);`,
+    // External data is copied before it is kept: handlers mutate state in place.
+    `if (m.type == "serverSet") Object.assign(S[m.widget], structuredClone(m.state)), up(m.widget);`,
+    `else if (m.type == "snapshot") { const w = structuredClone(m.state.widgets); for (const k in w) Object.assign(S[k], w[k]), up(k); }`,
   ];
   if (has("clock")) branches.push(`else if (m.type == "tick") for (const t of T) t();`);
   if (has("feed")) branches.push(`else if (m.type == "notify") S[m.widget].entries.push(m.entry), up(m.widget);`);
