@@ -59,6 +59,17 @@ const FUNCTIONS = {
   },
 };
 
+// A list of items numbered 1, 2, … in order (checked), as the item each gives.
+function numbered(w, xs, item) {
+  if (xs.some((x, i) => x.id !== i + 1)) throw new Error(`${w.id}: items are not numbered 1, 2, … in order`);
+  return xs.map(item);
+}
+
+// Initial states written more compactly than the model: the factory expands them.
+const INITS = {
+  todo: (w, st) => ({ ...st, items: numbered(w, st.items, (x) => [x.text, x.done]) }),
+};
+
 const VALUES = {
   message: (w) => w.rule.message,
   // Tabs and options as [title, content] and [value, label] pairs.
@@ -151,6 +162,8 @@ const FACTORIES = {
   todo: {
     uses: ["el", "text", "prop", "on", "list", "schedule"],
     code: `export function todo(parent, s, readers, id, heading, placeholder, addText, removeText) {
+  // The initial items come as [text, done] pairs, numbered 1, 2, … in order.
+  s.items = s.items.map(([text, done], i) => ({ id: i + 1, text, done }));
   const root = section(parent, id, heading, "todo");
   const draft = el("input", root, { type: "text", "data-role": "draft", placeholder: placeholder });
   const addButton = el("button", root, { "data-role": "add" }, addText);
@@ -560,7 +573,7 @@ function formatNumber(n) {
 
   const table = spec.widgets.map((w) => {
     const ind = "    ";
-    const config = [w.kind, w.kind === "summary" ? "null" : literal(spec.initialState.widgets[w.id], ind), str(w.label)];
+    const config = [w.kind, w.kind === "summary" ? "null" : literal(INITS[w.kind] ? INITS[w.kind](w, spec.initialState.widgets[w.id]) : spec.initialState.widgets[w.id], ind), str(w.label)];
     for (const name of PARAMS[w.kind]) {
       if (FUNCTIONS[name]) config.push(FUNCTIONS[name](w));
       else if (VALUES[name]) config.push(literal(VALUES[name](w), ind));
@@ -592,7 +605,11 @@ ${clocks.map((w) => `        views.${w.id}.tick();`).join("\n")}
 
   const imports = [`import { el, flush, cancel } from "./runtime.js";`,
     ...kinds.map((k) => `import { ${k} } from "./widgets/${k}.js";`)];
-  const readers = Object.fromEntries(spec.widgets.filter((w) => read.has(w.id)).map((w) => [w.id.slice(1), []]));
+  // A summary reads only widgets above it (checked), so the app can give each widget its readers
+  // list as it mounts.
+  for (const w of summaries) {
+    if (w.sources.some((id) => Number(id.slice(1)) > Number(w.id.slice(1)))) throw new Error(`${w.id} reads a widget below it`);
+  }
 
   return `${imports.join("\n")}
 ${consts.length ? "\n" + consts.join("\n\n") + "\n" : ""}
@@ -607,15 +624,15 @@ export function start(root) {
   const model = {};
   const board = el("div", root, { "data-role": "dashboard" });
   // For each widget a summary reads, the summaries' bindings: the widget schedules them when it
-  // writes a field they read.
-  const readers = ${literal(readers, "  ")};
+  // writes a field they read.${summaries.length ? " Each widget gets its (empty) list as it mounts, before\n  // the summaries reading it, which come later." : ""}
+  const readers = {};
   // Each widget's handle: its load for serverSet and snapshot, carrying its external arms.
   const views = {};
   let n = 0;
   for (const [factory, init, ...config] of page()) {
     // Widget wN is number N: its state slice is \`model[N]\`, its initial state (a summary gets the
     // model), and its readers \`readers[N]\`.
-    views["w" + ++n] = factory(board, init ? (model[n] = init) : model, readers, n, ...config);
+${summaries.length ? "    readers[++n] = [];\n    views[\"w\" + n]" : "    views[\"w\" + ++n]"} = factory(board, ${summaries.length ? "init ? (model[n] = init) : model" : "(model[n] = init)"}, readers, n, ...config);
   }
   flush();
 
