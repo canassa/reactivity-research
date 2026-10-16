@@ -30,11 +30,17 @@ export function templateFiles({ name, title }) {
   };
 }
 
+// A runtime file only some scenarios use (the keyed tables of big-table): the app asks for it
+// by name, so the other scenarios' output stays byte-identical.
+export function runtimeFile(file) {
+  return fs.readFileSync(path.join(HERE, "template", file), "utf8");
+}
+
 // Which bucket a source-map source belongs to. The runtime has no package of its own: it is
 // the runtime file every app gets from the template.
 export function classify(source) {
   if (source.includes("/node_modules/") || source.startsWith("\0") || source.includes("vite/")) return "runtime";
-  if (/(^|\/)src\/runtime\.js$/.test(source)) return "runtime";
+  if (/(^|\/)src\/(runtime|table)\.js$/.test(source)) return "runtime";
   if (/(^|\/)src\/adapter\.js$/.test(source)) return "adapter";
   return "app";
 }
