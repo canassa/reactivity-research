@@ -82,7 +82,9 @@ panel.append(
 
 function labelOf(id) {
   const w = spec.widgets?.find((x) => x.id === id);
-  return w ? `${id} · ${w.kind} · ${w.label}` : id;
+  if (w) return `${id} · ${w.kind} · ${w.label}`;
+  const t = spec.tables?.find((x) => x.id === id);
+  return t ? `${id} · ${t.title}` : id;
 }
 
 // Owner interaction with the app (trusted events) means the reference no longer follows.

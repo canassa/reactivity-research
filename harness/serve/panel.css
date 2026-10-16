@@ -19,6 +19,9 @@ body.rr-served { margin: 8px 420px 8px 8px; }
 #rr-panel .rr-log { padding-left: 1.6em; margin: 0; font-size: 12px; max-height: 260px; overflow: auto; }
 #rr-panel .rr-ref { background: #fff; border: 1px dashed #bbb; padding: 6px; max-height: 400px; overflow: auto; font-size: 12px; }
 #rr-panel .rr-ref section { margin-bottom: 6px; }
+/* big-table: the selected row's marker, invisible without the app's (absent) CSS. */
+body.rr-served #root tr.danger, body.rr-served #root tr.selected, body.rr-served #root tr.active,
+body.rr-served #root tr[aria-selected="true"] { background: #ffe08a; }
 @media (prefers-color-scheme: dark) {
   #rr-panel { background: #1f1f1d; color: #ddd; border-color: #444; }
   #rr-panel h3, #rr-panel .rr-checks dt { color: #999; }
