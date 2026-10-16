@@ -477,6 +477,8 @@ async function remoteBench(args, rest) {
     `[ -d "$R/.git" ] || git clone -q ${q(origin)} "$R"`,
     `cd "$R"`,
     "git fetch -q origin",
+    // Earlier runs' results were copied back (and may be committed since): drop the remote copies.
+    "git clean -fdq results/cpu",
     `git checkout -q --detach ${sha}`,
     `nix develop -c bash -c ${q("set -e; for d in frameworks/*/; do if [ -f \"$d/package-lock.json\" ]; then (cd \"$d\" && npm ci --silent --no-audit --no-fund); fi; done; frameworks/beni/install.sh")}`,
   ].join("\n"));
