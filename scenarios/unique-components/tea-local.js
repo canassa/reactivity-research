@@ -387,7 +387,7 @@ function widgetFile(spec, w) {
   fn.push(...cx.patch.map((l) => "    " + l));
   fn.push(`  };`);
   // The earlier widgets it reads, now watched by its patch.
-  for (const s of sources) fn.push(`  const ${s} = widgets.get(${q(s)});`, `  ${s}.watch(patch);`);
+  for (const s of sources) fn.push(`  const ${s} = widgets[${s.slice(1) - 1}];`, `  ${s}.watch(patch);`);
   // The model, and the reducer: one function per message, indexed by its tag.
   fn.push(`  // type Msg = ${msgNames.join(" | ")}`);
   fn.push(`  const self = instance(${lit(spec.initialState.widgets[w.id])}, [`, ...cases.map((c) => `    ${c.replace(/\n/g, "\n    ")},`), `  ], patch);`);
@@ -425,9 +425,8 @@ const FRAME_FILE = `import { wire } from "../runtime.js";
 // heading and view), its controls wired to the messages 0, 1, 2, ... (see \`wire\`). Returns the
 // section and the template's elements, in document order.
 export function widget(parent, html, self) {
-  const id = "w" + (widgets.size + 1); // widgets are numbered in page order (w1, w2, …)
-  widgets.set(id, self);
-  parent.insertAdjacentHTML("beforeend", \`<section data-key=\${id} data-role=widget>\${html}\`);
+  // Widgets are numbered in page order (w1, w2, …): w1 is widgets[0].
+  parent.insertAdjacentHTML("beforeend", \`<section data-key=w\${widgets.push(self)} data-role=widget>\${html}\`);
   return wire(parent.lastChild, self, 0);
 }
 
@@ -438,8 +437,9 @@ export function place(node, shown) {
   else node.mark?.replaceWith(node);
 }
 
-// The instances by widget id, for the external events that name a widget and for readers.
-export const widgets = new Map();
+// The instances in page order (w1 first), for the external events that name a widget and for
+// readers.
+export const widgets = [];
 
 // A list row from its template (parsed once): each new row is a clone, its controls wired to
 // the messages \`first\`, … with the item's id (see \`wire\`). Returns its elements, in document
@@ -500,21 +500,21 @@ ${calls.join("\n")}
     receive(msg) {
       switch (msg.type) {
         case "serverSet":
-          widgets.get(msg.widget).set(msg.state);
+          widgets[msg.widget.slice(1) - 1].set(msg.state);
           break;
 ${timed ? `        case "tick":
           for (const tick of running) tick();
           break;
 ` : ""}${feeds ? `        case "notify":
-          widgets.get(msg.widget).notify(msg.item);
+          widgets[msg.widget.slice(1) - 1].notify(msg.item);
           break;
 ` : ""}        case "snapshot":
-          for (const id in msg.state.widgets) widgets.get(id).set(msg.state.widgets[id]);
+          for (const id in msg.state.widgets) widgets[id.slice(1) - 1].set(msg.state.widgets[id]);
           break;
       }
     },
     dispose() {
-${timed ? "      running.clear();\n" : ""}      widgets.clear();
+${timed ? "      running.clear();\n" : ""}      widgets.length = 0;
       main.remove();
     },
   };

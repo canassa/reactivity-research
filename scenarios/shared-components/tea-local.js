@@ -378,9 +378,9 @@ export function summary(parent, heading, text, sources) {
   const line = element(root, "p", { "data-role": "summary" }, " ");
 
   function patch() {
-    setText(line, text(...sources.map((source) => widgets.get(source).m)));
+    setText(line, text(...sources.map((source) => widgets[source].m)));
   }
-  for (const source of sources) widgets.get(source).watch(patch);
+  for (const source of sources) widgets[source].watch(patch);
   patch();
 }
 `,
@@ -388,17 +388,15 @@ export function summary(parent, heading, text, sources) {
 
 const WIDGET_FILE = `import { element } from "../runtime.js";
 
-// The instances by widget id, for the external events that name a widget, the clocks the tick
-// goes to and the sources of summaries.
-export const widgets = new Map();
+// The instances in page order (w1 is widgets[0]), for the external events that name a widget,
+// the clocks the tick goes to and the sources of summaries.
+export const widgets = [];
 
 // The frame every widget shares: its keyed section and its heading. It registers the widget's
-// instance (a summary has none, and no event names it) under its id: widgets are numbered in
-// page order, so the next one is w1, w2, … (the registry is emptied on dispose).
+// instance (a summary has none, and no event names it): widgets are numbered in page order, so
+// the next one is w1, w2, … (the registry is emptied on dispose).
 export function widget(parent, heading, kind, self) {
-  const id = "w" + (widgets.size + 1);
-  widgets.set(id, self);
-  const section = element(parent, "section", { "data-key": id, "data-role": "widget-" + kind });
+  const section = element(parent, "section", { "data-key": "w" + widgets.push(self), "data-role": "widget-" + kind });
   element(section, "h2", null, heading);
   return section;
 }
@@ -519,26 +517,26 @@ function appFile(spec) {
   if (needsFormatNumber(spec)) imports.push(`import { formatNumber } from "./number.js";`);
 
   const calls = spec.widgets.map((w) => {
-    if (w.kind === "summary") return `  ${w.kind}(${args(spec, w, readFilters, `[${w.sources.map((id) => `"${id}"`).join(", ")}]`)});`;
+    if (w.kind === "summary") return `  ${w.kind}(${args(spec, w, readFilters, `[${w.sources.map((id) => id.slice(1) - 1).join(", ")}]`)});`;
     const call = `${w.kind}(${args(spec, w, readFilters, literal(spec.initialState.widgets[w.id], "    "))});`;
     return `  ${call}`;
   });
 
   const cases = [`      case "serverSet":
-        widgets.get(msg.widget).set(msg.state);
+        widgets[msg.widget.slice(1) - 1].set(msg.state);
         break;`];
   if (clocks.length) {
     cases.push(`      case "tick":
-        for (const id of [${clocks.map((w) => `"${w.id}"`).join(", ")}]) widgets.get(id).send(tick);
+        for (const i of [${clocks.map((w) => w.id.slice(1) - 1).join(", ")}]) widgets[i].send(tick);
         break;`);
   }
   if (hasFeed) {
     cases.push(`      case "notify":
-        widgets.get(msg.widget).send(notify, msg.entry);
+        widgets[msg.widget.slice(1) - 1].send(notify, msg.entry);
         break;`);
   }
   cases.push(`      case "snapshot":
-        for (const id in msg.state.widgets) widgets.get(id).set(msg.state.widgets[id]);
+        for (const id in msg.state.widgets) widgets[id.slice(1) - 1].set(msg.state.widgets[id]);
         break;`);
 
   return `${imports.join("\n")}
@@ -556,7 +554,7 @@ ${cases.join("\n")}
     },
     dispose() {
       main.remove();
-      widgets.clear();
+      widgets.length = 0;
     },
   };
 }
