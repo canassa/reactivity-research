@@ -155,7 +155,7 @@ function compileNode(w, n, cx) {
       content(v, n.text);
       close("button");
       cx.wire.push(tag(n.msg));
-      if (n.disabled) cx.patch.push(`setProp(${v}, "disabled", ${expr(n.disabled, cx, true)});`);
+      if (n.disabled) cx.patch.push(`setProp(${v}, ${expr(n.disabled, cx, true)}, "disabled");`);
       return [{ v }];
     }
     case "input": {
@@ -167,10 +167,10 @@ function compileNode(w, n, cx) {
           : { type: "text", "data-role": n.msg, ...(n.placeholder ? { placeholder: n.placeholder } : {}) });
         if (number) {
           cx.wire.push(tag(n.msg));
-          cx.patch.push(`setProp(${v}, "valueAsNumber", m.${f.name});`);
+          cx.patch.push(`setProp(${v}, m.${f.name}, "valueAsNumber");`);
         } else {
           cx.wire.push(tag(n.msg));
-          cx.patch.push(`setProp(${v}, "value", m.${f.name});`);
+          cx.patch.push(`setProp(${v}, m.${f.name});`);
         }
         return v;
       });
@@ -188,7 +188,7 @@ function compileNode(w, n, cx) {
       cx.html += esc(n.label);
       close("label");
       cx.wire.push(tag(n.msg));
-      cx.patch.push(`setProp(${v}, "checked", m.${msgOf(n.msg).field});`);
+      cx.patch.push(`setProp(${v}, m.${msgOf(n.msg).field}, "checked");`);
       cx.own = true;
       return [{ v: l }];
     }
@@ -204,7 +204,7 @@ function compileNode(w, n, cx) {
         }
         close("select");
         cx.wire.push(tag(n.msg));
-        cx.patch.push(`setProp(${v}, "value", m.${f.name});`);
+        cx.patch.push(`setProp(${v}, m.${f.name});`);
         return v;
       });
     }
@@ -222,7 +222,7 @@ function compileNode(w, n, cx) {
       const tags = [n.check, n.remove].filter(Boolean).map(tag);
       tags.forEach((t, i) => { if (t !== tags[0] + i) throw new Error(`${w.id}: row tags not consecutive`); });
       create(`const ${l} = list(${u}, row(${q(trim(row))}, self, ${tags[0] ?? 0}), (r, item) => {`);
-      if (n.check) create(`  setProp(r[1], "checked", item.done);`);
+      if (n.check) create(`  setProp(r[1], item.done, "checked");`);
       create(`  setText(r[${n.check ? 2 : 1}], item.text);`);
       create(`});`);
       cx.patch.push(`${l}(m.${n.field});`);
@@ -320,8 +320,8 @@ function branch(w, m, cx) {
 // ---------------------------------------------------------------------------------------------
 // One widget: a block of the app's dashboard function.
 
-const RUNTIME = ["setText", "setProp", "instance", "list"];
-const FRAME = ["widget", "widgets", "running", "row", "place", "nextId", "subscribe"];
+const RUNTIME = ["setText", "instance", "list"];
+const FRAME = ["setProp", "widget", "widgets", "running", "row", "place", "nextId", "subscribe"];
 
 // Message tags are the compiler's to choose: the controls of the widget's template take 0, 1,
 // 2, ... in document order, then each list row's controls, in order, then the other messages.
@@ -413,6 +413,11 @@ function widgetBlock(spec, w) {
 // ---------------------------------------------------------------------------------------------
 
 const FRAME_FILE = `import { wire } from "../runtime.js";
+
+// A property write, skipped if unchanged: a form control's value, unless \`key\` names another.
+export function setProp(node, value, key = "value") {
+  if (node[key] !== value) node[key] = value;
+}
 
 // The frame every widget shares: its keyed section, holding the widget's own template (its
 // heading and view), its controls wired to the messages 0, 1, 2, ... (see \`wire\`). Returns the
