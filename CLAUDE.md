@@ -257,7 +257,12 @@ cloudflared tunnel and restarts the server behind it whenever `harness/`, `scena
 **`./rr check`** builds one small app per framework (by default the scenario's quick-check size, seed 1),
 serves it with the panel and runs the whole interaction script in headless Chrome, reporting per step
 any mismatch with the reference render, replaced keyed node, lost focus or caret, and anything left
-after dispose. It takes about a second, for iterating on generators; it never replaces the owner's
+after dispose. A **same-task pass** then replays the script landing two actions in one task before
+`settled()` (a click twice, a step and the next one, a click on a control the previous action removed
+with its item, page, panel or dialog; the reference treats an action on a gone control as a
+no-op), sends a snapshot of the same state after each invalid typed value (the input must show
+its model value again), then disposes at the script's busiest point and remounts; `--no-same-task`
+skips it. It takes seconds, for iterating on generators; it never replaces the owner's
 check by hand. For **prototype-track** frameworks it also enforces **locality**: the JavaScript calls one
 local action costs (as `./rr work` counts them) may grow at most 8× when the app grows 16×, so a
 prototype cannot buy bytes with work that grows with the whole page (re-evaluating every binding
