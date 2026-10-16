@@ -16,15 +16,15 @@ let D; // the dashboard element
 let P; // the position of the element the last binding was made on (bindings come in document order)
 let id;
 
-// By widget id: the state (S) and the bindings (W). T: the time-driven fields' tick functions.
-export let S, W, T;
+// By widget id: the setter that replaces the widget's whole state (S), the record of its fields
+// that other code reads (O) and its bindings (W). T: the time-driven fields' tick functions.
+export let S, O, W, T;
 
-const run = (b) => {
+// Digest a binding list: `run(W[k])` digests widget k after its state changed, its bindings
+// and its readers'.
+export const run = (b) => {
   for (const f of b) f();
 };
-
-// Digest one widget after its state changed: its bindings and its readers'.
-export const up = (k) => run(W[k]);
 
 const el = (tag, html) => {
   const n = document.createElement(tag);
@@ -87,16 +87,18 @@ export const add = (l, text, done) => l.push({ id: Math.max(0, ...l.map((i) => i
 // A list from its items' texts, or [text, done] pairs; the ids are 1, 2, …
 export const L = (a) => a.map((x, i) => (typeof x == "string" ? { id: i + 1, text: x } : { id: i + 1, text: x[0], done: !!x[1] }));
 
-// Create the widget's section from `html` (its heading and content), with state `s` and `h`, the
-// handlers of its controls in document order, and make it the one being created: the bindings
-// that follow refer to its elements by position (0 is the heading).
-export const widget = (html, s, h) => {
+// Create the widget's section from `html` (its heading and content), with `h`, the handlers of
+// its controls in document order, `set`, the setter of its whole state, and `o`, the record of
+// its fields that escape it, and make it the one being created: the bindings that follow refer
+// to its elements by position (0 is the heading).
+export const widget = (html, h, set, o) => {
   const x = el("section", html);
   x.dataset.key = id;
   x.dataset.role = "widget";
   on(x, h);
   D.append(x);
-  S[id] = s;
+  S[id] = set;
+  O[id] = o;
   W[id] = x.b = B = [];
   E = x.querySelectorAll("*");
   P = 0;
@@ -118,10 +120,11 @@ const onEvent = ({ target: t }) => {
 };
 
 // The program: `defs` is one widget function per widget, in page order (ids w1, w2, …);
-// `receive(msg)` applies an external event and digests the widgets it touched (with `up`).
+// `receive(msg)` applies an external event and digests the widgets it touched (with `run`).
 export const app = (defs, receive) => ({
   mount(root) {
     S = {};
+    O = {};
     W = {};
     T = [];
     D = el("div", "");
@@ -130,7 +133,7 @@ export const app = (defs, receive) => ({
       id = "w" + (i + 1);
       f();
     });
-    for (const k in W) up(k);
+    for (const k in W) run(W[k]);
     D.addEventListener("click", onEvent);
     D.addEventListener("input", onEvent);
     root.append(D);
@@ -139,6 +142,6 @@ export const app = (defs, receive) => ({
   // The listeners are on the dashboard element, so removing it removes them.
   dispose() {
     D.remove();
-    B = E = S = W = T = D = null;
+    B = E = S = O = W = T = D = null;
   },
 });

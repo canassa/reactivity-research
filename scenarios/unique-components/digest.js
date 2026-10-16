@@ -32,14 +32,25 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ESC[c]);
 // Text inside a JavaScript template literal.
 const tpl = (s) => s.replace(/[\\`]|\$\{/g, (m) => "\\" + m);
 
+// Where a field lives (state stays plain mutable variables; where is a compile-time fact):
+// - a field only its widget uses is a local variable of the widget's function (`$name`);
+// - a field another widget reads is a module variable (`w1$name`), so the reader's bindings read
+//   it directly;
+// - a feed list, which `notify` pushes into by name, is on the widget's record (`O.w1.name`, or
+//   `s.name` in its own widget).
+let FEED, READ, cur;
+const V = (id, name) => (FEED[id].has(name) ? (id === cur ? `s.${name}` : `O.${id}.${name}`)
+  : READ[id].has(name) ? `${id}$${name}` : `$${name}`);
+const F = (name) => V(cur, name);
+
 const CMP = { "==": "===", "!=": "!==", "<": "<", "<=": "<=", ">": ">", ">=": ">=" };
 
 // A widget's expression as JavaScript. `reads` collects the earlier widgets it reads.
 function expr(e, reads) {
   const x = (a) => expr(a, reads);
   switch (e[0]) {
-    case "f": return `s.${e[1]}`;
-    case "w": reads.add(e[1]); return `S.${e[1]}.${e[2]}`;
+    case "f": return F(e[1]);
+    case "w": reads.add(e[1]); return V(e[1], e[2]);
     case "k": return lit(e[1]);
     case "+": return `(${x(e[1])} + ${x(e[2])})`;
     case "-": return `(${x(e[1])} - ${x(e[2])})`;
@@ -69,14 +80,14 @@ function parts(ps, reads) {
 function op(o, fields) {
   const [kind, name] = o;
   const f = fields[name];
-  const L = `s.${name}`;
+  const L = F(name);
   switch (kind) {
     case "add": return { e: `${L} = cl(${L} + ${o[2]}, ${f.min}, ${f.max})` };
     case "set": return { e: `${L} = ${lit(o[2])}` };
     case "toggle": return { e: `${L} = !${L}` };
     case "reset": return { e: `${L} = ${lit(f.initial)}` };
     case "cycle": return { e: `${L} = nx(${lit(f.options)}, ${L})` };
-    case "push": return { s: `{ const t = s.${o[2]}.trim(); if (t) add(${L}${f.checkable ? ", t, false" : ", t"}), s.${o[2]} = ""; }` };
+    case "push": return { s: `{ const t = ${F(o[2])}.trim(); if (t) add(${L}${f.checkable ? ", t, false" : ", t"}), ${F(o[2])} = ""; }` };
     case "pushText": return { e: `add(${L}, ${lit(o[2])}${f.checkable ? ", false" : ""})` };
     case "pop": return { e: `${L}.pop()` };
     case "shift": return { e: `${L}.shift()` };
@@ -88,7 +99,7 @@ function op(o, fields) {
 
 // A message's handler, as an arrow function of (element, key of the nearest data-key).
 function handler(m, fields) {
-  const L = `s.${m.field}`;
+  const L = F(m.field);
   switch (m.kind) {
     case "click": {
       const ops = m.ops.map((o) => op(o, fields));
@@ -121,6 +132,7 @@ function initial(f, v) {
 
 // One widget's function.
 function widgetCode(w, init) {
+  cur = w.id;
   const fields = Object.fromEntries(w.fields.map((f) => [f.name, f]));
   const msgs = Object.fromEntries(w.messages.map((m) => [m.name, m]));
   const reads = new Set();
@@ -159,7 +171,7 @@ function widgetCode(w, init) {
         if (v.label) n++;
         const i = n++;
         on(v.msg);
-        binds.push(`bind(${ref(i)}, "value", () => s.${f.name});`);
+        binds.push(`bind(${ref(i)}, "value", () => ${F(f.name)});`);
         let html = f.type === "int" ? `<input type=number data-role=${v.msg}>`
           : `<input type=text data-role=${v.msg}${v.placeholder ? ` placeholder="${esc(v.placeholder)}"` : ""}>`;
         if (v.label) html = `<label>${esc(v.label)}${html}</label>`;
@@ -173,7 +185,7 @@ function widgetCode(w, init) {
         n++;
         const i = n++;
         on(v.msg);
-        binds.push(`bind(${ref(i)}, "checked", () => s.${msgs[v.msg].field});`);
+        binds.push(`bind(${ref(i)}, "checked", () => ${F(msgs[v.msg].field)});`);
         return `<label><input type=checkbox data-role=${v.msg}>${esc(v.label)}</label>`;
       }
       case "select": {
@@ -182,7 +194,7 @@ function widgetCode(w, init) {
         const i = n++;
         n += f.options.length;
         on(v.msg);
-        binds.push(`bind(${ref(i)}, "value", () => s.${f.name});`);
+        binds.push(`bind(${ref(i)}, "value", () => ${F(f.name)});`);
         const html = `<select data-role=${v.msg}>${f.options.map((o) => `<option value="${esc(o)}">${esc(o)}</option>`).join("")}</select>`;
         return v.label ? `<label>${esc(v.label)}${html}</label>` : html;
       }
@@ -204,7 +216,7 @@ function widgetCode(w, init) {
           hs.push(handler(msgs[v.remove], fields));
         }
         if (hs.length) inner.push(`[${hs.join(", ")}]`);
-        binds.push(`list(${ref(i)}, () => s.${v.field}, "${v.field}Item", \`${tpl(item)}\`, (r) => (${inner.join(", ")}));`);
+        binds.push(`list(${ref(i)}, () => ${F(v.field)}, "${v.field}Item", \`${tpl(item)}\`, (r) => (${inner.join(", ")}));`);
         return `<${v.tag}></${v.tag}>`;
       }
       case "when": {
@@ -221,14 +233,21 @@ function widgetCode(w, init) {
   };
 
   const html = `<h2>${esc(w.label)}</h2>` + w.view.map(view).join("");
-  const state = `{ ${w.fields.map((f) => `${f.name}: ${initial(f, init[f.name])}`).join(", ")} }`;
+  const own = w.fields.filter((f) => !FEED[cur].has(f.name) && !READ[cur].has(f.name));
+  const read = w.fields.filter((f) => !FEED[cur].has(f.name) && READ[cur].has(f.name));
+  const shared = w.fields.filter((f) => FEED[cur].has(f.name));
   const handlers = ctl.map((h) => `    ${h}`).join("\n");
+  // External events replace the widget's whole state: its setter assigns every field.
+  const set = `(v) => ({ ${w.fields.map((f) => `${f.name}: ${F(f.name)}`).join(", ")} } = v)`;
 
-  const body = [`  const s = ${state};`,
-    `  widget(\`${tpl(html)}\`, s, [\n${handlers}\n  ]);`,
+  const body = [
+    ...(own.length ? [`  let ${own.map((f) => `$${f.name} = ${initial(f, init[f.name])}`).join(", ")};`] : []),
+    ...read.map((f) => `  ${F(f.name)} = ${initial(f, init[f.name])};`),
+    ...(shared.length ? [`  const s = { ${shared.map((f) => `${f.name}: ${initial(f, init[f.name])}`).join(", ")} };`] : []),
+    `  widget(\`${tpl(html)}\`, [\n${handlers}\n  ], ${set}${shared.length ? ", s" : ""});`,
     ...binds.map((b) => "  " + b)];
   for (const f of w.fields) {
-    if (f.tick) body.push(`  T.push(() => s.${f.tickWhen} && (s.${f.name} = Math.min(${f.max}, s.${f.name} + ${f.tick}), up("${w.id}")));`);
+    if (f.tick) body.push(`  T.push(() => ${F(f.tickWhen)} && (${F(f.name)} = Math.min(${f.max}, ${F(f.name)} + ${f.tick}), run(W.${w.id})));`);
   }
   if (reads.size) body.push(`  dep(${[...reads].map(lit).join(", ")});`);
   return `// ${w.id}\nconst ${w.id} = () => {\n${body.join("\n")}\n};`;
@@ -238,29 +257,43 @@ function appFile(spec) {
   spec.widgets.forEach((w, i) => {
     if (w.id !== `w${i + 1}`) throw new Error(`digest expects sequential widget ids, got ${w.id} at ${i}`);
   });
+  // The fields other widgets read, and the feed lists, by widget.
+  FEED = Object.fromEntries(spec.widgets.map((w) => [w.id, new Set(w.fields.filter((f) => f.feed).map((f) => f.name))]));
+  READ = Object.fromEntries(spec.widgets.map((w) => [w.id, new Set()]));
+  const walk = (x) => {
+    if (!x || typeof x !== "object") return;
+    if (x[0] === "w" && READ[x[1]] && typeof x[2] === "string") READ[x[1]].add(x[2]);
+    for (const y of Object.values(x)) walk(y);
+  };
+  for (const w of spec.widgets) walk(w.view);
   const code = spec.widgets.map((w) => widgetCode(w, spec.initialState.widgets[w.id]));
+  const shared = spec.widgets.flatMap((w) => [...READ[w.id]].filter((f) => !FEED[w.id].has(f)).map((f) => `${w.id}$${f}`));
 
   // External events: only the branches this app can receive.
   const fields = spec.widgets.flatMap((w) => w.fields);
   const branches = [
-    `if (m.type == "serverSet") Object.assign(S[m.widget], structuredClone(m.state)), up(m.widget);`,
-    `else if (m.type == "snapshot") for (const k in m.state.widgets) Object.assign(S[k], structuredClone(m.state.widgets[k])), up(k);`,
+    `if (m.type == "serverSet") S[m.widget](structuredClone(m.state)), run(W[m.widget]);`,
+    `else if (m.type == "snapshot") for (const k in m.state.widgets) S[k](structuredClone(m.state.widgets[k])), run(W[k]);`,
   ];
   if (fields.some((f) => f.tick)) branches.push(`else if (m.type == "tick") for (const t of T) t();`);
-  if (fields.some((f) => f.feed)) branches.push(`else if (m.type == "notify") S[m.widget][m.field].push({ ...m.item }), up(m.widget);`);
+  if (fields.some((f) => f.feed)) branches.push(`else if (m.type == "notify") O[m.widget][m.field].push({ ...m.item }), run(W[m.widget]);`);
 
   const body = code.join("\n\n") + "\n\n" + branches.join("\n");
-  const names = ["widget", "bind", "text", "show", "list", "dep", "up", "cl", "nx", "add", "L", "S", "T"]
+  const names = ["widget", "bind", "text", "show", "list", "dep", "run", "cl", "nx", "add", "L", "S", "O", "W", "T"]
     .filter((x) => new RegExp(`(^|[^\\w.])${x}\\b`, "m").test(body));
   const ids = spec.widgets.map((w) => w.id).join(", ");
 
   return `// Generated by scenarios/unique-components/digest.js. Do not edit.
 import { app, ${names.join(", ")} } from "./runtime.js";
-
+${shared.length ? `
+// The fields other widgets read.
+let ${shared.join(", ")};
+` : ""}
 ${code.join("\n\n")}
 
-// External events: each changes the state (S) of the widgets it concerns and digests only those
-// (\`up\`; a time-driven field's tick function digests its own widget).
+// External events: each replaces the state of the widgets it concerns (with their setters, S)
+// and digests only those (\`run(W[k])\`; a time-driven field's tick function digests its own
+// widget).
 const receive = (m) => {
   ${branches.join("\n  ")}
 };
