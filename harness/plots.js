@@ -40,7 +40,21 @@ export function collect(only) {
       });
     }
   }
-  return [...scenarios].map(([name, variants]) => ({ name, variants: [...variants.values()], work: latestWork(name) }));
+  return [...scenarios].map(([name, variants]) => ({ name, variants: [...variants.values()], work: latestWork(name), cpu: latestCpu(name) }));
+}
+
+// The latest ./rr bench run of a scenario (results/cpu/<date>-<scenario>[-…]/): its run.json and
+// summary.json (not the samples), or null.
+function latestCpu(scenario) {
+  const base = path.join(RESULTS, "cpu");
+  if (!fs.existsSync(base)) return null;
+  const runs = fs.readdirSync(base).filter((d) => fs.existsSync(path.join(base, d, "run.json")) && fs.existsSync(path.join(base, d, "summary.json")))
+    .map((dir) => ({ dir, run: JSON.parse(fs.readFileSync(path.join(base, dir, "run.json"), "utf8")) }))
+    .filter((r) => r.run.scenario === scenario)
+    .sort((a, b) => a.run.finished.localeCompare(b.run.finished));
+  if (!runs.length) return null;
+  const { dir, run } = runs[runs.length - 1];
+  return { dir, run, summary: JSON.parse(fs.readFileSync(path.join(base, dir, "summary.json"), "utf8")) };
 }
 
 // The latest ./rr work run of a scenario (results/work/<date>-<scenario>[-n]/), or null.

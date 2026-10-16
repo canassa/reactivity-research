@@ -8,7 +8,9 @@
   const tip = document.getElementById("tip");
   let mode = "br";
   // One colour per framework across every scenario (colour follows the entity, not its position).
-  const NAMES = [...new Set(DATA.scenarios.flatMap((sc) => sc.variants.map((v) => v.name)))];
+  // (CPU-only names, such as an A/A twin, come after every size result's, so they shift no colour.)
+  const NAMES = [...new Set([...DATA.scenarios.flatMap((sc) => sc.variants.map((v) => v.name)),
+    ...DATA.scenarios.flatMap((sc) => Object.keys(sc.cpu?.run.variants || {}))])];
   const colorOfName = (n) => SLOTS[NAMES.indexOf(n) % SLOTS.length];
   // Which view is shown: a scenario's name, or "compare". Kept in the URL hash.
   const views = () => [...DATA.scenarios.map((sc) => sc.name), ...(DATA.scenarios.length > 1 ? ["compare"] : [])];
@@ -79,7 +81,7 @@
   const hideTip = () => { tip.style.display = "none"; };
 
   // ---- line chart on a log2 N axis, with seed spread as whiskers and optional fitted curves.
-  function lineChart({ series, curves = [], yMax, unit = "B", width = 560, height = 260, pointsOnly = false, yLog = false, yFmt = fmt, xLabel = "N (widgets, log scale)" }) {
+  function lineChart({ series, curves = [], yMax, unit = "B", width = 560, height = 260, pointsOnly = false, yLog = false, yFmt = fmt, xLabel = "N (widgets, log scale)", spread = "seeds" }) {
     const W = width, H = height, L = 56, R = 14, T = 24, B = 34;
     const xs = [...new Set(series.flatMap((s) => s.points.map((p) => p.x)))].sort((a, b) => a - b);
     const lx = (x) => Math.log2(x);
@@ -125,7 +127,7 @@
       for (const p of s.points) g.append(sv("circle", { cx: X(p.x), cy: Y(p.y), r: 4, fill: s.color, stroke: "var(--card)", "stroke-width": 2 }));
       if (s.endLabel) {
         const p = s.points[s.points.length - 1];
-        g.append(sv("text", { class: "end", x: X(p.x) - 6, y: Y(p.y) - 9, "text-anchor": "end", text: fmt(p.y) }));
+        g.append(sv("text", { class: "end", x: X(p.x) - 6, y: Y(p.y) - 9, "text-anchor": "end", text: yFmt(p.y) }));
       }
     });
     // Crosshair: snap to the nearest N and list every series there.
@@ -138,7 +140,7 @@
       const px = ((e.clientX - r.left) / r.width) * W;
       const x = xs.reduce((a, b) => (Math.abs(X(b) - px) < Math.abs(X(a) - px) ? b : a));
       cross.setAttribute("x1", X(x)); cross.setAttribute("x2", X(x)); cross.setAttribute("visibility", "visible");
-      const rows = series.map((s) => { const p = s.points.find((q) => q.x === x); return p ? [s.color, `${fmt(p.y)} ${unit}`, `${s.name}${p.hi > p.lo ? ` (seeds ${fmt(p.lo)}–${fmt(p.hi)})` : ""}`] : null; }).filter(Boolean);
+      const rows = series.map((s) => { const p = s.points.find((q) => q.x === x); return p ? [s.color, `${yFmt(p.y)} ${unit}`, `${s.name}${p.hi > p.lo ? ` (${spread} ${yFmt(p.lo)}–${yFmt(p.hi)})` : ""}`] : null; }).filter(Boolean);
       showTip(e, `N = ${x}`, rows);
     });
     hit.addEventListener("pointerleave", () => { cross.setAttribute("visibility", "hidden"); hideTip(); });
@@ -275,6 +277,89 @@
         el("div", { text: `Node ${w.run.versions.node} · ${w.run.versions.chrome} · V8 flags ${w.run.jsFlags || "(none)"} · ${versions.join(" · ")}` })));
   }
 
+  // ---- CPU time per event: ./rr bench's script time of one event, against N.
+  let cpuEvent = "";   // "" = the median of the local events
+  function cpuCard(sc) {
+    const c = sc.cpu;
+    if (!c) return card("CPU time per event against N", null, el("p", { class: "note", text: "No CPU results for this scenario yet. Run ./rr bench " + sc.name + " all: it times one event (and the startup) from Chrome traces at several sizes, and this chart appears here." }), sc.variants);
+    const { run, summary } = c;
+    const names = Object.keys(run.variants).sort((a, b) => NAMES.indexOf(a) - NAMES.indexOf(b));
+    const label = (n) => n + (run.variants[n].track === "prototype" ? " (prototype)" : "");
+    const halves = [...new Map(summary.events.map((e) => [e.half, e.scope])).entries()];
+    const ev = (n, size, half) => summary.events.find((e) => e.variant === n && e.size === size && e.half === half);
+    const sizesOf = (n) => [...new Set(summary.events.filter((e) => e.variant === n).map((e) => e.size))].sort((a, b) => a - b);
+    const point = (n, size) => {
+      if (cpuEvent) {
+        const e = ev(n, size, cpuEvent);
+        return e ? { x: size, y: e.script.median, lo: e.script.p25, hi: e.script.p75 } : null;
+      }
+      const es = summary.events.filter((e) => e.variant === n && e.size === size && e.scope === "local");
+      return es.length ? { x: size, y: median(es.map((e) => e.script.median)), lo: median(es.map((e) => e.script.p25)), hi: median(es.map((e) => e.script.p75)) } : null;
+    };
+    const us = (t) => (t >= 100 ? fmt(t) : t >= 10 ? t.toFixed(0) : t.toFixed(1));
+    const series = names.map((n) => ({ name: label(n), color: colorOfName(n), points: sizesOf(n).map((s) => point(n, s)).filter(Boolean), endLabel: true })).filter((s) => s.points.length);
+    const chart = el("div", { class: "chart" });
+    chart.append(lineChart({ series, unit: "µs", width: 1060, height: 380, yLog: true, yFmt: us, spread: "IQR" }));
+    const select = el("select", { onchange: (e) => { cpuEvent = e.target.value; render(); } },
+      el("option", { value: "", text: "median of the local events" }),
+      ...halves.map(([h, scope]) => el("option", { value: h, text: h + (scope === "global" ? " (global by nature)" : ""), ...(cpuEvent === h ? { selected: "" } : {}) })));
+    if (!cpuEvent) select.firstChild.selected = true;
+
+    // Growth, next to the call counts' growth from ./rr work over the same sizes where it has them.
+    const w = sc.work;
+    const callsRatio = (n, lo, hi) => {
+      if (!w || !w.run.variants[n]) return "—";
+      const has = (s) => w.run.sizes.includes(s);
+      const [a, b] = has(lo) && has(hi) ? [lo, hi] : [w.run.sizes[0], w.run.sizes[w.run.sizes.length - 1]];
+      const locals = w.run.actions.filter((x) => !x.setup && x.scope === "local").map((x) => x.name);
+      const rs = w.run.seeds.flatMap((seed) => locals.map((act) => {
+        const at = (size) => w.records.find((r) => r.variant === n && r.seed === seed && r.size === size && r.action === act)?.calls;
+        return at(b) / at(a);
+      })).filter((x) => Number.isFinite(x));
+      return rs.length ? `${median(rs).toFixed(2)}× (N=${a}→${b})` : "—";
+    };
+    const growthRows = names.filter((n) => summary.growth[n]).map((n) => {
+      const g = summary.growth[n];
+      return [label(n), `${g.lo}→${g.hi}`, `${us(g.medianLo)} → ${us(g.medianHi)}`, g.medianRatio.toFixed(2) + "×", `${g.maxRatio.toFixed(2)}× (${g.worst})`, callsRatio(n, g.lo, g.hi)];
+    });
+
+    // Startup.
+    const startSeries = names.map((n) => ({ name: label(n), color: colorOfName(n), endLabel: true,
+      points: summary.startup.filter((s) => s.variant === n).sort((a, b) => a.size - b.size).map((s) => ({ x: s.size, y: s.total.median, lo: s.total.p25, hi: s.total.p75 })) })).filter((s) => s.points.length);
+    const startChart = el("div", { class: "chart" });
+    startChart.append(lineChart({ series: startSeries, unit: "ms", width: 1060, height: 300, yFmt: (t) => t.toFixed(t >= 10 ? 0 : 1), spread: "IQR" }));
+
+    const m = run.machine, v = run.versions, meth = run.method;
+    const fwv = Object.entries(run.variants).map(([n, x]) => `${n}: ${Object.entries(x.versions || {}).map(([k, y]) => `${k} ${y}`).join(", ")}`);
+    const rowsAll = summary.events.slice().sort((a, b) => NAMES.indexOf(a.variant) - NAMES.indexOf(b.variant) || a.size - b.size)
+      .filter((e) => !cpuEvent || e.half === cpuEvent)
+      .map((e) => [e.variant, e.size, e.half + (e.scope === "global" ? " *" : ""), us(e.script.median), `${us(e.script.p25)}–${us(e.script.p75)}`, `${us(e.script.ci[0])}–${us(e.script.ci[1])}`, e.script.n, e.total.median.toFixed(2)]);
+    const out = [el("h3", { text: "CPU time per event against N" }),
+      el("p", { class: "note", text: "Script time (µs) of one event, from a Chrome trace: from the input event to the first commit after the app's work, the JavaScript inside (js-framework-benchmark's rule, no CPU throttling). Each event is ./rr work's action as real input through the DevTools protocol, repeated from the same state many times on one page; median over the reps, seeds and sessions, with the interquartile range as a pale bar; both axes logarithmic. Flat means the cost is local to what changed." + (run.quick ? " This is a --quick run: one size, one seed, few reps; for development, not for conclusions." : "") }),
+      el("div", { class: "controls" }, el("label", {}, "event ", select)),
+      hoverLegend(series.map((s) => [s.name, s.color]), chart), chart,
+      details("Table", table(["variant", "N", "event", "script µs (median)", "IQR", "95% CI of the median", "n", "total ms (median)"], rowsAll)),
+      el("h4", { text: "Growth of a local event's script time, smallest to largest size" }),
+      growthRows.length ? table(["variant", "N", "median script µs", "median ratio", "worst ratio (event)", "calls ratio (./rr work)"], growthRows)
+        : el("p", { class: "note", text: "Needs at least two sizes." }),
+      el("p", { class: "note", text: "ratio = the median script time at the largest size ÷ at the smallest, per local event; the median and the worst over the events. The calls ratio is ./rr work's count of JavaScript calls for the same actions over the same sizes: time and work should grow together." }),
+      el("h4", { text: "Startup: navigation to the first paint after mount" }),
+      hoverLegend(startSeries.map((s) => [s.name, s.color]), startChart), startChart,
+      details("Table", table(["variant", "N", "total ms (median)", "IQR", "script ms (median)", "compile ms", "JS heap after mount (MB)", "loads"],
+        summary.startup.slice().sort((a, b) => NAMES.indexOf(a.variant) - NAMES.indexOf(b.variant) || a.size - b.size)
+          .map((s) => [s.variant, s.size, s.total.median.toFixed(1), `${s.total.p25.toFixed(1)}–${s.total.p75.toFixed(1)}`, s.script.median.toFixed(2), s.compileMs.toFixed(2), (s.heapBytes / 1e6).toFixed(2), s.total.n])))];
+    if (summary.aa) {
+      out.push(el("h4", { text: "A/A check: one app under two names" }),
+        table(["app", "twin", "cells", "intervals overlap", "median |difference|", "max |difference|"],
+          Object.entries(summary.aa).map(([n, x]) => [n, x.twin, x.cells, x.overlapping, (x.medianAbsDiff * 100).toFixed(1) + "%", (x.maxAbsDiff * 100).toFixed(1) + "%"])));
+    }
+    out.push(el("div", { class: "source" },
+      el("div", { text: `Results: results/cpu/${c.dir} · commit ${v.git ? v.git.commit.slice(0, 7) + (v.git.dirty ? " (dirty)" : "") : "?"} · sizes ${run.sizes.join(",")} × seeds ${run.seeds.join(",")} · ${run.sessions} session(s) · reps ${meth.warmup} warm-up + ${meth.minReps}–${meth.maxReps} (stop at ±${meth.tol * 100}%) · startup ${meth.loads} loads${run.quick ? " · --quick" : ""}` }),
+      el("div", { text: `${m.hostname}: ${m.cpu}, ${m.threads} threads, governor ${m.governor ?? "?"}, no_turbo ${m.noTurbo ?? "—"}, boost ${m.boost ?? "—"}, taskset ${m.taskset ?? "none"} · ${m.kernel} · ${v.chrome} (${v.chromeBin}) · Node ${v.node}` }),
+      el("div", { text: fwv.join(" · ") })));
+    return el("section", { class: "card" }, out);
+  }
+
   function renderScenario(sc) {
     const out = [el("h2", { text: `Scenario: ${sc.name}` })];
     const vs = sc.variants;
@@ -360,6 +445,7 @@
         [legend(series.map((s) => [s.name, s.color])), lineChart({ series, unit: "× vanilla", width: 1060, height: 300, yFmt: (t) => t.toFixed(1) })], vs));
     }
     out.push(workCard(sc));
+    out.push(cpuCard(sc));
     return out;
   }
 
