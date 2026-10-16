@@ -135,7 +135,9 @@ recommends. The adapter's bytes are reported separately and **excluded from the 
    idiomatically, with its own best practices (keyed lists, components, its normal build
    pipeline). Use real libraries at pinned versions where they exist. No golfing that the
    approach's users wouldn't do: compare what each approach really ships. A straw man is worse
-   than no comparison.
+   than no comparison. Never shape code to the measuring tools rather than to the approach
+   (for example loops written only because `./rr work` counts function calls): what is
+   measured must be what the approach would really do.
 4. **What is measured: everything shipped to the browser, HTML and JavaScript.**
    - **HTML** is not minified, only compressed with brotli (quality 11).
    - **JavaScript** is minified, then compressed with brotli (quality 11). Use the production
