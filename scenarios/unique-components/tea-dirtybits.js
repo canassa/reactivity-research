@@ -50,9 +50,23 @@ export function nextId(items) {
 function widgetModule(w) {
   const fieldOf = (name) => w.fields.find((f) => f.name === name);
   const msgOf = (name) => w.messages.find((m) => m.name === name);
-  // Dirty bits, written as numbers (the compiler knows them): one per field in order, then one
-  // per field of another widget the view reads, in order of first use.
-  const own = (name) => 1 << w.fields.findIndex((f) => f.name === name);
+  // Dirty bits, written as numbers (the compiler knows them): one per field, then one per field
+  // of another widget the view reads, each in order of first use.
+  // Own fields are numbered in the order the view first reads them (then any it never reads).
+  const fieldOrder = [];
+  const reach = (x) => {
+    if (Array.isArray(x)) {
+      if (x[0] === "f" && typeof x[1] === "string" && !fieldOrder.includes(x[1])) fieldOrder.push(x[1]);
+      else x.forEach(reach);
+    } else if (x && typeof x === "object") {
+      const field = x.el === "list" ? x.field : x.msg && msgOf(x.msg)?.field;
+      if (field && !fieldOrder.includes(field)) fieldOrder.push(field);
+      Object.values(x).forEach(reach);
+    }
+  };
+  reach(w.view);
+  for (const f of w.fields) if (!fieldOrder.includes(f.name)) fieldOrder.push(f.name);
+  const own = (name) => 1 << fieldOrder.indexOf(name);
   const reads = new Map(); // "widget.field" -> [bit, widget id, field]
   const helpers = new Set(["mark"]);
   const use = (...names) => names.forEach((n) => helpers.add(n));
@@ -422,7 +436,7 @@ function widgetModule(w) {
   // -------------------------------------------------------------------------------------------
   // The module
 
-  const bits = [...w.fields.map((f) => `${f.name} ${own(f.name)}`), ...[...reads].map(([k, [b]]) => `${k} ${b}`)];
+  const bits = [...fieldOrder.map((f) => `${f} ${own(f)}`), ...[...reads].map(([k, [b]]) => `${k} ${b}`)];
   const tags = messages.map((m, i) => `${m.name} ${i}`);
   helpers.add("html");
   const imports = [...helpers].sort().filter((h) => h !== "nextId");
