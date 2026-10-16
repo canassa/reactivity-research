@@ -269,9 +269,13 @@ function widgetModule(w) {
   };
   const W = "id";
 
-  // Elements are numbered in document order, as `html` returns them: `t[0]` is the section.
-  let count = 0;
-  const node = () => `t[${count++}]`;
+  // Bound elements carry a marker in the template and are numbered in document order, as
+  // `template` returns them: `t[0]` is the section, `t[1]` the first bound element.
+  // `node()` numbers a bound element (its markup then carries MK); `node(false)` notes one
+  // the code never touches, which gets no marker and no number.
+  let count = 1;
+  const node = (used = true) => (used ? `t[${count++}]` : null);
+  const MK = " b";
 
   // Appends the markup of `nodes` to the returned string; handlers go to `out`, bindings to `sc`.
   function build(nodes, sc, out, ind) {
@@ -283,11 +287,11 @@ function widgetModule(w) {
         case "text": {
           const deps = new Set();
           const t = textOf(n.parts, deps);
-          const e = node();
+          const e = node(t.stat === undefined);
           if (t.stat !== undefined) h += `<${n.tag}>${esc(t.stat)}</${n.tag}>`;
           else {
             use("setText");
-            h += `<${n.tag}></${n.tag}>`;
+            h += `<${n.tag}${MK}></${n.tag}>`;
             bind(sc, deps, `setText(${e}, ${t.src});`);
           }
           break;
@@ -297,10 +301,10 @@ function widgetModule(w) {
           const b = node();
           const deps = new Set();
           const t = textOf(n.text, deps);
-          if (t.stat !== undefined) h += `<button data-role=${n.msg}>${esc(t.stat)}</button>`;
+          if (t.stat !== undefined) h += `<button data-role=${n.msg}${MK}>${esc(t.stat)}</button>`;
           else {
             use("setText");
-            h += `<button data-role=${n.msg}></button>`;
+            h += `<button data-role=${n.msg}${MK}></button>`;
             bind(sc, deps, `setText(${b}, ${t.src});`);
           }
           if (n.disabled) {
@@ -315,19 +319,19 @@ function widgetModule(w) {
           const m = msgOf(n.msg);
           const f = fieldOf(m.field);
           if (n.label) {
-            node();
+            node(false);
             h += `<label>${esc(n.label)}`;
           }
           const i = node();
           if (f.type === "int") {
             use("onInt", "setNumber");
-            h += `<input type=number data-role=${n.msg}>`;
+            h += `<input type=number data-role=${n.msg}${MK}>`;
             // Only an integer within range becomes a message; anything else stays as typed.
             E(`onInt(${i}, ${W}, ${tag(n.msg)}, ${f.min}, ${f.max});`);
             bind(sc, new Set([own(f.name)]), `setNumber(${i}, s.${f.name});`);
           } else {
             use("onInput", "setValue");
-            h += `<input type=text data-role=${n.msg}${n.placeholder ? ` placeholder="${esc(n.placeholder)}"` : ""}>`;
+            h += `<input type=text data-role=${n.msg}${n.placeholder ? ` placeholder="${esc(n.placeholder)}"` : ""}${MK}>`;
             E(`onInput(${i}, ${W}, ${tag(n.msg)});`);
             bind(sc, new Set([own(f.name)]), `setValue(${i}, s.${f.name});`);
           }
@@ -335,7 +339,7 @@ function widgetModule(w) {
           if (n.invalid) {
             use("branch");
             const e = name();
-            h += `<p data-role=${n.msg}Error>${esc(n.invalid.message)}</p>`;
+            h += `<p data-role=${n.msg}Error${MK}>${esc(n.invalid.message)}</p>`;
             L(`const ${e} = branch(${node()});`);
             const deps = new Set();
             bind(sc, deps, `${e}(${ex(n.invalid.when, deps)});`);
@@ -345,9 +349,9 @@ function widgetModule(w) {
         case "check": {
           use("onCheck", "setChecked");
           const m = msgOf(n.msg);
-          node();
+          node(false);
           const i = node();
-          h += `<label><input type=checkbox data-role=${n.msg}>${esc(n.label)}</label>`;
+          h += `<label><input type=checkbox data-role=${n.msg}${MK}>${esc(n.label)}</label>`;
           E(`onCheck(${i}, ${W}, ${tag(n.msg)});`);
           bind(sc, new Set([own(m.field)]), `setChecked(${i}, s.${m.field});`);
           break;
@@ -356,13 +360,13 @@ function widgetModule(w) {
           use("onInput", "setValue");
           const m = msgOf(n.msg);
           if (n.label) {
-            node();
+            node(false);
             h += `<label>${esc(n.label)}`;
           }
           const e = node();
-          h += `<select data-role=${n.msg}>`;
+          h += `<select data-role=${n.msg}${MK}>`;
           for (const o of fieldOf(m.field).options) {
-            node();
+            node(false);
             h += `<option value="${esc(o)}">${esc(o)}</option>`;
           }
           h += `</select>`;
@@ -372,20 +376,20 @@ function widgetModule(w) {
           break;
         }
         case "list": {
-          use("html", "setText", "list");
+          use("template", "setText", "list");
           const l = name();
-          h += `<${n.tag}></${n.tag}>`;
+          h += `<${n.tag}${MK}></${n.tag}>`;
           let row = `<li data-role=${n.field}Item>`;
           let k = 1;
           const box = n.check ? `r[${k++}]` : null;
-          if (n.check) row += `<input type=checkbox data-role=${n.check}>`;
+          if (n.check) row += `<input type=checkbox data-role=${n.check}${MK}>`;
           const label = `r[${k++}]`;
-          row += `<span></span>`;
+          row += `<span${MK}></span>`;
           const remove = n.remove ? `r[${k++}]` : null;
-          if (n.remove) row += `<button data-role=${n.remove}>${esc(n.removeText)}</button>`;
+          if (n.remove) row += `<button data-role=${n.remove}${MK}>${esc(n.removeText)}</button>`;
           row += `</li>`;
           L(`const ${l} = list(${node()}, (item) => {`);
-          L(`  const r = html(${J(trimTemplate(row))});`);
+          L(`  const r = template(${J(trimTemplate(row))});`);
           if (n.check) {
             use("onCheck", "setChecked");
             L(`  onCheck(${box}, ${W}, ${tag(n.check)}, item.id);`);
@@ -405,7 +409,7 @@ function widgetModule(w) {
           break;
         }
         case "group": {
-          node();
+          node(false);
           h += `<${n.tag}>${build(n.children, sc, out, ind)}</${n.tag}>`;
           break;
         }
@@ -414,7 +418,7 @@ function widgetModule(w) {
           const c = name();
           const e = node();
           const inner = scope();
-          h += `<${n.tag}>${build(n.children, inner, out, ind)}</${n.tag}>`;
+          h += `<${n.tag}${MK}>${build(n.children, inner, out, ind)}</${n.tag}>`;
           const deps = new Set(inner.deps);
           const cond = ex(n.cond, deps);
           // Its patch runs when the bits of the binding below are set (or with every bit).
@@ -436,8 +440,6 @@ function widgetModule(w) {
   const root = scope();
   const body = [];
   const wires = [];
-  node(); // the section
-  node(); // its heading
   const markup = `<section data-role=widget><h2>${esc(w.label)}</h2>${build(w.view, root, body, "  ")}</section>`;
   // A widget's patch runs only with some of its bits set: own fields and fields it reads.
   let patch = patchBody(root, "    ", (1 << (w.fields.length + reads.size)) - 1);
@@ -456,7 +458,7 @@ function widgetModule(w) {
 
   const bits = [...fieldOrder.map((f) => `${f} ${own(f)}`), ...[...reads].map(([k, [b]]) => `${k} ${b}`)];
   const tags = messages.map((m, i) => `${m.name} ${i}`);
-  helpers.add("html");
+  helpers.add("template");
   const imports = [...helpers].sort().filter((h) => h !== "nextId");
   const file = `import { ${imports.join(", ")} } from "../runtime.js";
 import { ${helpers.has("nextId") ? "WIDGETS, nextId" : "WIDGETS"} } from "./widget.js";
@@ -468,7 +470,7 @@ import { ${helpers.has("nextId") ? "WIDGETS, nextId" : "WIDGETS"} } from "./widg
 WIDGETS.${w.id} = [
   // Builds the widget once and returns its static patch.
   (parent, id) => {
-    const t = html(${J(trimTemplate(markup))}, parent);
+    const t = template(${J(trimTemplate(markup))}, parent);
 ${indent(body)}
     return (${args}) => {
 ${indent(patch)}
@@ -503,7 +505,7 @@ function appFile(spec, mods) {
       edges.push(`    if (dirty.${src} & ${mods[src].bit(field)}) dirty.${w.id} |= ${bit}; // ${key} -> ${w.id}`);
     }
   }
-  return `import { dirty, html } from "./runtime.js";
+  return `import { dirty, template } from "./runtime.js";
 import { WIDGETS } from "./widgets/widget.js";
 // Every widget in page order: each module adds its own [view, reducer, initial state].
 ${imports.join("\n")}
@@ -549,7 +551,7 @@ ${[...(ticks.length ? ["      const ws = model.widgets;"] : []), ...ticks, "    
 // The returned patch first turns dirty bits that other widgets read into the readers' bits, then
 // runs each dirty widget's patch.
 export function view(root, model) {
-  const dash = html("<div data-role=dashboard>", root)[0];
+  const dash = template("<div data-role=dashboard>", root)[0];
   const w = model.widgets;
   const patches = {};
   for (const id in WIDGETS) {

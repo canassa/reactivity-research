@@ -55,6 +55,18 @@ export function html(source, parent) {
   return [node, ...node.querySelectorAll("*")];
 }
 
+// A component's static markup whose bound elements carry a `b` attribute, a marker removed here
+// (as Lit removes its own): its root element, appended to `parent`, then the bound elements in
+// document order, so the compiled code finds a node by its position among them.
+export function template(source, parent) {
+  T.innerHTML = source;
+  const node = T.content.firstChild;
+  const bound = node.querySelectorAll("[b]");
+  for (const n of bound) n.removeAttribute("b");
+  if (parent) parent.append(node);
+  return [node, ...bound];
+}
+
 // Events that send a message to a widget, like Elm's `onClick Msg` and `onInput Msg`. A click or
 // a checkbox toggle sends a constant message (with the item's id in a list row), built once
 // when the event is wired; an input sends the control's value.
