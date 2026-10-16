@@ -23,7 +23,7 @@ and its handlers. Here is the counter, as `scenarios/shared-components/digest.js
 
 ```js
 const counter = (l, st, mn, mx, value, v0 = value) => {   // the state: plain variables of the factory
-  widget("counter", l, `<output data-role=value></output><button data-role=dec>-${st}</button>…`,
+  widget("counter", l, `<output data-role=value></output><button data-role=dec>-${st}</button>…<button data-role=reset>Reset`,
     (v) => ({ value } = v),                        // the setter external replacements use
     () => value = Math.max(mn, value - st), // dec: the update arms, one per control,
     () => value = Math.min(mx, value + st), // inc  in the template's document order
@@ -37,7 +37,12 @@ const counter = (l, st, mn, mx, value, v0 = value) => {   // the state: plain va
 
 **The state is the factory's own variables** (its parameters where it can be: tabs' `active`,
 panel's `open`), so the minifier gives every reference a one-letter name. The names of the
-fields appear once, in the setter `widget()` stores for external events (`S[id]`).
+fields appear once, in the setter `widget()` keeps for external events (on the widget's binding
+list, `W[id].s`).
+
+**A template leaves out the end tags it closes with** (`…<button data-role=reset>Reset`, no
+`</button>`): the end of the HTML closes every element still open, so the DOM is the same. Solid's
+compiler writes its templates the same way. End tags inside a template stay.
 
 **Handlers go to controls by position, and bindings name elements by position.** The compiler
 knows the template, so it writes the handlers in the order of the template's controls (its
@@ -50,13 +55,19 @@ repeats a control (toggles, tabs, rating stars), the factory computes the positi
 stride (the i-th checkbox of toggles is element 4 + 3i).
 
 **Each instance is one row of data:** the factory, then the instance's constants and initial
-state. The app is the table of rows in page order:
+state. The app is the table of rows in page order, then the table of the widgets' labels in the
+same order (the runtime passes a widget's label as its factory's first argument, `l`):
 
 ```js
 export default app([
-  [counter, "Design tickets", 5, 0, 20, 0],
-  [field, "Office tag", "Your tag", "[^]{5}", "Needs 5 or more characters", ""],
-  [amount, "Fleet deposit", 1, "", " kg", 85],
+  [counter, 5, 0, 20, 0],
+  [field, "Your tag", "[^]{5}", "Needs 5 or more characters", ""],
+  [amount, 1, "", " kg", 85],
+  …
+], [
+  "Design tickets",
+  "Office tag",
+  "Fleet deposit",
   …
 ], receive);
 ```
@@ -79,9 +90,7 @@ calls the target's handler with the element, then digests **the bindings of the 
 widget only**:
 
 ```js
-const onEvent = ({ target: t }) => {
-  if (t.h) { t.h(t); run(t.b); }   // .b: the list of the control's widget
-};
+const onEvent = ({ target: t }) => t.h && (t.h(t), run(t.b));   // .b: the list of the control's widget
 
 // a binding: write the i-th element's n[k] only when f() changed since the last write
 const bind = (i, k, f, last, n = N[i]) => B.push(() => last !== (last = f()) && (n[k] = last));
@@ -110,7 +119,7 @@ from the item template; the item's bindings name its elements by position, and i
 handlers of its controls, which close over `r`:
 
 ```js
-list(3, () => items, `<input type=checkbox data-role=toggle><span></span><button data-role=remove>${rm}</button>`, (r) => (
+list(3, () => items, `<input type=checkbox data-role=toggle><span></span><button data-role=remove>${rm}`, (r) => (
   bind(0, "checked", () => r.i.done),
   text(1, () => r.i.text),
   [
@@ -144,7 +153,7 @@ src = src.map((k) => (k = "w" + (id.slice(1) - k), W[k].push(...w), E[k]));   //
 ### External events
 
 `receive` is app code, and it changes state in place. The adapter only forwards `dispatch` to
-it. A replacement goes through the widget's setter (`S[k]`) and digests only the widgets the
+it. A replacement goes through the widget's setter (`W[k].s`) and digests only the widgets the
 event names (`run(W[k])` runs widget `k`'s list); a `serverSet` is a snapshot of one widget, so
 the two share one branch. Every clock registers its tick function in `T`, so a tick never visits
 the rest of the page. A feed keeps its entries on a record its factory returns (`E[k]`), which
@@ -155,7 +164,7 @@ const receive = (m) => {
   if (m.type == "tick") for (const t of T) t();                                  // only with a clock
   else if (m.type == "notify") E[m.widget].e.push(m.entry), run(W[m.widget]);    // only with a feed
   // serverSet and snapshot; a tick or notify the app has no branch for has no state
-  else for (const k in (m = structuredClone(m.type == "serverSet" ? { [m.widget]: m.state } : m.state?.widgets))) S[k](m[k]), run(W[k]);
+  else for (const k in (m = structuredClone(m.type == "serverSet" ? { [m.widget]: m.state } : m.state?.widgets))) W[k].s(m[k]), run(W[k]);
 };
 
 // in the clock factory
@@ -407,6 +416,67 @@ higher, none lower; 11,798 in total (shared-components), 19,962 (unique-componen
   about 130 B at N=256 but costs up to 15 B between N=8 and N=32, where the decoder is paid
   for few lists. It is kept because every size still ends below the start.
 
+### Templates apart, Solid's template spellings (seventh pass)
+
+A seventh pass changed where the compiled code keeps its templates and how it spells them, not
+the strategy:
+- **unique-components hoists the templates** into one table, in page order: `app([templates],
+  [widgets], receive)`. The dashboard element keeps the table (`D.h`, an expando like a
+  control's `h`), and `widget()` takes the next template. Solid hoists its templates out of its
+  components too (as named constants). A template is static markup, which the scenario allows
+  as data; each widget's handlers, bindings and setter stay its own code. It is the largest step
+  of the pass, about −1,000 B at N=256 on its own: HTML now sits with HTML and code with code,
+  which brotli models better, and no widget names its template. The same templates as named
+  constants (`const w6$html = …`) were +81 B at N=256 instead: a name per widget costs more than
+  the separation gains.
+- **A text's static prefix is in the template** (unique): `<p>Gap: </p>` and `text(3, () =>
+  $motto.length - w6$miles)`. `text()` writes a text node of its own at the end of its element
+  (`.data`), so the prefix stays in front of it, as Solid's compiler does with `<p>Gap: <!>`.
+  Every text binding works this way, so the runtime has no second helper. About −340 B at N=256.
+- **Templates leave out the end tags they close with** (both): `…<button
+  data-role=reset>Reset`, no `</button>`. The end of the HTML closes every element still open,
+  so the DOM is the same. Solid's compiler omits them too; end tags inside a template stay, as
+  in Solid. About −190 B at N=256 (unique).
+- **shared-components keeps the labels in a table of their own**, after the rows: `app([[counter,
+  5, 0, 20, 0], …], ["Design tickets", …], receive)`; the runtime passes a widget's label as its
+  factory's first argument. −160 B at N=256. Moving every string of a row into the table
+  instead (one array per row) was +72 B.
+- **Smaller pieces:** a list item's remove is `rm(list, r.i)`, an in-place splice (unique: one
+  call where `filter` called back once per item, so a remove costs fewer calls); a checklist
+  with no done item starts as a plain `L(…)` list (an absent `done` reads as not done; unique);
+  an item's record is its binding list itself (`(r = B = []).n = …`, unique); `show` takes the
+  condition as it is (every condition is a typed bool; unique); `bind(d, f, k, n, last)` takes
+  the node before the cache, so `text` passes it without a placeholder (unique);
+  shared-components keeps the setter on the binding list (`W[k].s`, no `S` map) and its
+  delegated listener is one expression.
+
+Brotli totals, adapter excluded, `runs.json` sizes (1 to 256) and seeds (1 to 3), medians:
+
+| | N=1 | N=16 | N=64 | N=256 | fit, all sizes | fit, N ≥ 16 |
+|---|---|---|---|---|---|---|
+| shared-components, before | 1,009 B | 3,074 B | 4,309 B | 7,514 B | 2,028 + 23.51 B/widget | 2,987 + 18.10 B/widget |
+| shared-components, after | 1,009 B | 3,074 B | **4,264 B** | **7,345 B** | 2,032 + **22.86** | 2,996 + **17.43** |
+| unique-components, before | 1,356 B | 4,923 B | 12,604 B | 37,255 B | 2,331 + 140.9 B/widget | 3,596 + 133.8 B/widget |
+| unique-components, after | 1,356 B | **4,829 B** | **12,185 B** | **35,617 B** | 2,339 + **134.5** | 3,603 + **127.4** |
+
+No size's median is higher on either scenario (sizes 1 to 256): shared is equal at N=1 and
+N=16 and lower at the seven other sizes, unique is equal at N=1 and lower at the eight others.
+Sums over all 27 builds: shared −874 B, unique −9,692 B (−4.4% at N=256). The fits' baselines
+rise a few bytes only because the slopes fell. Calls (`./rr work`, seed 1, sizes 16 to 256),
+record by record: none higher; 11,798 → 11,798 in total (shared-components), 19,962 → 19,942
+(unique-components: a remove no longer calls back per item).
+
+- **Where a string sits matters as much as how long it is.** Moving the templates out of the
+  widget code, unchanged, took 2.7% off the largest unique bundles; moving the labels out of the
+  rows took 2% off the largest dashboards. Brotli's literal coding depends on the bytes before,
+  so a stream of HTML and a stream of code cost less than the two interleaved.
+- **The small sizes are a lottery of a few bytes.** The HTML page names the bundle by its
+  content hash, and its brotli size moves between 138 and 152 B with that hash alone, so any
+  change to the JavaScript moves every build's total by up to ±7 B at random. At N=1 the
+  JavaScript of the two scenarios is within a few bytes of where it started (the template table
+  and the text node cost about 15 B in the runtime of a one-widget unique app, which the other
+  changes pay back), and the totals land equal.
+
 ## Locality
 
 `./rr check` holds prototypes to a locality rule: the calls one local action costs may grow at
@@ -570,6 +640,38 @@ minified bundles where marked):
 | Unquoted option values (unique), retried | sum −54 B, +23 B at N=64 | dropped: mixed |
 | The item's text binding written by the list runtime (unique) | −484 B summed at best (offline) | not built: the binding would no longer be the widget's own code |
 
+Seventh pass (`runs.json` sizes and seeds, sums of the 27 totals against the step before):
+
+| Idea | Effect | Verdict |
+|---|---|---|
+| Templates in one table after the widgets, `app(defs, receive, html)` (unique) | sum −4,862 B, −999 B at N=256, +19 B at N=1 | replaced by the table first |
+| The table first, `app(html, defs, receive)`; or between, `app(defs, html, receive)` | sum −5,252 B; or −4,771 B | kept the first |
+| The table in a module variable `H`, then on the dashboard element (`D.h`) | `D.h` sum −134 B against `H`, and 3 to 8 B less JavaScript at N=1 | kept `D.h`: no new runtime variable, so the minifier renames nothing |
+| Templates as named constants (`const w6$html = …`), as Solid writes them | sum +827 B, +81 B at N=256 | dropped: a name per widget costs more than the separation gains |
+| Each widget function gets its template as its first parameter | sum −4,991 B, +24 B at N=1 | dropped: the table is smaller |
+| Item templates in the same table, in creation order (`list` takes the next) | sum +520 B | dropped |
+| A text's static prefix in the template, through a second helper (`tail`) | sum −583 B, +20 B below N=16 | replaced: every text binding writes its own text node (sum −2,045 B) |
+| A static suffix too (`${n} minutes`), the text node put first (`text(d, f, 1)`) | sum +173 B | dropped |
+| No end tags at a template's end (unique; then shared) | sum −1,529 B; −183 B | kept |
+| The same on shared, keeping a final `</button>` | sum −12 B | dropped: the buttons were part of the gain |
+| A list item's remove as an in-place `rm(list, item)` (unique) | sum −158 B, fewer calls per remove | kept |
+| Item bindings take the item as their argument (`text(0, (i) => i.text)`) (unique) | about −150 B, then ±50 B once the rest was in | dropped: noise, and a runtime that passes arguments to every binding |
+| The same for item handlers, the item on the control (`X.h(X.r?.i)`) | +26 B at N=1, then sum +135 B | dropped |
+| An item's record as its binding list (`(r = B = []).n = …`) (unique; then shared) | the reverse costs +294 B; shared sum +10 B | kept on unique only |
+| A checklist with no done item as a plain `L(…)` list (unique) | sum −350 B | kept |
+| `add` leaving out `done: false` (unique) | sum +66 B (+73 B at N=256: the runtime renamed) | dropped |
+| An empty initial list as `[]` instead of `L()` (unique) | sum +164 B | dropped: `L(` is a copy |
+| `show` without `!!` (unique; then shared) | sum −35 B; +48 B | kept on unique only |
+| The number check on `X.v`, so no handler names a parameter (unique) | sum −127 B, +61 B at N=256 | dropped: mixed |
+| `el()` with a default parameter instead of a block (unique; shared) | sum −38 B, more JavaScript at N=1; ±0 | dropped |
+| Unquoted option values (unique), a third time | sum +2 B | dropped: noise |
+| `bind(d, f, k, n, last)`: the node before the cache (unique) | sum −91 B | kept |
+| shared: the labels table before the rows; after them | sum −599 B; −675 B | kept after |
+| shared: every string of a row in the table, one array per row | +683 B against the labels alone | dropped |
+| shared: the delegated listener as one expression, retried | sum −240 B | kept |
+| shared: the setter on the binding list (`W[k].s`, no `S` map), retried | −7 to −14 B below N=4, sum about level | kept: it lands the small sizes at or below the start |
+| shared: a new todo item without `done` | sum −5 B | dropped: noise |
+
 
 ## Honest limits
 
@@ -581,8 +683,10 @@ minified bundles where marked):
   would need the compiler to digest that widget too; this scenario has none.
 - **Templates are HTML strings with compile-time constants spliced in.** The emitter escapes
   them when it writes them. Values that come from state (todo text, feed entries) only ever
-  reach the DOM through `textContent` or properties, never through `innerHTML`. A template is
-  parsed once per widget and once per new list item.
+  reach the DOM through text nodes or properties, never through `innerHTML`. A template is
+  parsed once per widget and once per new list item. A template leaves out the end tags it
+  closes with, which relies on the HTML parser closing open elements at the end of the input
+  (it always does).
 - **Some assumptions are checked at build time, not handled.** The emitter asserts that widget
   ids are `w1…wN` in order and that initial list ids are 1…k. Lists are keyed by an `id` field.
   A different spec would need explicit ids in the rows: a few bytes per widget.
@@ -613,6 +717,16 @@ minified bundles where marked):
   it is gone, which the serve page confirms (0 listeners, 0 timers).
 - **ARIA attributes are written through reflected properties** (`ariaSelected`, `ariaPressed`,
   `ariaExpanded`): Chrome, Safari, and Firefox 119 and later.
+- **unique-components hoists the templates into one table in page order,** which the dashboard
+  element keeps during mount (`D.h`); the n-th `widget()` call takes the n-th template. This
+  works because every widget is created once, in page order; a widget created twice, or out of
+  order, would need its template by name.
+- **A text binding writes a text node of its own** (unique), after the static prefix the
+  template gives its element. The element holds two text nodes where the reference has one; the
+  page reads the same and serializes the same, as with Solid's templates.
+- **The items of a checklist that starts with no done item have no `done` field** (unique) until
+  one is toggled or replaced: an absent `done` reads as not done, and the checkbox binding writes
+  nothing while the value stays `undefined` (the checkbox starts unchecked).
 - **A non-canonical number spelling stays as typed.** If you type `1e2` into an amount whose
   value is already 100, the input still shows `1e2`. Solid's controlled input behaves the same.
 
@@ -621,15 +735,15 @@ minified bundles where marked):
 `scenarios/unique-components/digest.js` writes every widget as **its own function**, with no
 per-kind factories and no data rows (the shared-components size win came from rows, which the
 scenario's rule forbids). A widget function holds, as code: its state (local variables, and
-module variables for the fields other widgets read), its template (one static HTML string), its
-handlers (one arrow function per control, in the template's order, the ops compiled to
+module variables for the fields other widgets read), its handlers (one arrow function per control, in the template's order, the ops compiled to
 statements), its setter, its bindings (derived expressions compiled to JavaScript) and, for a
-time-driven field, its tick function. Only initial values and texts are data.
+time-driven field, its tick function. Only initial values and texts are data, and the widgets'
+templates (static HTML strings), which the app keeps apart in one table, in page order.
 
 It uses `runtime-unique.js` instead of `runtime.js`: the same strategy (binding closures that
 write on change, a local digest, handlers and bindings by position), but it knows nothing about
-widget kinds. `widget(set, ...h, html)` builds the section from the template (the last
-argument), hands `h` to its controls in document order, keeps the setter on the widget's
+widget kinds. `widget(set, ...h)` builds the section from the next template of the table,
+hands `h` to its controls in document order, keeps the setter on the widget's
 binding list (`W[k].s`) and calls it once while `S` is empty, so its defaults set the initial
 state (a feed widget puts its record in `O` itself), and makes its elements the ones bindings
 refer to, each by its distance from the previous binding's element (`text(3, …)`). A widget's
@@ -642,11 +756,18 @@ const w6 = ($motto) => {
     (t) => Number.isInteger((t = X.valueAsNumber)) && t >= 0 && t <= 52 && (w6$miles = t), // enterMiles
     () => (w6$miles = 11, $motto = "Harbor"), // restoreAll
     () => $motto = X.value, // writeMotto
-    `<h2>Trail panel 77xz</h2><div><input type=number data-role=enterMiles><output></output></div>…`,
   );
   bind(2, () => w6$miles);
+  text(1, () => w6$miles);
+  text(3, () => ($motto.length - w6$miles));   // after the template's "Gap: "
   …
 };
+
+export default app([
+  …,
+  `<h2>Trail panel 77xz</h2><div><input type=number data-role=enterMiles><output></output></div><div><small>Unit 77xz</small><p>Gap: </p></div>…<p>Plus one: `,
+  …
+], [w1, w2, w3, w4, w5, w6, …], receive);
 ```
 Differences from `runtime.js`:
 - a list item is `<li data-key data-role>` (the item role is `{field}Item`);
