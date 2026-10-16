@@ -1,0 +1,242 @@
+{
+  "1": {
+    "digest": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 16.019469026548673,
+      "maxRatio": 16.2078853046595,
+      "worst": "dispatch: serverSet one widget",
+      "medianPerWidget": 17.858450940860212,
+      "callsAtMin": 283,
+      "callsAtMax": 4526,
+      "snapshotRatio": 16.106666666666666
+    },
+    "elm": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 17.007360672975814,
+      "maxRatio": 17.26944667201283,
+      "worst": "feed: dismiss an entry",
+      "medianPerWidget": 254.92237903225796,
+      "callsAtMin": 3804,
+      "callsAtMax": 64690,
+      "snapshotRatio": 16.941123996431756
+    },
+    "solid": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1,
+      "maxRatio": 3.8046875,
+      "worst": "dispatch: tick (one clock running)",
+      "medianPerWidget": 0,
+      "callsAtMin": 128,
+      "callsAtMax": 168,
+      "snapshotRatio": 17.685985247629084
+    },
+    "tea-dirtybits": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1,
+      "maxRatio": 3.96,
+      "worst": "dispatch: tick (one clock running)",
+      "medianPerWidget": 0,
+      "callsAtMin": 24,
+      "callsAtMax": 25,
+      "snapshotRatio": 15.831632653061224
+    },
+    "tea-inline": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1,
+      "maxRatio": 2.4375,
+      "worst": "dispatch: tick (one clock running)",
+      "medianPerWidget": 0,
+      "callsAtMin": 17,
+      "callsAtMax": 19,
+      "snapshotRatio": 15.30716723549488
+    },
+    "tea-local": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1,
+      "maxRatio": 3.3793103448275863,
+      "worst": "dispatch: tick (one clock running)",
+      "medianPerWidget": 0,
+      "callsAtMin": 23,
+      "callsAtMax": 24,
+      "snapshotRatio": 15.96103896103896
+    }
+  },
+  "2": {
+    "digest": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 18.0061099796334,
+      "maxRatio": 18.468619246861923,
+      "worst": "counter: click +",
+      "medianPerWidget": 17.407510080645157,
+      "callsAtMin": 246,
+      "callsAtMax": 4421,
+      "snapshotRatio": 17.793233082706767
+    },
+    "elm": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 16.705054715997914,
+      "maxRatio": 17.06181721289635,
+      "worst": "tabs: select a tab",
+      "medianPerWidget": 251.4429603494623,
+      "callsAtMin": 3838,
+      "callsAtMax": 64114,
+      "snapshotRatio": 16.559132720105126
+    },
+    "solid": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1,
+      "maxRatio": 3.0344827586206895,
+      "worst": "dispatch: tick (one clock running)",
+      "medianPerWidget": 0,
+      "callsAtMin": 165,
+      "callsAtMax": 182,
+      "snapshotRatio": 16.71272365805169
+    },
+    "tea-dirtybits": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1,
+      "maxRatio": 3.84,
+      "worst": "dispatch: tick (one clock running)",
+      "medianPerWidget": 0,
+      "callsAtMin": 25,
+      "callsAtMax": 25,
+      "snapshotRatio": 16.584699453551913
+    },
+    "tea-inline": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1,
+      "maxRatio": 2.111111111111111,
+      "worst": "dispatch: tick (one clock running)",
+      "medianPerWidget": 0,
+      "callsAtMin": 17,
+      "callsAtMax": 17,
+      "snapshotRatio": 17.169291338582678
+    },
+    "tea-local": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1,
+      "maxRatio": 3.259259259259259,
+      "worst": "dispatch: tick (one clock running)",
+      "medianPerWidget": 0,
+      "callsAtMin": 23,
+      "callsAtMax": 23,
+      "snapshotRatio": 16.75925925925926
+    }
+  },
+  "3": {
+    "digest": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 15.819614711033275,
+      "maxRatio": 16.014134275618375,
+      "worst": "dispatch: tick (one clock running)",
+      "medianPerWidget": 17.64642137096774,
+      "callsAtMin": 286,
+      "callsAtMax": 4517,
+      "snapshotRatio": 15.354430379746836
+    },
+    "elm": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 16.32264579651603,
+      "maxRatio": 16.48559041060954,
+      "worst": "dispatch: tick (one clock running)",
+      "medianPerWidget": 252.9696740591397,
+      "callsAtMin": 3961,
+      "callsAtMax": 64652,
+      "snapshotRatio": 15.759301130524152
+    },
+    "solid": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1,
+      "maxRatio": 4.966101694915254,
+      "worst": "dispatch: tick (one clock running)",
+      "medianPerWidget": 0,
+      "callsAtMin": 135,
+      "callsAtMax": 244,
+      "snapshotRatio": 16.401135288552506
+    },
+    "tea-dirtybits": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1,
+      "maxRatio": 5.3,
+      "worst": "dispatch: tick (one clock running)",
+      "medianPerWidget": 0,
+      "callsAtMin": 27,
+      "callsAtMax": 31,
+      "snapshotRatio": 15.569306930693068
+    },
+    "tea-inline": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1,
+      "maxRatio": 3.2142857142857144,
+      "worst": "dispatch: tick (one clock running)",
+      "medianPerWidget": 0,
+      "callsAtMin": 21,
+      "callsAtMax": 28,
+      "snapshotRatio": 15.954225352112676
+    },
+    "tea-local": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1,
+      "maxRatio": 4.24,
+      "worst": "dispatch: tick (one clock running)",
+      "medianPerWidget": 0,
+      "callsAtMin": 25,
+      "callsAtMax": 40,
+      "snapshotRatio": 15.4149377593361
+    }
+  }
+}

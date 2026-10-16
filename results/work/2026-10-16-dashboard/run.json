@@ -1,0 +1,206 @@
+{
+  "scenario": "dashboard",
+  "kind": "work",
+  "date": "2026-10-16",
+  "sizes": [
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "runs": 2,
+  "jsFlags": "--no-turbofan --no-maglev",
+  "scenarioOptions": {
+    "kinds": "all",
+    "summaries": "auto"
+  },
+  "actions": [
+    {
+      "name": "counter: click +",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "tabs: select a tab",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "amount: type a digit",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "todo: type in the draft",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "todo: add",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "todo: toggle an item",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "filter: type a letter",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "field: type",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "toggles: flip one",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "panel: open or close",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "rating: rate",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "feed: dismiss an entry",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "clock: start",
+      "scope": "local",
+      "setup": true
+    },
+    {
+      "name": "dispatch: tick (one clock running)",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "dispatch: serverSet one widget",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "dispatch: notify one feed",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "dispatch: whole-state snapshot",
+      "scope": "global",
+      "setup": false
+    }
+  ],
+  "variants": {
+    "digest": {
+      "emitter": "digest",
+      "framework": "digest",
+      "label": "digest (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "elm": {
+      "emitter": "elm",
+      "framework": "elm",
+      "label": "Elm 0.19.3",
+      "track": "framework",
+      "emitterOptions": {},
+      "versions": {
+        "elm (compiler, npm installer)": "0.19.3-0",
+        "@elm_binaries/linux_x64": "0.19.3-0",
+        "uglify-js": "3.19.3",
+        "elm/browser": "1.0.2",
+        "elm/core": "1.0.5",
+        "elm/html": "1.0.1",
+        "elm/json": "1.1.4",
+        "elm/regex": "1.0.0",
+        "elm/time": "1.0.0",
+        "elm/url": "1.0.0",
+        "elm/virtual-dom": "1.0.5"
+      }
+    },
+    "solid": {
+      "emitter": "solid",
+      "framework": "solid",
+      "label": "Solid 1",
+      "track": "framework",
+      "emitterOptions": {},
+      "versions": {
+        "solid-js": "1.9.17",
+        "babel-preset-solid": "1.9.16",
+        "babel-plugin-jsx-dom-expressions": "0.40.11",
+        "@babel/core": "7.29.7",
+        "vite-plugin-solid": "2.11.14",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-dirtybits": {
+      "emitter": "tea-dirtybits",
+      "framework": "tea-dirtybits",
+      "label": "TEA + dirty bits (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "versions": {
+        "tea-dirtybits runtime": "prototype (frameworks/tea-dirtybits/template)",
+        "reconcileArrays": "@solidjs/web 2.0.0-rc.9 (vendored, unmodified)",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-inline": {
+      "emitter": "tea-inline",
+      "framework": "tea-inline",
+      "label": "TEA inline (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14",
+        "reconcileArrays (vendored, from @solidjs/web)": "2.0.0-rc.9"
+      }
+    },
+    "tea-local": {
+      "emitter": "tea-local",
+      "framework": "tea-local",
+      "label": "tea-local (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14",
+        "reconcileArrays (vendored)": "@solidjs/web 2.0.0-rc.9"
+      }
+    }
+  },
+  "versions": {
+    "node": "v26.11.1",
+    "chrome": "Google Chrome 154.0.8037.97",
+    "platform": "linux 6.12.112 x64",
+    "git": {
+      "commit": "f0b9559c39d3efd101dd3d8f8d0e1a0a5aeadd4d",
+      "dirty": false
+    }
+  },
+  "method": "Profiler.startPreciseCoverage({ callCount: true, detailed: true }); per action: take (reset), perform, await settled(), take; summed over the app's own scripts (URLs under /<variant>/); calls = function invocations, blocks = basic-block executions"
+}
