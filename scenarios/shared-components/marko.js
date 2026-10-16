@@ -4,12 +4,18 @@
 // - One reusable tag per widget kind (`src/tags/<kind>-widget.marko`, auto-discovered), configured
 //   by attributes; every instance is a use of its kind's tag. The `-widget` suffix keeps the names
 //   clear of native elements (`<summary>` is one).
-// - State: each kind tag declares its state as controllable `<let>`s (`<let/value:=input.value>`),
-//   as Marko's cheat sheet recommends for state a parent may own. The root template, app.marko,
-//   owns every widget's state as `<let>`s and binds them down with `:=`
-//   (`<counter-widget value:=w1Value …/>`): the summaries read other widgets' state and the
-//   external events replace it, and Marko has no context API, so the state is lifted to the
-//   common parent.
+// - State, by the `state` parameter; both are patterns of Marko's cheat sheet:
+//   - `root` (default): each kind tag declares its state as controllable `<let>`s
+//     (`<let/value:=input.value>`), for state a parent may own. The root template, app.marko,
+//     owns every widget's state as `<let>`s and binds them down with `:=`
+//     (`<counter-widget value:=w1Value …/>`): the summaries read other widgets' state and the
+//     external events replace it, and Marko has no context API, so the state is lifted to the
+//     common parent.
+//   - `local`: each kind tag owns its `<let>`s, seeded from its attributes
+//     (`<let/value=input.value>`), and `<return>`s its state with an API (`set`, and `tick` or
+//     `notify` where the kind has them). The root names each widget with a tag variable
+//     (`<counter-widget/w1 …/>`), builds the summaries from `w1.value`, and routes external
+//     events through `w1.set(state)`.
 // - Derived values with `<const>` (field errors, filtered lists, summary texts and their terms).
 // - Lists with `<for … by="id">` for keyed items, `<for>` (by index) for fixed lists, and
 //   `<for from to>` for the stars. Immutable updates (`concat`, `toSpliced`), as Marko requires.
@@ -17,18 +23,26 @@
 // - Events as handlers in markup (`onClick() { … }`); inputs, checkboxes and selects are
 //   controlled with `value:=`, `checked`/`checkedChange` and `<select value:=…>`. The number
 //   input keeps an invalid edit in a local `pending` `<let>` (the cheat sheet's pattern for
-//   uncommitted edits) and commits only valid numbers.
+//   uncommitted edits) and commits only valid numbers; the edit remembers the value it was made
+//   over, so a new value from outside (serverSet, snapshot) replaces it.
 // - Per-instance rules (a field's validation, an amount's format) are functions passed as
 //   attributes.
 // - External events: app.marko `<return>`s one function, the root's tag variable, which the
-//   adapter calls with each message; it assigns the widgets' `<let>`s.
+//   adapter calls with each message; it assigns the widgets' `<let>`s (root) or calls their
+//   APIs (local).
 
 import { templateFiles } from "../../frameworks/marko/framework.js";
 import { attrs, literal, tplText, camelCase, pascal } from "../../frameworks/marko/source.js";
 
 export const framework = "marko";
 
-export const params = {};
+export const params = {
+  state: {
+    default: "root",
+    choices: ["root", "local"],
+    help: "where widget state lives: lifted into the root template and bound down with :=, or in each widget's tag, which <return>s its state and an API",
+  },
+};
 
 const tagName = (kind) => `${kind}-widget`;
 
@@ -194,14 +208,16 @@ const TAGS = {
 `,
 
   amount: `<let/value:=input.value>
+// An edit that is not a number yet (empty, a lone "-") stays in the input, uncommitted. It is
+// remembered with the value it was made over, so a new value from outside replaces it.
 <let/pending=null>
-<const/draft=pending ?? value>
+<const/draft=(pending?.over === value ? pending.text : value)>
 
 <section data-key=input.id data-role="widget-amount">
   <h2>\${input.label}</h2>
   <input type="number" data-role="input" value=draft valueChange(text) {
     if (text === "") {
-      pending = text;
+      pending = { over: value, text };
     } else {
       value = +text;
       pending = null;
@@ -288,14 +304,41 @@ const TAGS = {
 };
 
 // ---------------------------------------------------------------------------------------------
+// Widget-local state (`--state local`): the kind tag owns its `<let>`s, seeded from its
+// attributes, and `<return>`s its state and an API, the pattern of Marko's cheat sheet
+// (`<return=api>` in the child, `<Child/api>` then `api.x()` in the parent).
+const METHODS = {
+  clock: `tick() {
+    if (running) seconds++;
+  }`,
+  feed: `notify(entry) {
+    entries = entries.concat(entry);
+  }`,
+};
+
+function localTag(kind) {
+  const fields = FIELDS[kind];
+  if (fields.length === 0) return TAGS[kind];
+  const src = TAGS[kind].replace(/<let\/(\w+):=input\.\1>/g, "<let/$1=input.$1>");
+  const set = `set(state) {\n${fields.map((f) => `    ${f} = state.${f};`).join("\n")}\n  }`;
+  const members = [...fields, set, ...(METHODS[kind] ? [METHODS[kind]] : [])];
+  return `${src}
+// The widget's state, for the dashboard's summaries, and its API for external events.
+<return={
+${members.map((m) => `  ${m},`).join("\n")}
+}>
+`;
+}
+
+// ---------------------------------------------------------------------------------------------
 // The root template
 
-// The name of the root's `<let>` for one state field of a widget: w3Items, w3Draft.
+// Where a widget's state field lives, read from the root: its own `<let>` in the root (w3Items),
+// or the widget's returned value (w3.items).
 const stateName = (w, field) => `${w.id}${pascal(field)}`;
 
-// A summary's term for one source widget: an expression over the root's `<let>`s.
-function metricExpr(src, itemsName) {
-  const s = (field) => stateName(src, field);
+// A summary's term for one source widget, over that state.
+function metricExpr(src, itemsName, s) {
   switch (src.kind) {
     case "counter": case "amount": return s("value");
     case "toggles": return `${s("on")}.filter(Boolean).length`;
@@ -322,12 +365,13 @@ const PHRASES = {
 // The suffix naming a source's term: counterValue → "dailyVisitors", todo → "kitchenTasksLeft".
 const TERM_SUFFIX = { toggles: "On", todo: "Left", filter: "Found", feed: "Count" };
 
-function appFile(spec) {
+function appFile(spec, local) {
   const byId = (id) => spec.widgets.find((x) => x.id === id);
   const widgets = spec.widgets.filter((w) => w.kind !== "summary");
   const summaries = spec.widgets.filter((w) => w.kind === "summary");
   const sourceIds = [...new Set(summaries.flatMap((w) => w.sources))];
   const needsFormatNumber = summaries.some((w) => w.sources.some((id) => byId(id).kind === "amount"));
+  const initial = (w, f) => spec.initialState.widgets[w.id][f];
 
   // Filters read by a summary share their items through a module constant.
   const itemsName = (w) => `${camelCase(w.label)}Items`;
@@ -340,28 +384,33 @@ static function formatNumber(n) {
 }`);
   }
 
-  // State: one <let> per field of every widget.
-  const lets = widgets.flatMap((w) => FIELDS[w.kind].map((f) => `<let/${stateName(w, f)}=${literal(w.kind === "summary" ? null : spec.initialState.widgets[w.id][f])}>`));
+  // Root-lifted state: one <let> per field of every widget.
+  const lets = local ? [] : widgets.flatMap((w) => FIELDS[w.kind].map((f) => `<let/${stateName(w, f)}=${literal(initial(w, f))}>`));
 
-  // Derived: a <const> per summary term that is more than a plain read, then each summary's text.
+  // Derived: per summary, a <const> for each term that is more than a plain read (once, where it
+  // is first needed), then the summary's text. With root state they sit at the top with the
+  // <let>s; with local state they sit just before their summary, after the widgets whose tag
+  // variables they read (a tag variable read before its tag is a hoisted getter, not a value).
   const termName = {};
   const used = new Set();
-  const consts = [];
-  for (const id of sourceIds) {
-    const src = byId(id);
-    const expr = metricExpr(src, itemsName);
-    if (/^\w+$/.test(expr)) {
-      termName[id] = expr;
-      continue;
-    }
-    let name = camelCase(src.label) + (TERM_SUFFIX[src.kind] ?? "");
-    while (used.has(name)) name += "2";
-    used.add(name);
-    termName[id] = name;
-    consts.push(`<const/${name}=${expr}>`);
-  }
   const textName = (w) => `${camelCase(w.label)}Text`;
+  const before = {};
   for (const w of summaries) {
+    const own = (before[w.id] = []);
+    for (const id of w.sources) {
+      if (termName[id]) continue;
+      const src = byId(id);
+      const expr = metricExpr(src, itemsName, (f) => (local ? `${src.id}.${f}` : stateName(src, f)));
+      if (/^[\w.]+$/.test(expr)) {
+        termName[id] = expr;
+        continue;
+      }
+      let name = camelCase(src.label) + (TERM_SUFFIX[src.kind] ?? "");
+      while (used.has(name)) name += "2";
+      used.add(name);
+      termName[id] = name;
+      own.push(`<const/${name}=${expr}>`);
+    }
     const sources = w.sources.map(byId);
     const names = w.sources.map((id) => termName[id]);
     // Only amounts can hold fractions; their terms (and any total including them) are rounded.
@@ -372,79 +421,124 @@ static function formatNumber(n) {
     if (w.formula === "sum") text = `${tplText(w.prefix)}: \${${total}}`;
     else if (w.formula === "breakdown") text = `${tplText(w.prefix)}: ${names.map((_, i) => show(i)).join(" + ")} = \${${total}}`;
     else text = sources.map((src, i) => PHRASES[src.kind](show(i), src)).join("; ");
-    consts.push(`<const/${textName(w)}=\`${text}\`>`);
+    own.push(`<const/${textName(w)}=\`${text}\`>`);
   }
+  const consts = local ? [] : summaries.flatMap((w) => before[w.id]);
 
-  // The widgets.
+  // The widgets: bound to the root's <let>s, or seeded and named by a tag variable.
   const elements = spec.widgets.map((w) => {
     let a = attrs({ id: w.id, label: w.label, ...PARAMS[w.kind](w) }, "    ");
     if (w.kind === "filter") a += ` items=${sourceIds.includes(w.id) ? itemsName(w) : literal(w.items, "    ")}`;
     for (const [k, src] of Object.entries(FUNCTIONS[w.kind]?.(w) ?? {})) a += ` ${k}=${src}`;
-    for (const f of FIELDS[w.kind]) a += ` ${f}:=${stateName(w, f)}`;
+    for (const f of FIELDS[w.kind]) a += local ? ` ${f}=${literal(initial(w, f), "    ")}` : ` ${f}:=${stateName(w, f)}`;
     if (w.kind === "summary") a += ` text=${textName(w)}`;
-    return `  <${tagName(w.kind)}${a}/>`;
+    const tagVar = local && w.kind !== "summary" ? `/${w.id}` : "";
+    const element = `  <${tagName(w.kind)}${tagVar}${a}/>`;
+    return local && w.kind === "summary" ? [...before[w.id].map((c) => "  " + c), element].join("\n") : element;
   });
 
-  // External events.
+  const head = [statics.join("\n\n"), [...lets, ...consts].join("\n")].filter(Boolean);
+  return `${head.map((h) => h + "\n\n").join("")}<div data-role="dashboard">
+${elements.join("\n")}
+${local ? `  // External events, through the widgets' APIs. Declared beside the widgets: a function at the
+  // root would read their tag variables through hoisted getters, which Marko 6.4.6 compiles
+  // without the scope they need (see frameworks/marko/README.md).
+${localReceive(widgets)}
+` : ""}</div>
+
+// External events: the root's tag variable, which the adapter calls with each message.
+${local ? "<return=receive>\n" : rootReceive(widgets)}`;
+}
+
+// Root-lifted state: the function assigns the root's <let>s.
+function rootReceive(widgets) {
   const setCases = widgets.map((w) => `      case "${w.id}":\n${FIELDS[w.kind].map((f) => `        ${stateName(w, f)} = state.${f};\n`).join("")}        break;`);
   const clocks = widgets.filter((w) => w.kind === "clock");
   const feeds = widgets.filter((w) => w.kind === "feed");
-  const cases = [`      case "serverSet":
-        setWidget(msg.widget, msg.state);
-        break;`];
+  const cases = [`    case "serverSet":
+      setWidget(msg.widget, msg.state);
+      break;`];
   if (clocks.length) {
-    cases.push(`      case "tick":
-${clocks.map((w) => `        if (${stateName(w, "running")}) ${stateName(w, "seconds")}++;\n`).join("")}        break;`);
+    cases.push(`    case "tick":
+${clocks.map((w) => `      if (${stateName(w, "running")}) ${stateName(w, "seconds")}++;\n`).join("")}      break;`);
   }
   if (feeds.length) {
-    cases.push(`      case "notify":
-        switch (msg.widget) {
-${feeds.map((w) => `          case "${w.id}":\n            ${stateName(w, "entries")} = ${stateName(w, "entries")}.concat(msg.entry);\n            break;`).join("\n")}
-        }
-        break;`);
+    cases.push(`    case "notify":
+      switch (msg.widget) {
+${feeds.map((w) => `        case "${w.id}":\n          ${stateName(w, "entries")} = ${stateName(w, "entries")}.concat(msg.entry);\n          break;`).join("\n")}
+      }
+      break;`);
   }
-  cases.push(`      case "snapshot":
-        for (const [id, state] of Object.entries(msg.state.widgets)) setWidget(id, state);
-        break;`);
-
-  return `${statics.length ? statics.join("\n\n") + "\n\n" : ""}${lets.join("\n")}
-${consts.length ? consts.join("\n") + "\n" : ""}
-<div data-role="dashboard">
-${elements.join("\n")}
-</div>
-
-// External events: the root's tag variable, which the adapter calls with each message.
-<return=(msg) => {
+  cases.push(`    case "snapshot":
+      for (const [id, state] of Object.entries(msg.state.widgets)) setWidget(id, state);
+      break;`);
+  return `<return=(msg) => {
   function setWidget(id, state) {
     switch (id) {
 ${setCases.join("\n")}
     }
   }
   switch (msg.type) {
-${cases.join("\n").replace(/^/gm, "  ").replace(/^ {2}$/gm, "")}
+${cases.join("\n")}
   }
 }>
 `;
 }
 
-export function emit(spec) {
+// Widget-local state: the function calls the widgets' returned APIs.
+function localReceive(widgets) {
+  const clocks = widgets.filter((w) => w.kind === "clock");
+  const hasFeed = widgets.some((w) => w.kind === "feed");
+  const cases = [`    case "serverSet":
+      widgets[msg.widget].set(msg.state);
+      break;`];
+  if (clocks.length) {
+    cases.push(`    case "tick":
+${clocks.map((w) => `      ${w.id}.tick();\n`).join("")}      break;`);
+  }
+  if (hasFeed) {
+    cases.push(`    case "notify":
+      widgets[msg.widget].notify(msg.entry);
+      break;`);
+  }
+  cases.push(`    case "snapshot":
+      for (const [id, state] of Object.entries(msg.state.widgets)) widgets[id].set(state);
+      break;`);
+  const ids = widgets.map((w) => w.id);
+  const list = `{ ${ids.join(", ")} }`;
+  const widgetsLine = list.length <= 80 ? `  const widgets = ${list};` : `  const widgets = {\n${ids.map((id) => `    ${id},`).join("\n")}\n  };`;
+  const receive = `<const/receive=(msg) => {
+${widgetsLine}
+  switch (msg.type) {
+${cases.join("\n")}
+  }
+}>`;
+  return receive.replace(/^(?=.)/gm, "  ");
+}
+
+export function emit(spec, options = {}) {
+  const local = (options.state ?? "root") === "local";
   const files = {
     ...templateFiles({ name: "dashboard", title: "Dashboard" }),
-    "src/app.marko": appFile(spec),
+    "src/app.marko": appFile(spec, local),
   };
   for (const kind of [...new Set(spec.widgets.map((w) => w.kind))]) {
-    files[`src/tags/${tagName(kind)}.marko`] = TAGS[kind];
+    files[`src/tags/${tagName(kind)}.marko`] = local ? localTag(kind) : TAGS[kind];
   }
   return {
     files,
     style: {
       components: "one reusable tag per widget kind (src/tags/<kind>-widget.marko), configured by attributes",
-      state: "every widget's state as <let>s in the root template, bound down with := to controllable <let>s in the kind tags",
-      externalEvents: "app.marko <return>s a function (the root's tag variable) that assigns the widgets' <let>s",
+      state: local
+        ? "each widget's state as <let>s in its own tag, seeded from attributes; the tag <return>s its state and an API (set, tick, notify), read by the root through tag variables"
+        : "every widget's state as <let>s in the root template, bound down with := to controllable <let>s in the kind tags",
+      externalEvents: local
+        ? "app.marko <return>s a function (the root's tag variable) that calls the widgets' returned APIs"
+        : "app.marko <return>s a function (the root's tag variable) that assigns the widgets' <let>s",
       lists: "<for by=\"id\"> for keyed items, <for> by index for fixed lists, <for from to> for stars; immutable updates",
       conditionals: "<if>",
       derived: "<const> (field errors, filtered lists, summary terms and texts)",
-      events: "handlers in markup (onClick); value:=, checked/checkedChange and <select value:=> for inputs; the number input commits only valid numbers, keeping an invalid edit in a local pending <let>",
+      events: "handlers in markup (onClick); value:=, checked/checkedChange and <select value:=> for inputs; the number input commits only valid numbers, keeping an invalid edit in a local pending <let> until the value changes",
       build: "Vite + @marko/vite (linked: false), production mode, client-only mount, hidden source maps",
     },
   };
