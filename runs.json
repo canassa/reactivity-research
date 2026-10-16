@@ -105,6 +105,10 @@
     }
   },
   "big-table": {
-    "$bench": { "$comment": "N=1 only: the js-framework-benchmark app, the calibration point (scenarios/big-table/README.md); growth with N is left to ./rr work.", "sizes": [1], "seeds": [1] }
+    "$bench": { "$comment": "N=1 only: the js-framework-benchmark app, the calibration point (scenarios/big-table/README.md); growth with N is left to ./rr work.", "sizes": [1], "seeds": [1] },
+    "solid": {
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3]
+    }
   }
 }
