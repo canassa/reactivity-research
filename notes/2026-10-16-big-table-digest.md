@@ -19,6 +19,22 @@ Wrote `scenarios/big-table/digest.js` and `frameworks/digest/runtime-table.js`.
   append and serverRows are O(rows) in calls; swap and remove are also O(rows) in time through the
   reconciler's walk even though swap is 6 calls.
 
+## Review follow-up
+
+- **rowDigest option.** `runtime-table.js` digests a row only when it is new or replaced and
+  relies on by-hand row digests (`every`, `serverUpdate`, `sel`'s previous row, a dynamic
+  dependency edge). The emitter now has `rowDigest: changed | all`; `all` runs every row's list
+  as the other digest runtimes do. Both pass the checks (sizes 1-64, seeds 1-3, locality 1.00x).
+  `all` is 33 B smaller at N=1 and 720 B at N=256, but every row control costs O(rows) calls
+  (select 7,005 at 1k rows, 70,005 at 10k); `changed` stays at 11-26. Both are in `runs.json`.
+- **Counter shaping in unique-components.** `rm` (splice, "one call") is gone; removal is a
+  `filter`, +4 calls per remove (57 to 61), sizes within +65 B at N=256 and -10 B at N=1.
+- **Smaller fixes.** `serverRows` uses `reduce` for `nextId` (no spread of every id); `dispose`
+  resets `X`; the emitter collects its imports in a used-set instead of a regexp over its text;
+  the README lists the scenario-specific helpers in `runtime-table.js`.
+- **/tmp filled up** (other jobs' leaked chrome profiles) and the shell lost its output, so the
+  runs used `TMPDIR` under the home directory and results were read from files.
+
 ## What was learned
 
 - **Call counts can hide work.** The first version removed rows with `indexOf` and `splice` and

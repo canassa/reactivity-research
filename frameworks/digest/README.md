@@ -441,8 +441,9 @@ the strategy:
   5, 0, 20, 0], …], ["Design tickets", …], receive)`; the runtime passes a widget's label as its
   factory's first argument. −160 B at N=256. Moving every string of a row into the table
   instead (one array per row) was +72 B.
-- **Smaller pieces:** a list item's remove is `rm(list, r.i)`, an in-place splice (unique: one
-  call where `filter` called back once per item, so a remove costs fewer calls); a checklist
+- **Smaller pieces:** a list item's remove was an in-place splice, `rm(list, r.i)` (unique), which was
+  shaped to the call counter (one call where `filter` calls back once per item) and has been
+  replaced by the natural `list = list.filter((i) => i != r.i)` (see the end of this file); a checklist
   with no done item starts as a plain `L(…)` list (an absent `done` reads as not done; unique);
   an item's record is its binding list itself (`(r = B = []).n = …`, unique); `show` takes the
   condition as it is (every condition is a typed bool; unique); `bind(d, f, k, n, last)` takes
@@ -654,7 +655,7 @@ Seventh pass (`runs.json` sizes and seeds, sums of the 27 totals against the ste
 | A static suffix too (`${n} minutes`), the text node put first (`text(d, f, 1)`) | sum +173 B | dropped |
 | No end tags at a template's end (unique; then shared) | sum −1,529 B; −183 B | kept |
 | The same on shared, keeping a final `</button>` | sum −12 B | dropped: the buttons were part of the gain |
-| A list item's remove as an in-place `rm(list, item)` (unique) | sum −158 B, fewer calls per remove | kept |
+| A list item's remove as an in-place `rm(list, item)` (unique) | sum −158 B, fewer calls per remove | dropped later: it was shaped to the call counter; back to `filter` (+4 calls per remove) |
 | Item bindings take the item as their argument (`text(0, (i) => i.text)`) (unique) | about −150 B, then ±50 B once the rest was in | dropped: noise, and a runtime that passes arguments to every binding |
 | The same for item handlers, the item on the control (`X.h(X.r?.i)`) | +26 B at N=1, then sum +135 B | dropped |
 | An item's record as its binding list (`(r = B = []).n = …`) (unique; then shared) | the reverse costs +294 B; shared sum +10 B | kept on unique only |
@@ -889,3 +890,55 @@ with `indexOf` and `splice`, which hid the scan from `./rr work`, and was change
 **Honest limits.** The row digest on `serverRows` and a snapshot re-checks every row (their
 objects are new), as it must. Creating 10,000 rows runs about 17 calls a row (the record, the
 clone, the bindings and their first run), which is more than a hand-written vanilla table.
+
+### The row digest, a departure from the other runtimes
+
+In `runtime.js` and `runtime-unique.js` a keyed list's digest runs the binding list of **every**
+item, so each binding checks itself. `runtime-table.js` does **not** by default: the table's
+digest runs a row's list only when the row is new or its object was replaced (`r.i !== i`). That
+is a dirty flag on the row object, and it only works because every in-place edit digests its
+rows by hand: `every` (update every k-th), a `serverUpdate`, and `sel`, which digests the
+**previously selected row**. That last call is a dynamic dependency edge (a row that reads
+`selected` is re-checked when another row writes it), found at run time through the record map,
+not wired at build time as `dep` is.
+
+The emitter has a style option for it, `rowDigest`: `changed` (the default, above) or `all`
+(`./rr check big-table digest --row-digest all`). `all` behaves as the other runtimes do: the
+table digest runs every row's list, a row control belongs to the table's list, and the by-hand
+digests (`every`'s, `sel`'s, `serverUpdate`'s) are gone. `runs.json` measures both. Both pass
+`./rr check` (sizes 1, 4, 16, 64, seeds 1-3, locality 1.00x in N). What the departure buys and
+costs (N=16 for work, `--rows` 1,000 and 10,000; sizes are the median of 3 seeds):
+
+| | `changed` | `all` |
+|---|---|---|
+| bytes N=1 / 64 / 256 | 1,898 / 12,462 / 35,985 | 1,865 / 12,180 / 35,266 |
+| fit, N >= 4 | 3,499 + 128.6 B/table | 3,440 + 125.9 B/table |
+| select, calls at 1k / 10k rows | 11-26 / 11-26 | 7,005-22,005 / 70,005-220,005 |
+| toggle (t2) | 23 / 23 | 18,009 / 180,009 |
+| bump (t3) | 25 / 25 | 22,005 / 220,005 |
+| remove (t1) | 1,012 / 10,012 | 7,998 / 79,998 |
+| swap (t1) | 6 / 6 (plus a walk of the rows) | 7,006 / 70,006 |
+| `serverUpdate` of 3 rows (t3) | 69 / 69 | 22,005 / 220,005 |
+| update every k-th (t3) | 2,881 / 28,756 | 22,131 / 221,256 |
+
+So the departure costs 33 B at N=1 and 720 B at N=256 (2.7 B per table: the by-hand digests and
+the record lookups) and turns every row control from O(rows) into O(1) in calls. `all` is the
+honest "digest as the others do it" point; it is local in N but not in rows.
+
+### What `runtime-table.js` holds that is scenario code
+
+Its "runtime" bytes are partly big-table's: the shared mechanisms are `bind`, `text`, `table`,
+`rows` (the reconciler), `go`, `app` and the delegated listener; the scenario-specific helpers
+are `sel`, `every` (update every k-th), `swap`, `by` (sort order), `nx` (the next status),
+the number formats (`g`, `cur`, `pct`) and the calendar (`md`, `dm`, `nd`, `cal`). The README's
+runtime-against-app split therefore overstates the generic part.
+
+### Shaping to the call counter (unique-components, corrected)
+
+`runtime-unique.js` had `rm(l, i) = l.splice(l.indexOf(i), 1)`, commented as one call where a
+`filter` calls back once per item. That chose the code for the counter, not for the approach (the
+same shaping reverted on big-table). It is now `list = list.filter((i) => i != r.i)`, as
+big-component writes it. `./rr check unique-components digest` still passes (locality 2.1x). Remove
+costs 61 calls instead of 57 at N=16-128 (81 instead of 77 at 256). Sizes: N=1 1,609 to 1,599 B,
+N=16 4,793 to 4,814, N=64 12,616 to 12,620, N=256 35,617 to 35,682 (fit 2,339 + 134.5 to 2,333 +
+134.7 B/widget).
