@@ -33,46 +33,49 @@ view model =
 What tea-local emits, once per widget **kind** (every counter shares it):
 
 ```js
-const Inc = [0], Dec = [1];
+// type Msg = Inc | Dec | Reset                 (Inc is tag 0, Dec tag 1, Reset tag 2)
 
-function update(model, msg, c) {          // the reducer, kept as written
-  switch (msg[0]) {
-    case 0: return { value: Math.min(c.max, model.value + c.step) };
-    case 1: return { value: Math.max(c.min, model.value - c.step) };
-  }
-}
-
-export function counter(parent, c, model) {
-  const self = instance(model, update, patch, c);  // the model lives in this closure
-  const root = widget(parent, c, "counter", self); // DOM built once
-  const value = element(root, "output", null, " "); // a dynamic text: a placeholder node
+export function counter(parent, id, heading, step, min, max, start, model) {
+  const self = instance(model, update, patch);       // the model lives in this closure
+  const root = widget(parent, id, heading, "counter", self); // DOM built once; registered by id
+  const value = element(root, "output", null, " ");  // a dynamic text: a placeholder node
   const dec = element(root, "button", null, "-");
-  on(dec, "click", () => self.send(Dec));          // the event goes to this instance only
+  on(dec, "click", () => self.send(1));               // Dec, to this instance only
   // …
-  function patch() {                               // this instance's binding list
+  function patch() {                                  // this instance's binding list
     const m = self.m;
-    setText(value, m.value);                       // skipped if the text is unchanged
-    setProp(dec, "disabled", m.value <= c.min);    // skipped if already equal
+    setText(value, m.value);                          // skipped if the text is unchanged
+    setProp(dec, "disabled", m.value <= min);         // skipped if already equal
   }
-  return self;                                     // instance() scheduled the first patch
-}
+  function update(model, tag) {                       // the reducer, kept as written
+    switch (tag) {
+      case 0: return { value: Math.min(max, model.value + step) };
+      case 1: return { value: Math.max(min, model.value - step) };
+      // …
+    }
+  }
+}                                                     // instance() scheduled the first patch
 ```
 
-`send` is tiny and lives in the runtime:
+A message is sent as its constructor's tag and its argument, if any (`send(1)`,
+`send(0, text)`): the same message as a `[tag, value]` array, without allocating it. `send` is
+tiny and lives in the runtime:
 
 ```js
-send: (msg) => set(update(self.m, msg, config)),
+send: (tag, value) => set(update(self.m, tag, value)),
 set(next) { if (next !== self.m) { self.m = next; schedule(patch); /* + watchers */ } },
 ```
 
-`schedule` collects patches in a `Set` and runs them in one microtask, so several messages
-cost one patch. There are no dirty bits, no dependency tracking, and no comparison of
-anything except the final DOM values.
+`schedule` collects patches in a `Set` and runs them in one microtask (queued with the first
+patch scheduled after the last flush), so several messages cost one patch. There are no dirty
+bits, no dependency tracking, and no comparison of anything except the final DOM values.
 
-Each widget is one call with its own config and initial model:
+Each widget is one call with its id, heading, config fields (positional, in its kind's order)
+and initial model; the widget frame keeps the instance in a registry by id, so the app keeps
+nothing:
 
 ```js
-const w1 = counter(main, { id: "w1", label: "Design tickets", step: 5, min: 0, max: 20, start: 0 }, { value: 0 });
+counter(main, "w1", "Design tickets", 5, 0, 20, 0, { value: 0 });
 ```
 
 ## Lists, summaries and external events
@@ -88,24 +91,26 @@ replaced (vendored until October 2026, about 480 B brotli); its worst case is a 
 which moves every node but one. The PR's array edit journal, which comes from beni's owned
 lists, is left out: the first pass already skips unchanged rows.
 
-**Summaries** read other widgets' state. A summary instance subscribes to the instances it reads
-(`source.watch(patch)`). When one of their models changes, for any reason, the summary's patch
-is scheduled in the same flush. It recomputes its line from the sources' current models:
+**Summaries** read other widgets' state. A summary subscribes to the instances it reads,
+named by id (`widgets.get(id).watch(patch)`). When one of their models changes, for any reason,
+the summary's patch is scheduled in the same flush. It recomputes its line from the sources'
+current models (a term read once is written in place; a breakdown, which shows each term and
+their total, names them):
 
 ```js
-summary(main, { id: "w8", label: "…", text: (m3, m6) => `Total: ${m3.value + m6.value}` }, [w3, w6]);
+summary(main, "w8", "…", (m3, m6) => `Total: ${m3.value + m6.value}`, ["w3", "w6"]);
 ```
 
 **External events** go from the adapter's `dispatch` to `App.receive`, which routes them:
 
 | Event | Becomes |
 |---|---|
-| `serverSet` | `widgets[id].set(state)`: the instance's model is replaced |
+| `serverSet` | `widgets.get(id).set(state)`: the instance's model is replaced |
 | `snapshot` | `set` on every instance, each with its own new model |
 | `tick` | the clock's own `Tick` message, sent to each clock instance |
 | `notify` | the feed's `Notify entry` message, sent to that feed |
 
-`settled()` is the microtask flush. `dispose()` removes the dashboard's element: every listener
+`settled()` (in the runtime; the adapter only calls it) resolves after the microtask flush. `dispose()` removes the dashboard's element: every listener
 sits on a node inside it, and the app has no timers or global listeners.
 
 ## The expected trade-off
@@ -124,21 +129,34 @@ sits on a node inside it, and the app has no timers or global listeners.
 ## unique-components
 
 `scenarios/unique-components/tea-local.js` runs the same strategy when every widget is its own
-component type. Nothing is shared per kind, so each widget gets its own module: its initial
-model, a reducer with one `case` per message (written out from the message's kind and ops, never
-interpreted), and a factory with its own static template, event wiring and `patch` (derived
-texts become template literals). The template is the widget's markup as one string (trailing
-end tags left out, as Solid's compiler does); `widget()` puts it in the section and returns its
-elements in document order, which the factory addresses as `e[3]` (indexes compress better than
-names, measured). Events send messages through `onSend(node, self, msg)` (Elm's `onClick msg`),
-`onValue(node, self, tag)` (`onInput Tag`) and `onInt` (a number input decoded as a bounded
-integer). Only generic helpers are shared: this runtime and a small
-`widgets/frame.js` (the widget frame, placing conditional content before its next attached
-sibling, next item id).
+component type. Nothing is shared per kind, so each widget gets its own module: a factory with
+its initial model (in its `instance` call), its own reducer with one `case` per message (written
+out from the message's kind and ops, never interpreted, declared inside the factory), its own
+static template and `patch` (derived texts become template literals). The template is the
+widget's markup as one string (trailing end tags left out, as Solid's compiler does); `widget()`
+puts it in the section and returns its elements in document order, which the factory addresses
+as `e[3]` (indexes compress better than names, measured). Only generic helpers are shared: this
+runtime and a small `widgets/frame.js` (the widget frame and its registry, conditional
+content, next item id, subscriptions).
 
-- A cross-widget read is a factory parameter: the reader watches the earlier widget's instance.
+- **Events, as Elm's `onClick msg` and `onInput Tag`:** the factory gives `widget()` one message
+  tag per control of its template, in document order (`widget(parent, "w6", html, self, 0, 2, 1)`),
+  and the runtime's `wire` attaches them: a button or checkbox sends its message when clicked, a
+  text input, select or number input sends its tag with its value on input. A list row wires its
+  own controls the same way, with the item's id as the argument (`wire(li, self, [0, 1], item.id)`).
+  One listener per control and one `send` per event, as before; what goes is the
+  per-element `onSend(e[5], self, [3])` call and its index. A number input sends its
+  `valueAsNumber`; its reducer case takes it only as an integer within [min, max] (anything else
+  returns the same model, so nothing is patched), and it is written through `valueAsNumber`.
+- **Conditional content** (`when`, validation errors) is in the template; `place(node, shown)`
+  swaps it with an empty text node of its own while hidden, so it needs neither its parent nor
+  its later siblings to find its way back.
+- **The frame registers every instance by id**: the app calls each factory without keeping
+  what it returns, and a cross-widget reader takes the earlier widget's instance from the
+  registry (`const w3 = widgets.get("w3")`), reads its model in `patch` and watches it.
 - A time-driven int is a subscription, like Elm's `subscriptions`: while its gate is on, the
-  widget's `patch` puts its `tick` in a shared `running` set, and the app's `tick` event calls
-  only those. Otherwise `tick` would cost one call per widget and fail the locality check.
+  widget's `tick` is in a shared `running` set, and the app's `tick` event calls only those.
+  Otherwise `tick` would cost one call per widget and fail the locality check. An app routes
+  `tick` only if it has such a widget, and `notify` only if it has a feed.
 - `notify` is a method of the widgets that have a feed; `serverSet` and `snapshot` use `set`.
-- The slope is the per-component code: model, reducer, DOM creation and bindings.
+- The slope is the per-component code: model, reducer, template, event tags and bindings.

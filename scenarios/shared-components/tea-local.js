@@ -445,7 +445,8 @@ export function summary(parent, id, heading, text, sources) {
 
 const WIDGET_FILE = `import { element } from "../runtime.js";
 
-// The instances by widget id, for the external events that name a widget.
+// The instances by widget id, for the external events that name a widget, the clocks the tick
+// goes to and the sources of summaries.
 export const widgets = new Map();
 
 // The frame every widget shares: its keyed section and its heading. It registers the widget's
