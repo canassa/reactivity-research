@@ -252,8 +252,9 @@ function opAssign(w, op, s, cx) {
     case "toggle": return `!${cur}`;
     case "reset": return q(f.initial);
     case "cycle":
-      cx.options.add(name);
-      return `${name}Options[(${name}Options.indexOf(${cur}) + 1) % ${name}Options.length]`;
+      // The next option, as a chain of comparisons (the last option, or any other value, wraps
+      // to the first).
+      return `(${f.options.slice(0, -1).map((o, i) => `${cur} === ${q(o)} ? ${q(f.options[i + 1])} : `).join("")}${q(f.options[0])})`;
     case "pushText": return `[...${cur}, ${item(q(op[2]))}]`;
     case "pop": return `${cur}.slice(0, -1)`;
     case "shift": return `${cur}.slice(1)`;
@@ -342,7 +343,7 @@ function widgetFile(spec, w) {
   const order = messageOrder(w);
   w = { ...w, messages: order.map((name) => w.messages.find((m) => m.name === name)) };
   const cx = {
-    create: [], patch: [], wire: [], templates: [], html: "", index: 2, own: false, sources: new Set(), options: new Set(), counts: {},
+    create: [], patch: [], wire: [], html: "", index: 2, own: false, sources: new Set(), counts: {},
     name(prefix) { this.counts[prefix] = (this.counts[prefix] ?? 0) + 1; return prefix + this.counts[prefix]; },
   };
   compileView(w, w.view, cx);
@@ -375,7 +376,6 @@ function widgetFile(spec, w) {
   if (timed.length) msgNames.push("Tick");
   if (feed) msgNames.push("Notify Item");
 
-  const optionLines = [...cx.options].map((name) => `const ${name}Options = ${lit(w.fields.find((f) => f.name === name).options)};`);
 
   const fn = [];
   fn.push(`export function ${w.id}(parent) {`);
@@ -402,15 +402,13 @@ function widgetFile(spec, w) {
   fn.push(`}`);
   const body = fn.join("\n");
 
-  const code = [...optionLines, ...cx.templates, `update`, ...cases, body].join("\n");
+  const code = body;
   const used = (names) => names.filter((h) => new RegExp(`\\b${h}\\b`).test(code));
   const out = [
     `import { ${used(RUNTIME).join(", ")} } from "../runtime.js";`,
     `import { ${used(FRAME).join(", ")} } from "./frame.js";`,
     ``,
     `// ${w.label} (${w.kind})`,
-    ...optionLines,
-    ...cx.templates,
     ``,
     body,
     ``,
