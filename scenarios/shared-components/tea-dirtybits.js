@@ -38,8 +38,15 @@ const PARAMS = {
   summary: [],
 };
 
-// Config fields that are functions or derived from the widget's rules: their source.
+// Config fields that are functions or derived from the widget's rules, or records the kind reads
+// by position (a tab's [title, content], an option's [value, label]): their source.
 const DERIVED = {
+  tabs(w) {
+    return literal(w.tabs.map((t) => [t.title, t.content]), "    ");
+  },
+  options(w) {
+    return literal(w.options.map((o) => [o.value, o.label]), "    ");
+  },
   valid(w) {
     if (w.rule.type === "required") return `(text) => text.trim() !== ""`;
     if (w.rule.type === "minLength") return `(text) => text.length >= ${w.rule.min}`;
@@ -260,17 +267,17 @@ export const kind = [
   },
   (parent, [, , label, tabs], id) => {
     const t = section(parent, id, label, "tabs", "<div role=tablist></div><p data-role=tab-content role=tabpanel>");
-    const buttons = tabs.map((tab, i) => {
+    const buttons = tabs.map(([title], i) => {
       const [button] = html("<button data-role=tab role=tab>", t[2]);
       button.dataset.key = i;
-      button.textContent = tab.title;
+      button.textContent = title;
       onClick(button, id, 0, i);
       return button;
     });
     return (s, d) => {
       if (d & 1) {
         buttons.forEach((tab, i) => prop(tab, "ariaSelected", String(i === s.active)));
-        setText(t[3], tabs[s.active].content);
+        setText(t[3], tabs[s.active][1]);
       }
     };
   },
@@ -328,10 +335,10 @@ export const kind = [
   },
   (parent, [, , label, options, extraFor, extraPlaceholder], id) => {
     const [, , select, input] = section(parent, id, label, "choice", "<select data-role=select></select><input type=text data-role=extra>");
-    for (const option of options) {
+    for (const [value, label] of options) {
       const [o] = html("<option>", select);
-      o.value = option.value;
-      o.textContent = option.label;
+      o.value = value;
+      o.textContent = label;
     }
     input.placeholder = extraPlaceholder;
     onInput(select, id, 0);
