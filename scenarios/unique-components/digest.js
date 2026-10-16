@@ -47,7 +47,9 @@ const V = (id, name) => (FEED[id].has(name) ? (id === cur ? `s.${name}` : `O.${i
   : READ[id].has(name) ? `${id}$${name}` : `$${name}`);
 const F = (name) => V(cur, name);
 
-const CMP = { "==": "===", "!=": "!==", "<": "<", "<=": "<=", ">": ">", ">=": ">=" };
+// Both sides of a comparison have the same type (the expressions are typed), so loose equality
+// is strict equality.
+const CMP = new Set(["==", "!=", "<", "<=", ">", ">="]);
 
 // A widget's expression as JavaScript. `reads` collects the earlier widgets it reads.
 function expr(e, reads) {
@@ -67,7 +69,7 @@ function expr(e, reads) {
     case "not": return `!${x(e[1])}`;
     case "if": return `(${x(e[1])} ? ${x(e[2])} : ${x(e[3])})`;
   }
-  if (CMP[e[0]]) return `(${x(e[1])} ${CMP[e[0]]} ${x(e[2])})`;
+  if (CMP.has(e[0])) return `(${x(e[1])} ${e[0]} ${x(e[2])})`;
   throw new Error(`digest: unknown expression ${lit(e)}`);
 }
 
