@@ -9,20 +9,21 @@
 // - The form is ONE module, `Form`, with ONE flat `Model` record (a typed field per state field,
 //   about 1.06 N of them) and ONE `Msg` with a constructor per control. `update` is one case
 //   branch per message, the ops written out as record updates. No interpreter, no field table.
-// - The view is split where an expert would split a long form: `view` lists the sections, each
-//   section is a function (`viewBilling`, named after its title) listing its groups, each group
-//   (a fieldset) a function of its own (`viewKeyboardOptions`). Every one takes the whole form
-//   `Model`: a group reads fields of other groups (derived text, conditions, disabled states),
-//   and passing the exact fields would thread dozens of arguments through. Each `if` of a text
-//   becomes a `let` binding of the function that needs it. Deeper groups stay inline.
+// - The form is flat (no sections or fieldsets), so the view is split by field unit: `view` is
+//   `Ui.widget … (List.concat [ viewLobbyCoins model, … ])`, one function per unit (the run of
+//   top-level nodes belonging to the latest unit they read or write), named after its main field
+//   and returning a `List (Html Msg)`. Every one takes the whole form `Model`: a unit reads fields
+//   of earlier units anywhere in the form, and passing the exact fields would thread dozens of
+//   arguments through. Each `if` of a text becomes a `let` binding of the function that needs it.
+//   A unit's own wrapper (div/header/footer) stays inline in its function.
 // - A conditional section (`when`) is a view function of its own, called as
 //   `Ui.when condition (viewSection model)`, which renders an empty text node while the condition
 //   fails, so siblings keep their positions (and inputs their focus).
 // - No `Html.Lazy`: the guide's advice is to use it on expensive views with arguments that rarely
 //   change. The form is one record that changes on every message, so `lazy viewGroup model` would
-//   never hit; making it pay means passing each group the exact fields it reads (`lazy3`..`lazy7`
-//   with long argument lists), which nobody hand-writes for a form and which costs bytes per group.
-//   Elm's virtual DOM diff of an unchanged group is then the update cost (see ./rr work).
+//   never hit; making it pay means passing each unit the exact fields it reads (`lazy3`..`lazy7`
+//   with long argument lists), which nobody hand-writes for a form and which costs bytes per unit.
+//   Elm's virtual DOM diff of an unchanged unit is then the update cost (see ./rr work).
 // - Types: an `int` is an `Int`, a `bool` a `Bool`, a `text` and an `enum` a `String`, a `list` a
 //   `List` of a type alias per list built by its positional constructor.
 // - The companion is its own module reading the form: its `view` takes `Form.Model` before its own.
@@ -37,6 +38,7 @@
 // - Production build: `elm make --optimize`, then the guide's two uglify-js passes.
 
 import { templateFiles } from "../../frameworks/elm/framework.js";
+import { units } from "./spec.js";
 import { camelCase, pascal } from "../../frameworks/shared/jsx.js";
 
 export const framework = "elm";
@@ -212,7 +214,6 @@ function widgetModule(spec, w, names) {
   const U = (n) => (used.ui.add(n), n);
   const bare = (n) => (used.ui.add(n), n);
   const declarations = []; // helper functions after `view`
-  let depth = 0;
   const claimed = new Set();
   // A view function's name, numbered when taken.
   function claim(base) {
@@ -452,23 +453,7 @@ ${ticks.map((f) => `        ${f.name}Next =
         for (const r of args) fn.reads.add(r);
         return [raw(`Ui.when ${wrap(cond, 10)} (${[name, ...args.map((r) => names[r].value), "model"].join(" ")})`)];
       }
-      case "group": {
-        // The form's sections and their groups are view functions of their own (a fieldset's markup
-        // read as one piece, named after its title); deeper groups stay inline.
-        if (w.kind !== "form" || depth >= 2) return [el(H(n.tag), [], buildNodes(n.children, fn))];
-        const title = n.children[0].parts[0];
-        const name = claim(`view${pascal(title)}`);
-        const slot = declarations.length;
-        declarations.push(null);
-        const inner = newFn("shown");
-        depth++;
-        const body = el(H(n.tag), [], buildNodes(n.children, inner));
-        depth--;
-        declarations[slot] = viewFunction(name, inner, body);
-        const args = [...inner.reads].sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
-        for (const r of args) fn.reads.add(r);
-        return [raw([name, ...args.map((r) => names[r].value), "model"].join(" "))];
-      }
+      case "group": return [el(H(n.tag), [], buildNodes(n.children, fn))];
     }
     throw new Error(`unknown view node ${n.el}`);
   }
@@ -476,11 +461,11 @@ ${ticks.map((f) => `        ${f.name}Next =
   const listViews = [];
 
   // A view function: its signature depends on the widgets its body reads.
-  function viewFunction(name, fn, body) {
+  function viewFunction(name, fn, body, list = false) {
     const reads = [...fn.reads].sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
     const params = [...reads.map((r) => names[r].value), "model"];
-    const types = [...reads.map((r) => `${names[r].mod}.Model`), "Model", "Html Msg"];
-    const doc = layoutDoc(body, 4, 0);
+    const types = [...reads.map((r) => `${names[r].mod}.Model`), "Model", list ? "List (Html Msg)" : "Html Msg"];
+    const doc = list ? listLines(body) : layoutDoc(body, 4, 0);
     let lets = "";
     if (fn.hoists.length) {
       lets = `    let
@@ -498,10 +483,69 @@ ${name} ${params.join(" ")} =
 ${lets}    ${doc}`;
   }
 
+  // The form is a flat sequence of field units: its view is split into one function per unit
+  // (the run of top-level nodes that belong to it), named after the unit's main field and
+  // returning its nodes as a list; `view` concatenates them. A node belongs to the latest unit
+  // among the fields it reads or writes; one that reads none stays with the previous unit.
+  const formUnits = w.kind === "form" ? units(w) : [];
+  const unitIndex = new Map();
+  formUnits.forEach((u, i) => u.names.forEach((nm) => unitIndex.set(nm, i)));
+  const messageFields = (name) => {
+    const m = msgByName(name);
+    return m.field ? [m.field] : (m.ops || []).map((op) => op[1]);
+  };
+  function unitOfNode(n) {
+    let at = -1;
+    const visit = (x) => {
+      if (Array.isArray(x)) {
+        if (x[0] === "f" && unitIndex.has(x[1])) at = Math.max(at, unitIndex.get(x[1]));
+        x.forEach(visit);
+      } else if (x && typeof x === "object") {
+        for (const k of ["msg", "check", "remove"]) if (x[k]) for (const f of messageFields(x[k])) at = Math.max(at, unitIndex.get(f));
+        if (x.field && unitIndex.has(x.field)) at = Math.max(at, unitIndex.get(x.field));
+        Object.values(x).forEach(visit);
+      }
+    };
+    visit(n);
+    return at;
+  }
+  // One element per line, the way elm-format lays out a list that does not fit.
+  function listLines(kids) {
+    const flat = `[ ${kids.map(flatDoc).join(", ")} ]`;
+    return 4 + flat.length <= MAX_WIDTH && !flat.includes("\n") ? flat : kidsLines(kids, 4);
+  }
+
   // The top-level view.
   const rootFn = newFn("shown");
-  const rootKids = buildNodes(w.view, rootFn);
-  const rootDoc = (() => {
+  let rootKids;
+  let unitCalls = null;
+  if (w.kind === "form") {
+    const runs = [];
+    let last = 0;
+    for (const n of w.view) {
+      const u = unitOfNode(n);
+      if (u >= 0) last = u;
+      if (runs.length && runs[runs.length - 1].unit === last) runs[runs.length - 1].nodes.push(n);
+      else runs.push({ unit: last, nodes: [n] });
+    }
+    unitCalls = runs.map((run) => {
+      const name = claim(`view${cap(formUnits[run.unit].main)}`);
+      const slot = declarations.length;
+      declarations.push(null);
+      const inner = newFn("shown");
+      const kids = buildNodes(run.nodes, inner);
+      declarations[slot] = viewFunction(name, inner, kids, true);
+      const args = [...inner.reads].sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
+      for (const r of args) rootFn.reads.add(r);
+      return [name, ...args.map((r) => names[r].value), "model"].join(" ");
+    });
+  } else rootKids = buildNodes(w.view, rootFn);
+  const rootDoc = unitCalls ? (() => {
+    const head = `Ui.widget ${elmString(w.id)} ${elmString(w.label)}`;
+    const flat = `${head} (List.concat ${listBlock(unitCalls, 0)})`;
+    if (4 + flat.length <= MAX_WIDTH && !flat.includes("\n")) return flat;
+    return `${head.replace(/ ("[^"]*")$/, "\n        $1")}\n        (List.concat\n            ${block("[", "]", unitCalls.map((flat) => ({ flat })), 12, true)}\n        )`;
+  })() : (() => {
     const head = `Ui.widget ${elmString(w.id)} ${elmString(w.label)}`;
     const flat = `${head} ${listBlock(rootKids.map(flatDoc), 0)}`;
     if (4 + flat.length <= MAX_WIDTH && !flat.includes("\n")) return flat;
@@ -896,8 +940,8 @@ export function emit(spec) {
       components: "one Form module with one flat Model record (a field per state field) and one Msg (a constructor per control), a case branch per message with the ops as record updates; a Companion module; Ui's generic helpers (widget, when, option, nextId, toggleDone, andMap, onNumberInput)",
       types: "int Int, bool Bool, text and enum String (options as data in the view and in a case for cycle), list a List of a type alias per list built by its positional constructor",
       derived: "computed in view; an if is a let binding of the view function",
-      viewSplit: "view lists sections; a view function per section and per group (fieldset), named after its title, each taking the whole form Model (groups read each other's fields); deeper groups inline",
-      lazy: "none: the form is one record changing on every message, so lazy on the whole model never hits and per-group field threading is not what an expert writes",
+      viewSplit: "the form is flat: view is Ui.widget … (List.concat [ viewX model, … ]) with a view function per field unit, named after its main field, returning List (Html Msg) and taking the whole form Model (units read earlier fields from anywhere); a unit's wrapper inline",
+      lazy: "none: the form is one record changing on every message, so lazy on the whole model never hits and per-unit field threading is not what an expert writes",
       decoder: "Decode.succeed Model |> Ui.andMap (Decode.field ...) per field beyond Decode.map8",
       conditionals: "a view function per conditional section, called as Ui.when condition (viewSection model), which renders an empty text node while the condition fails",
       crossReads: "the view takes the Model of each widget it reads, before its own",
