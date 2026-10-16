@@ -103,7 +103,7 @@ function update([, , , step, min, max, start], s, msg) {
 
 function view(parent, [, , label, step, min, max], id) {
   const [, , value, dec, inc, reset] = section(parent, id, label, "counter",
-    "<output data-role=value></output><button data-role=dec></button><button data-role=inc></button><button data-role=reset>Reset</button>");
+    "<output data-role=value></output><button data-role=dec></button><button data-role=inc></button><button data-role=reset>Reset");
   dec.textContent = "-" + step;
   inc.textContent = "+" + step;
   onClick(dec, id, 1);
@@ -136,9 +136,9 @@ function update(c, s, msg) {
 }
 
 function view(parent, [, , label, items], id) {
-  const t = section(parent, id, label, "toggles", "<ul></ul><p data-role=count></p>");
+  const t = section(parent, id, label, "toggles", "<ul></ul><p data-role=count>");
   const boxes = items.map((name, i) => {
-    const [, , box] = html("<li><label><input type=checkbox data-role=toggle></label></li>", t[2]);
+    const [, , box] = html("<li><label><input type=checkbox data-role=toggle>", t[2]);
     box.dataset.key = i;
     box.after(name);
     onCheck(box, id, 0, i);
@@ -170,7 +170,7 @@ function update(c, s, msg) {
 }
 
 function view(parent, [, , label, placeholder, valid, message], id) {
-  const [, , input, p] = section(parent, id, label, "field", "<input type=text data-role=input><p data-role=error></p>");
+  const [, , input, p] = section(parent, id, label, "field", "<input type=text data-role=input><p data-role=error>");
   input.placeholder = placeholder;
   p.textContent = message;
   onInput(input, id, 0);
@@ -215,13 +215,13 @@ function update(c, s, msg) {
 
 function view(parent, [, , label, placeholder, addText, removeText], id) {
   const [, , draft, add, ul, left] = section(parent, id, label, "todo",
-    "<input type=text data-role=draft><button data-role=add></button><ul></ul><p data-role=left></p>");
+    "<input type=text data-role=draft><button data-role=add></button><ul></ul><p data-role=left>");
   draft.placeholder = placeholder;
   add.textContent = addText;
   onInput(draft, id, 0);
   onClick(add, id, 1);
   const items = list(ul, (item) => {
-    const [li, box, label, remove] = html("<li><input type=checkbox data-role=toggle><span></span><button data-role=remove></button></li>");
+    const [li, box, label, remove] = html("<li><input type=checkbox data-role=toggle><span></span><button data-role=remove>");
     li.dataset.key = item.id;
     remove.textContent = removeText;
     onCheck(box, id, 2, item.id);
@@ -258,9 +258,9 @@ function update(c, s, msg) {
 }
 
 function view(parent, [, , label, tabs], id) {
-  const t = section(parent, id, label, "tabs", "<div role=tablist></div><p data-role=tab-content role=tabpanel></p>");
+  const t = section(parent, id, label, "tabs", "<div role=tablist></div><p data-role=tab-content role=tabpanel>");
   const buttons = tabs.map((tab, i) => {
-    const [button] = html("<button data-role=tab role=tab></button>", t[2]);
+    const [button] = html("<button data-role=tab role=tab>", t[2]);
     button.dataset.key = i;
     button.textContent = tab.title;
     onClick(button, id, 0, i);
@@ -292,7 +292,7 @@ function update(c, s, msg) {
 }
 
 function view(parent, [, , label, showText, hideText, body], id) {
-  const [, , toggle, p] = section(parent, id, label, "panel", "<button data-role=toggle></button><p data-role=body></p>");
+  const [, , toggle, p] = section(parent, id, label, "panel", "<button data-role=toggle></button><p data-role=body>");
   p.textContent = body;
   onClick(toggle, id, 0);
   const shown = branch(p);
@@ -328,7 +328,7 @@ function update(c, s, msg) {
 function view(parent, [, , label, options, extraFor, extraPlaceholder], id) {
   const [, , select, input] = section(parent, id, label, "choice", "<select data-role=select></select><input type=text data-role=extra>");
   for (const option of options) {
-    const [o] = html("<option></option>", select);
+    const [o] = html("<option>", select);
     o.value = option.value;
     o.textContent = option.label;
   }
@@ -364,7 +364,7 @@ function update(c, s, msg) {
 }
 
 function view(parent, [, , label, format], id) {
-  const [, , input, formatted] = section(parent, id, label, "amount", "<input type=number data-role=input><output data-role=formatted></output>");
+  const [, , input, formatted] = section(parent, id, label, "amount", "<input type=number data-role=input><output data-role=formatted>");
   // Only a valid number becomes a message; anything else stays in the input as typed.
   input.addEventListener("input", () => {
     const value = input.valueAsNumber;
@@ -401,11 +401,11 @@ export function matches(items, query) {
 }
 
 function view(parent, [, , label, items, placeholder], id) {
-  const [, , input, ul, count] = section(parent, id, label, "filter", "<input type=text data-role=query><ul></ul><p data-role=matches></p>");
+  const [, , input, ul, count] = section(parent, id, label, "filter", "<input type=text data-role=query><ul></ul><p data-role=matches>");
   input.placeholder = placeholder;
   onInput(input, id, 0);
   const rows = list(ul, (item) => {
-    const [li] = html("<li></li>");
+    const [li] = html("<li>");
     li.dataset.key = item.id;
     return [li, (item) => setText(li, item.text)];
   });
@@ -437,10 +437,10 @@ function update(c, s, msg) {
 }
 
 function view(parent, [, , label, stars, labels], id) {
-  const t = section(parent, id, label, "rating", "<div></div><p data-role=rating-label></p>");
+  const t = section(parent, id, label, "rating", "<div></div><p data-role=rating-label>");
   const buttons = [];
   for (let n = 1; n <= stars; n++) {
-    const [button] = html("<button data-role=star></button>", t[2]);
+    const [button] = html("<button data-role=star>", t[2]);
     button.dataset.key = n;
     onClick(button, id, 0, n);
     buttons.push(button);
@@ -477,10 +477,10 @@ function update(c, s, msg) {
 }
 
 function view(parent, [, , label, emptyText, dismissText], id) {
-  const [, , ul, p] = section(parent, id, label, "feed", "<ul></ul><p data-role=empty></p>");
+  const [, , ul, p] = section(parent, id, label, "feed", "<ul></ul><p data-role=empty>");
   p.textContent = emptyText;
   const entries = list(ul, (entry) => {
-    const [li, label, dismiss] = html("<li><span></span><button data-role=dismiss></button></li>");
+    const [li, label, dismiss] = html("<li><span></span><button data-role=dismiss>");
     li.dataset.key = entry.id;
     dismiss.textContent = dismissText;
     onClick(dismiss, id, 0, entry.id);
@@ -530,7 +530,7 @@ function formatTime(seconds) {
 
 function view(parent, [, , label, startText, stopText, resetText], id) {
   const [, , time, start, stop, reset] = section(parent, id, label, "clock",
-    "<output data-role=time></output><button data-role=start></button><button data-role=stop></button><button data-role=reset></button>");
+    "<output data-role=time></output><button data-role=start></button><button data-role=stop></button><button data-role=reset>");
   start.textContent = startText;
   stop.textContent = stopText;
   reset.textContent = resetText;
@@ -555,7 +555,7 @@ import { section } from "./widget.js";
 // A summary has no state of its own: \`text(widgets)\` derives its line from other widgets,
 // and the app's patch calls it again only when a field it reads is dirty.
 function view(parent, [, , label, text], id) {
-  const [, , line] = section(parent, id, label, "summary", "<p data-role=summary></p>");
+  const [, , line] = section(parent, id, label, "summary", "<p data-role=summary>");
   return (widgets) => setText(line, text(widgets));
 }
 
@@ -722,7 +722,7 @@ ${tick}
 // Builds every widget once. The returned patch runs each dirty widget's patch, then the
 // summaries whose sources have a dirty bit they read.
 export function view(root, model) {
-  const dash = html("<div data-role=dashboard></div>", root)[0];
+  const dash = html("<div data-role=dashboard>", root)[0];
   const w = model.widgets;
   const patches = {};
   // A summary's state is the whole model: it derives its line from other widgets.

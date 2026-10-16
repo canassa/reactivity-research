@@ -56,6 +56,13 @@ export async function build(dir) {
   return { outDir, html: path.join(outDir, "index.html"), scripts };
 }
 
+// A static template's markup with the closing tags at its very end left out, as Solid's
+// compiler writes its templates: the HTML parser closes every element still open at the end of
+// the input, so the parsed nodes are the same.
+export function trimTemplate(markup) {
+  return markup.replace(/(<\/[a-z][a-z0-9]*>)+$/, "");
+}
+
 // The exact versions of everything that shapes the output, from the lockfile.
 export function versions() {
   const lock = JSON.parse(fs.readFileSync(path.join(HERE, "package-lock.json"), "utf8"));

@@ -18,7 +18,7 @@
 // - Events build a message and send it; patches are batched into one microtask.
 // - Keyed lists patch changed rows, remove gone ones and move misplaced nodes in one walk.
 
-import { templateFiles } from "../../frameworks/tea-dirtybits/framework.js";
+import { templateFiles, trimTemplate } from "../../frameworks/tea-dirtybits/framework.js";
 import { literal, tplText } from "../../frameworks/shared/jsx.js";
 
 export const framework = "tea-dirtybits";
@@ -333,7 +333,7 @@ function widgetModule(w) {
           if (n.remove) row += `<button data-role=${n.remove}>${esc(n.removeText)}</button>`;
           row += `</li>`;
           L(`const ${l} = list(${node()}, (item) => {`);
-          L(`  const r = html(${J(row)});`);
+          L(`  const r = html(${J(trimTemplate(row))});`);
           L(`  r[0].dataset.key = item.id;`);
           if (n.check) {
             use("onCheck", "prop");
@@ -419,7 +419,7 @@ ${arms.join("\n")}
 
 // Builds the widget once and returns its static patch.
 export function view(parent, id) {
-  const t = html(${J(markup)}, parent);
+  const t = html(${J(trimTemplate(markup))}, parent);
   t[0].dataset.key = id;
 ${body.join("\n")}
   return (${args}) => {
