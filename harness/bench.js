@@ -415,7 +415,8 @@ function resultsDir(scenario, suffix = "") {
 async function remoteBench(args, rest) {
   const host = String(args.remote);
   const git = (...a) => execFileSync("git", a, { cwd: ROOT, encoding: "utf8" }).trim();
-  if (git("status", "--porcelain")) throw new Error("--remote needs a clean working tree: commit (and push) first");
+  // Untracked files (e.g. local results/cpu runs) do not change what the remote checks out.
+  if (git("status", "--porcelain", "--untracked-files=no")) throw new Error("--remote needs a clean working tree: commit (and push) first");
   git("fetch", "-q", "origin");
   const sha = git("rev-parse", "HEAD");
   const pushed = spawnSync("git", ["merge-base", "--is-ancestor", sha, "origin/main"], { cwd: ROOT }).status === 0;
