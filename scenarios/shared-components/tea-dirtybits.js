@@ -225,12 +225,10 @@ function view(parent, c, id) {
     remove.textContent = c.removeText;
     onCheck(box, id, 2, item.id);
     onClick(remove, id, 3, item.id);
-    const patch = (item) => {
+    return [li, (item) => {
       prop(box, "checked", item.done);
       setText(label, item.text);
-    };
-    patch(item);
-    return [li, patch];
+    }];
   });
   return (s, d) => {
     if (d & 2) prop(draft, "value", s.draft);
@@ -244,7 +242,7 @@ function view(parent, c, id) {
 export const kind = { update, view };
 `,
 
-  tabs: `import { mark, html, setText, attr, onClick } from "../runtime.js";
+  tabs: `import { mark, html, setText, prop, onClick } from "../runtime.js";
 import { section } from "./widget.js";
 
 // Dirty bits: active 1. Message tags: select 0 (id: the tab's index).
@@ -269,7 +267,7 @@ function view(parent, c, id) {
   });
   return (s, d) => {
     if (d & 1) {
-      tabs.forEach((tab, i) => attr(tab, "aria-selected", String(i === s.active)));
+      tabs.forEach((tab, i) => prop(tab, "ariaSelected", String(i === s.active)));
       setText(t[3], c.tabs[s.active].content);
     }
   };
@@ -278,7 +276,7 @@ function view(parent, c, id) {
 export const kind = { update, view };
 `,
 
-  panel: `import { mark, setText, attr, onClick, branch } from "../runtime.js";
+  panel: `import { mark, setText, prop, onClick, branch } from "../runtime.js";
 import { section } from "./widget.js";
 
 // Dirty bits: open 1. Message tags: toggle 0.
@@ -299,7 +297,7 @@ function view(parent, c, id) {
   const body = branch(p);
   return (s, d) => {
     if (d & 1) {
-      attr(toggle, "aria-expanded", String(s.open));
+      prop(toggle, "ariaExpanded", String(s.open));
       setText(toggle, s.open ? c.hideText : c.showText);
       body(s.open);
     }
@@ -408,7 +406,6 @@ function view(parent, c, id) {
   const items = list(ul, (item) => {
     const [li] = html("<li></li>");
     li.dataset.key = item.id;
-    li.textContent = item.text;
     return [li, (item) => setText(li, item.text)];
   });
   return (s, d) => {
@@ -424,7 +421,7 @@ function view(parent, c, id) {
 export const kind = { update, view };
 `,
 
-  rating: `import { mark, html, setText, attr, onClick } from "../runtime.js";
+  rating: `import { mark, html, setText, prop, onClick } from "../runtime.js";
 import { section } from "./widget.js";
 
 // Dirty bits: stars 1. Message tags: rate 0 (id: the star's number).
@@ -450,7 +447,7 @@ function view(parent, c, id) {
   return (s, d) => {
     if (d & 1) {
       stars.forEach((button, i) => {
-        attr(button, "aria-pressed", String(i < s.stars));
+        prop(button, "ariaPressed", String(i < s.stars));
         setText(button, i < s.stars ? "★" : "☆");
       });
       setText(t[3], c.labels[s.stars]);
@@ -484,7 +481,6 @@ function view(parent, c, id) {
   const entries = list(ul, (entry) => {
     const [li, label, dismiss] = html("<li><span></span><button data-role=dismiss></button></li>");
     li.dataset.key = entry.id;
-    label.textContent = entry.text;
     dismiss.textContent = c.dismissText;
     onClick(dismiss, id, 0, entry.id);
     return [li, (entry) => setText(label, entry.text)];

@@ -88,20 +88,25 @@ export function onInput(n, widget, type) {
   n.addEventListener("input", () => send({ widget, type, value: n.value }));
 }
 
+// A number input's decoder: only an integer within [min, max] becomes a message; anything else
+// stays in the input as typed.
+export function onInt(n, widget, type, min, max) {
+  n.addEventListener("input", () => {
+    const value = n.valueAsNumber;
+    if (Number.isInteger(value) && value >= min && value <= max) send({ widget, type, value });
+  });
+}
+
 // An element's text, written only when it differs.
 export function setText(n, value) {
   value = String(value);
   if (n.textContent !== value) n.textContent = value;
 }
 
-// A DOM property (value, checked, disabled), written only when it differs, so an input being
+// A DOM property (value, checked, disabled, or a reflected ARIA state), written only when it differs, so an input being
 // typed into keeps its caret.
 export function prop(n, key, value) {
   if (n[key] !== value) n[key] = value;
-}
-
-export function attr(n, name, value) {
-  if (n.getAttribute(name) !== value) n.setAttribute(name, value);
 }
 
 // Conditional content, built once with the rest of its component. The returned

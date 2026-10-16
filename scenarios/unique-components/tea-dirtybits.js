@@ -267,13 +267,10 @@ function widgetModule(w) {
           }
           const i = node();
           if (f.type === "int") {
-            use("send");
+            use("onInt");
             h += `<input type=number data-role=${n.msg}>`;
             // Only an integer within range becomes a message; anything else stays as typed.
-            L(`${i}.addEventListener("input", () => {`);
-            L(`  const value = ${i}.valueAsNumber;`);
-            L(`  if (Number.isInteger(value) && value >= ${f.min} && value <= ${f.max}) send({ widget: ${W}, type: ${tag(n.msg)}, value });`);
-            L(`});`);
+            L(`onInt(${i}, ${W}, ${tag(n.msg)}, ${f.min}, ${f.max});`);
             bind(sc, new Set([own(f.name)]), `prop(${i}, "valueAsNumber", s.${f.name});`);
           } else {
             use("onInput");
