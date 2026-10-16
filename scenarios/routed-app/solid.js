@@ -1,9 +1,10 @@
 // The routed-app scenario in Solid 1.
 //
 // Style (recorded in every generated app's rr.json):
-// - Routing is in-app state (README, "Routing"): a `route` signal in the app store, and
-//   `<Dynamic>` over a table of page components in `App`, mounting the one the route names (a
-//   `<Switch>` of N `<Match>`es would build N matches at every mount). No router library.
+// - Routing is in-app state (README, "Routing"): a `route` signal in the app store. By default
+//   `App` resolves the page with `<Dynamic>` over a table of page components, the way a router
+//   resolves a component for a route. The `routing: "switch"`
+//   variant writes it as a `<Switch>` of one `<Match>` per page instead. No router library.
 // - One component per page (`src/pages/PN.jsx`), written from the page's description alone: its
 //   handlers, bindings and derived expressions are that page's own code, nothing is interpreted
 //   at runtime. A tab panel (`PNT1`) and a modal (`PNModal`) are components of their own, in the
@@ -17,7 +18,8 @@
 //   shared through a context. Components read it directly (`g.balance`), so only the bindings
 //   that read a field depend on it; an unmounted page has no bindings left.
 // - Tabs and the modal render with `<Switch>`/`<Match>` and `<Show>`: the active panel and the
-//   open modal exist only while shown. The menu is a `<Show>` over a `<For>` of every page.
+//   open modal exist only while shown. The modal's signal counts its opens and `<Show keyed>`
+//   remounts it on each, so opening it again starts it afresh. The menu is a `<Show>` over a `<For>` of every page.
 // - Time-driven fields: `setInterval` in the component that owns the field, cleared by
 //   `onCleanup`. A feed list subscribes its page's `pagePush` handler to the app store with
 //   `onCleanup` to unsubscribe, so a push reaches only the page shown.
@@ -26,7 +28,10 @@
 //   items are copied, and a snapshot is cloned before `reconcile(…, { key: "id" })`.
 // - Lists with `<For>`, conditional sections and validation errors with `<Show>`, derived values
 //   as plain expressions in the JSX. Events: `onClick`/`onInput` (delegated), `onChange` for
-//   checkboxes and selects; a number input sends its message only for an integer in range.
+//   checkboxes and selects; a number input sends its message only for an integer in range, and
+//   its value binding also reads a per-field signal that every writer touches, so a write of the
+//   value the store already holds still replaces text typed into the input.
+// - Panels and modals receive the page's store (`p`, `setP`) only when they read or write it.
 
 import { templateFiles } from "../../frameworks/solid/framework.js";
 import { literal, jsxAttr } from "../../frameworks/shared/jsx.js";
@@ -34,7 +39,13 @@ import { GLOBAL } from "./spec.js";
 
 export const framework = "solid";
 
-export const params = {};
+export const params = {
+  routing: {
+    default: "dynamic",
+    choices: ["dynamic", "switch"],
+    help: "how App resolves the page of the route: <Dynamic> over a table of page components, or a <Switch> with one <Match> per page",
+  },
+};
 
 const str = JSON.stringify;
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
@@ -43,22 +54,24 @@ const COMPARE = { "==": "===", "!=": "!==", "<": "<", "<=": "<=", ">": ">", ">="
 // ---------------------------------------------------------------------------------------------
 // One component: the context that maps refs onto store reads and writes.
 
-function makeCtx(page, comp, kind) {
-  const ctx = { needs: {}, options: new Map(), kind };
+function makeCtx(page, comp, kind, tabP) {
+  const ctx = { needs: {}, options: new Map(), kind, tabP: tabP || {} };
   const desc = (ref) => {
     const list = ref[0] === "g" ? GLOBAL : ref[0] === "p" ? page.fields : comp.fields;
     return list.find((f) => f.name === ref[1]);
   };
   ctx.desc = desc;
+  // The int fields with a number input: their writers touch a signal the input's value reads.
+  ctx.fresh = new Set(comp.messages.filter((m) => m.kind === "input" && m.field[0] === "f" && desc(m.field).type === "int").map((m) => m.field[1]));
   ctx.read = (ref) => {
     if (ref[0] === "g") { ctx.needs.g = true; return `g.${ref[1]}`; }
-    if (ref[0] === "p") return kind === "page" ? `s.${ref[1]}` : `props.p.${ref[1]}`;
+    if (ref[0] === "p") { if (kind === "page") return `s.${ref[1]}`; ctx.needs.p = true; return `props.p.${ref[1]}`; }
     return `s.${ref[1]}`;
   };
   // A setter call on a ref: `args` follow the field's name (a value, or a filter, a key, a value).
   ctx.write = (ref, ...args) => {
     if (ref[0] === "g") { ctx.needs.setG = true; return `setG(${str(ref[1])}, ${args.join(", ")})`; }
-    if (ref[0] === "p" && kind !== "page") return `props.setP(${str(ref[1])}, ${args.join(", ")})`;
+    if (ref[0] === "p" && kind !== "page") { ctx.needs.setP = true; return `props.setP(${str(ref[1])}, ${args.join(", ")})`; }
     return `set(${str(ref[1])}, ${args.join(", ")})`;
   };
   ctx.expr = function expr(e, top = true) {
@@ -121,7 +134,8 @@ function opStatement(ctx, op) {
 
 // Statements of a list of ops, in one `batch` when they write more than once.
 function opsBody(ctx, ops, extra = []) {
-  const stmts = [...ops.map((op) => opStatement(ctx, op)), ...extra];
+  const touched = [...new Set(ops.filter((op) => op[1][0] === "f" && ctx.fresh.has(op[1][1])).map((op) => op[1][1]))];
+  const stmts = [...ops.map((op) => opStatement(ctx, op)), ...touched.map((n) => `touch${cap(n)}();`), ...extra];
   if (stmts.length === 1 && !stmts[0].startsWith("if")) return { arrow: stmts[0].replace(/;$/, ""), block: null };
   ctx.needs.batch = true;
   return { arrow: null, block: stmts };
@@ -130,7 +144,7 @@ function opsBody(ctx, ops, extra = []) {
 function handler(ctx, m) {
   const { write } = ctx;
   switch (m.kind) {
-    case "open": return `  const ${m.name} = () => setModalOpen(true);`;
+    case "open": return `  const ${m.name} = () => setModal((opens) => opens + 1);`;
     case "close": return `  const ${m.name} = () => props.onClose();`;
     case "click": case "confirm": {
       const extra = m.kind === "confirm" ? ["props.onClose();"] : [];
@@ -184,7 +198,7 @@ function view(ctx, page, comp, n, ind) {
     case "input": {
       const m = msg(n.msg);
       const f = ctx.desc(m.field);
-      const value = ctx.read(m.field);
+      const value = f.type === "int" && ctx.fresh.has(m.field[1]) ? `(${m.field[1]}Fresh(), ${ctx.read(m.field)})` : ctx.read(m.field);
       const attrs = f.type === "int"
         ? `type="number" data-role="${n.msg}" value={${value}} onInput={${n.msg}}`
         : `type="text" data-role="${n.msg}"${n.placeholder ? ` placeholder=${jsxAttr(n.placeholder)}` : ""} value={${value}} onInput={${n.msg}}`;
@@ -240,7 +254,7 @@ function view(ctx, page, comp, n, ind) {
         ...page.tabs.map((t) => `${pad}  <button data-key="${t.id}" data-role="tab" aria-selected={tab() === "${t.id}"} onClick={() => setTab("${t.id}")}>${jsxText(t.label)}</button>`),
         `${pad}</nav>`,
         `${pad}<Switch>`,
-        ...page.tabs.flatMap((t) => [`${pad}  <Match when={tab() === "${t.id}"}>`, `${pad}    <${pn}${t.id.toUpperCase()} p={s} />`, `${pad}  </Match>`]),
+        ...page.tabs.flatMap((t) => [`${pad}  <Match when={tab() === "${t.id}"}>`, `${pad}    <${pn}${t.id.toUpperCase()}${ctx.tabP[t.id] || ""} />`, `${pad}  </Match>`]),
         `${pad}</Switch>`,
       ];
     }
@@ -252,8 +266,8 @@ function view(ctx, page, comp, n, ind) {
 // Components
 
 // The function of one page, tab panel or modal. `root` builds the outermost JSX from the body.
-function component(page, comp, kind, name, { signals = [], extra = [], root }) {
-  const ctx = makeCtx(page, comp, kind);
+function component(page, comp, kind, name, { signals = [], extra = [], root, tabP }) {
+  const ctx = makeCtx(page, comp, kind, tabP);
   const handlers = comp.messages.filter((m) => !(kind === "tab" && m.kind === "tab")).map((m) => handler(ctx, m));
   const body = comp.view.flatMap((n) => view(ctx, page, comp, n, 3));
   const jsx = root(body);
@@ -267,6 +281,7 @@ function component(page, comp, kind, name, { signals = [], extra = [], root }) {
   const initial = Object.fromEntries(comp.fields.map((f) => [f.name, f.initial]));
   lines.push(`  const [s, set] = createStore(${literal(initial, "  ")});`);
   for (const sig of signals) lines.push(sig);
+  for (const n of ctx.fresh) lines.push(`  const [${n}Fresh, touch${cap(n)}] = createSignal(undefined, { equals: false });`);
   if (live) {
     lines.push(`  const timer = setInterval(() => set(${str(live.name)}, (v) => Math.min(${live.max}, v + ${live.by})), ${live.every});`);
     lines.push("  onCleanup(() => clearInterval(timer));");
@@ -279,7 +294,6 @@ function component(page, comp, kind, name, { signals = [], extra = [], root }) {
   return {
     code: `function ${name}(${props}) {\n${lines.join("\n")}\n  return (\n${jsx}\n  );\n}\n`,
     needs: ctx.needs,
-    source: null,
   };
 }
 
@@ -287,29 +301,38 @@ function pageFile(page) {
   const pn = page.id.toUpperCase();
   const out = [];
 
+  // The props each panel and the modal take from the page: its store, only if they use it.
+  const storeProps = (needs) => (needs.p ? " p={s}" : "") + (needs.setP ? " setP={set}" : "");
+  const tabP = {};
   for (const t of page.tabs || []) {
-    out.push(component(page, t, "tab", `${pn}${t.id.toUpperCase()}`, {
+    const c = component(page, t, "tab", `${pn}${t.id.toUpperCase()}`, {
       root: (body) => [`    <section data-key="${t.id}" data-role="panel">`, ...body, "    </section>"].join("\n"),
-    }).code);
+    });
+    tabP[t.id] = storeProps(c.needs);
+    out.push(c.code);
   }
+  let modalP = "";
   if (page.modal) {
-    out.push(component(page, page.modal, "modal", `${pn}Modal`, {
+    const c = component(page, page.modal, "modal", `${pn}Modal`, {
       root: (body) => [`    <aside data-key="modal" data-role="dialog">`, `      <h2>${jsxText(page.modal.title)}</h2>`, ...body, "    </aside>"].join("\n"),
-    }).code);
+    });
+    modalP = storeProps(c.needs);
+    out.push(c.code);
   }
 
   const signals = [];
   if (page.tabs) signals.push(`  const [tab, setTab] = createSignal(${str(page.tabs[0].id)});`);
-  if (page.modal) signals.push("  const [modalOpen, setModalOpen] = createSignal(false);");
+  if (page.modal) signals.push("  const [modal, setModal] = createSignal(0);");
   const pageParts = component(page, page, "page", pn, {
     signals,
+    tabP,
     root: (body) => [
       `    <main data-key="${page.id}" data-role="page">`,
       `      <h1>${jsxText(page.title)}</h1>`,
       ...body,
       ...(page.modal ? [
-        "      <Show when={modalOpen()}>",
-        `        <${pn}Modal p={s} setP={set} onClose={() => setModalOpen(false)} />`,
+        "      <Show when={modal()} keyed>",
+        `        {() => <${pn}Modal${modalP} onClose={() => setModal(0)} />}`,
         "      </Show>",
       ] : []),
       "    </main>",
@@ -393,13 +416,13 @@ export function nextId(items) {
 }
 `;
 
-function appFile(spec) {
+function appFile(spec, routing) {
+  const dynamic = routing === "dynamic";
   const names = spec.pages.map((p) => p.id.toUpperCase());
   const table = (pages) => pages.map((p) => `  [${str(p.id)}, ${str(p.title)}],`).join("\n");
   const pinned = spec.pages.filter((p) => spec.pinned.includes(p.id));
-  return `import { For, Show } from "solid-js";
-import { Dynamic } from "solid-js/web";
-import { AppContext, useApp } from "./store";
+  return `import { For, ${dynamic ? "" : "Match, "}Show${dynamic ? "" : ", Switch"} } from "solid-js";
+${dynamic ? 'import { Dynamic } from "solid-js/web";\n' : ""}import { AppContext, useApp } from "./store";
 ${names.map((n) => `import ${n} from "./pages/${n}";`).join("\n")}
 
 const pinned = [
@@ -410,10 +433,10 @@ const pages = [
 ${table(spec.pages)}
 ];
 
-// The page component of each route.
+${dynamic ? `// The page component of each route.
 const components = { ${spec.pages.map((p) => `${p.id}: ${p.id.toUpperCase()}`).join(", ")} };
 
-function Shell() {
+` : ""}function Shell() {
   const { g, route, menu, go, toggleMenu } = useApp();
   return (
     <header data-key="shell" data-role="shell">
@@ -457,7 +480,9 @@ export default function App(props) {
         <Show when={menu()}>
           <Menu />
         </Show>
-        <Dynamic component={components[route()]} />
+${dynamic ? "        <Dynamic component={components[route()]} />" : `        <Switch>
+${spec.pages.map((p) => `          <Match when={route() === ${str(p.id)}}>\n            <${p.id.toUpperCase()} />\n          </Match>`).join("\n")}
+        </Switch>`}
       </div>
     </AppContext.Provider>
   );
@@ -465,11 +490,11 @@ export default function App(props) {
 `;
 }
 
-export function emit(spec) {
+export function emit(spec, { routing = params.routing.default } = {}) {
   const files = {
     ...templateFiles({ name: "routed-app", title: "Routed app" }),
     "src/store.js": storeFile(spec),
-    "src/App.jsx": appFile(spec),
+    "src/App.jsx": appFile(spec, routing),
     "src/list.js": LIST_FILE,
   };
   let usesNextId = false;
@@ -482,9 +507,11 @@ export function emit(spec) {
   return {
     files,
     style: {
-      routing: "in-app route signal in the app store; <Dynamic> over a table of page components in App mounts the page the route names; no router library",
+      routing: routing === "dynamic"
+        ? "in-app route signal in the app store; <Dynamic> over a table of page components in App resolves the page the route names; no router library"
+        : "in-app route signal in the app store; <Switch> with one <Match> per page in App; no router library",
       components: "one component per page (src/pages/PN.jsx), with its tab panels and modal as components of their own in the same file; written from the description, nothing interpreted at runtime; the nav bar and the menu read a table of (id, title)",
-      localState: "a createStore created inside the page, tab panel and modal component, so it starts fresh on every mount; a panel reads its page's store through a prop, the modal writes it through a setter prop",
+      localState: "a createStore created inside the page, tab panel and modal component, so it starts fresh on every mount; a panel or modal gets the page's store (and a setter) as props only if it reads (or writes) it; the modal remounts on every open (a counting signal and <Show keyed>)",
       globalState: "one createStore per mount, plus the route and menu signals, shared through a context; read directly by the bindings that need a field",
       conditionals: "<Switch>/<Match> for the active tab panel (at most four), <Show> for the modal, the menu, conditional sections and validation errors",
       lists: "<For>",
