@@ -32,6 +32,9 @@ export const framework = "tea-inline";
 export const params = {};
 
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
+// A widget's number: widget `wN` is number N, its position in page order counted from 1 (the
+// emitter checks the ids).
+const pos = (id) => Number(id.slice(1));
 const str = JSON.stringify;
 // HTML escaping for the static markup: text, and attribute values (unquoted when safe).
 const escText = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
@@ -39,10 +42,11 @@ const attrValue = (v) => (/^[\w.:-]+$/.test(v) ? v : `"${v.replace(/&/g, "&amp;"
 
 const WIDGET_FILE = `import { schedule } from "../runtime.js";
 
-// A widget's DOM: its section, keyed by its id, with the markup inside (its heading and
-// everything it shows), appended to \`parent\`, and returned as its elements in document order.
-export function section(parent, id, html) {
-  parent.insertAdjacentHTML("beforeend", \`<section data-key=\${id} data-role=widget>\${html}</section>\`);
+// A widget's DOM: its section, keyed by its id (widget number i is wi), with the markup inside
+// (its heading and everything it shows), appended to \`parent\`, and returned as its elements in
+// document order.
+export function section(parent, i, html) {
+  parent.insertAdjacentHTML("beforeend", \`<section data-key=w\${i} data-role=widget>\${html}</section>\`);
   return [parent.lastChild, ...parent.lastChild.querySelectorAll("*")];
 }
 
@@ -406,7 +410,7 @@ function widgetFile(w, reads) {
     return flat.length <= 100 ? [flat] : [`const on${cap(f)} = [`, ...items.map((i) => "  " + i + ","), "];"];
   });
   const alone = bindings.filter((b) => b.own.length === 0).map((b) => b.name);
-  const crossPushes = bindings.flatMap((b) => b.cross.map((c) => `R.${c}.push(${b.name});`));
+  const crossPushes = bindings.flatMap((b) => b.cross.map((c) => `R[${pos(c.split(".")[0])}].${c.split(".")[1]}.push(${b.name});`));
 
   // External arms.
   const arms = [];
@@ -435,7 +439,7 @@ function widgetFile(w, reads) {
   const all = [...groups.keys()].map((f) => "on" + cap(f)).concat(alone);
   const body = [
     "const s = model[widget];",
-    ...readIds.map((x) => `const ${x} = model.${x};`),
+    ...readIds.map((x) => `const ${x} = model[${pos(x)}];`),
     ...consts,
     "// The DOM, built once from its markup; the elements the code refers to, in document order.",
     `const [${Array.from(refs, (r) => r || "").join(", ")}] = section(parent, widget, ${str(html)});`,
@@ -490,27 +494,27 @@ ${ticking.map((w) => `        views.${w.id}.tick();`).join("\n")}
         break;`);
 
   const readers = {};
-  for (const [wid, fs] of Object.entries(reads)) readers[wid] = Object.fromEntries([...fs].map((f) => [f, []]));
+  for (const [wid, fs] of Object.entries(reads)) readers[pos(wid)] = Object.fromEntries([...fs].map((f) => [f, []]));
   const imports = [`import { el, flush, cancel } from "./runtime.js";`,
     ...spec.widgets.map((w) => `import { ${w.id} } from "./widgets/${w.id}.js";`)];
 
   return `${imports.join("\n")}
 
-// The initial model (TEA's \`init\`), fresh for every mount.
+// The initial model (TEA's \`init\`: its widgets by number, from 1), fresh for every mount.
 function init() {
-  return ${literal(spec.initialState, "  ")};
+  return [, ${literal(spec.widgets.map((w) => spec.initialState.widgets[w.id]), "  ").slice(1)};
 }
 
 export function start(root) {
-  const model = init().widgets;
+  const model = init();
   const board = el("div", root, { "data-role": "dashboard" });
   // For each field another widget reads, the bindings reading it: the widget schedules them
   // when it writes the field.
   const R = ${literal(readers, "  ")};
-  // Every widget in page order; each returns its handle: \`load\` for serverSet and snapshot, and
-  // its external arms.
+  // Every widget in page order, given its number (widget \`wN\` is number N: its slice of the model
+  // is \`model[N]\`); each returns its handle: \`load\` for serverSet and snapshot, and its external arms.
   const views = {
-${spec.widgets.map((w) => `    ${w.id}: ${w.id}(board, model, R, "${w.id}"),`).join("\n")}
+${spec.widgets.map((w) => `    ${w.id}: ${w.id}(board, model, R, ${pos(w.id)}),`).join("\n")}
   };
   flush();
 
@@ -532,6 +536,8 @@ ${cases.join("\n")}
 }
 
 export function emit(spec) {
+  // Widgets are numbered in page order (their ids are w1, w2, …): the model is an array by number.
+  if (spec.widgets.some((w, i) => w.id !== `w${i + 1}`)) throw new Error("widget ids are not w1, w2, … in order");
   // The fields other widgets read.
   const reads = {};
   for (const w of spec.widgets) {
