@@ -2,7 +2,7 @@
 // ideal compiler would emit from a TEA source of the dashboard, with local message routing.
 //
 // Style (recorded in every generated app's rr.json):
-// - One module per widget kind: its message tags, its reducer `update(model, msg)` and its
+// - One module per widget kind: its message tags, its reducer `update(model, tag, value)` and its
 //   factory `kind(parent, id, heading, ...config, model)`, shared by every widget of that kind.
 //   Each widget is one call of its kind's factory with its own config as positional arguments
 //   (label, limits, items, rules as functions, formats, summary formula) and its initial model.
@@ -10,6 +10,7 @@
 // - A factory builds the widget's DOM once (createElement calls), wires its DOM events to its
 //   own instance's `send`, and declares one `patch` function: the binding list, where every
 //   write is skipped when its value did not change.
+// - A message is sent as its constructor's tag and its argument, if any: `send(tag, value)`.
 // - `send` runs the kind's reducer on the instance's model (held in a closure) and schedules
 //   that instance's patch in a microtask. No global dispatch, dirty bits or dependency graph.
 // - Summaries watch the instances they read: a change to one schedules the summary's patch,
@@ -79,9 +80,9 @@ export function counter(parent, id, heading, step, min, max, start, model) {
   const dec = element(root, "button", { "data-role": "dec" }, "-" + step);
   const inc = element(root, "button", { "data-role": "inc" }, "+" + step);
   const reset = element(root, "button", { "data-role": "reset" }, "Reset");
-  on(dec, "click", () => self.send([1]));
-  on(inc, "click", () => self.send([0]));
-  on(reset, "click", () => self.send([2]));
+  on(dec, "click", () => self.send(1));
+  on(inc, "click", () => self.send(0));
+  on(reset, "click", () => self.send(2));
 
   function patch() {
     const m = self.m;
@@ -90,8 +91,8 @@ export function counter(parent, id, heading, step, min, max, start, model) {
     setProp(inc, "disabled", m.value >= max);
   }
   // The reducer reads the widget's limits, so it closes over them.
-  function update(model, msg) {
-    switch (msg[0]) {
+  function update(model, tag) {
+    switch (tag) {
       case 0: return { value: Math.min(max, model.value + step) };
       case 1: return { value: Math.max(min, model.value - step) };
       case 2: return { value: start };
@@ -103,8 +104,8 @@ export function counter(parent, id, heading, step, min, max, start, model) {
 
   toggles: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 // type Msg = Toggle Int
-function update(model, msg) {
-  return { on: model.on.map((on, i) => (i === msg[1] ? !on : on)) };
+function update(model, tag, value) {
+  return { on: model.on.map((on, i) => (i === value ? !on : on)) };
 }
 
 export function toggles(parent, id, heading, items, model) {
@@ -115,7 +116,7 @@ export function toggles(parent, id, heading, items, model) {
     const label = element(element(ul, "li"), "label");
     const box = element(label, "input", { type: "checkbox", "data-role": "toggle", "data-key": i });
     label.append(name);
-    on(box, "change", () => self.send([0, i]));
+    on(box, "change", () => self.send(0, i));
     return box;
   });
   const count = element(root, "p", { "data-role": "count" }, " ");
@@ -131,15 +132,15 @@ export function toggles(parent, id, heading, items, model) {
 
   field: `${HEAD(["element", "on", "setText", "setProp", "show", "instance"])}
 // type Msg = Edit String
-function update(model, msg) {
-  return { text: msg[1] };
+function update(model, tag, value) {
+  return { text: value };
 }
 
 export function field(parent, id, heading, placeholder, validate, model) {
   const self = instance(model, update, patch);
   const root = widget(parent, id, heading, "field", self);
   const input = element(root, "input", { type: "text", "data-role": "input", placeholder: placeholder });
-  on(input, "input", () => self.send([0, input.value]));
+  on(input, "input", () => self.send(0, input.value));
   const error = element(null, "p", { "data-role": "error" }, " ");
 
   function patch() {
@@ -155,17 +156,17 @@ export function field(parent, id, heading, placeholder, validate, model) {
 
   todo: `${HEAD(["element", "on", "setText", "setProp", "instance", "list"])}
 // type Msg = EditDraft String | Add | Toggle Int | Remove Int
-function update(model, msg) {
-  switch (msg[0]) {
-    case 0: return { ...model, draft: msg[1] };
+function update(model, tag, value) {
+  switch (tag) {
+    case 0: return { ...model, draft: value };
     case 1: {
       const text = model.draft.trim();
       if (text === "") return model;
       const id = model.items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
       return { items: [...model.items, { id, text, done: false }], draft: "" };
     }
-    case 2: return { ...model, items: model.items.map((item) => (item.id === msg[1] ? { ...item, done: !item.done } : item)) };
-    case 3: return { ...model, items: model.items.filter((item) => item.id !== msg[1]) };
+    case 2: return { ...model, items: model.items.map((item) => (item.id === value ? { ...item, done: !item.done } : item)) };
+    case 3: return { ...model, items: model.items.filter((item) => item.id !== value) };
   }
 }
 
@@ -173,15 +174,15 @@ export function todo(parent, id, heading, placeholder, addText, removeText, mode
   const self = instance(model, update, patch);
   const root = widget(parent, id, heading, "todo", self);
   const draft = element(root, "input", { type: "text", "data-role": "draft", placeholder: placeholder });
-  on(draft, "input", () => self.send([0, draft.value]));
-  on(element(root, "button", { "data-role": "add" }, addText), "click", () => self.send([1]));
+  on(draft, "input", () => self.send(0, draft.value));
+  on(element(root, "button", { "data-role": "add" }, addText), "click", () => self.send(1));
   const items = list(element(root, "ul"), (item) => {
     const li = element(null, "li");
     const box = element(li, "input", { type: "checkbox", "data-role": "toggle" });
     const label = element(li, "span", null, " ");
     const remove = element(li, "button", { "data-role": "remove" }, removeText);
-    on(box, "change", () => self.send([2, item.id]));
-    on(remove, "click", () => self.send([3, item.id]));
+    on(box, "change", () => self.send(2, item.id));
+    on(remove, "click", () => self.send(3, item.id));
     return {
       node: li,
       patch(next) {
@@ -205,8 +206,8 @@ export function todo(parent, id, heading, placeholder, addText, removeText, mode
 
   tabs: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 // type Msg = Select Int
-function update(model, msg) {
-  return { active: msg[1] };
+function update(model, tag, value) {
+  return { active: value };
 }
 
 export function tabs(parent, id, heading, tabs, model) {
@@ -215,7 +216,7 @@ export function tabs(parent, id, heading, tabs, model) {
   const tablist = element(root, "div", { role: "tablist" });
   const buttons = tabs.map((tab, i) => {
     const button = element(tablist, "button", { role: "tab", "data-role": "tab", "data-key": i }, tab.title);
-    on(button, "click", () => self.send([0, i]));
+    on(button, "click", () => self.send(0, i));
     return button;
   });
   const content = element(root, "p", { role: "tabpanel", "data-role": "tab-content" }, " ");
@@ -239,7 +240,7 @@ export function panel(parent, id, heading, showText, hideText, body, model) {
   const self = instance(model, update, patch);
   const root = widget(parent, id, heading, "panel", self);
   const toggle = element(root, "button", { "data-role": "toggle" }, " ");
-  on(toggle, "click", () => self.send([0]));
+  on(toggle, "click", () => self.send(0));
   const text = element(null, "p", { "data-role": "body" }, body);
 
   function patch() {
@@ -254,10 +255,10 @@ export function panel(parent, id, heading, showText, hideText, body, model) {
 
   choice: `${HEAD(["element", "on", "setProp", "show", "instance"])}
 // type Msg = Choose String | EditExtra String
-function update(model, msg) {
-  switch (msg[0]) {
-    case 0: return { ...model, option: msg[1] };
-    case 1: return { ...model, extra: msg[1] };
+function update(model, tag, value) {
+  switch (tag) {
+    case 0: return { ...model, option: value };
+    case 1: return { ...model, extra: value };
   }
 }
 
@@ -266,9 +267,9 @@ export function choice(parent, id, heading, options, extraFor, extraPlaceholder,
   const root = widget(parent, id, heading, "choice", self);
   const select = element(root, "select", { "data-role": "select" });
   for (const option of options) element(select, "option", { value: option.value }, option.label);
-  on(select, "change", () => self.send([0, select.value]));
+  on(select, "change", () => self.send(0, select.value));
   const extra = element(null, "input", { type: "text", "data-role": "extra", placeholder: extraPlaceholder });
-  on(extra, "input", () => self.send([1, extra.value]));
+  on(extra, "input", () => self.send(1, extra.value));
 
   function patch() {
     const m = self.m;
@@ -282,8 +283,8 @@ export function choice(parent, id, heading, options, extraFor, extraPlaceholder,
 
   amount: `${HEAD(["element", "on", "setText", "instance"])}
 // type Msg = Set Float
-function update(model, msg) {
-  return { value: msg[1] };
+function update(model, tag, value) {
+  return { value: value };
 }
 
 export function amount(parent, id, heading, format, model) {
@@ -293,7 +294,7 @@ export function amount(parent, id, heading, format, model) {
   // Only a valid number is a message; anything else stays in the input, unsent.
   on(input, "input", () => {
     const value = input.valueAsNumber;
-    if (!Number.isNaN(value)) self.send([0, value]);
+    if (!Number.isNaN(value)) self.send(0, value);
   });
   const formatted = element(root, "output", { "data-role": "formatted" }, " ");
 
@@ -308,15 +309,15 @@ export function amount(parent, id, heading, format, model) {
 
   filter: `${HEAD(["element", "on", "setText", "setProp", "instance", "list"])}
 // type Msg = Edit String
-function update(model, msg) {
-  return { query: msg[1] };
+function update(model, tag, value) {
+  return { query: value };
 }
 
 export function filter(parent, id, heading, items, placeholder, model) {
   const self = instance(model, update, patch);
   const root = widget(parent, id, heading, "filter", self);
   const input = element(root, "input", { type: "text", "data-role": "query", placeholder: placeholder });
-  on(input, "input", () => self.send([0, input.value]));
+  on(input, "input", () => self.send(0, input.value));
   // The items are fixed per widget, so a row never changes once built.
   const shown = list(element(root, "ul"), (item) => ({
     node: element(null, "li", null, item.text),
@@ -338,8 +339,8 @@ export function filter(parent, id, heading, items, placeholder, model) {
 
   rating: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 // type Msg = Rate Int
-function update(model, msg) {
-  return { stars: msg[1] };
+function update(model, tag, value) {
+  return { stars: value };
 }
 
 export function rating(parent, id, heading, stars, labels, model) {
@@ -350,7 +351,7 @@ export function rating(parent, id, heading, stars, labels, model) {
   for (let n = 1; n <= stars; n++) {
     const button = element(row, "button", { "data-role": "star", "data-key": n }, " ");
     buttons.push(button);
-    on(button, "click", () => self.send([0, n]));
+    on(button, "click", () => self.send(0, n));
   }
   const label = element(root, "p", { "data-role": "rating-label" }, " ");
 
@@ -368,12 +369,12 @@ export function rating(parent, id, heading, stars, labels, model) {
 
   feed: `${HEAD(["element", "on", "setText", "show", "instance", "list"])}
 // type Msg = Dismiss Int | Notify Entry
-export const notify = (entry) => [1, entry];
+export const notify = 1; // the tag of Notify, sent by the app
 
-function update(model, msg) {
-  switch (msg[0]) {
-    case 0: return { entries: model.entries.filter((entry) => entry.id !== msg[1]) };
-    case 1: return { entries: [...model.entries, msg[1]] };
+function update(model, tag, value) {
+  switch (tag) {
+    case 0: return { entries: model.entries.filter((entry) => entry.id !== value) };
+    case 1: return { entries: [...model.entries, value] };
   }
 }
 
@@ -383,7 +384,7 @@ export function feed(parent, id, heading, emptyText, dismissText, model) {
   const entries = list(element(root, "ul"), (entry) => {
     const li = element(null, "li");
     const label = element(li, "span", null, " ");
-    on(element(li, "button", { "data-role": "dismiss" }, dismissText), "click", () => self.send([0, entry.id]));
+    on(element(li, "button", { "data-role": "dismiss" }, dismissText), "click", () => self.send(0, entry.id));
     return { node: li, patch: (next) => setText(label, next.text) };
   });
   const empty = element(null, "p", { "data-role": "empty" }, emptyText);
@@ -399,10 +400,10 @@ export function feed(parent, id, heading, emptyText, dismissText, model) {
 
   clock: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 // type Msg = Start | Stop | Reset | Tick
-export const tick = [3];
+export const tick = 3; // the tag of Tick, sent by the app
 
-function update(model, msg) {
-  switch (msg[0]) {
+function update(model, tag) {
+  switch (tag) {
     case 0: return { ...model, running: true };
     case 1: return { ...model, running: false };
     case 2: return { seconds: 0, running: false };
@@ -421,9 +422,9 @@ export function clock(parent, id, heading, startText, stopText, resetText, model
   const start = element(root, "button", { "data-role": "start" }, startText);
   const stop = element(root, "button", { "data-role": "stop" }, stopText);
   const reset = element(root, "button", { "data-role": "reset" }, resetText);
-  on(start, "click", () => self.send([0]));
-  on(stop, "click", () => self.send([1]));
-  on(reset, "click", () => self.send([2]));
+  on(start, "click", () => self.send(0));
+  on(stop, "click", () => self.send(1));
+  on(reset, "click", () => self.send(2));
 
   function patch() {
     const m = self.m;
@@ -590,7 +591,7 @@ function appFile(spec) {
   }
   if (hasFeed) {
     cases.push(`      case "notify":
-        widgets.get(msg.widget).send(notify(msg.entry));
+        widgets.get(msg.widget).send(notify, msg.entry);
         break;`);
   }
   cases.push(`      case "snapshot":

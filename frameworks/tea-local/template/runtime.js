@@ -45,18 +45,21 @@ export function on(node, type, handler) {
   node.addEventListener(type, handler);
 }
 
-// The controls a view wires to messages.
+// The controls a view wires to messages, and those of them that send on click.
 const controls = "button,input,select";
+const clicked = "button,[type=checkbox]";
 
-// The events of a view (Elm's `onClick msg` and `onInput Tag`): `msgs` holds one entry per control
-// under `root`, in document order. A button or checkbox sends its constant message when clicked;
-// a text input, select or number input sends `[tag, value]` on input, a number input its value
-// as a number (the reducer takes it only if it is an integer in range).
-export function wire(root, self, msgs) {
+// The events of a view (Elm's `onClick msg` and `onInput Tag`): `tags` holds one message tag per
+// control under `root`, in document order. A button or checkbox sends its message when clicked,
+// with `id` as its argument (a list row's item id, or none); a text input, select or number input
+// sends its value on input, a number input as a number (the reducer takes it only if it is an
+// integer in range).
+export function wire(root, self, tags, id) {
   for (const node of root.querySelectorAll(controls)) {
-    const msg = msgs.shift();
-    node.addEventListener(msg.at ? "click" : "input", () =>
-      self.send(msg.at ? msg : [msg, node.type === "number" ? node.valueAsNumber : node.value]),
+    const tag = tags.shift();
+    const click = node.matches(clicked);
+    node.addEventListener(click ? "click" : "input", () =>
+      self.send(tag, click ? id : node.type === "number" ? node.valueAsNumber : node.value),
     );
   }
 }
@@ -80,8 +83,8 @@ export function show(parent, node, shown) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// A component instance: its model lives in this closure. `send(msg)` runs the component's own
-// reducer and schedules the instance's `patch` (its binding list) and whoever watches it.
+// A component instance: its model lives in this closure. `send(tag, value)` (a message: its
+// constructor's tag and its argument, if any) runs the component's own reducer and schedules the instance's `patch` (its binding list) and whoever watches it.
 // There is no global dispatch, no dirty bits and no dependency tracking.
 
 export function instance(model, update, patch) {
@@ -96,7 +99,7 @@ export function instance(model, update, patch) {
   schedule(patch); // the first render, in the flush after mount
   const self = {
     m: model,
-    send: (msg) => set(update(self.m, msg)),
+    send: (tag, value) => set(update(self.m, tag, value)),
     set,
     watch: (watcher) => watchers.push(watcher),
   };
