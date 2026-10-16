@@ -6,9 +6,10 @@ never relaxes it.
 ## What it models
 
 **An app that grows by making one component bigger.** A large settings form: one component,
-one model, whose fields are added one after another, with their controls, displays, and the
-derived values, conditions, validations and disabled states that tie them together. A small
-companion widget beside it reads a few of its fields and stays the same at every size.
+one model, whose fields are added one after another in one flat list, with their controls,
+displays, and the derived values, conditions, validations and disabled states that tie them
+together. A small companion widget beside it reads a few of its fields and stays the same at
+every size.
 
 The other two scenarios grow the other way, by adding many small widgets:
 
@@ -28,7 +29,8 @@ It measures two things the others cannot:
   Here the widget is the whole form, so such a strategy costs O(N) per event, while one that runs
   only the bindings reading what changed (signals, dirty bits, per-field binding groups) stays
   O(1). The locality check of `./rr check` (calls per local action may grow at most 8× from N to
-  16 N) tells them apart, as it already does for "re-run the whole page".
+  16 N) tells them apart, as it already does for "re-run the whole page". The form has no
+  sections or groups, so there is no smaller block of the form to re-run instead of the whole.
 
 ## What "size" means
 
@@ -37,15 +39,14 @@ measured is set per framework in `runs.json`, not here.
 
 - A **field unit** is one field with everything that belongs to it: its controls, its displays,
   and the bindings it adds over earlier fields. A list fed from a draft brings its draft text
-  field, and a time-driven int its gate bool, so the model has about 1.06 N fields (271 at
-  N = 256) and about 1.5 messages per unit.
+  field, and a time-driven int its gate bool, so the model has about 1.07 N fields (275 at
+  N = 256) and about 1.6 messages per unit.
 - Data stays small: lists hold a handful of items.
 - **Prefix stability:** for one seed, unit i (its fields, messages and view nodes, and where they
-  sit) is identical at every N. Growing N only appends units, groups and sections. A node that
-  reads several units appears with the latest of them (a group's summary with the group's last
-  unit).
+  sit) is identical at every N. Growing N only appends units. A node that reads several units
+  appears with the latest of them.
 - The component carries a **token**, 4 seeded base-36 characters, in its heading; the companion
-  has its own. Field names already differ (each group has its own noun prefix), so there is no
+  has its own. Field names already differ (each unit draws its own noun prefix), so there is no
   per-field token.
 
 ## The component is its own code (scenario rule)
@@ -66,9 +67,10 @@ its companion:
 - **Rule of thumb:** if deleting one field's code from the bundle would leave its behaviour
   still described somewhere as data that a generic routine executes, it is an interpreter.
 
-Splitting the form into sub-components (per section or per group) is allowed where it is the
-approach's idiom, but the state is **one model** (`state.widgets.w1`), and the bindings cross
-groups (see the dependencies below), so a split has to pass the fields it reads.
+Splitting the form into sub-components is allowed where it is the approach's idiom, but the
+state is **one model** (`state.widgets.w1`), the spec draws no boundaries to split along, and a
+binding may read a field from anywhere earlier in the form (see the dependencies below), so a
+split is the implementation's own choice and has to pass the fields it reads.
 
 The reference `update` and `render` in `spec.js` are interpreters: they are the specification,
 not a model to copy.
@@ -85,7 +87,7 @@ array expressions; the view nodes `text`, `button`, `input`, `check`, `select`, 
 | | `unique-components` | `big-component` |
 |---|---|---|
 | widgets | `w1`…`wN` | `w1` (`kind: "form"`), `w2` (`kind: "companion"`) |
-| field names | single words (`orders`) | group noun + word, camelCase (`printerVolume`); unique in the component |
+| field names | single words (`orders`) | the unit's noun + word, camelCase (`lobbyCoins`); unique in the component |
 | messages | 1-2 fields each | the same: every message writes one field, or two (a combined button) |
 | reads of another widget | readers of earlier widgets | only the companion, of three w1 fields |
 | page root | `<div data-role="dashboard">` | `<div data-role="page">` |
@@ -94,34 +96,33 @@ array expressions; the view nodes `text`, `button`, `input`, `check`, `select`, 
 
 ```
 section w1  <h2>{label}</h2>
-├─ group div            a section: <strong>{title}</strong>, 2-4 groups, maybe a section total
-│  ├─ group fieldset    a group: <em|strong|span>{title}</em>, 2-5 units, maybe "n of m set"
-│  │  ├─ unit …         a unit's nodes (sometimes wrapped in a div/header/footer)
-│  │  ├─ unit …
-│  │  └─ text small     the group summary
-│  └─ text p            the section total
-└─ …
+├─ unit 0 …     its nodes, directly in the section
+├─ unit 1 …
+├─ …
+└─ unit N-1 …
 ```
 
-| Shape | What it is | Reads |
-|---|---|---|
-| **section** | `group div`: a title, 2-4 groups | — |
-| **section total** | `<p>{title} total: a + b + c</p>`, the sum of the section's first three ints (60% of sections; none with fewer than three ints) | 3 fields |
-| **group** | `group fieldset`: a title, 2-5 units | — |
-| **gated group** | 30% of groups of 3+ units (never before unit 9): its first unit is a bool with a checkbox; the rest of the group is in `when ["f", gate]` | 1 field |
-| **group summary** | `<small>{n} of {m} set</small>`, one term per unit: `["if", cond, 1, 0]` with cond int `> min`, bool on, text non-empty, enum not its first option, list non-empty (50% of groups) | every unit of the group |
-| **unit** | one field and its controls and displays, as unique-components draws them per type (int 30%, bool 20%, text 20%, enum 15%, list 6%, time-driven int 2%) | its field |
+The form is **one flat sequence of N field units**, directly in the component's section after
+its heading. There are no sections, fieldsets or titled groups, no gated groups, no per-group
+summaries and no totals over a block of the form: nothing in the spec marks a block of units.
+A **unit** is one field and its controls and displays, as unique-components draws them per type
+(int 30%, bool 20%, text 20%, enum 15%, list 6%, time-driven int 2%). Its own nodes sometimes
+sit in a wrapper of their own (`group` with a `div`, `header` or `footer`, 25% of units); a
+wrapper never holds nodes of another unit.
 
-And the bindings a unit adds over **earlier fields**, only those of the previous 6 units
-(`WINDOW`), so no field is read by more than a bounded number of bindings:
+And the bindings a unit adds over **earlier fields**:
 
 | Dependency | How often | Example |
 |---|---|---|
-| derived text over this field and 1-2 earlier ones | 35% of units | `["+", ["f","printerDegrees"], ["f","printerVolume"]]` |
-| conditional section over an earlier field (or two), wrapping some of the unit's nodes | 20% | `when [">=", ["f","printerVolume"], ["k",2]]` |
-| validation over this text and an earlier field | 40% of texts | `["and", [">", ["f","printerDegrees"], ["k",-8]], ["==", ["len", ["f","syncCaption"]], ["k",0]]]` |
-| disabled state reading an earlier field | 15% | `["or", ["<=", ["f","syncDegrees"], ["k",0]], ["f","printerLive"]]` |
-| combined button writing this field and an earlier one | 12% | `ops: [["add","harborPlates",1], ["reset","contactCity"]]` |
+| derived text over this field and (usually) 1-2 earlier ones | 50% of units | `["+", ["f","lobbyCoins"], ["f","projectCalls"]]` |
+| conditional section over an earlier field (or two), wrapping some of the unit's nodes | 20% | `when ["<", ["f","lobbyCoins"], ["k",7]]` |
+| validation over this text and an earlier field | 40% of texts | `["and", [">", ["f","lobbyCoins"], ["k",7]], ["==", ["len", ["f","deliveryTitle"]], ["k",0]]]` |
+| disabled state reading an earlier field | 15% | `["<", ["f","backupVotes"], ["k",0]]` |
+| combined button writing this field and an earlier one | 12% | `ops: [["add","backupVotes",-1], ["toggle","themeSynced"]]` |
+
+An earlier field is usually a nearby one, but about a third of these reads reach further back,
+as far as the first unit: a field can be read by a binding a hundred units after it. What stays
+bounded is how many bindings read one field, whatever N:
 
 **Reads per field** (binding sites reading a field: each expression in a text, a disabled
 state, a condition, a validation, and the value binding of an input, checkbox, select or list;
@@ -129,17 +130,18 @@ the companion's reads included), seeds 1-3:
 
 | N | 16 | 32 | 64 | 128 | 256 |
 |---|---|---|---|---|---|
-| max | 6-8 | 6-8 | 6-8 | 6-8 | 6-8 |
-| average | 2.5-3.3 | 2.8-3.3 | 2.9-3.3 | 2.9-3.3 | 3.1 |
+| max | 7 | 7 | 7 | 7-8 | 7-8 |
+| average | 2.8-3.5 | 2.8-3.2 | 2.8-3.2 | 2.8-3.0 | 2.8-3.0 |
 
-At N = 256 (average of seeds 1-3): 271 fields, 397 messages, 75 groups, 106 texts reading two or
-more fields, 71 conditional sections, 20 cross-field disabled states, 18 two-field validations,
-31 combined buttons, 16 keyed lists, 5 time-driven ints; nesting up to 6 levels.
+At N = 256 (average of seeds 1-3): 275 fields, 411 messages, 102 texts reading two or more
+fields, 58 conditional sections, 20 cross-field disabled states, 22 two-field validations,
+28 combined buttons, 21 keyed lists, 6 time-driven ints; nesting up to 3 levels inside the
+component's section.
 
 ### The first units
 
 So the work actions find the same targets at every size, the first nine units each carry one
-capability, never inside a conditional section, and the groups holding them are never gated:
+capability, never inside a conditional section:
 
 | Unit | Always is |
 |---|---|
@@ -203,9 +205,9 @@ Generated from the app, the same for every framework:
    sampled units, the companion;
 6. dispose.
 
-The script stays short as N grows: 60-85 steps at N = 16, 95-150 at N = 32 to 256. About 88%
-of the sampled units' messages are exercised (76-100% per spec) (the rest sit behind conditions that stay closed,
-disabled states that stay on, or lists left empty). Every step is only generated when its
+The script stays short as N grows: 65-100 steps at N = 16, 100-155 at N = 32 to 256. About
+98% of the sampled units' messages are exercised (96-100% per spec; the rest sit behind
+conditions that stay closed, disabled states that stay on, or lists left empty). Every step is only generated when its
 control is rendered and enabled in the reference at that moment.
 
 ## Scenario-specific expectations
@@ -214,10 +216,9 @@ On top of the global contract, the same as unique-components':
 - **Keyed lists:** items keep their DOM node across pushes, removes, toggles and the snapshot
   reorder.
 - **Focus and caret:** every text and number input keeps focus and caret while typed into, even
-  when the component re-renders around it (an error appearing, a derived text or a summary
-  changing). No input is inside a conditional section whose condition reads the input's field.
-- **Conditional content:** `when` sections (gated groups included) and validation errors appear
-  and disappear without replacing their siblings.
+  when the component re-renders around it (an error appearing, a derived text changing). No input is inside a conditional section whose condition reads the input's field.
+- **Conditional content:** `when` sections and validation errors appear and disappear without
+  replacing their siblings.
 - **Precise updates:** nodes whose content did not change are not replaced, however big the
   component. (Work per event is measured by `./rr work`; prototypes are held to locality.)
 - **Number inputs:** the message is sent only while the input holds an integer within
@@ -227,44 +228,45 @@ On top of the global contract, the same as unique-components':
 
 ## A worked example
 
-`--size 4 --seed 1`: the first four units, all in the first group of the first section. One
-line per field and message:
+`--size 4 --seed 1`: the first four units, one after another directly under the heading. One
+line per field, message and top-level view node:
 
 ```json
 { "id": "w1", "kind": "form", "token": "04zc", "label": "Warehouse preferences 04zc",
   "fields": [
-    { "name": "keyboardStamps", "type": "int", "min": 1, "max": 25, "initial": 8 },
-    { "name": "keyboardRemark", "type": "text", "initial": "zip" },
-    { "name": "keyboardIdeas", "type": "list", "checkable": true, "initial": [
-      { "id": 1, "text": "Check the supplier", "done": false }, { "id": 2, "text": "Send the slides", "done": false } ] },
-    { "name": "keyboardEntry", "type": "text", "initial": "" },
-    { "name": "keyboardPinned", "type": "bool", "initial": false } ],
+    { "name": "officeHours", "type": "int", "min": 0, "max": 35, "initial": 6 },
+    { "name": "studioNickname", "type": "text", "initial": "" },
+    { "name": "securityChores", "type": "list", "checkable": true, "initial": [
+      { "id": 1, "text": "Call the venue", "done": false }, { "id": 2, "text": "Order the tickets", "done": true },
+      { "id": 3, "text": "Review the car", "done": false }, { "id": 4, "text": "Sort the slides", "done": true }] },
+    { "name": "securityJot", "type": "text", "initial": "" },
+    { "name": "accountSilent", "type": "bool", "initial": false } ],
   "messages": [
-    { "name": "growKeyboardStamps", "kind": "click", "ops": [["add", "keyboardStamps", 1]] },
-    { "name": "setKeyboardStampsTo17", "kind": "click", "ops": [["set", "keyboardStamps", 17]] },
-    { "name": "writeKeyboardRemark", "kind": "input", "field": "keyboardRemark" },
-    { "name": "toggleInKeyboardIdeas", "kind": "item", "field": "keyboardIdeas", "op": "toggle" },
-    { "name": "deleteFromKeyboardIdeas", "kind": "item", "field": "keyboardIdeas", "op": "remove" },
-    { "name": "editKeyboardEntry", "kind": "input", "field": "keyboardEntry" },
-    { "name": "appendToKeyboardIdeas", "kind": "click", "ops": [["push", "keyboardIdeas", "keyboardEntry"]] },
-    { "name": "emptyKeyboardIdeas", "kind": "click", "ops": [["clear", "keyboardIdeas"]] },
-    { "name": "toggleKeyboardPinned", "kind": "click", "ops": [["toggle", "keyboardPinned"]] } ],
+    { "name": "boostOfficeHours", "kind": "click", "ops": [["add", "officeHours", 3]] },
+    { "name": "setOfficeHoursTo8", "kind": "click", "ops": [["set", "officeHours", 8]] },
+    { "name": "zeroOfficeHours", "kind": "click", "ops": [["reset", "officeHours"]] },
+    { "name": "writeStudioNickname", "kind": "input", "field": "studioNickname" },
+    { "name": "markInSecurityChores", "kind": "item", "field": "securityChores", "op": "toggle" },
+    { "name": "removeFromSecurityChores", "kind": "item", "field": "securityChores", "op": "remove" },
+    { "name": "typeSecurityJot", "kind": "input", "field": "securityJot" },
+    { "name": "appendToSecurityChores", "kind": "click", "ops": [["push", "securityChores", "securityJot"]] },
+    { "name": "switchAccountSilent", "kind": "click", "ops": [["toggle", "accountSilent"]] } ],
   "view": [
-    { "el": "group", "tag": "div", "children": [
-      { "el": "text", "tag": "strong", "parts": ["Billing"] },
-      { "el": "group", "tag": "fieldset", "children": [
-        { "el": "text", "tag": "strong", "parts": ["Keyboard options"] },
-        { "el": "text", "tag": "p", "parts": ["Stamps: ", ["f", "keyboardStamps"]] },
-        { "el": "button", "msg": "growKeyboardStamps", "text": ["Up 1"] },
-        { "el": "button", "msg": "setKeyboardStampsTo17", "text": ["= 17"] },
-        { "el": "input", "msg": "writeKeyboardRemark", "label": "Remark" },
-        { "el": "text", "tag": "p", "parts": ["Together: ", ["+", ["len", ["f", "keyboardRemark"]], ["f", "keyboardStamps"]]] },
-        { "el": "input", "msg": "editKeyboardEntry", "placeholder": "Next step" },
-        { "el": "button", "msg": "appendToKeyboardIdeas", "text": ["Append"] },
-        { "el": "button", "msg": "emptyKeyboardIdeas", "text": ["Clear all"] },
-        { "el": "list", "field": "keyboardIdeas", "tag": "ul", "check": "toggleInKeyboardIdeas",
-          "remove": "deleteFromKeyboardIdeas", "removeText": "×" },
-        { "el": "button", "msg": "toggleKeyboardPinned", "text": [["if", ["f", "keyboardPinned"], ["k", "Stop"], ["k", "Start"]]] } ] } ] } ] }
+    { "el": "button", "msg": "boostOfficeHours", "text": ["3 more"] },
+    { "el": "button", "msg": "setOfficeHoursTo8", "text": ["Set to 8"] },
+    { "el": "text", "tag": "output", "parts": [["f", "officeHours"]] },
+    { "el": "button", "msg": "zeroOfficeHours", "text": ["Undo all"] },
+    { "el": "text", "tag": "small", "parts": [["if", [">", ["f", "officeHours"], ["k", 3]], ["k", "Many"], ["k", "Some"]]] },
+    { "el": "input", "msg": "writeStudioNickname", "label": "Nickname" },
+    { "el": "text", "tag": "p", "parts": ["Together: ", ["+", ["len", ["f", "studioNickname"]], ["f", "officeHours"]]] },
+    { "el": "input", "msg": "typeSecurityJot", "placeholder": "Next step" },
+    { "el": "button", "msg": "appendToSecurityChores", "text": ["Save"] },
+    { "el": "list", "field": "securityChores", "tag": "ul", "check": "markInSecurityChores", "remove": "removeFromSecurityChores", "removeText": "×" },
+    { "el": "text", "tag": "p", "parts": [["left", ["f", "securityChores"]], " left"] },
+    { "el": "when", "tag": "div", "cond": ["==", ["count", ["f", "securityChores"]], ["k", 0]], "children": [{ "el": "text", "tag": "p", "parts": ["No news"] }] },
+    { "el": "button", "msg": "switchAccountSilent", "text": ["Flip silent"] },
+    { "el": "text", "tag": "span", "parts": ["Silent: ", ["if", ["f", "accountSilent"], ["k", "done"], ["k", "pending"]]] },
+    { "el": "text", "tag": "p", "parts": [["if", ["and", ["f", "accountSilent"], [">", ["len", ["f", "studioNickname"]], ["k", 0]]], ["k", "Go"], ["k", "Wait"]]] } ] }
 ```
 
 The companion at this size reads units 0 and 3 (unit 6 does not exist yet):
@@ -275,10 +277,9 @@ The companion at this size reads units 0 and 3 (unit 6 does not exist yet):
   "messages": [{ "name": "checkPinned", "kind": "check", "field": "pinned" }, { "name": "editReviewer", "kind": "input", "field": "reviewer" }],
   "view": [
     { "el": "check", "msg": "checkPinned", "label": "Pinned" },
-    { "el": "input", "msg": "editReviewer", "label": "Reviewer",
-      "invalid": { "when": ["==", ["len", ["f", "reviewer"]], ["k", 0]], "message": "Name a reviewer" } },
-    { "el": "text", "tag": "p", "parts": ["Stamps: ", ["w", "w1", "keyboardStamps"]] },
-    { "el": "text", "tag": "p", "parts": ["Pinned: ", ["if", ["w", "w1", "keyboardPinned"], ["k", "yes"], ["k", "no"]]] },
+    { "el": "input", "msg": "editReviewer", "label": "Reviewer", "invalid": { "when": ["==", ["len", ["f", "reviewer"]], ["k", 0]], "message": "Name a reviewer" } },
+    { "el": "text", "tag": "p", "parts": ["Hours: ", ["w", "w1", "officeHours"]] },
+    { "el": "text", "tag": "p", "parts": ["Silent: ", ["if", ["w", "w1", "accountSilent"], ["k", "yes"], ["k", "no"]]] },
     { "el": "when", "tag": "aside", "cond": ["f", "pinned"], "children": [{ "el": "text", "tag": "small", "parts": ["Pinned for review 1dbt"] }] } ] }
 ```
 
@@ -288,75 +289,75 @@ The reference HTML of the initial state (indented for reading; whitespace is ign
 <div data-role="page">
   <section data-key="w1" data-role="widget">
     <h2>Warehouse preferences 04zc</h2>
-    <div>
-      <strong>Billing</strong>
-      <fieldset>
-        <strong>Keyboard options</strong>
-        <p>Stamps: 8</p>
-        <button data-role="growKeyboardStamps">Up 1</button>
-        <button data-role="setKeyboardStampsTo17">= 17</button>
-        <label>Remark<input type="text" data-role="writeKeyboardRemark" value="zip"></label>
-        <p>Together: 11</p>
-        <input type="text" data-role="editKeyboardEntry" placeholder="Next step" value="">
-        <button data-role="appendToKeyboardIdeas">Append</button>
-        <button data-role="emptyKeyboardIdeas">Clear all</button>
-        <ul>
-          <li data-key="1" data-role="keyboardIdeasItem"><input type="checkbox" data-role="toggleInKeyboardIdeas"><span>Check the supplier</span><button data-role="deleteFromKeyboardIdeas">×</button></li>
-          <li data-key="2" data-role="keyboardIdeasItem"><input type="checkbox" data-role="toggleInKeyboardIdeas"><span>Send the slides</span><button data-role="deleteFromKeyboardIdeas">×</button></li>
-        </ul>
-        <button data-role="toggleKeyboardPinned">Start</button>
-      </fieldset>
-    </div>
+    <button data-role="boostOfficeHours">3 more</button>
+    <button data-role="setOfficeHoursTo8">Set to 8</button>
+    <output>6</output>
+    <button data-role="zeroOfficeHours">Undo all</button>
+    <small>Many</small>
+    <label>Nickname<input type="text" data-role="writeStudioNickname" value></label>
+    <p>Together: 6</p>
+    <input type="text" data-role="typeSecurityJot" placeholder="Next step" value>
+    <button data-role="appendToSecurityChores">Save</button>
+    <ul>
+      <li data-key="1" data-role="securityChoresItem"><input type="checkbox" data-role="markInSecurityChores"><span>Call the venue</span><button data-role="removeFromSecurityChores">×</button></li>
+      <li data-key="2" data-role="securityChoresItem"><input type="checkbox" data-role="markInSecurityChores" checked><span>Order the tickets</span><button data-role="removeFromSecurityChores">×</button></li>
+      <li data-key="3" data-role="securityChoresItem"><input type="checkbox" data-role="markInSecurityChores"><span>Review the car</span><button data-role="removeFromSecurityChores">×</button></li>
+      <li data-key="4" data-role="securityChoresItem"><input type="checkbox" data-role="markInSecurityChores" checked><span>Sort the slides</span><button data-role="removeFromSecurityChores">×</button></li>
+    </ul>
+    <p>2 left</p>
+    <button data-role="switchAccountSilent">Flip silent</button>
+    <span>Silent: pending</span>
+    <p>Wait</p>
   </section>
   <section data-key="w2" data-role="widget">
     <h2>Summary 1dbt</h2>
     <label><input type="checkbox" data-role="checkPinned">Pinned</label>
-    <label>Reviewer<input type="text" data-role="editReviewer" value=""></label>
+    <label>Reviewer<input type="text" data-role="editReviewer" value></label>
     <p data-role="editReviewerError">Name a reviewer</p>
-    <p>Stamps: 8</p>
-    <p>Pinned: no</p>
+    <p>Hours: 6</p>
+    <p>Silent: no</p>
   </section>
 </div>
 ```
 
-Clearing Remark shows "Together: 8" (`len("") + 8`); clicking **Up 1** then shows "Stamps: 9"
-in both widgets and "Together: 9". At every bigger size, everything above stays exactly as it is
-(unit 4 joins this group, which has no summary).
+Typing "Ada" into Nickname shows "Together: 9" (`len("Ada") + 6`); clicking **3 more** then shows
+"9" in the output, "Hours: 9" in the companion and "Together: 12". Turning silent on with
+**Flip silent** shows "Silent: done" and "Go" (the nickname is no longer empty). At every bigger
+size, everything above stays exactly as it is, and the next units follow `<p>Wait</p>`.
 
-**Dependencies at a bigger size.** At `--size 16 --seed 1`, unit 8 (printer group) and the gated
-"Sync details" group (units 9-11):
+**Dependencies at a bigger size.** At `--size 32 --seed 1`, unit 8 (`lobbyCoins`, forced: a
+derived text over unit 6's number input and a conditional section over unit 3's bool), then
+two later units that read `lobbyCoins`: a validation in unit 13 and a text in unit 21:
 
 ```json
-{ "el": "text", "tag": "p", "parts": ["Together: ", ["+", ["f", "printerDegrees"], ["f", "printerVolume"]]] },
-{ "el": "when", "tag": "div", "cond": ["not", ["f", "keyboardPinned"]], "children": [
-  { "el": "text", "tag": "p", "parts": ["Lunch is served from noon."] },
-  { "el": "text", "tag": "span", "parts": [["f", "printerDegrees"], " degrees"] } ] }
+{ "el": "button", "msg": "setLobbyCoinsTo9", "text": ["Make it 9"] },
+{ "el": "text", "tag": "strong", "parts": ["Coins = ", ["f", "lobbyCoins"]] },
+{ "el": "button", "msg": "shrinkLobbyCoins", "text": ["Down 1"] },
+{ "el": "button", "msg": "raiseLobbyCoins", "text": ["Add 1"], "disabled": [">=", ["f", "lobbyCoins"], ["k", 18]] },
+{ "el": "text", "tag": "p", "parts": ["Together: ", ["+", ["f", "lobbyCoins"], ["f", "projectCalls"]]] },
+{ "el": "when", "tag": "aside", "cond": ["not", ["f", "accountSilent"]], "children": [
+  { "el": "text", "tag": "p", "parts": ["Printing is free for members."] },
+  { "el": "text", "tag": "output", "parts": [["f", "lobbyCoins"]] } ] },
+{ "el": "text", "tag": "strong", "parts": ["Overall: ", ["+", ["+", ["f", "lobbyCoins"], ["f", "officeHours"]], ["f", "privacyMinutes"]]] },
 
-{ "el": "group", "tag": "fieldset", "children": [
-  { "el": "text", "tag": "em", "parts": ["Sync details"] },
-  { "el": "check", "msg": "tickSyncSeparate", "label": "Separate" },
-  { "el": "text", "tag": "p", "parts": [["if", ["and", ["f", "syncSeparate"], ["f", "keyboardPinned"]], ["k", "All set"], ["k", "Not yet"]]] },
-  { "el": "when", "tag": "div", "cond": ["f", "syncSeparate"], "children": [
-    { "el": "text", "tag": "p", "parts": ["Gap: ", ["-", ["f", "syncDegrees"], ["f", "printerElapsed"]]] },
-    { "el": "button", "msg": "lowerSyncDegrees", "text": ["Down 1"],
-      "disabled": ["or", ["<=", ["f", "syncDegrees"], ["k", 0]], ["f", "printerLive"]] },
-    { "el": "text", "tag": "output", "parts": [["f", "syncDegrees"]] },
-    { "el": "button", "msg": "zeroSyncDegrees", "text": ["Reset"] },
-    { "el": "when", "tag": "div", "cond": [">=", ["f", "printerVolume"], ["k", 2]], "children": [
-      { "el": "input", "msg": "typeSyncCaption", "placeholder": "Enter a caption",
-        "invalid": { "when": ["and", [">", ["f", "printerDegrees"], ["k", -8]], ["==", ["len", ["f", "syncCaption"]], ["k", 0]]],
-                     "message": "Required when degrees is above -8" } },
-      { "el": "text", "tag": "small", "parts": [["len", ["f", "syncCaption"]], " chars"] } ] } ] },
-  { "el": "text", "tag": "small", "parts": [["+", ["+",
-    ["if", ["f", "syncSeparate"], ["k", 1], ["k", 0]],
-    ["if", [">", ["f", "syncDegrees"], ["k", 0]], ["k", 1], ["k", 0]]],
-    ["if", [">", ["len", ["f", "syncCaption"]], ["k", 0]], ["k", 1], ["k", 0]]], " of 3 set"] } ] }
+{ "el": "input", "msg": "typeDeliveryTitle", "placeholder": "Enter a title",
+  "invalid": { "when": ["and", [">", ["f", "lobbyCoins"], ["k", 7]], ["==", ["len", ["f", "deliveryTitle"]], ["k", 0]]],
+               "message": "Required when coins is above 7" } },
+
+{ "el": "text", "tag": "p", "parts": [["if", ["and", ["f", "printerSigned"], [">", ["f", "lobbyCoins"], ["k", 0]]], ["k", "Go"], ["k", "Wait"]]] }
 ```
 
-Typing into the volume number input (unit 6) must update unit 8's "Together", the printer
-group's summary, the companion's "Volume" and "Combined", and open or close the caption section
-in the next group, and nothing else. Changing `keyboardPinned` (unit 3) updates its button,
-unit 8's section, the gate's "All set" in another group and the companion.
+Clicking **Add 1** (unit 8) changes `lobbyCoins`. The bindings that read it are unit 8's
+"Coins", its button's disabled state, its "Together", the output inside its aside and its
+"Overall", unit 13's validation and unit 21's text; no other binding of the form needs to run.
+At `--size 256`, unit 114 reads it too, 106 units further down:
+
+```json
+{ "el": "group", "tag": "footer", "children": [
+  { "el": "when", "tag": "div", "cond": ["<", ["f", "lobbyCoins"], ["k", 7]], "children": [
+    { "el": "check", "msg": "flagClinicOpen", "label": "Open" } ] },
+  { "el": "text", "tag": "em", "parts": ["Open: ", ["if", ["f", "clinicOpen"], ["k", "done"], ["k", "pending"]]] } ] }
+```
 
 ## How to implement it
 
@@ -381,3 +382,20 @@ idiomatic style by default.
 ## Not in this scenario
 
 No CSS, no network, no routing: one page, as in unique-components.
+
+## What changed: a flat form (2026-10-16)
+
+The first version built the form from bounded groups: sections of 2-4 fieldsets, each of 2-5
+units, with gated fieldsets, an "n of m set" summary per fieldset and section totals, and every
+cross-field binding looked back at most 6 units. Two prototypes (digest and tea-local) passed
+locality by making a fieldset their unit of re-run: an event re-ran its fieldset and the few
+fieldsets reading it, a cost bounded by the group size rather than by what changed. The groups
+handed them the boundaries the scenario exists to take away.
+
+By the owner's decision the form is now one flat list of units: no sections, fieldsets, gated
+groups, summaries or totals, and no distance limit on dependencies (only a cap on how many
+bindings read one field). Everything per unit is unchanged: fields and controls, derived texts,
+conditional sections, validations, disabled states, combined buttons, lists, time-driven ints,
+the forced first nine units, the companion, the external events and the script. Derived texts
+are a little more frequent (50% of units, from 35%) so that the form keeps about as many texts
+reading two or more fields as the group summaries gave it.
