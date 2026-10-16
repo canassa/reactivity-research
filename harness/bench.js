@@ -111,8 +111,11 @@ async function benchScenario(name, which, args) {
   if (quick && !args.seeds) seeds = seeds.slice(0, 1);
   const skipped = [];
   const plan = [];
+  // "$bench".also names frameworks left out of the size runs (they fail a rule there) that are
+  // timed anyway, for reference, with the reason carried into the results and onto the card.
+  const also = block.also || {};
   for (const e of emitters) {
-    const entry = config[e.name];
+    const entry = config[e.name] || (also[e.name] ? {} : null);
     if (!entry) { skipped.push({ variant: e.name, why: `not in runs.json for ${name}` }); continue; }
     for (const size of sizes) {
       if (entry.sizes && !entry.sizes.includes(size)) { skipped.push({ variant: e.name, size, why: `size ${size} is not in its runs.json sizes` }); continue; }
@@ -221,6 +224,7 @@ async function benchScenario(name, which, args) {
     variantsInfo[p.variant] ||= {
       emitter: p.emitter.name, framework: p.emitter.mod.framework, label: p.emitter.framework.label + (p.twinOf ? " (A/A twin)" : ""),
       track: p.emitter.framework.track, emitterOptions: p.opts, versions: p.emitter.framework.versions(), ...(p.twinOf ? { twinOf: p.twinOf } : {}),
+      ...(also[p.emitter.name] ? { excluded: also[p.emitter.name] } : {}),
     };
   }
   const run = {

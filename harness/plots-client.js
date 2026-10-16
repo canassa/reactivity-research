@@ -314,7 +314,8 @@
     if (!c) return card("CPU time", null, el("p", { class: "note", text: "No CPU results for this scenario yet. Run ./rr bench " + sc.name + " all --remote azathoth: it times one event and the startup of one app per framework from Chrome traces, and this card appears here." }), sc.variants);
     const { run, summary } = c;
     const names = Object.keys(run.variants).sort((a, b) => NAMES.indexOf(a) - NAMES.indexOf(b));
-    const sub = (n) => (run.variants[n].track === "prototype" ? "prototype" : "");
+    const sub = (n) => (run.variants[n].excluded ? "fails a rule: reference only" : run.variants[n].track === "prototype" ? "prototype" : "");
+    const excluded = names.filter((n) => run.variants[n].excluded);
     const halves = [...new Map(summary.events.map((e) => [e.half, e.scope])).entries()];
     const us = (t) => (t >= 100 ? fmt(t) : t >= 10 ? t.toFixed(0) : t.toFixed(1));
     const eventOf = (n) => {
@@ -341,6 +342,7 @@
       .map((e) => [e.variant, e.half + (e.scope === "global" ? " *" : ""), us(e.script.median), `${us(e.script.p25)}–${us(e.script.p75)}`, `${us(e.script.ci[0])}–${us(e.script.ci[1])}`, e.script.n, e.total.median.toFixed(2)]);
     const out = [el("h3", { text: `CPU time (N=${sizes}, seed ${seeds})` }),
       el("p", { class: "note", text: "One app per framework, at the same size. Script time (µs) of one event, from a Chrome trace: from the input event to the first commit after the app's work, the JavaScript inside (js-framework-benchmark's rule, no CPU throttling). Each event is ./rr work's action as real input through the DevTools protocol, repeated from the same state on one page; the bar is the median over the reps (of the median over the local events, unless one event is picked), the whisker the interquartile range. Lower is faster. Differences under about 10% are within the A/A noise." + (run.quick ? " This is a --quick run: few reps; for development, not for conclusions." : "") }),
+      ...excluded.map((n) => el("p", { class: "note", text: `${n} is shown for reference only: it ${run.variants[n].excluded}. It is left out of this scenario's size results.` })),
       el("div", { class: "controls" }, el("label", {}, "event ", select)),
       el("div", { class: "chart" }, bars({ items: evItems, unit: "µs", yFmt: us })),
       details("Table", table(["variant", "event", "script µs (median)", "IQR", "95% CI of the median", "n", "total ms (median)"], rowsAll)),
