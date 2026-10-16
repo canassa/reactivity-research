@@ -14,10 +14,10 @@ let B; // the bindings being collected: the widget's, or one list item's while i
 let N; // the elements of the template being created (a widget's, or one list item's), by position
 let D; // the dashboard element
 
-// By widget id: the setter that replaces the widget's whole state (S), what its factory returns
-// for others to read (E; `m`: its metric, `p`: its phrase; a feed's record, which `notify`
-// pushes into) and its bindings (W). T: the clocks' tick functions.
-export let S, E, W, T;
+// By widget id: what its factory returns for others to read (E; `m`: its metric, `p`: its
+// phrase; a feed's record, which `notify` pushes into) and its bindings (W; the list also carries
+// the setter that replaces the widget's whole state, `W[k].s`). T: the clocks' tick functions.
+export let E, W, T;
 
 // Digest a binding list: `run(W[k])` digests widget k after its state changed, its bindings and
 // its readers'.
@@ -87,28 +87,23 @@ export const widget = (kind, label, html, set, ...h) => {
   const x = el("section", `<h2>${label}</h2>` + html);
   x.dataset.key = id;
   x.dataset.role = "widget-" + kind;
-  on(x, h, (W[id] = B = []));
+  (W[id] = B = []).s = set;
+  on(x, h, B);
   D.append(x);
   N = x.querySelectorAll("*");
-  S[id] = set;
   return B;
 };
 
 // One delegated handler for clicks and input, on the dashboard element. Handlers read the
 // element they are given, so a checkbox's click and input events (both fire) agree. Only the
 // widget the event came from is digested.
-const onEvent = ({ target: t }) => {
-  if (t.h) {
-    t.h(t);
-    run(t.b);
-  }
-};
+const onEvent = ({ target: t }) => t.h && (t.h(t), run(t.b));
 
-// The program: `defs` is one [factory, ...config] per widget, in page order (ids w1, w2, …);
+// The program: `defs` is one [factory, ...config] per widget and `labels` the widgets' labels,
+// both in page order (ids w1, w2, …): a factory gets its widget's label first, then its config;
 // `receive(msg)` applies an external event and digests the widgets it touched (with `run`).
-export const app = (defs, receive) => ({
+export const app = (defs, labels, receive) => ({
   mount(root) {
-    S = {};
     E = {};
     W = {};
     T = [];
@@ -116,7 +111,7 @@ export const app = (defs, receive) => ({
     D.dataset.role = "dashboard";
     defs.forEach(([f, ...c], i) => {
       id = "w" + (i + 1);
-      E[id] = f(...c);
+      E[id] = f(labels[i], ...c);
       // The first digest of the widget: its own bindings, and a summary's line (which its
       // sources, created before it, did not have yet).
       run(W[id]);
@@ -129,6 +124,6 @@ export const app = (defs, receive) => ({
   // The listeners are on the dashboard element, so removing it removes them.
   dispose() {
     D.remove();
-    B = N = S = E = W = T = D = null;
+    B = N = E = W = T = D = null;
   },
 });

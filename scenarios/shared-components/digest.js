@@ -48,7 +48,7 @@ const KINDS = {
   counter: {
     args: "l, st, mn, mx, value, v0 = value",
     body: `
-  widget("counter", l, \`<output data-role=value></output><button data-role=dec>-\${st}</button><button data-role=inc>+\${st}</button><button data-role=reset>Reset</button>\`, (v) => ({ value } = v),
+  widget("counter", l, \`<output data-role=value></output><button data-role=dec>-\${st}</button><button data-role=inc>+\${st}</button><button data-role=reset>Reset\`, (v) => ({ value } = v),
     () => value = Math.max(mn, value - st), // dec
     () => value = Math.min(mx, value + st), // inc
     () => value = v0, // reset
@@ -65,7 +65,7 @@ const KINDS = {
     body: `
   // The initial state is a bit mask of the switches that are on (bit i: switch i).
   on = names.map((n, i) => (on >> i) & 1);
-  widget("toggles", l, \`<ul>\${names.map((n, i) => \`<li><label><input type=checkbox data-role=toggle data-key=\${i}>\${n}</label></li>\`).join("")}</ul><p data-role=count></p>\`, (v) => ({ on } = v),
+  widget("toggles", l, \`<ul>\${names.map((n, i) => \`<li><label><input type=checkbox data-role=toggle data-key=\${i}>\${n}</label></li>\`).join("")}</ul><p data-role=count>\`, (v) => ({ on } = v),
     ...names.map((n, i) => (t) => on[i] = t.checked)); // toggle
   // Each item is li, label, input: the i-th checkbox is element 4 + 3i.
   names.forEach((n, i) => bind(4 + 3 * i, "checked", () => on[i]));
@@ -82,7 +82,7 @@ const KINDS = {
     args: "l, ph, re, msg, str",
     body: `
   re = RegExp(re);
-  widget("field", l, \`<input type=text data-role=input placeholder="\${ph}"><p data-role=error>\${msg}</p>\`, (v) => ({ text: str } = v),
+  widget("field", l, \`<input type=text data-role=input placeholder="\${ph}"><p data-role=error>\${msg}\`, (v) => ({ text: str } = v),
     (t) => str = t.value, // input
   );
   bind(1, "value", () => str);
@@ -95,13 +95,13 @@ const KINDS = {
     body: `
   // The initial items are texts, and m a bit mask of the done ones (bit i: item i).
   items = items.map((text, i) => ({ id: i + 1, text, done: (m >> i) & 1 }));
-  widget("todo", l, \`<input type=text data-role=draft placeholder="\${ph}"><button data-role=add>\${add}</button><ul></ul><p data-role=left></p>\`, (v) => ({ items, draft } = v),
+  widget("todo", l, \`<input type=text data-role=draft placeholder="\${ph}"><button data-role=add>\${add}</button><ul></ul><p data-role=left>\`, (v) => ({ items, draft } = v),
     (t) => draft = t.value, // draft
     // add: the trimmed draft goes in the parameter, which a click handler has no use for
     (text) => (text = draft.trim()) && (items.push({ id: Math.max(0, ...items.map((i) => i.id)) + 1, text, done: false }), draft = ""),
   );
   bind(1, "value", () => draft);
-  list(3, () => items, \`<input type=checkbox data-role=toggle><span></span><button data-role=remove>\${rm}</button>\`, (r) => (
+  list(3, () => items, \`<input type=checkbox data-role=toggle><span></span><button data-role=remove>\${rm}\`, (r) => (
     bind(0, "checked", () => r.i.done),
     text(1, () => r.i.text),
     [
@@ -122,7 +122,7 @@ const KINDS = {
   tabs: {
     args: "l, titles, texts, active",
     body: `
-  widget("tabs", l, \`<div role=tablist>\${titles.map((t, i) => \`<button role=tab data-role=tab data-key=\${i}>\${t}</button>\`).join("")}</div><p role=tabpanel data-role=tab-content></p>\`, (v) => ({ active } = v),
+  widget("tabs", l, \`<div role=tablist>\${titles.map((t, i) => \`<button role=tab data-role=tab data-key=\${i}>\${t}</button>\`).join("")}</div><p role=tabpanel data-role=tab-content>\`, (v) => ({ active } = v),
     ...titles.map((t, i) => () => active = i)); // tab
   titles.forEach((t, i) => bind(2 + i, "ariaSelected", () => i == active));
   text(2 + titles.length, () => texts[active]);`,
@@ -132,7 +132,7 @@ const KINDS = {
   panel: {
     args: "l, sh, hi, body, open",
     body: `
-  widget("panel", l, \`<button data-role=toggle></button><p data-role=body>\${body}</p>\`, (v) => ({ open } = v),
+  widget("panel", l, \`<button data-role=toggle></button><p data-role=body>\${body}\`, (v) => ({ open } = v),
     () => open = !open, // toggle
   );
   bind(1, "ariaExpanded", () => !!open);
@@ -160,7 +160,7 @@ const KINDS = {
   amount: {
     args: "l, d, pre, suf, value",
     body: `
-  widget("amount", l, "<input type=number data-role=input><output data-role=formatted></output>", (v) => ({ value } = v),
+  widget("amount", l, "<input type=number data-role=input><output data-role=formatted>", (v) => ({ value } = v),
     (t) => t.value && (value = +t.value), // input
   );
   bind(1, "value", () => value);
@@ -177,7 +177,7 @@ const KINDS = {
     args: "l, ph, items, query",
     body: `
   items = items.map((text, i) => ({ id: i + 1, text }));
-  widget("filter", l, \`<input type=text data-role=query placeholder="\${ph}"><ul></ul><p data-role=matches></p>\`, (v) => ({ query } = v),
+  widget("filter", l, \`<input type=text data-role=query placeholder="\${ph}"><ul></ul><p data-role=matches>\`, (v) => ({ query } = v),
     (t) => query = t.value, // query
   );
   bind(1, "value", () => query);
@@ -196,7 +196,7 @@ const KINDS = {
     args: "l, labels, n",
     body: `
   const stars = labels.slice(1);
-  widget("rating", l, \`<div>\${stars.map((_, i) => \`<button data-role=star data-key=\${i + 1}></button>\`).join("")}</div><p data-role=rating-label></p>\`, (v) => ({ stars: n } = v),
+  widget("rating", l, \`<div>\${stars.map((_, i) => \`<button data-role=star data-key=\${i + 1}></button>\`).join("")}</div><p data-role=rating-label>\`, (v) => ({ stars: n } = v),
     ...stars.map((_, i) => () => n = i + 1)); // star
   stars.forEach((_, i) => {
     bind(2 + i, "ariaPressed", () => i < n);
@@ -215,8 +215,8 @@ const KINDS = {
     body: `
   // \`notify\` pushes into the entries: they stay on a record (\`e\`), which the factory returns (E).
   const s = { e: entries.map((text, i) => ({ id: i + 1, text })) };
-  widget("feed", l, \`<ul></ul><p data-role=empty>\${empty}</p>\`, (v) => ({ entries: s.e } = v));
-  list(1, () => s.e, \`<span></span><button data-role=dismiss>\${dismiss}</button>\`, (r) => (
+  widget("feed", l, \`<ul></ul><p data-role=empty>\${empty}\`, (v) => ({ entries: s.e } = v));
+  list(1, () => s.e, \`<span></span><button data-role=dismiss>\${dismiss}\`, (r) => (
     text(0, () => r.i.text),
     [() => s.e = s.e.filter((e) => e != r.i)] // dismiss
   ));
@@ -232,7 +232,7 @@ const KINDS = {
   clock: {
     args: "l, a, b, c, seconds, running",
     body: `
-  const w = widget("clock", l, \`<output data-role=time></output><button data-role=start>\${a}</button><button data-role=stop>\${b}</button><button data-role=reset>\${c}</button>\`, (v) => ({ seconds, running } = v),
+  const w = widget("clock", l, \`<output data-role=time></output><button data-role=start>\${a}</button><button data-role=stop>\${b}</button><button data-role=reset>\${c}\`, (v) => ({ seconds, running } = v),
     () => running = true, // start
     () => running = false, // stop
     () => (seconds = 0, running = false), // reset
@@ -248,7 +248,7 @@ const KINDS = {
   summary: {
     args: "l, f, src, pre",
     body: `
-  const w = widget("summary", l, "<p data-role=summary></p>");
+  const w = widget("summary", l, "<p data-role=summary>");
   const num = (x) => Math.round(x * 100) / 100;
   text(1, () => {
     const v = src.map((e) => e.m());
@@ -289,7 +289,7 @@ function appFile(spec) {
     // The label is spliced into the heading's HTML and read as text by summaries: one string
     // serves both only while it needs no escaping.
     if (html(w.label) !== lit(w.label)) throw new Error(`digest expects labels without HTML special characters: ${w.label}`);
-    return `  [${[w.kind, lit(w.label), ...KINDS[w.kind].row(w, s)].join(", ")}],`;
+    return `  [${[w.kind, ...KINDS[w.kind].row(w, s)].join(", ")}],`;
   });
 
   // External events: only the branches this app can receive.
@@ -301,23 +301,26 @@ function appFile(spec) {
   const branches = [];
   if (has("clock")) branches.push(`if (m.type == "tick") for (const t of T) t();`);
   if (has("feed")) branches.push(`if (m.type == "notify") E[m.widget].e.push(m.entry), run(W[m.widget]);`);
-  branches.push(`for (const k in (m = structuredClone(m.type == "serverSet" ? { [m.widget]: m.state } : m.state?.widgets))) S[k](m[k]), run(W[k]);`);
+  branches.push(`for (const k in (m = structuredClone(m.type == "serverSet" ? { [m.widget]: m.state } : m.state?.widgets))) W[k].s(m[k]), run(W[k]);`);
   for (let i = 1; i < branches.length; i++) branches[i] = "else " + branches[i];
 
   return `// Generated by scenarios/shared-components/digest.js. Do not edit.
-import { app, widget, bind, text, show, list, run, id, S, E, W, T } from "./runtime.js";
+import { app, widget, bind, text, show, list, run, id, E, W, T } from "./runtime.js";
 
 ${factories.join("\n\n")}
 
-// External events: each replaces the state of the widgets it concerns (with their setters, S) and
-// digests only those (\`run(W[k])\`; a clock's tick function digests its own clock).
+// External events: each replaces the state of the widgets it concerns (with their setters,
+// \`W[k].s\`) and digests only those (\`run(W[k])\`; a clock's tick function digests its own clock).
 const receive = (m) => {
   ${branches.join("\n  ")}
 };
 
-// One row per widget, in page order: [kind, label, ...constants, ...initial state].
+// One row per widget, in page order: [kind, ...constants, ...initial state]; then the widgets'
+// labels, in the same order (each factory gets its label as its first argument).
 export default app([
 ${rows.join("\n")}
+], [
+${spec.widgets.map((w) => `  ${lit(w.label)},`).join("\n")}
 ], receive);
 `;
 }
@@ -330,9 +333,9 @@ export function emit(spec) {
     },
     style: {
       approach: "compiled dirty checking, per widget: an event re-runs the bindings of the widget it touched (and of the summaries reading it), writing a DOM property only when its value changed",
-      components: "one factory per widget kind present in the app; one data row per instance",
+      components: "one factory per widget kind present in the app; one data row per instance, the labels in a table of their own",
       state: "plain mutable variables of the kind's factory, one set per widget; external replacements go through a setter the factory hands the runtime; a feed's entries sit on a record notify pushes into",
-      templates: "HTML strings with the instance's constants (escaped at build time), parsed once per widget or list item",
+      templates: "HTML strings with the instance's constants (escaped at build time), no end tags at their end, parsed once per widget or list item",
       lists: "keyed by id, reconciled in place by the runtime",
       conditionals: "a binding that swaps one node with an empty text node",
       events: "one delegated click and input listener; handlers given to the controls in document order (an expando the listener reads)",
