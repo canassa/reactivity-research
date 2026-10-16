@@ -94,7 +94,11 @@ function handler(m, fields) {
       if (ops.every((o) => o.e)) return `() => ${ops.length === 1 ? ops[0].e : `(${ops.map((o) => o.e).join(", ")})`}`;
       return `() => { ${ops.map((o) => o.s ?? o.e + ";").join(" ")} }`;
     }
-    case "input": return fields[m.field].type === "int" ? `(t) => t.value && (${L} = +t.value)` : `(t) => ${L} = t.value`;
+    case "input": {
+      // A number input sends only an integer within the field's range (the README's rule).
+      const f = fields[m.field];
+      return f.type === "int" ? `(t) => { const n = t.valueAsNumber; Number.isInteger(n) && n >= ${f.min} && n <= ${f.max} && (${L} = n); }` : `(t) => ${L} = t.value`;
+    }
     case "check": return `(t) => ${L} = t.checked`;
     case "select": return `(t) => ${L} = t.value`;
     case "item": return m.op === "remove" ? `(t, k) => ${L} = ${L}.filter((i) => i.id != k)`
