@@ -254,8 +254,9 @@ seeds and options; a list of option values measures each as a variant), then ser
   view it), serves it locally and through a **cloudflared quick tunnel**, and prints the URL.
   `--local` skips the tunnel; `--out <file>` only writes the page;
 - for each scenario, at least:
-  - **size against N** for every framework: compressed total, with HTML and JavaScript as
-    separate series, raw size available on toggle, seeds shown as spread around the median;
+  - **size against N:** every framework's compressed total on one graph (hovering a framework's
+    label picks out its curve), raw size available on toggle, seeds shown as spread around the
+    median; HTML and JavaScript separately in its table and under "where the bytes go";
   - **the fitted baseline and slope** per framework, as a table and as the fitted lines;
   - **where the bytes go:** runtime/library code against app code (and HTML) per framework, at
     each size, stacked;
