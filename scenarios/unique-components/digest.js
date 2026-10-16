@@ -18,8 +18,9 @@
 // - State is plain variables: a field only its widget uses is a parameter of the widget's
 //   function, a field another widget reads a module variable, a feed list a field of the widget's
 //   record (`notify` pushes into it by name). External replacements go through the widget's
-//   setter, the first argument of `widget()`, whose defaults are the initial state: `widget()`
-//   calls it once with no fields.
+//   setter, the first argument of `widget()`, which assigns every field from the runtime's `S`
+//   (the state being applied) and whose defaults are the initial state: `widget()` calls it
+//   once while `S` is empty.
 // - Nodes are found by their position in the template, each binding's as a distance from the
 //   previous binding's (`text(3, …)`), resolved once at creation;
 //   handlers are given to the controls (buttons, inputs, selects) in document order.
@@ -247,12 +248,13 @@ function widgetCode(w, init) {
   const own = w.fields.filter((f) => !FEED[cur].has(f.name) && !READ[cur].has(f.name));
   const shared = w.fields.filter((f) => FEED[cur].has(f.name));
   const handlers = ctl.map((h) => `    ${h}`).join("\n");
-  // External events replace the widget's whole state: its setter assigns every field. Each
-  // field's default is its initial value, so the setter also initialises the state (`widget()`
-  // calls it with no fields). A field named like a property of Object.prototype would pick that
+  // External events replace the widget's whole state: its setter assigns every field from `S`,
+  // the state `run(W[k], state)` is applying (a setter reads it rather than taking a parameter,
+  // so no setter needs a name of its own). Each field's default is its initial value, so the
+  // setter also initialises the state (`widget()` calls it while `S` is empty). A field named like a property of Object.prototype would pick that
   // property up instead.
   for (const f of w.fields) if (f.name in {}) throw new Error(`digest: field name ${f.name} shadows an Object.prototype property`);
-  const set = `(v) => ({ ${w.fields.map((f) => `${f.name}: ${F(f.name)} = ${initial(f, init[f.name])}`).join(", ")} } = v)`;
+  const set = `() => ({ ${w.fields.map((f) => `${f.name}: ${F(f.name)} = ${initial(f, init[f.name])}`).join(", ")} } = S)`;
 
   const body = [
     ...(shared.length ? [`  const s = (O.${cur} = {});`] : []),
@@ -299,7 +301,7 @@ function appFile(spec) {
   for (let i = 1; i < branches.length; i++) branches[i] = "else " + branches[i];
 
   const body = code.join("\n\n") + "\n\n" + branches.join("\n");
-  const names = ["widget", "bind", "text", "show", "list", "dep", "run", "nx", "add", "L", "C", "O", "W", "T"]
+  const names = ["widget", "bind", "text", "show", "list", "dep", "run", "nx", "add", "L", "C", "O", "W", "T", "S"]
     .filter((x) => new RegExp(`(^|[^\\w.])${x}\\b`, "m").test(body));
   const ids = spec.widgets.map((w) => w.id).join(", ");
 

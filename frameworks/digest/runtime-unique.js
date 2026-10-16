@@ -19,14 +19,15 @@ let I;
 
 // By widget id: the record of its fields that other code reads (O) and its bindings (W; the list
 // also carries the setter that replaces the widget's whole state, `W[k].s`). T: the time-driven
-// fields' tick functions.
-export let O, W, T;
+// fields' tick functions. S: the state a setter assigns (setters read it instead of taking an
+// argument, so no setter needs a parameter of its own).
+export let O, W, T, S;
 
 // Digest a binding list: `run(W[k])` digests widget k after its state changed, its bindings
 // and its readers'. `run(W[k], v)` first replaces the widget's whole state with `v`, through its
 // setter.
 export const run = (b, v) => {
-  v && b.s(v);
+  v && ((S = v), b.s());
   for (const f of b) f();
 };
 
@@ -98,15 +99,15 @@ export const C = (...a) => a.map(([text, done], i) => ({ id: i + 1, text, done: 
 // Create the widget's section, with `set`, the setter of its whole state, then the handlers of its
 // controls in document order, then its template (its heading and content, the last argument),
 // and make it the one being created: the bindings that follow refer to its elements by position
-// (0 is the heading). The setter's defaults are the initial state: it is called once with no
-// fields. A widget with a feed list puts the record `notify` pushes into in O itself.
+// (0 is the heading). The setter's defaults are the initial state: it is called once while S
+// is empty. A widget with a feed list puts the record `notify` pushes into in O itself.
 export const widget = (set, ...h) => {
   const x = el("section", h.pop());
   x.dataset.role = "widget";
   x.dataset.key = id;
   on(x, h, (W[id] = B = []));
   D.append(x);
-  (B.s = set)({});
+  (B.s = set)();
   E = x.querySelectorAll("*");
   P = 0;
 };
@@ -127,6 +128,7 @@ const onEvent = ({ target: t }) => t.h && (t.h(t), run(t.b));
 export const app = (defs, receive) => ({
   mount(root) {
     O = {};
+    S = {};
     W = {};
     T = [];
     I = 0;
