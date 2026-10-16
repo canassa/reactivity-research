@@ -91,3 +91,15 @@ The app itself is a table of `[factory, config]` rows in page order, plus `init(
 - `../../scenarios/shared-components/tea-inline.js`: the emitter, with one factory per widget kind.
 - The build is Vite with no framework plugin, the same bundler and minifier as the Solid setup.
   Source maps are hidden.
+
+## unique-components
+
+`../../scenarios/unique-components/tea-inline.js` uses the same runtime and strategy, but with no
+kinds to share: every widget is its own module (`src/widgets/<id>.js`), written out from its
+description. The emitter compiles each widget's expressions to JavaScript, works out the fields
+each binding reads, and inlines every message into the action of its control, which writes the
+fields in place and schedules the per-field binding groups (`onVisits = [...]`) plus
+`R.<widget>.<field>` for the fields other widgets read. Conditional sections are built detached
+and attached by `when`. The only generic code beyond the runtime is four helpers in
+`widgets/widget.js` (`section`, `loader`, `nextId`, `options`). Expect the slope to be the cost of
+per-widget DOM construction and actions, with no shared factory to amortize it.
