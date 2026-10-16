@@ -29,26 +29,21 @@ What this strategy emits, once per widget kind and configured per widget by its 
 // Dirty bits: value 1. Message tags: inc 0, dec 1, reset 2.
 
 export const kind = [               // the kind: [reducer, DOM factory]
-  ([, , , step, min, max, start], s, msg) => {
-    switch (msg.type) {
-      case 0: mark(1); return { value: Math.min(max, s.value + step) };   // inc
-      case 1: mark(1); return { value: Math.max(min, s.value - step) };   // dec
-      // … reset …
-    }
-    return s;
-  },
-  (parent, [, , label, step, min, max], id) => {   // runs once: builds the DOM
-    const [, , value, dec, inc, reset] = section(parent, id, label, "counter",
-      "<output data-role=value></output><button data-role=dec></button>…");   // static template
+  [                                  // the reducer: its arms by message tag, [bits, new slice]
+    ([, , , step, , max], s) => [1, { value: Math.min(max, s.value + step) }],   // inc
+    ([, , , step, min], s) => [1, { value: Math.max(min, s.value - step) }],     // dec
+    // … reset …
+  ],
+  (parent, [, , , step, min, max], id) => {   // runs once: builds the DOM
+    const [, , value, dec, inc, reset] = html(
+      "<section data-role=widget-counter><h2></h2><output data-role=value></output>…", parent);
     dec.textContent = "-" + step;
     onClick(dec, id, 1);                      // event → message { widget: id, type: 1 }
     // … inc, reset …
-    return (s, d) => {                        // the static patch
-      if (d & 1) {
-        setText(value, s.value);
-        prop(dec, "disabled", s.value <= min);
-        prop(inc, "disabled", s.value >= max);
-      }
+    return (s) => {                           // the static patch: its one bit needs no test
+      setText(value, s.value);
+      prop(dec, "disabled", s.value <= min);
+      prop(inc, "disabled", s.value >= max);
     };                                        // the app runs it once with every bit (-1)
   },
 ];
@@ -57,6 +52,14 @@ export const kind = [               // the kind: [reducer, DOM factory]
 - **Bits and message tags are numbers** the compiler writes in place (with their names in a
   comment), the way Elm `--optimize` tags constructors. External events (`tick`, `notify`,
   `serverSet`, `snapshot`) keep their names.
+- **A reducer is a table of its arms by message tag**, as a switch over dense tags compiles to
+  a jump table (an array, or an object when external events are among the tags). Each arm
+  returns the compile-time bits of the fields it writes with the new slice, `[bits, slice]`, or
+  nothing when the slice is unchanged; the app reducer calls the arm of the message's tag and
+  writes the bits into the runtime's `dirty` table under the widget. (A unique widget's arm
+  returns only the fields it writes, and the app merges them into the slice.)
+- **A patch test that every possible dirty mask passes is left out**: a patch only runs with
+  some of its widget's bits set, so a component with one field patches without a test.
 - **The DOM is one static HTML string per component**, parsed once by `html()` (through a
   `<template>` element); the code finds each node by its position in document order. Texts that
   come from a widget's config are written by `textContent`, once. The emitter writes the
@@ -70,19 +73,22 @@ export const kind = [               // the kind: [reducer, DOM factory]
 A click runs, in order:
 
 1. the handler sends its message, `{ widget: "w1", type: 0 }`, built when it was wired;
-2. the app reducer routes it to the counter's `update`, files the marked bits under `w1` and
-   returns the new model (immutable, with structural sharing);
+2. the app reducer calls the counter's arm for tag 0, files the bits it returned under `w1`
+   and returns the new model (immutable, with structural sharing);
 3. one microtask later, the app's patch calls `w1`'s patch with its bits: only the bindings
    under bit 1 run, and each one writes the DOM only when the value differs.
 
 All widgets of one kind share one module (`src/widgets/<kind>.js`). A widget adds only its
-row: its initial slice, its label and its parameters (limits, items, rules, formats). Config
+row: its initial slice, its label and its parameters (limits, items, rules, formats). The kind's
+view parses its whole section (with an empty heading); the app's build loop keys the section by
+the widget's id and writes the row's label into the heading. Config
 records a kind reads by position are written as tuples (a tab's `[title, content]`, an
 option's `[value, label]`).
 
 ## Lists, derived values, external events
 
-- **Keyed lists** (todo, filter, feed): rows are built once per id from their own template. On
+- **Keyed lists** (todo, filter, feed): rows are built once per id from their own template (the
+  list sets each row's `data-key`). On
   a patch, new rows and rows whose item changed are patched; rows whose id is gone are removed,
   and one walk over the rest moves only the nodes out of place. (Solid 2's `reconcileArrays` did
   this until it was replaced: these lists only append, remove and filter, and it cost about
@@ -131,6 +137,11 @@ uses the same strategy with no shared kinds: every widget is its own module
 written out as code), initial state, DOM factory and static patch, all written from that widget's
 description. Nothing is interpreted at runtime. What it adds:
 
+- **Marked templates.** Only the elements the code touches carry a `b` attribute in the
+  static markup; `template()` returns the root and then those elements in document order, and
+  removes the marker (as Lit removes its own markers), so references are dense (`t[1]`,
+  `t[2]`…) and read alike across widgets. List rows use the same function.
+
 - **Its own template per widget.** The handlers take the widget id from the view's `id`
   parameter, and the app's build loop keys each section: repeating the id literal on every line
   broke brotli's matches between lines that were otherwise alike (about 13 B per widget).
@@ -138,7 +149,7 @@ description. Nothing is interpreted at runtime. What it adds:
   under its id to the registry in `widget.js` when the app imports it (in page order), so no
   binding is named per widget.
 - **Numbers count up the same way in every widget:** message tags in the order the view first
-  sends them, field bits in the order it first reads them, handlers wired in one run after the
+  sends them (its own handlers first, in wiring order, then its list rows'), field bits in the order it first reads them, handlers wired in one run after the
   branches and lists, patch tests ordered by mask. Enum cycles are compiled to a conditional
   chain (the compiler knows the options), and property bindings go through one setter per
   property (`setValue`, `setNumber`, `setChecked`, `setDisabled`).
@@ -188,3 +199,35 @@ lower at some sizes, higher at others; a small change also renames the minifier'
 across the bundle, which moves brotli by ±10 B on its own). Not done, as close to the rules:
 deriving dashboard ids from row order (it fits the generator's naming), dropping Vite's
 modulepreload polyfill, and moving `settled` from the runtime into the excluded adapter.
+
+## Size pass 3 (2026-10-16)
+
+Total brotli, medians of seeds 1 to 3 (all sizes of `runs.json`), before and after. Lower at
+every measured size in both scenarios. No `./rr work` record rose (sizes 16 to 256, seed 1;
+summed calls 6,921 to 6,257 and 8,740 to 8,074; blocks 7,924 to 7,229 and 9,797 to 9,131):
+
+| | N=1 | N=16 | N=64 | N=256 | fit, all N | fit, N >= 16 |
+|---|---|---|---|---|---|---|
+| shared-components | 1,255 → 1,199 | 3,669 → 3,592 | 5,302 → 5,222 | 9,793 → 9,760 | 2,419 + 31.1 → 2,346 + 31.2 | 3,499 + 25.0 → 3,428 + 25.1 |
+| unique-components | 1,674 → 1,651 | 6,114 → 6,030 | 16,473 → 16,066 | 50,098 → 48,296 | 2,758 + 190.3 → 2,748 + 183.8 | 4,299 + 181.6 → 4,299 + 175.1 |
+
+What changed: arms return `[bits, slice]` instead of calling `mark()` for the app to `take()`
+(two calls fewer per message), and the reducer is a table of arms by tag; the app writes bits
+straight into the runtime's `dirty` table (no `touch()` call); patch tests that every possible
+mask passes are left out; the keyed list sets row keys; unique arms return only the fields they
+write; unique templates mark their bound elements; unique tags number the widget's own handlers
+first; the dashboard's sections are keyed and labelled by the app. Brotli rewarded regularity
+more than raw bytes again: putting the bits first in an arm's result (`[1, {…}]`, so every arm
+starts alike) saved 170 B at unique N=256 for no change in raw size.
+
+What did not help, measured: dropping unused patch and arm parameters (`e=>` for `(e,t)=>`),
+expression-bodied patches, always passing `(s, d, w)`, other orders of a unique module's triple
+(view, arms, init stays best), wiring before the branches and lists, markers right after the tag
+name, initial slices in bit order, a "widget being built" global instead of the id argument to
+handlers (unique N=256 +450 B), merging the app's `set` into `route`, `(c, s, msg)` on every
+dashboard arm, dashboard arms returning only the written fields, summary triggers written as
+`dirty.w1` for one-field kinds or as `(dirty.w1 | dirty.w3) & 1`, and `parent?.append`. Most moved
+results by ±10 to 40 B either way: at the dashboard's large sizes, where the rows are only data,
+the size of a small change is mostly brotli's (and the HTML's hashed script name's) noise.
+Marking template elements costs about 20 B at N <= 16 (the marker-removing loop) and saves
+about 470 B at N=256.
