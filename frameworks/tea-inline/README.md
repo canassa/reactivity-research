@@ -329,12 +329,18 @@ change): a page event 8 to 9 calls, `serverSet` of a global no page shown reads 
 and a feed), the app's mount (shell and p1) 61 and its dispose 14. Opening the menu is global by
 nature: 36 → 516.
 
-**Size** (seeds 1 to 3, sizes 1 to 256): baseline 4,451 B, slope 307 B per page (R² 0.990); N = 256
-ships 78.9 to 82.6 kB brotli. The runtime is 884 B from N = 4 (661 to 698 at N = 1), against 730 B in
-the dashboards: `routes.js` costs about 140 B. The lifetime machinery in the generated code (the
-`reg` calls and the pages' disposers, deleted from a build to count them) costs 242 B at N = 16
-(2.3%), 874 B at N = 64 and 2,480 B at N = 256 (3.1%), about 10 B per page; the `D`/`C` parameters
-and the registrations are all of it. Building only what is shown costs 3% of the bytes.
+**Size** (seeds 1 to 3, sizes 1 to 256): baseline 4,500 B, slope 309 B per page (R² 0.990); N = 256
+ships 79.4 to 83.2 kB brotli. The runtime is 899 B from N = 4, against 730 B in the dashboards:
+`routes.js` costs about 170 B. **Disposal bookkeeping** (not the cost against an eager design, which
+was not built): deleting the `reg` calls and the pages' leave disposers from a generated build and
+rebuilding it (the result leaks; `notes/2026-10-17-routed-app-tea-inline-strip.mjs` does it) saves
+203 to 251 B at N = 16 (seeds 1 to 3, 2.2 to 2.8%), 609 to 933 B at N = 64 (2.4 to 3.3%) and 2,630 to
+2,856 B at N = 256 (3.3 to 3.4%), about 10 B per page.
+
+**Stale events.** A click can reach a page that already left in the same task. `up` builds nothing
+on a ref that is no longer connected (so a stale "open modal" or tab click registers nothing and
+starts no timer), and a control that writes state outside its unit (a global field, or a page field
+from a tab or the modal) returns at once when its own node is detached.
 
 **What is not disposed.** A binding already scheduled in the same tick that its unit goes still runs
 once, on its detached nodes: the runtime's pending set is private, and `routes.js` does not edit

@@ -24,7 +24,7 @@ the shell and the page shown. Details in `frameworks/tea-inline/README.md`, "rou
   9 calls, navigation 49 to 147, mount 61, dispose 14, a tab switch 27 and 56. The menu (global) grows
   36 → 516.
 - Size, seeds 1 to 3: baseline 4,451 B, slope 307 B per page, R² 0.990; N=256 is 78.9 to 82.6 kB. The
-  runtime is 884 B from N=4 (730 B in the dashboards).
+  runtime is 884 B from N=4 (730 B in the dashboards; 899 B after the review round).
 - Deletion accounting of the lifetime machinery (registrations and page disposers cut out of a generated
   build; the result leaks and is only for counting): 242 B at N=16 (2.3%), 874 B at N=64, 2,480 B at
   N=256 (3.1%), about 10 B per page, plus 140 B of `routes.js`.
@@ -44,3 +44,18 @@ the shell and the page shown. Details in `frameworks/tea-inline/README.md`, "rou
 - A binding scheduled in the same tick as its unit's `down` still runs once on detached nodes
   (`runtime.js` keeps `pending` private; touching it would change every scenario's bytes).
 - Not measured here: the CPU bench, and the comparison with the other routed-app emitters.
+
+## Review round (same day)
+
+- Stale structural and global-writing events on a page left in the same task: `up` returns a no-op unit
+  for a detached ref, and controls that write outside their unit (global, or page fields from a tab or
+  the modal, and global-list row removals) return when their node is not connected.
+- Adopted feed items (`notify`, `pagePush`) are cloned like `snapshot`; navigation roles are matched
+  strictly (`navLink`, `menuLink`, `pageLink`).
+- The "10 B per page" figure is narrowed: it is the disposal bookkeeping only (`reg` calls and leave
+  disposers), not the cost against an eager design. Seeds 1 to 3 at N = 16, 64, 256, and the script is
+  `notes/2026-10-17-routed-app-tea-inline-strip.mjs`: 203 to 251 B, 609 to 933 B, 2,630 to 2,856 B.
+- Before and after (seeds 1 to 3): baseline 4,451 → 4,500 B, slope 307.3 → 309.2 B per page, runtime
+  884 → 899 B, N = 256 seed 1 78,858 → 79,368 B. The five scenarios' tea-inline checks pass; the other
+  four scenarios' N=16 builds are still byte-identical to the committed results.
+- Not done: the two-events-in-one-task `./rr check` step had not landed on main at rebase time.
