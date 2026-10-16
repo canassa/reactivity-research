@@ -119,16 +119,14 @@ export const setDisabled = setter("disabled");
 // every bit) when it shows, and while it stays runs its own static `patch(s, d, w)`.
 export function branch(node, patch) {
   const anchor = new Comment();
-  let shown = true;
   return (show, s, d, w) => {
     if (show) {
-      if (!shown) {
+      if (anchor.parentNode) {
         anchor.replaceWith(node);
         d = -1;
       }
       patch?.(s, d, w);
-    } else if (shown) node.replaceWith(anchor);
-    shown = show;
+    } else node.replaceWith(anchor);
   };
 }
 
@@ -143,8 +141,7 @@ export function list(parent, row) {
     for (const item of items) {
       let r = rows.get(item.id);
       if (!r) (r = row(item))[0].dataset.key = item.id;
-      if (r.item !== item) r[1](item);
-      r.item = item;
+      if (r.item !== item) r[1]((r.item = item));
       next.set(item.id, r);
     }
     for (const [id, r] of rows) if (!next.has(id)) r[0].remove();
