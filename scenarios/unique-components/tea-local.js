@@ -391,7 +391,7 @@ function widgetFile(spec, w) {
   fn.push(`  // type Msg = ${msgNames.join(" | ")}`);
   fn.push(`  const self = instance(${lit(spec.initialState.widgets[w.id])}, [`, ...cases.map((c) => `    ${c.replace(/\n/g, "\n    ")},`), `  ], patch);`);
   cx.wire.forEach((t, i) => { if (t !== i) throw new Error(`${w.id}: control tags out of order`); });
-  fn.push(`  const e = widget(parent, ${q(w.id)}, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))}, self);`);
+  fn.push(`  const e = widget(parent, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))}, self);`);
   fn.push(...cx.create);
   // Subscribe to the clock while the gate is on, as soon as the model changes (not at the next
   // render), so a tick right after the gate opens is not missed.
@@ -425,7 +425,8 @@ const FRAME_FILE = `import { wire } from "../runtime.js";
 // The frame every widget shares: its keyed section, holding the widget's own template (its
 // heading and view), its controls wired to the messages 0, 1, 2, ... (see \`wire\`). Returns the
 // section and the template's elements, in document order.
-export function widget(parent, id, html, self) {
+export function widget(parent, html, self) {
+  const id = "w" + (widgets.size + 1); // widgets are numbered in page order (w1, w2, …)
   widgets.set(id, self);
   parent.insertAdjacentHTML("beforeend", \`<section data-key=\${id} data-role=widget>\${html}\`);
   return wire(parent.lastChild, self, 0);
@@ -472,6 +473,8 @@ export function subscribe(self, tag, gate) {
 `;
 
 export function emit(spec) {
+  // The frame numbers the widgets in page order: the ids must be w1, w2, ….
+  if (spec.widgets.some((w, i) => w.id !== `w${i + 1}`)) throw new Error("widget ids are not w1, w2, … in order");
   const files = {
     ...templateFiles({ name: "unique-components", title: "Unique components" }),
     "src/widgets/frame.js": FRAME_FILE,
