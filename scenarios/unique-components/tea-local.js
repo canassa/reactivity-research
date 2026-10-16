@@ -379,13 +379,14 @@ function widgetFile(spec, w) {
 
   const fn = [];
   fn.push(`export function ${w.id}(parent) {`);
-  for (const s of sources) fn.push(`  const ${s} = widgets.get(${q(s)});`);
   // The binding list (it runs after mount, once `self` and `e` are set).
   fn.push(`  const patch = () => {`);
   if (cx.own) fn.push(`    const m = self.m;`);
   for (const s of sources) fn.push(`    const m${s.slice(1)} = ${s}.m;`);
   fn.push(...cx.patch.map((l) => "    " + l));
   fn.push(`  };`);
+  // The earlier widgets it reads, now watched by its patch.
+  for (const s of sources) fn.push(`  const ${s} = widgets.get(${q(s)});`, `  ${s}.watch(patch);`);
   // The model, and the reducer: one function per message, indexed by its tag.
   fn.push(`  // type Msg = ${msgNames.join(" | ")}`);
   fn.push(`  const self = instance(${lit(spec.initialState.widgets[w.id])}, [`, ...cases.map((c) => `    ${c.replace(/\n/g, "\n    ")},`), `  ], patch);`);
@@ -396,7 +397,6 @@ function widgetFile(spec, w) {
   // render), so a tick right after the gate opens is not missed.
   if (timed.length) fn.push(`  subscribe(self, ${tickIndex}, (m) => ${gate});`);
   fn.push(``);
-  for (const s of sources) fn.push(`  ${s}.watch(patch);`);
   if (feed) fn.push(`  self.notify = (item) => self.send(${notifyIndex}, item);`);
 
   fn.push(`}`);
