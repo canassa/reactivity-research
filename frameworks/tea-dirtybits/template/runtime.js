@@ -19,7 +19,6 @@ export let send;
 
 export function program(root, model, update, view) {
   let pending;
-  dirty = {};
   send = (msg) => {
     model = update(model, msg);
     pending ||= Promise.resolve().then(() => {
