@@ -44,6 +44,32 @@ const RUN = `(async () => {
   return { tally: rrPanel.tally, fails, end: rrPanel.last };
 })()`;
 
+// Run the whole interaction script on one served page (with the panel). Also used by ./rr bench
+// as its correctness gate.
+export async function scriptCheck(chrome, url, { timeout = 15000 } = {}) {
+  const t = performance.now();
+  const page = await chrome.open(url);
+  try {
+    await page.waitFor("window.rrPanel && window.rrPanel.ready === true", timeout);
+    const r = await page.evaluate(RUN);
+    return { r, errors: page.errors, ok: r.fails.length === 0 && page.errors.length === 0, seconds: (performance.now() - t) / 1000 };
+  } finally {
+    await page.close();
+  }
+}
+
+// The lines ./rr check prints for one script check.
+export function checkReport(scenarioName, v, spec, { r, errors, ok, seconds }) {
+  const t = r.tally;
+  const lines = [`${ok ? "ok  " : "FAIL"} ${scenarioName}/${v} n=${spec.options.size} s=${spec.options.seed}: ${t.total} steps, ${t.compared} compared with the reference, ` +
+    `${t.mismatches} mismatches, ${t.focusLost} focus losses, ${t.keyedReplaced} keyed replacements; ` +
+    `after dispose ${r.end.listeners} listeners, ${r.end.timers} timers (${seconds.toFixed(1)}s)`];
+  for (const f of r.fails.slice(0, 5)) lines.push(`     step ${f.step} (${f.label}): ${f.bad.join("; ").replace(/\n/g, "\n       ")}`);
+  if (r.fails.length > 5) lines.push(`     … ${r.fails.length - 5} more failing steps`);
+  for (const e of errors.slice(0, 5)) lines.push(`     page error: ${e}`);
+  return { ok, text: lines.join("\n") };
+}
+
 export async function checkCommand(rest) {
   const t0 = performance.now();
   const { args, scenario, emitters, scenarioOptions, emitterOptions } = await selection(rest, ["noLocality"]);
@@ -55,25 +81,12 @@ export async function checkCommand(rest) {
   const chrome = await launch();
   let failed = false;
   try {
-    const results = await Promise.all(variants.map(async (v) => {
-      const t = performance.now();
-      const page = await chrome.open(`${base}/${v}/`);
-      await page.waitFor("window.rrPanel && window.rrPanel.ready === true");
-      const r = await page.evaluate(RUN);
-      await page.close();
-      return { v, r, errors: page.errors, seconds: (performance.now() - t) / 1000 };
-    }));
-    for (const { v, r, errors, seconds } of results) {
-      const t = r.tally;
-      const ok = r.fails.length === 0 && errors.length === 0;
+    const results = await Promise.all(variants.map((v) => scriptCheck(chrome, `${base}/${v}/`)));
+    variants.forEach((v, i) => {
+      const { ok, text } = checkReport(scenario.name, v, spec, results[i]);
       failed ||= !ok;
-      console.log(`${ok ? "ok  " : "FAIL"} ${scenario.name}/${v} n=${spec.options.size} s=${spec.options.seed}: ${t.total} steps, ${t.compared} compared with the reference, ` +
-        `${t.mismatches} mismatches, ${t.focusLost} focus losses, ${t.keyedReplaced} keyed replacements; ` +
-        `after dispose ${r.end.listeners} listeners, ${r.end.timers} timers (${seconds.toFixed(1)}s)`);
-      for (const f of r.fails.slice(0, 5)) console.log(`     step ${f.step} (${f.label}): ${f.bad.join("; ").replace(/\n/g, "\n       ")}`);
-      if (r.fails.length > 5) console.log(`     … ${r.fails.length - 5} more failing steps`);
-      for (const e of errors.slice(0, 5)) console.log(`     page error: ${e}`);
-    }
+      console.log(text);
+    });
   } finally {
     await chrome.close();
     server.close();

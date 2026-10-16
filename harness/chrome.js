@@ -1,5 +1,5 @@
 // A minimal headless Chrome driver over the DevTools protocol (Node's built-in WebSocket), with
-// no dependencies. Used by ./rr check.
+// no dependencies. Used by ./rr check, ./rr work and ./rr bench.
 
 import fs from "node:fs";
 import os from "node:os";
@@ -8,7 +8,9 @@ import { spawn, execFileSync } from "node:child_process";
 
 const CANDIDATES = ["google-chrome", "google-chrome-stable", "chromium", "chromium-browser", "chrome"];
 
-export function findChrome() {
+// The Chrome binary: `explicit` (./rr bench --chrome), else $CHROME, else the first candidate on PATH.
+export function findChrome(explicit) {
+  if (explicit) return explicit;
   if (process.env.CHROME) return process.env.CHROME;
   for (const c of CANDIDATES) {
     try {
@@ -19,14 +21,18 @@ export function findChrome() {
   throw new Error(`no Chrome or Chromium found (tried ${CANDIDATES.join(", ")}); set CHROME=/path/to/chrome`);
 }
 
-// `args`: extra Chrome command-line flags, e.g. ["--js-flags=--no-turbofan"].
-export async function launch({ args = [] } = {}) {
-  const bin = findChrome();
+// `args`: extra Chrome command-line flags, e.g. ["--js-flags=--no-turbofan"]. `chrome`: the
+// binary (default: findChrome()). `taskset`: a CPU list (e.g. "1-5,7-11") to pin Chrome to.
+export async function launch({ args = [], chrome, taskset } = {}) {
+  const bin = findChrome(chrome);
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), "rr-chrome-"));
-  const child = spawn(bin, [
+  const argv = [
     "--headless=new", "--remote-debugging-port=0", `--user-data-dir=${profile}`,
     "--no-first-run", "--no-default-browser-check", "--disable-extensions", "--window-size=1400,1000", ...args, "about:blank",
-  ], { stdio: ["ignore", "ignore", "pipe"] });
+  ];
+  const child = taskset
+    ? spawn("taskset", ["-c", String(taskset), bin, ...argv], { stdio: ["ignore", "ignore", "pipe"] })
+    : spawn(bin, argv, { stdio: ["ignore", "ignore", "pipe"] });
   const wsUrl = await new Promise((resolve, reject) => {
     let err = "";
     const t = setTimeout(() => reject(new Error(`Chrome did not start:\n${err}`)), 20000);
@@ -56,8 +62,10 @@ export async function launch({ args = [] } = {}) {
     ws.send(JSON.stringify({ id: i, method, params, ...(sessionId ? { sessionId } : {}) }));
   });
 
-  // Open a page; returns { evaluate(expr), cdp(method, params), waitFor, errors, close() }.
-  async function open(url) {
+  // Open a page; returns { evaluate(expr), cdp(method, params), on(fn), waitFor, errors, close() }.
+  // `beforeNavigate({ cdp, on })` runs once the page target exists, before it navigates (e.g. to
+  // start a trace that covers the load).
+  async function open(url, { beforeNavigate } = {}) {
     const { targetId } = await send("Target.createTarget", { url: "about:blank" });
     const { sessionId } = await send("Target.attachToTarget", { targetId, flatten: true });
     const errors = [];
@@ -67,18 +75,29 @@ export async function launch({ args = [] } = {}) {
       if (m.method === "Runtime.consoleAPICalled" && m.params.type === "error") errors.push(m.params.args.map((a) => a.value ?? a.description).join(" "));
     };
     listeners.add(onEvent);
-    await send("Runtime.enable", {}, sessionId);
-    await send("Page.enable", {}, sessionId);
-    await send("Page.navigate", { url }, sessionId);
+    const own = new Set();
+    // Subscribe to this page's protocol events; returns the unsubscribe function.
+    const on = (fn) => {
+      const l = (m) => { if (m.sessionId === sessionId) fn(m); };
+      listeners.add(l);
+      own.add(l);
+      return () => { listeners.delete(l); own.delete(l); };
+    };
+    const cdp = (method, params = {}) => send(method, params, sessionId);
+    await cdp("Runtime.enable");
+    await cdp("Page.enable");
+    if (beforeNavigate) await beforeNavigate({ cdp, on });
+    await cdp("Page.navigate", { url });
     const evaluate = async (expression) => {
-      const r = await send("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true }, sessionId);
+      const r = await cdp("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true });
       if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description || r.exceptionDetails.text);
       return r.result.value;
     };
     return {
       evaluate,
       // Any DevTools protocol command on this page, e.g. cdp("Profiler.enable").
-      cdp: (method, params = {}) => send(method, params, sessionId),
+      cdp,
+      on,
       errors,
       async waitFor(expression, timeout = 15000) {
         const t0 = Date.now();
@@ -88,14 +107,21 @@ export async function launch({ args = [] } = {}) {
           await new Promise((r) => setTimeout(r, 50));
         }
       },
-      close: () => { listeners.delete(onEvent); return send("Target.closeTarget", { targetId }); },
+      close: () => {
+        listeners.delete(onEvent);
+        for (const l of own) listeners.delete(l);
+        return send("Target.closeTarget", { targetId });
+      },
     };
   }
+
+  // The browser's product string, e.g. "HeadlessChrome/154.0.8037.97".
+  const version = async () => (await send("Browser.getVersion")).product;
 
   async function close() {
     try { ws.close(); } catch {}
     child.kill("SIGKILL");
     fs.rmSync(profile, { recursive: true, force: true });
   }
-  return { open, close };
+  return { open, close, version, bin };
 }
