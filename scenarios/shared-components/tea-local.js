@@ -13,11 +13,12 @@
 // - A message is sent as its constructor's tag and its argument, if any: `send(tag, value)`.
 // - `send` runs the kind's reducer on the instance's model (held in a closure) and schedules
 //   that instance's patch in a microtask. No global dispatch, dirty bits or dependency graph.
-// - Summaries watch the instances they read: a change to one schedules the summary's patch,
-//   which recomputes its line from the sources' current models.
+// - The widget frame registers each instance by widget id; nothing else keeps it (a factory
+//   returns nothing).
+// - Summaries watch the instances they read (named by id): a change to one schedules the
+//   summary's patch, which recomputes its line from the sources' current models.
 // - External events: `serverSet` and `snapshot` replace instance models (`set`); `tick` and
-//   `notify` are messages to the clock and feed reducers, sent to the instances concerned. The
-//   widget frame registers each instance by id for the events that name a widget.
+//   `notify` are messages to the clock and feed reducers, sent to the instances concerned.
 // - Keyed lists through the runtime's `list` (patch changed rows, forward placement pass on any
 //   change of order or membership). Conditional content is built once and attached while shown.
 
@@ -98,7 +99,6 @@ export function counter(parent, id, heading, step, min, max, start, model) {
       case 2: return { value: start };
     }
   }
-  return self;
 }
 `,
 
@@ -126,7 +126,6 @@ export function toggles(parent, id, heading, items, model) {
     boxes.forEach((box, i) => setProp(box, "checked", m.on[i]));
     setText(count, \`\${m.on.filter(Boolean).length} of \${items.length} on\`);
   }
-  return self;
 }
 `,
 
@@ -150,7 +149,6 @@ export function field(parent, id, heading, placeholder, validate, model) {
     if (problem) setText(error, problem);
     show(root, error, problem);
   }
-  return self;
 }
 `,
 
@@ -200,7 +198,6 @@ export function todo(parent, id, heading, placeholder, addText, removeText, mode
     items(m.items);
     setText(left, \`\${m.items.filter((item) => !item.done).length} left\`);
   }
-  return self;
 }
 `,
 
@@ -226,7 +223,6 @@ export function tabs(parent, id, heading, tabs, model) {
     buttons.forEach((button, i) => setProp(button, "ariaSelected", \`\${i === m.active}\`));
     setText(content, tabs[m.active].content);
   }
-  return self;
 }
 `,
 
@@ -249,7 +245,6 @@ export function panel(parent, id, heading, showText, hideText, body, model) {
     setText(toggle, m.open ? hideText : showText);
     show(root, text, m.open);
   }
-  return self;
 }
 `,
 
@@ -277,7 +272,6 @@ export function choice(parent, id, heading, options, extraFor, extraPlaceholder,
     setProp(extra, "value", m.extra);
     show(root, extra, extraFor.includes(m.option));
   }
-  return self;
 }
 `,
 
@@ -303,7 +297,6 @@ export function amount(parent, id, heading, format, model) {
     if (input.valueAsNumber !== m.value) input.value = m.value;
     setText(formatted, format(m.value));
   }
-  return self;
 }
 `,
 
@@ -333,7 +326,6 @@ export function filter(parent, id, heading, items, placeholder, model) {
     shown(matches);
     setText(count, \`\${matches.length} matches\`);
   }
-  return self;
 }
 `,
 
@@ -363,7 +355,6 @@ export function rating(parent, id, heading, stars, labels, model) {
     });
     setText(label, labels[m.stars]);
   }
-  return self;
 }
 `,
 
@@ -394,7 +385,6 @@ export function feed(parent, id, heading, emptyText, dismissText, model) {
     entries(m.entries);
     show(root, empty, m.entries.length === 0);
   }
-  return self;
 }
 `,
 
@@ -432,21 +422,22 @@ export function clock(parent, id, heading, startText, stopText, resetText, model
     setProp(start, "disabled", m.running);
     setProp(stop, "disabled", !m.running);
   }
-  return self;
 }
 `,
 
-  summary: `${HEAD(["element", "setText"])}
-// No model and no messages: the line is derived from the instances it reads. Each of them
-// schedules this patch when its model changes.
+  summary: `import { element, setText } from "../runtime.js";
+import { widget, widgets } from "./widget.js";
+
+// No model and no messages: the line is derived from the instances it reads (by widget id).
+// Each of them schedules this patch when its model changes.
 export function summary(parent, id, heading, text, sources) {
   const root = widget(parent, id, heading, "summary");
   const line = element(root, "p", { "data-role": "summary" }, " ");
 
   function patch() {
-    setText(line, text(...sources.map((source) => source.m)));
+    setText(line, text(...sources.map((source) => widgets.get(source).m)));
   }
-  for (const source of sources) source.watch(patch);
+  for (const source of sources) widgets.get(source).watch(patch);
   patch();
 }
 `,
@@ -579,12 +570,10 @@ function appFile(spec) {
   }
   if (needsFormatNumber(spec)) imports.push(`import { formatNumber } from "./number.js";`);
 
-  // Only the widgets the app refers to (summary sources, clocks) need a name.
-  const named = new Set([...spec.widgets.flatMap((w) => w.sources ?? []), ...clocks.map((w) => w.id)]);
   const calls = spec.widgets.map((w) => {
-    if (w.kind === "summary") return `  ${w.kind}(${args(spec, w, readFilters, `[${w.sources.join(", ")}]`)});`;
+    if (w.kind === "summary") return `  ${w.kind}(${args(spec, w, readFilters, `[${w.sources.map((id) => `"${id}"`).join(", ")}]`)});`;
     const call = `${w.kind}(${args(spec, w, readFilters, literal(spec.initialState.widgets[w.id], "    "))});`;
-    return named.has(w.id) ? `  const ${w.id} = ${call}` : `  ${call}`;
+    return `  ${call}`;
   });
 
   const cases = [`      case "serverSet":
@@ -592,7 +581,7 @@ function appFile(spec) {
         break;`];
   if (clocks.length) {
     cases.push(`      case "tick":
-        for (const clock of [${clocks.map((w) => w.id).join(", ")}]) clock.send(tick);
+        for (const id of [${clocks.map((w) => `"${w.id}"`).join(", ")}]) widgets.get(id).send(tick);
         break;`);
   }
   if (hasFeed) {
