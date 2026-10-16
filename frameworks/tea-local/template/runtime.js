@@ -21,6 +21,9 @@ function flush() {
   pending.clear();
 }
 
+// Resolves after the pending flush (it was queued first), so the DOM is current.
+export const settled = () => new Promise((resolve) => queueMicrotask(resolve));
+
 // ---------------------------------------------------------------------------------------------
 // DOM: built once (by createElement calls or from a static template); every later write is
 // skipped when nothing changed.
