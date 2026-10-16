@@ -53,7 +53,6 @@ function widgetModule(w) {
   // Dirty bits, written as numbers (the compiler knows them): one per field in order, then one
   // per field of another widget the view reads, in order of first use.
   const own = (name) => 1 << w.fields.findIndex((f) => f.name === name);
-  const optsName = (name) => "OPTS_" + name.toUpperCase();
   const reads = new Map(); // "widget.field" -> [bit, widget id, field]
   const helpers = new Set(["mark"]);
   const use = (...names) => names.forEach((n) => helpers.add(n));
@@ -71,7 +70,6 @@ function widgetModule(w) {
   for (const m of w.messages) if (!order.includes(m.name)) order.push(m.name);
   const messages = order.map((name) => w.messages.find((m) => m.name === name));
   const tag = (name) => order.indexOf(name);
-  const usedOpts = new Set();
 
   // An expression of the widget's fields (`s`) and of other widgets' (`w`); `deps` collects
   // the bits it reads.
@@ -143,7 +141,12 @@ function widgetModule(w) {
             case "set": set(f, J(op[2])); break;
             case "toggle": set(f, `!${S}`); break;
             case "reset": set(f, J(field.initial)); break;
-            case "cycle": usedOpts.add(f); set(f, `${optsName(f)}[(${optsName(f)}.indexOf(${S}) + 1) % ${optsName(f)}.length]`); break;
+            case "cycle": {
+              // The option after the current one, wrapping around, decided at compile time.
+              const o = field.options;
+              set(f, "(" + o.slice(0, -1).map((v, i) => `${S} === ${J(v)} ? ${J(o[i + 1])} : `).join("") + J(o[0]) + ")");
+              break;
+            }
             case "push": {
               if (!alone) throw new Error("push with other ops");
               use("nextId");
@@ -421,7 +424,6 @@ function widgetModule(w) {
 
   const bits = [...w.fields.map((f) => `${f.name} ${own(f.name)}`), ...[...reads].map(([k, [b]]) => `${k} ${b}`)];
   const tags = messages.map((m, i) => `${m.name} ${i}`);
-  const opts = [...usedOpts].map((f) => `const ${optsName(f)} = ${J(fieldOf(f).options)};`);
   helpers.add("html");
   const imports = [...helpers].sort().filter((h) => h !== "nextId");
   const file = `import { ${imports.join(", ")} } from "../runtime.js";
@@ -429,7 +431,7 @@ import { ${helpers.has("nextId") ? "WIDGETS, nextId" : "WIDGETS"} } from "./widg
 
 // Dirty bits: ${bits.join(", ")}.
 // Message tags: ${tags.join(", ")}.
-${opts.length ? opts.join("\n") + "\n" : ""}
+
 // The widget: its initial state, its reducer and its DOM factory.
 WIDGETS.${w.id} = [
   ${literal(Object.fromEntries(w.fields.map((f) => [f.name, f.initial])), "  ")},
