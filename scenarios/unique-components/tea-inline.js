@@ -46,12 +46,16 @@ export function section(parent, id, html) {
   return [parent.lastChild, ...parent.lastChild.querySelectorAll("*")];
 }
 
-// serverSet and snapshot: replace the widget's state (a copy: the message is not ours to edit)
-// and run every binding it has, and those of the widgets reading it.
-export const loader = (s, all) => (next) => {
-  Object.assign(s, structuredClone(next));
-  schedule(all);
-};
+// Schedule every binding of a widget for its first render, and return its \`load\` for serverSet
+// and snapshot: replace the widget's state (a copy: the message is not ours to edit) and run
+// every binding it has again, and those of the widgets reading it.
+export const loader = (s, all) => (
+  schedule(all),
+  (next) => {
+    Object.assign(s, structuredClone(next));
+    schedule(all);
+  }
+);
 
 // A new list item's id: one more than the largest.
 export const nextId = (items) => items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
@@ -446,10 +450,8 @@ function widgetFile(w, reads) {
     ...(handlerLines.length ? ["", "// The arms of update, as actions."] : []),
     ...handlerLines.flat(),
     "",
-    `const all = [${all.join(", ")}];`,
-    ...(all.length ? ["schedule(all);"] : []),
     "return {",
-    `  load: loader(s, ${watched.length ? `[all, ${watched.join(", ")}]` : "all"}),`,
+    `  load: loader(s, [${[...all, ...watched].join(", ")}]),`,
     ...arms.flat().map((l) => "  " + l),
     "};",
   ];

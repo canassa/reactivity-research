@@ -97,7 +97,6 @@ const FACTORIES = {
     schedule(onValue);
   });
 
-  schedule(onValue);
   return { load: loader(s, onValue) };
 }`,
   },
@@ -125,7 +124,6 @@ const FACTORIES = {
     schedule(boxes[i], onCount);
   };
 
-  schedule(boxes, onCount);
   return { load: loader(s, [boxes, onCount]) };
 }`,
   },
@@ -146,7 +144,6 @@ const FACTORIES = {
     schedule(onText);
   });
 
-  schedule(onText);
   return { load: loader(s, onText) };
 }`,
   },
@@ -204,7 +201,6 @@ const FACTORIES = {
     schedule(onItems);
   };
 
-  schedule(onDraft, items, onItems);
   return { load: loader(s, [onDraft, items, onItems]) };
 }`,
   },
@@ -228,7 +224,6 @@ const FACTORIES = {
   const content = el("p", root, { role: "tabpanel", "data-role": "tab-content" });
   onActive.push(() => text(content, tabs[s.active].content));
 
-  schedule(onActive);
   return { load: loader(s, onActive) };
 }`,
   },
@@ -255,7 +250,6 @@ const FACTORIES = {
     schedule(onOpen);
   });
 
-  schedule(onOpen);
   return { load: loader(s, onOpen) };
 }`,
   },
@@ -289,7 +283,6 @@ const FACTORIES = {
     schedule(onOption);
   });
 
-  schedule(onOption);
   return { load: loader(s, onOption) };
 }`,
   },
@@ -312,7 +305,6 @@ const FACTORIES = {
     schedule(onValue);
   });
 
-  schedule(onValue);
   return { load: loader(s, onValue) };
 }`,
   },
@@ -342,7 +334,6 @@ const FACTORIES = {
     schedule(onQuery);
   });
 
-  schedule(onQuery);
   return { load: loader(s, onQuery) };
 }`,
   },
@@ -370,7 +361,6 @@ const FACTORIES = {
   const label = el("p", root, { "data-role": "rating-label" });
   onStars.push(() => text(label, labels[s.stars]), readers[id]);
 
-  schedule(onStars);
   return { load: loader(s, onStars) };
 }`,
   },
@@ -397,7 +387,6 @@ const FACTORIES = {
     schedule(onEntries);
   };
 
-  schedule(entries, onEntries);
   return {
     load: loader(s, [entries, onEntries]),
     // The external arm: notify(entry).
@@ -440,7 +429,6 @@ export function clock(parent, model, readers, id, heading, startText, stopText, 
     schedule(onSeconds, onRunning);
   });
 
-  schedule(onSeconds, onRunning);
   return {
     load: loader(s, [onSeconds, onRunning]),
     // The external arm: tick.
@@ -477,11 +465,15 @@ export function section(parent, id, label, kind) {
   return root;
 }
 
-// serverSet and snapshot: replace the widget's state and run every binding it has.
-export const loader = (s, all) => (next) => {
-  Object.assign(s, next);
-  schedule(all);
-};
+// Schedule every binding of a widget for its first render, and return its \`load\` for serverSet
+// and snapshot: replace the widget's state and run every binding again.
+export const loader = (s, all) => (
+  schedule(all),
+  (next) => {
+    Object.assign(s, next);
+    schedule(all);
+  }
+);
 `;
 
 function factoryFile(kind) {
@@ -646,6 +638,7 @@ export function emit(spec) {
     "src/widgets/widget.js": WIDGET_FILE,
   };
   for (const kind of new Set(spec.widgets.map((w) => w.kind))) files[`src/widgets/${kind}.js`] = factoryFile(kind);
+
   return {
     files,
     style: {
