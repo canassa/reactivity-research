@@ -353,3 +353,28 @@ the app.
   147.5 B per table over N >= 4 (3641 + 151.1 over all sizes). Runtime 1013 B (1005 at N=1; the
   reorder added about 126 B), HTML about 145 B; the rest is app code. The per-table cost is its
   pools, row builder, row template, patch and reducer arms.
+
+## routed-app
+
+`scenarios/routed-app/tea-local.js` runs the strategy on an app of N pages whose pages, tab panels
+and modals mount and unmount. It adds `template/routed.js` (opt-in, counted as runtime, 2.5 kB raw).
+
+- **Lifetime.** A page is a factory in a table; the shell's patch hands the route to a `slot`,
+  which destroys the previous page instance, removes its node and calls the next factory. A
+  tab panel and a modal are factories nested in their page's, held by slots of the page's patch
+  (keyed by the model's `tab` and `modal`). `component(...)` is `instance` plus `destroy()`: it
+  unwatches the instances it read, clears its `every(tag, ms)` interval and destroys its slots.
+  Page-local state therefore starts fresh on every mount, as the contract says.
+- **Global state** is one DOM-less instance. The shell and every mounted component that reads a
+  global field watch it (a page that reads none does not), and writes are messages to it, one
+  generic arm per operation. A control that writes it, a link (`Go route` to the shell) and a
+  modal's confirm (`Confirm…` to the page, which then closes the modal) are commands: `cmds[tag]`
+  runs before the reducer arm, which stays pure.
+- **Coarse subscriptions stay constant.** A global write re-runs the shell's patch and that of the
+  one mounted component per page that reads it, so a `serverSet` costs 33 calls at every N.
+- **Check.** `./rr check routed-app tea-local` passes at sizes 1 to 256 (1, 4, 16, 64 with
+  locality), seeds 1 to 3. `./rr work` (N=16 to 256, calls): p1 event 18 to 18; navigation 41 to
+  103 (the page's size), 1.00 growth; tab switch 46 and 60; mount 44, dispose 9; all flat. Only
+  the "All pages" menu grows (35 to 275, global by nature).
+- **Bytes** (brotli, 3 seeds): N=1 about 2.2 kB, 16 about 9.4 kB, 64 about 26.7 kB, 256 about
+  77.8 kB. Fit 4364 B + 295.9 B per page (R2 0.991). Runtime 923 B, HTML about 142 B.
