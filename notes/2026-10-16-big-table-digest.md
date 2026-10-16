@@ -48,3 +48,10 @@ Wrote `scenarios/big-table/digest.js` and `frameworks/digest/runtime-table.js`.
   where it is makes it two moves.
 - **The glyph inside a link:** a real click on the remove `×` has the `<span>` as its target, so
   the delegated handler uses `closest("a,button,input")`.
+
+## Helpers as app code
+
+Moved `sel`, `every`, `swap`, `by`, `nx`, the formats and the calendar out of `runtime-table.js`
+into `frameworks/digest/table-helpers.js`, emitted as `src/helpers.js` (classified app, as in
+vanilla, Solid and tea-local). Runtime is now about 905-910 B; totals moved by under 50 B. Both
+`rowDigest` variants pass sizes 1 and 16, seeds 1-3, locality.

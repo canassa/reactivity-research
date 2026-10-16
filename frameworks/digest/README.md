@@ -925,13 +925,25 @@ So the departure costs 33 B at N=1 and 720 B at N=256 (2.7 B per table: the by-h
 the record lookups) and turns every row control from O(rows) into O(1) in calls. `all` is the
 honest "digest as the others do it" point; it is local in N but not in rows.
 
-### What `runtime-table.js` holds that is scenario code
+### Scenario helpers are app code
 
-Its "runtime" bytes are partly big-table's: the shared mechanisms are `bind`, `text`, `table`,
-`rows` (the reconciler), `go`, `app` and the delegated listener; the scenario-specific helpers
-are `sel`, `every` (update every k-th), `swap`, `by` (sort order), `nx` (the next status),
-the number formats (`g`, `cur`, `pct`) and the calendar (`md`, `dm`, `nd`, `cal`). The README's
-runtime-against-app split therefore overstates the generic part.
+The scenario's own helpers are not in `runtime-table.js`. They live in
+`frameworks/digest/table-helpers.js`, which the emitter writes to `src/helpers.js` in every app,
+and the size attribution counts them as **app** code, as vanilla, Solid and tea-local count theirs
+(every js-framework-benchmark entry ships its own `buildData`). They are `sel`, `every` (update
+every k-th), `swap`, `by` (sort order), `nx` (the next status), the number formats (`g`, `cur`,
+`pct`) and the calendar (`md`, `dm`, `nd`); only those the app calls are bundled. The runtime
+keeps digest's generic machinery: `bind`, `text`, `table`, `rows` (the keyed reconciler), `go`,
+`app` and the delegated listener. Split, seed 1, brotli (total unchanged within 50 B):
+
+| | N=1 | N=64 | N=256 |
+|---|---|---|---|
+| `changed`: total | 1,898 | 12,472 | 35,450 |
+| runtime / app / html | 905 / 850 / 143 | 905 / 11,422 / 145 | 905 / 34,398 / 147 |
+| `all`: total | 1,858 | 12,215 | 34,649 |
+| runtime / app / html | 910 / 809 / 139 | 910 / 11,159 / 146 | 910 / 33,597 / 142 |
+
+(These runtime figures replace the 989 to 1,258 B quoted above, which included the helpers.)
 
 ### Shaping to the call counter (unique-components, corrected)
 
