@@ -71,9 +71,6 @@ import { widget } from "./widget.js";
 const KINDS = {
   counter: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 // type Msg = Inc | Dec | Reset
-const Inc = [0];
-const Dec = [1];
-const Reset = [2];
 
 export function counter(parent, id, heading, step, min, max, start, model) {
   const self = instance(model, update, patch);
@@ -82,9 +79,9 @@ export function counter(parent, id, heading, step, min, max, start, model) {
   const dec = element(root, "button", { "data-role": "dec" }, "-" + step);
   const inc = element(root, "button", { "data-role": "inc" }, "+" + step);
   const reset = element(root, "button", { "data-role": "reset" }, "Reset");
-  on(dec, "click", () => self.send(Dec));
-  on(inc, "click", () => self.send(Inc));
-  on(reset, "click", () => self.send(Reset));
+  on(dec, "click", () => self.send([1]));
+  on(inc, "click", () => self.send([0]));
+  on(reset, "click", () => self.send([2]));
 
   function patch() {
     const m = self.m;
