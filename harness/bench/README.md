@@ -140,6 +140,15 @@ of one page, so it does not include the few percent by which two pages of the sa
 read differences below about 5% as noise there, and rerun the A/A on the machine that produces
 the results before trusting finer ones.
 
+## CPU frequency
+
+Each rep follows 40 ms of idle. On an idle machine with a power-saving governor the core drops to
+its lowest clock in between, and a sub-millisecond event runs before it ramps up: on azathoth
+(`powersave`, idle cores at 800 MHz) the first quick run read about 3.3× the script times of a
+loaded desktop, with the frameworks in the same order and ratio. Compare absolute times only
+between runs with the same governor (`run.json` records it, with `no_turbo` or `boost`); the
+harness never changes it.
+
 ## Speed
 
 A step costs about 45 ms of wall time (prepare, input, the 40 ms wait, finish). On a busy machine
