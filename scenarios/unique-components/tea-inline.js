@@ -232,19 +232,20 @@ function widgetFile(w, reads) {
     });
   }
 
-  // A named action for an item control: \`toggleIn…(id)\` or \`removeFrom…(id)\`.
+  // The action of an item control (toggle or remove), inlined into the row's handler, which
+  // knows its item's id; written once the binding groups are known (see `itemBodies`).
+  const itemBodies = {};
   function itemAction(name) {
     const m = message(name);
-    actions.push(() => {
+    itemBodies[name] = () => {
       const v = `s.${m.field}`;
       const lv = lists[m.field];
-      const find = `${v}.find((item) => item.id === id)`;
       const body = m.op === "toggle"
-        ? [`const item = ${find};`, "item.done = !item.done;", `${lv}.patch(item);`]
-        : [`${v}.splice(${v}.findIndex((item) => item.id === id), 1);`, `${lv}.drop(id);`];
-      return [`const ${name} = (id) => {`, ...[...body, ...sched([m.field])].map((l) => "  " + l), "};"];
-    });
-    return name;
+        ? [`const found = ${v}.find((other) => other.id === item.id);`, "found.done = !found.done;", `${lv}.patch(found);`]
+        : [`${v}.splice(${v}.findIndex((other) => other.id === item.id), 1);`, `${lv}.drop(item.id);`];
+      return [...body, ...sched([m.field])];
+    };
+    return `@@${name}@@`;
   }
 
   // The widget's static markup, as one HTML string, and the elements the code refers to: the
@@ -345,13 +346,13 @@ function widgetFile(w, reads) {
         const set = [];
         if (n.check) {
           row.push(`const box = el("input", node, ${attrs({ type: str("checkbox"), "data-role": str(n.check) })});`);
-          row.push(`on(box, "change", () => ${itemAction(n.check)}(item.id));`);
+          row.push(`on(box, "change", () => {`, itemAction(n.check), "});");
           set.push('prop(box, "checked", item.done);');
         }
         row.push('const label = el("span", node);');
         set.push("text(label, item.text);");
         if (n.remove) {
-          row.push(`on(el("button", node, ${attrs({ "data-role": str(n.remove) })}, ${str(n.removeText)}), "click", () => ${itemAction(n.remove)}(item.id));`);
+          row.push(`on(el("button", node, ${attrs({ "data-role": str(n.remove) })}, ${str(n.removeText)}), "click", () => {`, itemAction(n.remove), "});");
         }
         row.push(`return { node, set(item) { ${set.join(" ")} } };`);
         build.push(`const ${l} = list(${u}, () => s.${f.name}, (item) => {`,
@@ -425,6 +426,10 @@ function widgetFile(w, reads) {
   }
 
   const handlerLines = actions.map((a) => a());
+  const expand = (lines) => lines.flatMap((l) => {
+    const m = /^(\s*)@@(\w+)@@$/.exec(l);
+    return m ? itemBodies[m[2]]().map((b) => m[1] + "  " + b) : [l];
+  });
   const readIds = [...crossIds];
 
   const all = [...groups.keys()].map((f) => "on" + cap(f)).concat(alone);
@@ -433,7 +438,7 @@ function widgetFile(w, reads) {
     ...readIds.map((x) => `const ${x} = model[${pos(x)}];`),
     "// The DOM, built once from its markup; the elements the code refers to, in document order.",
     `const [${Array.from(refs, (r) => r || "").join(", ")}] = section(parent, widget, ${str(html)});`,
-    ...build,
+    ...expand(build),
     "",
     ...(namedLines.length ? ["// Bindings reading several fields, or other widgets."] : []),
     ...namedLines,
