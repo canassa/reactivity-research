@@ -239,7 +239,11 @@ scenario README).
 serves it with the panel and runs the whole interaction script in headless Chrome, reporting per step
 any mismatch with the reference render, replaced keyed node, lost focus or caret, and anything left
 after dispose. It takes about a second, for iterating on generators; it never replaces the owner's
-check by hand.
+check by hand. For **prototype-track** frameworks it also enforces **locality**: the JavaScript calls one
+local action costs (as `./rr work` counts them) may grow at most 8× when the app grows 16×, so a
+prototype cannot buy bytes with work that grows with the whole page (re-evaluating every binding
+after every event, polling, recomputing everything). Real frameworks are measured as they ship and
+are not held to it; `./rr work` reports their locality. `--no-locality` skips the check.
 
 **`./rr report`** runs the predefined measurements in **`runs.json`** (per scenario, per emitter: sizes,
 seeds and options; a list of option values measures each as a variant), then serves the plots:
