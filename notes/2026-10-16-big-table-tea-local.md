@@ -37,3 +37,15 @@ map and reduce, as the other tea-local emitters do; dropped the `loops` style en
 claims about it. Effect: bytes slightly smaller (4182 + 147.6 to 4134 + 147.6 B per table; N=256
 41256 to 41213); remove 14 to 1021 calls, serverDelete 12 to 498, serverUpdate 53 to 1053 (1000
 rows). The snapshot handler's direct model set is commented.
+
+## Swap was slow (CPU bench: 7.3 ms script)
+
+Cause: `keyed` placed rows with the runtime's forward pass. Swapping rows 1 and 998, the first
+row is put before the old second, and then every row until the old second is not "in place"
+(`at` stays on the old second), so each is inserted before it: 997 native moves, invisible to
+the call counter. Fix, general: keep the longest increasing run of old positions (each row
+remembers its position), insert only the other rows, walking from the end. Local timing at 1,000
+rows, N=2: swap 1.3 to 0.3 ms, serverRows with two rows swapped 1.1 to 0.2, alternating sorts
+1.7 to 1.7, serverRows reversed 1.3 to 1.6 (all but one row move anyway). Bytes: runtime +126 B;
+4265 + 147.5 B per table, N=256 41316 (mean of 3 seeds). Checks (sizes 1, 4, 16, 64 x seeds 1-3,
+and the other scenarios) pass.

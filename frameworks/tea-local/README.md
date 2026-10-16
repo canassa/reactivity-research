@@ -339,7 +339,17 @@ the app.
     is flat (11 to 11).
   - Any message that changes `rows` makes the keyed list visit every row. Rows as instances
     would remove that for toggle and bump only.
-- **Bytes** (brotli, mean of 3 seeds): N=1 2203, 16 6546, 64 14445, 256 41213. Fit 4134 B +
-  147.6 B per table over N >= 4 (3518 + 151.2 over all sizes). Runtime 887 B (874 at N=1), HTML
-  about 145 B; the rest is app code. The per-table cost is its pools, row builder, row template,
-  patch and reducer arms.
+- **The keyed list moves the fewest nodes.** The runtime `list` places rows with one forward pass
+  (a node already in place stays, any other is inserted before the first node not yet placed),
+  which is fine for adds, removes and filters but moves every row between the two ends of a swap:
+  a swap of rows 1 and 998 was 997 `insertBefore`s, 7.3 ms of script in the CPU bench. The
+  table's own `keyed` (`table.js`) keeps the rows whose old positions already increase (a longest
+  increasing subsequence, O(n log n)) and inserts only the others, walking from the end. A swap
+  moves two nodes, an insert or a remove none. A local timing in headless Chrome (1,000 rows,
+  click to settled, median of 15; `performance.now` is coarse): swap 1.3 to 0.3 ms, `serverRows`
+  with two rows swapped 1.1 to 0.2 ms, alternating sorts 1.7 to 1.7 ms, `serverRows` reversed
+  1.3 to 1.6 ms (a reverse moves all but one row either way, and pays the subsequence search).
+- **Bytes** (brotli, mean of 3 seeds): N=1 2303, 16 6671, 64 14590, 256 41316. Fit 4265 B +
+  147.5 B per table over N >= 4 (3641 + 151.1 over all sizes). Runtime 1013 B (1005 at N=1; the
+  reorder added about 126 B), HTML about 145 B; the rest is app code. The per-table cost is its
+  pools, row builder, row template, patch and reducer arms.
