@@ -316,6 +316,52 @@ less), 19,967 → 19,962 (unique-components: an int click no longer calls `cl`).
   change is kept only when it is smaller by construction and the sum over all sizes and seeds
   agrees.
 
+### Initial state in the setter, the template last (fifth pass)
+
+A fifth pass moved where the compiled code writes its initial state and in what order it hands
+`widget()` its pieces, not the strategy:
+- **The setter's defaults are the initial state** (unique): `(v) => ({ sheets: $sheets = 11,
+  files: w1$files = L(…) } = v)`. `widget()` calls the setter once with `{}`, so no widget
+  declares or initialises its state a second time: its own fields are its function's parameters,
+  and the `let` and the read fields' assignments are gone. Each field name now sits next to its
+  initial value, which brotli codes better. It is the largest step of the pass: about −720 B at
+  N=256 on its own.
+- **The setter rides on the widget's binding list** (`W[k].s`, unique), so there is no `S` map:
+  `receive` calls `W[k].s(…)` and then `run(W[k])`.
+- **`widget(set, ...handlers, html)`** (unique): the setter first, the template last
+  (`h.pop()`), so the template sits next to the bindings that use its positions.
+- **Two list helpers** (unique): `L(...texts)` and `C(...[text, done])` instead of one that
+  tests `typeof`, so an app ships only the one it uses.
+- **Small runtime spellings:** the delegated listener is one expression (unique); the widget
+  number is a counter (`id = "w" + ++I`, so `dep` reads `I - k` instead of `id.slice(1)`)
+  (unique); the heading is spliced into the section's HTML instead of set through
+  `textContent`, and each widget is digested for the first time right after its factory runs
+  (shared).
+
+Brotli totals, adapter excluded, `runs.json` sizes (1 to 256) and seeds (1 to 3), medians:
+
+| | N=1 | N=16 | N=64 | N=256 | fit, all sizes | fit, N ≥ 16 |
+|---|---|---|---|---|---|---|
+| shared-components, before | 1,045 B | 3,110 B | 4,359 B | 7,580 B | 2,061 + 23.68 B/widget | 3,019 + 18.28 B/widget |
+| shared-components, after | **1,033 B** | **3,108 B** | **4,348 B** | **7,578 B** | **2,053 + 23.69** | **3,011 + 18.29** |
+| unique-components, before | 1,382 B | 4,997 B | 12,925 B | 38,437 B | 2,356 + 145.4 B/widget | 3,623 + 138.2 B/widget |
+| unique-components, after | **1,377 B** | **4,970 B** | **12,736 B** | **37,617 B** | 2,359 + **142.2** | 3,646 + **135.0** |
+
+Every size's median is lower on both scenarios (sizes 1 to 256); the unique fits' baselines rise
+only because the slope fell. Calls (`./rr work`, seed 1, sizes 16 to 256), record by record: none
+higher; 11,806 → 11,798 in total (shared-components), 19,962 → 19,962 (unique-components).
+
+- **The work counter undercounts a callback until its closure is warm.** Digesting each unique
+  widget right after it is built (as shared-components now does) made "bool: toggle" cost 54 →
+  56 calls: a summary's `filter((i) => i.done)` callback was counted once for three items
+  before and three times after, because the old mount had run that binding more often. The
+  count is closer to the truth, but the rule is per record, so unique-components keeps the
+  digest after all widgets. The 8 fewer calls on shared-components are the same effect in the
+  other direction, most likely (no code on those paths changed).
+- **Brotli codes a name next to its value better than the same bytes apart.** Initial values as
+  parameter defaults (`($sheets = 11) =>`, with a plain setter) were as long as the setter
+  defaults and gained nothing (+612 B at N=256 against them).
+
 ## Locality
 
 `./rr check` holds prototypes to a locality rule: the calls one local action costs may grow at
@@ -425,6 +471,33 @@ marked):
 | Rows flattened into one argument stream, split by each factory's arity (shared) | −9 B at N=256 before the decoder (offline) | dropped: no gain, and fragile (a minifier may drop unused parameters) |
 | `onclick`/`oninput` properties instead of `addEventListener` | not built | dropped: the serve page counts listeners through `addEventListener`, so the dispose check could no longer see them |
 
+Fifth pass (`runs.json` sizes and seeds, each against the step before):
+
+| Idea | Effect | Verdict |
+|---|---|---|
+| Initial state as the setter's defaults, called once with `{}` (unique) | −19 to −723 B from N=8, +2 to +3 B below (the call) | kept |
+| The setter on the widget's binding list (`W[k].s`), no `S` map (unique) | −2 to −7 B below N=16 | kept |
+| The same on shared-components | +21 B at N=128, +28 B at N=256, −7 B at N=1 | dropped: mixed |
+| Setter first (`widget(set, html, ...h)`), then the template last (`widget(set, ...h, html)`) (unique) | sum over all builds −347 B, then −391 B | kept |
+| Handlers first, then the setter and the template (`widget(...h, set, html)`) (unique) | +146 B at N=256, +11 B at N=1 | dropped |
+| Handlers in a separate call after the bindings (`on(...h)`) (unique) | +172 B at N=256, +16 B at N=1 | dropped |
+| Initial values as the widget function's parameter defaults, a plain setter (unique) | +612 B at N=256 against the setter defaults | dropped |
+| `L` and `C` instead of one list helper that tests `typeof` (unique) | sum −100 B | kept |
+| The delegated listener as one expression (unique) | sum −145 B | kept |
+| The same on shared-components | +5 B at N=32 against the start | dropped: mixed |
+| Each widget digested right after it is built (unique) | sum −129 B | dropped: the work counter then counted 2 more calls on a toggle (see above) |
+| The same on shared-components, `run(W[id])` in the mount loop | sum −92 B | kept (no count higher) |
+| The heading spliced into the section's HTML (shared) | −8 to −13 B below N=16, sum −131 B | kept |
+| The section's key, role and heading in one wrapper's HTML (`el("div", …).firstChild`) (shared) | +145 B summed | dropped, as in the first pass |
+| The widget number as a counter in shared-components | sum +196 B | dropped |
+| Rows as factory calls (`counter("…", 5, 0, 20, 0)`), metrics registered by the factory (shared) | +35 B at N=256, +22 B at N=8 | dropped: brotli codes the array rows better, and single-use factories are no longer inlined |
+| Unquoted option values and placeholders where HTML allows (unique) | +4 B at N=1, −39 B at N=256 | dropped: mixed |
+| Consecutive text bindings in one variadic call (`text(3, f, 4, g)`) (unique) | +208 B at N=256, +19 B at N=1 | dropped: brotli already codes `),text(1,()=>` as one copy |
+| The two listeners added in a loop (unique) | +2 to +4 B below N=4 | dropped |
+| One `structuredClone` for a whole snapshot (unique) | ±2 B | dropped: noise |
+| The item role suffixed by the runtime (`role + "Item"`) (unique) | +37 B at N=256, −14 B at N=16 | dropped: noise, as in the third pass |
+
+
 ## Honest limits
 
 - **An event re-runs all of its widget's bindings,** with no memoization: about five, plus a
@@ -441,7 +514,14 @@ marked):
   ids are `w1…wN` in order and that initial list ids are 1…k. Lists are keyed by an `id` field.
   A different spec would need explicit ids in the rows: a few bytes per widget.
 - **External replacements assign every field through the widget's setter.** This assumes
-  `serverSet` and `snapshot` send a widget's whole state, as the scenario specifies.
+  `serverSet` and `snapshot` send a widget's whole state, as the scenario specifies. On
+  unique-components the setter's defaults are the initial state, so a field missing from a
+  `serverSet` would take its initial value (not `undefined`), and a field named like an
+  `Object.prototype` property would read that property when the setter initialises the state
+  with `{}` (the emitter refuses such a name).
+- **shared-components splices a widget's label into its heading's HTML** and summaries read the
+  same string as text, so a label must need no escaping (the emitter checks it; a label with
+  `&` or `<` would need a second, escaped copy in its row).
 - **An int add trusts the field's range.** It checks only the bound its step can pass, which is
   exact while the field is within `[min, max]`: every op and the number input keep it there,
   and the scenario's external states send in-range values. An out-of-range `serverSet` value
@@ -468,9 +548,25 @@ time-driven field, its tick function. Only initial values and texts are data.
 
 It uses `runtime-unique.js` instead of `runtime.js`: the same strategy (binding closures that
 write on change, a local digest, handlers and bindings by position), but it knows nothing about
-widget kinds. `widget(html, set, ...h)` builds the section, hands `h` to its controls in
-document order, keeps the setter (a feed widget puts its record in `O` itself), and makes its elements the ones
-bindings refer to, each by its distance from the previous binding's element (`text(3, …)`).
+widget kinds. `widget(set, ...h, html)` builds the section from the template (the last
+argument), hands `h` to its controls in document order, keeps the setter on the widget's
+binding list (`W[k].s`) and calls it once with no fields, so its defaults set the initial state
+(a feed widget puts its record in `O` itself), and makes its elements the ones bindings refer
+to, each by its distance from the previous binding's element (`text(3, …)`). A widget's own
+fields are the parameters of its function:
+
+```js
+const w6 = ($motto) => {
+  widget((v) => ({ miles: w6$miles = 11, motto: $motto = "Harbor" } = v),
+    (t) => Number.isInteger((t = t.valueAsNumber)) && t >= 0 && t <= 52 && (w6$miles = t), // enterMiles
+    () => (w6$miles = 11, $motto = "Harbor"), // restoreAll
+    (t) => $motto = t.value, // writeMotto
+    `<h2>Trail panel 77xz</h2><div><input type=number data-role=enterMiles><output></output></div>…`,
+  );
+  bind(2, () => w6$miles);
+  …
+};
+```
 Differences from `runtime.js`:
 - a list item is `<li data-key data-role>` (the item role is `{field}Item`);
 - a reader widget copies its bindings into each source's list (`dep`, a compile-time fact, the
