@@ -77,10 +77,10 @@ const METRIC_BIT = {
 
 const WIDGET_FILE = `import { html } from "../runtime.js";
 
-// A widget's <section> with its heading and the kind's static markup \`inner\`: every element, in
-// document order.
-export function section(parent, id, label, kind, inner) {
-  const t = html(\`<section data-role=widget-\${kind}><h2></h2>\${inner}\`, parent);
+// A widget's static markup (its <section>, its heading, then the kind's own elements), keyed and
+// labelled: every element, in document order.
+export function section(parent, id, label, markup) {
+  const t = html(markup, parent);
   t[0].dataset.key = id;
   t[1].textContent = label;
   return t;
@@ -101,8 +101,8 @@ export const kind = [
     ([, , , , , , start]) => [{ value: start }, 1],
   ],
   (parent, [, , label, step, min, max], id) => {
-    const [, , value, dec, inc, reset] = section(parent, id, label, "counter",
-      "<output data-role=value></output><button data-role=dec></button><button data-role=inc></button><button data-role=reset>Reset");
+    const [, , value, dec, inc, reset] = section(parent, id, label,
+      "<section data-role=widget-counter><h2></h2><output data-role=value></output><button data-role=dec></button><button data-role=inc></button><button data-role=reset>Reset");
     dec.textContent = "-" + step;
     inc.textContent = "+" + step;
     onClick(dec, id, 1);
@@ -126,7 +126,7 @@ import { section } from "./widget.js";
 export const kind = [
   [(c, s, msg) => [{ on: s.on.map((on, i) => (i === msg.id ? !on : on)) }, 1]],
   (parent, [, , label, items], id) => {
-    const t = section(parent, id, label, "toggles", "<ul></ul><p data-role=count>");
+    const t = section(parent, id, label, "<section data-role=widget-toggles><h2></h2><ul></ul><p data-role=count>");
     const boxes = items.map((name, i) => {
       const [, , box] = html("<li><label><input type=checkbox data-role=toggle>", t[2]);
       box.dataset.key = i;
@@ -151,7 +151,7 @@ import { section } from "./widget.js";
 export const kind = [
   [(c, s, msg) => [{ text: msg.value }, 1]],
   (parent, [, , label, placeholder, valid, message], id) => {
-    const [, , input, p] = section(parent, id, label, "field", "<input type=text data-role=input><p data-role=error>");
+    const [, , input, p] = section(parent, id, label, "<section data-role=widget-field><h2></h2><input type=text data-role=input><p data-role=error>");
     input.placeholder = placeholder;
     p.textContent = message;
     onInput(input, id, 0);
@@ -183,8 +183,8 @@ export const kind = [
     (c, s, msg) => [{ ...s, items: s.items.filter((item) => item.id !== msg.id) }, 1],
   ],
   (parent, [, , label, placeholder, addText, removeText], id) => {
-    const [, , draft, add, ul, left] = section(parent, id, label, "todo",
-      "<input type=text data-role=draft><button data-role=add></button><ul></ul><p data-role=left>");
+    const [, , draft, add, ul, left] = section(parent, id, label,
+      "<section data-role=widget-todo><h2></h2><input type=text data-role=draft><button data-role=add></button><ul></ul><p data-role=left>");
     draft.placeholder = placeholder;
     add.textContent = addText;
     onInput(draft, id, 0);
@@ -219,7 +219,7 @@ import { section } from "./widget.js";
 export const kind = [
   [(c, s, msg) => [{ active: msg.id }, 1]],
   (parent, [, , label, tabs], id) => {
-    const t = section(parent, id, label, "tabs", "<div role=tablist></div><p data-role=tab-content role=tabpanel>");
+    const t = section(parent, id, label, "<section data-role=widget-tabs><h2></h2><div role=tablist></div><p data-role=tab-content role=tabpanel>");
     const buttons = tabs.map(([title], i) => {
       const [button] = html("<button data-role=tab role=tab>", t[2]);
       button.dataset.key = i;
@@ -244,7 +244,7 @@ import { section } from "./widget.js";
 export const kind = [
   [(c, s) => [{ open: !s.open }, 1]],
   (parent, [, , label, showText, hideText, body], id) => {
-    const [, , toggle, p] = section(parent, id, label, "panel", "<button data-role=toggle></button><p data-role=body>");
+    const [, , toggle, p] = section(parent, id, label, "<section data-role=widget-panel><h2></h2><button data-role=toggle></button><p data-role=body>");
     p.textContent = body;
     onClick(toggle, id, 0);
     const shown = branch(p);
@@ -269,7 +269,7 @@ export const kind = [
     (c, s, msg) => [{ ...s, extra: msg.value }, 2],
   ],
   (parent, [, , label, options, extraFor, extraPlaceholder], id) => {
-    const [, , select, input] = section(parent, id, label, "choice", "<select data-role=select></select><input type=text data-role=extra>");
+    const [, , select, input] = section(parent, id, label, "<section data-role=widget-choice><h2></h2><select data-role=select></select><input type=text data-role=extra>");
     for (const [value, label] of options) {
       const [o] = html("<option>", select);
       o.value = value;
@@ -300,7 +300,7 @@ import { section } from "./widget.js";
 export const kind = [
   [(c, s, msg) => [{ value: msg.value }, 1]],
   (parent, [, , label, format], id) => {
-    const [, , input, formatted] = section(parent, id, label, "amount", "<input type=number data-role=input><output data-role=formatted>");
+    const [, , input, formatted] = section(parent, id, label, "<section data-role=widget-amount><h2></h2><input type=number data-role=input><output data-role=formatted>");
     // Only a valid number becomes a message; anything else stays in the input as typed.
     input.addEventListener("input", () => {
       const value = input.valueAsNumber;
@@ -329,7 +329,7 @@ export function matches(items, query) {
 export const kind = [
   [(c, s, msg) => [{ query: msg.value }, 1]],
   (parent, [, , label, items, placeholder], id) => {
-    const [, , input, ul, count] = section(parent, id, label, "filter", "<input type=text data-role=query><ul></ul><p data-role=matches>");
+    const [, , input, ul, count] = section(parent, id, label, "<section data-role=widget-filter><h2></h2><input type=text data-role=query><ul></ul><p data-role=matches>");
     input.placeholder = placeholder;
     onInput(input, id, 0);
     const rows = list(ul, (item) => {
@@ -355,7 +355,7 @@ import { section } from "./widget.js";
 export const kind = [
   [(c, s, msg) => [{ stars: msg.id }, 1]],
   (parent, [, , label, stars, labels], id) => {
-    const t = section(parent, id, label, "rating", "<div></div><p data-role=rating-label>");
+    const t = section(parent, id, label, "<section data-role=widget-rating><h2></h2><div></div><p data-role=rating-label>");
     const buttons = [];
     for (let n = 1; n <= stars; n++) {
       const [button] = html("<button data-role=star>", t[2]);
@@ -386,7 +386,7 @@ export const kind = [
     notify: (c, s, msg) => [{ entries: [...s.entries, msg.entry] }, 1],
   },
   (parent, [, , label, emptyText, dismissText], id) => {
-    const [, , ul, p] = section(parent, id, label, "feed", "<ul></ul><p data-role=empty>");
+    const [, , ul, p] = section(parent, id, label, "<section data-role=widget-feed><h2></h2><ul></ul><p data-role=empty>");
     p.textContent = emptyText;
     const entries = list(ul, (entry) => {
       const [li, label, dismiss] = html("<li><span></span><button data-role=dismiss>");
@@ -424,8 +424,8 @@ export const kind = [
     tick: (c, s) => s.running && [{ ...s, seconds: s.seconds + 1 }, 1],
   },
   (parent, [, , label, startText, stopText, resetText], id) => {
-    const [, , time, start, stop, reset] = section(parent, id, label, "clock",
-      "<output data-role=time></output><button data-role=start></button><button data-role=stop></button><button data-role=reset>");
+    const [, , time, start, stop, reset] = section(parent, id, label,
+      "<section data-role=widget-clock><h2></h2><output data-role=time></output><button data-role=start></button><button data-role=stop></button><button data-role=reset>");
     start.textContent = startText;
     stop.textContent = stopText;
     reset.textContent = resetText;
@@ -452,7 +452,7 @@ import { section } from "./widget.js";
 export const kind = [
   0,
   (parent, [, , label, text], id) => {
-    const [, , line] = section(parent, id, label, "summary", "<p data-role=summary>");
+    const [, , line] = section(parent, id, label, "<section data-role=widget-summary><h2></h2><p data-role=summary>");
     return (widgets) => setText(line, text(widgets));
   },
 ];
