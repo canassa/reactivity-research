@@ -5,17 +5,20 @@
 // Style (recorded in every generated app's rr.json):
 // - One module per widget (`src/widgets/w3.js`): its own initial model, its own `update`
 //   reducer (one `case` per message, written out from the message's kind and ops) and its own
-//   factory `w3(parent, ...sources)`. Nothing is shared between widgets except generic helpers:
-//   the runtime's DOM, instance and keyed-list helpers, and `widgets/frame.js` (the widget
-//   frame, conditional placement, next item id, subscriptions).
+//   factory `w3(parent)`. Nothing is shared between widgets except generic helpers: the
+//   runtime's DOM, instance and keyed-list helpers, and `widgets/frame.js` (the widget frame and
+//   registry, conditional placement, next item id, subscriptions).
 // - The factory builds the widget's DOM once from its own static template (the markup as one
 //   string, its elements addressed by document order; a list row has a template of its own),
-//   wires each control to a message for its own instance, and declares one `patch` function: the binding list, one write per binding (derived texts compiled to template
-//   literals and operators), each skipped when its value did not change.
+//   wires each control to a message for its own instance, and declares one `patch` function:
+//   the binding list, one write per binding (derived texts compiled to template literals and
+//   operators), each skipped when its value did not change.
 // - The model lives in the instance's closure; `send` runs the widget's reducer and schedules
 //   that instance's patch in a microtask. No global dispatch, dirty bits or dependency graph.
-// - A cross-widget read is a factory parameter (the earlier widget's instance): the reader
-//   reads its model in `patch` and watches it, so its patch is scheduled when the source changes.
+// - The widget frame registers each instance by widget id (`widgets`), for the external events
+//   that name a widget and for readers: a cross-widget read takes the earlier widget's instance
+//   from it, reads its model in `patch` and watches it, so its patch is scheduled when the
+//   source changes.
 // - External events: `serverSet` and `snapshot` replace instance models (`set`); `notify` is a
 //   method of widgets with a feed (a message to that instance). A widget with a time-driven int
 //   is a subscription, as in Elm's `subscriptions`: while a gate is on it puts its `tick` into
@@ -313,7 +316,7 @@ function reducerCase(w, m, i, cx) {
 // One widget module.
 
 const RUNTIME = ["wire", "setText", "setProp", "instance", "list", "template"];
-const FRAME = ["widget", "place", "nextId", "subscribe"];
+const FRAME = ["widget", "widgets", "place", "nextId", "subscribe"];
 
 // Returns { code, sources }: the module, and the earlier widgets its factory takes.
 function widgetFile(spec, w) {
@@ -354,10 +357,11 @@ function widgetFile(spec, w) {
   const optionLines = [...cx.options].map((name) => `const ${name}Options = ${lit(w.fields.find((f) => f.name === name).options)};`);
 
   const fn = [];
-  fn.push(`export function ${w.id}(parent${sources.map((s) => ", " + s).join("")}) {`);
+  fn.push(`export function ${w.id}(parent) {`);
+  for (const s of sources) fn.push(`  const ${s} = widgets.get(${q(s)});`);
   fn.push(`  // type Msg = ${msgNames.join(" | ")}`);
   fn.push(`  const self = instance(${lit(spec.initialState.widgets[w.id])}, update, patch);`);
-  fn.push(`  const e = widget(parent, ${q(w.id)}, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))}${cx.wire.length ? ", self, " + cx.wire.join(", ") : ""});`);
+  fn.push(`  const e = widget(parent, ${q(w.id)}, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))}${[", self", ...cx.wire].join(", ")});`);
   fn.push(...cx.create);
   // Subscribe to the clock while the gate is on, as soon as the model changes (not at the next
   // render), so a tick right after the gate opens is not missed.
@@ -371,7 +375,7 @@ function widgetFile(spec, w) {
   fn.push(`  }`);
   for (const s of sources) fn.push(`  ${s}.watch(patch);`);
   if (feed) fn.push(`  self.notify = (item) => self.send(${notifyIndex}, item);`);
-  fn.push(`  return self;`);
+
   fn.push(`}`);
   const body = fn.join("\n");
 
@@ -399,6 +403,7 @@ const FRAME_FILE = `import { element, wire } from "../runtime.js";
 // heading and view), its controls wired to the message \`tags\` (see \`wire\`). Returns the section
 // and the template's elements, in document order.
 export function widget(parent, id, html, self, ...tags) {
+  widgets.set(id, self);
   const section = element(parent, "section", { "data-key": id, "data-role": "widget" });
   section.innerHTML = html;
   wire(section, self, tags);
@@ -411,6 +416,9 @@ export function place(node, shown) {
   if (!shown) node.replaceWith((node.mark ??= new Text()));
   else node.mark?.replaceWith(node);
 }
+
+// The instances by widget id, for the external events that name a widget and for readers.
+export const widgets = new Map();
 
 export const nextId = (items) => items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
 
@@ -442,17 +450,17 @@ export function emit(spec) {
   for (const w of spec.widgets) {
     const { code, sources } = widgetFile(spec, w);
     files[`src/widgets/${w.id}.js`] = code;
-    calls.push(`  widgets.${w.id} = ${w.id}(${["main", ...sources.map((s) => "widgets." + s)].join(", ")});`);
+    calls.push(`  ${w.id}(main);`);
   }
   // Only an app with a time-driven widget has ticks to route, and only one with a feed, notify.
   const timed = spec.widgets.some((w) => w.fields.some((f) => f.tick));
   const feeds = spec.widgets.some((w) => w.fields.some((f) => f.feed));
   files["src/app.js"] = `import { element } from "./runtime.js";
-${timed ? `import { running } from "./widgets/frame.js";\n` : ""}${spec.widgets.map((w) => `import { ${w.id} } from "./widgets/${w.id}.js";`).join("\n")}
+import { widgets${timed ? ", running" : ""} } from "./widgets/frame.js";
+${spec.widgets.map((w) => `import { ${w.id} } from "./widgets/${w.id}.js";`).join("\n")}
 
 export function App(root) {
   const main = element(root, "div", { "data-role": "dashboard" });
-  const widgets = {};
 ${calls.join("\n")}
 
   return {
@@ -460,21 +468,22 @@ ${calls.join("\n")}
     receive(msg) {
       switch (msg.type) {
         case "serverSet":
-          widgets[msg.widget].set(msg.state);
+          widgets.get(msg.widget).set(msg.state);
           break;
 ${timed ? `        case "tick":
           for (const tick of running) tick();
           break;
 ` : ""}${feeds ? `        case "notify":
-          widgets[msg.widget].notify(msg.item);
+          widgets.get(msg.widget).notify(msg.item);
           break;
 ` : ""}        case "snapshot":
-          for (const id in msg.state.widgets) widgets[id].set(msg.state.widgets[id]);
+          for (const id in msg.state.widgets) widgets.get(id).set(msg.state.widgets[id]);
           break;
       }
     },
     dispose() {
-${timed ? "      running.clear();\n" : ""}      main.remove();
+${timed ? "      running.clear();\n" : ""}      widgets.clear();
+      main.remove();
     },
   };
 }
@@ -485,7 +494,7 @@ ${timed ? "      running.clear();\n" : ""}      main.remove();
       components: "one module per widget: its initial model, its own reducer (one case per message, written out from its ops) and its own factory; only generic helpers are shared",
       state: "each instance's model in its own closure; send(tag, value) runs the widget's reducer and schedules that instance's binding list",
       updates: "one patch function per instance, every DOM write skipped when unchanged; derived texts compiled to template literals; batched in a microtask",
-      crossWidget: "a reader's factory takes the earlier widgets it reads, reads their models in patch and watches them",
+      crossWidget: "a reader takes the earlier widgets it reads from the frame's registry, reads their models in patch and watches them",
       externalEvents: "serverSet/snapshot replace instance models; notify is a message to a feed widget; tick calls the widgets of a shared running set, each subscribing while its gate is on",
       lists: "runtime keyed list by item.id: patch changed rows, one forward placement pass when order or membership changes",
       dom: "one static template per widget (trailing end tags left out), elements addressed by document order; one template per list row, cloned per new item",
