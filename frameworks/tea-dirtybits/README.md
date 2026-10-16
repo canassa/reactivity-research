@@ -288,3 +288,33 @@ two scenarios use (bitwise operators are 32-bit). What it adds:
   line per read that turns the form's word bit into the companion's.
 - **Locality:** calls per local action are flat from N=16 to 256 (1.00 ratio, 12 to 23 calls);
   only the whole-state actions (`snapshot`, `serverSet` of the form) grow, as they must.
+
+## big-table
+
+The emitter for `big-table` (`scenarios/big-table/tea-dirtybits.js`) keeps the strategy with rows
+as dynamic data. What it adds (`template/grid.js`, new, included only here, counted as runtime):
+
+- **Two kinds of dirty bits per table.** The table's: rows 1 (reconcile the whole list),
+  selected 2, gone 4, moved 8, added 16. A row's: one bit per data column from 32 up. An arm returns
+  `[bits, fields, payload]`; the payload names the rows the event touched (ids for gone and moved,
+  row objects for added and edited cells).
+- **Per-row dirtiness.** Select marks two rows (the old and the new, by id), remove drops one
+  node, swap moves two, append builds only the new rows, toggle, bump and `updateEvery` call the
+  row's static patch with the column bit of the cell they wrote (a computed cell tests every column
+  its expression reads). Only create, sort, clear and `serverRows` ask for the keyed reconcile
+  (bit 1: new rows built, changed items patched, gone rows removed, one walk moves misplaced
+  nodes). A second event of one tick files bit 1, which covers both.
+- **A row is one cloned template** (parsed once), its record `[tr, item, …bound cells]`, and its
+  patch is a static function with a test per cell. Events are delegated: one click listener per
+  table, a switch on `data-role` that sends a numbered message. A row's control sends the row's
+  current item with it, so the reducer finds the row with `indexOf` (one native scan, by id if
+  the item is stale), not a callback per row.
+- **External events** `serverRows`, `serverUpdate` and `serverDelete` are handled in `app.js`:
+  they name no column. `serverRows` reconciles, the other two name the rows they touched.
+- **Rows axis (honest accounting).** In JavaScript calls and blocks, select, swap, remove,
+  toggle, bump are flat from 1,000 to 10,000 rows (13 to 22 calls). They are not free of O(rows)
+  work: remove, toggle and bump scan the array natively (`indexOf`) and copy it (`toSpliced`,
+  `with`), swap copies it (`slice`), none of which the call counter sees. `serverUpdate`,
+  `serverDelete` and `removeChecked` scan every row with `findIndex` or `filter` (an id that does
+  not exist forces the full scan), so they grow with the rows; `updateEvery`, create, append,
+  clear, sort and `serverRows` grow with the rows by nature.
