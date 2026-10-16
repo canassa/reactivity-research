@@ -7,7 +7,8 @@
 //   runtime: no column descriptors, no op codes. Table 1 is written the way
 //   js-framework-benchmark's keyed/solid entry is: a `For` over the rows, `createSelector` for
 //   the selected row, `batch` around multi-signal updates, `textContent` on elements whose only
-//   child is a text, the row's id captured once, handlers in JSX.
+//   child is a text (table 1 only: tables 2 to N use plain JSX children, as an expert writes
+//   them), the row's id captured once, handlers in JSX.
 // - State: one app store (`createStore`) holding every table's `{ rows, selected, nextId, rng }`
 //   (the contract's state shape), created per mount and shared through a context. A table reads
 //   its slice and updates it with path setters: an index path for one cell (`updateEvery`), a
@@ -210,17 +211,20 @@ function control(t, ctl) {
 // ---------------------------------------------------------------------------------------------
 // View
 
-function cell(c, needs) {
+// `tc` is true for table 1, which sets `textContent` as js-framework-benchmark does; the other
+// tables use JSX children.
+function cell(c, needs, tc) {
+  const text = (tag, expr, attrs = "") => (tc ? `<${tag}${attrs} textContent={${expr}} />` : `<${tag}${attrs}>{${expr}}</${tag}>`);
   switch (c.kind) {
-    case "id": return `<td textContent={id} />`;
+    case "id": return text("td", "id");
     case "label": case "text":
-      if (c.select) return `<td><a data-role="${c.select}" onClick={() => ${handlerName(c.select)}(id)} textContent={row.${c.name}} /></td>`;
-      return `<td textContent={row.${c.name}} />`;
-    case "number": return `<td textContent={${formatted(c, `row.${c.name}`, needs)}} />`;
-    case "date": needs.format.add(DATE_FORMATS[c.format]); return `<td textContent={${DATE_FORMATS[c.format]}(row.${c.name})} />`;
-    case "status": return `<td><${c.tag} textContent={row.${c.name}} /></td>`;
+      if (c.select) return `<td>${text("a", `row.${c.name}`, ` data-role="${c.select}" onClick={() => ${handlerName(c.select)}(id)}`)}</td>`;
+      return text("td", `row.${c.name}`);
+    case "number": return text("td", formatted(c, `row.${c.name}`, needs));
+    case "date": needs.format.add(DATE_FORMATS[c.format]); return text("td", `${DATE_FORMATS[c.format]}(row.${c.name})`);
+    case "status": return `<td>${text(c.tag, `row.${c.name}`)}</td>`;
     case "flag": return `<td><input type="checkbox" data-role="${c.toggle}" checked={row.${c.name}} onChange={() => ${handlerName(c.toggle)}(id)} /></td>`;
-    case "computed": return `<td textContent={${computed(c, needs)}} />`;
+    case "computed": return text("td", computed(c, needs));
     case "remove": {
       const inner = c.glyph ? `<span aria-hidden="true">${jsxText(c.text)}</span>` : jsxText(c.text);
       return `<td><${c.element} data-role="${c.role}" onClick={() => ${handlerName(c.role)}(id)}>${inner}</${c.element}></td>`;
@@ -248,7 +252,7 @@ function tableComponent(t) {
     if (c.kind === "bump") ctls.push({ kind: "bump", role: c.role, column: c.column, delta: c.delta });
   }
   const controls = ctls.map((ctl) => control(t, ctl));
-  const cells = t.columns.map((c) => `                  ${cell(c, needs)}`);
+  const cells = t.columns.map((c) => `                  ${cell(c, needs, t.id === "t1")}`);
   const buttons = t.ops.map((o) => `        <button data-role="${o.name}" onClick={${handlerName(o.name)}}>${jsxText(o.text)}</button>`);
   const thead = t.thead
     ? `        <thead>
@@ -431,7 +435,7 @@ export function emit(spec) {
       externalEvents: "store.receive(msg); serverRows and snapshot through reconcile(…, { key: 'id' }); serverUpdate one path set per change in a batch",
       lists: "<For> over the rows store array, as js-framework-benchmark's keyed/solid",
       selection: "createSelector per table with select; classList or aria-selected for the marker",
-      cells: "textContent on elements whose only child is the text, as js-framework-benchmark's entry; the row id captured once",
+      cells: "table 1: textContent on elements whose only child is the text, as js-framework-benchmark's entry, the row id captured once; tables 2 to N: JSX children ({row.x})",
       events: "onClick (delegated) for buttons and links, onChange for checkboxes",
       build: "Vite + vite-plugin-solid, production defaults, hidden source maps",
     },
