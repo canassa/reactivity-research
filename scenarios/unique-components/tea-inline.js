@@ -10,11 +10,15 @@
 //   for that list.
 // - Every dynamic expression (a text, a disabled state, a condition, a validation rule) is
 //   compiled to JavaScript and becomes a binding. The emitter works out at compile time which
-//   fields each binding reads, and groups the bindings per field (`onVisits = [...]`).
+//   fields each binding reads, and groups the bindings per field: the widget's binding table
+//   `G` holds one group per field (`G[0]`, `G[1]`, …), then each binding reading several
+//   fields or other widgets, added at mount to the group of every field it reads (a reader of
+//   another widget adds itself to that widget's group, `R[3][1]`). A list is the first binding
+//   of its field's group (`G[1][0]`).
 // - Every message (a `case` arm of the widget's `update`) is inlined into the action its
 //   control calls: it writes the fields its ops change, in place, and schedules the groups of
-//   exactly those fields, plus the bindings of other widgets that read them (`R[widget].<field>`,
-//   only for the fields some widget reads). No `Msg` object, no switch, no op table.
+//   exactly those fields, which hold the bindings of other widgets that read them. No `Msg`
+//   object, no switch, no op table.
 // - External events stay messages: `receive(msg)` routes serverSet/snapshot to a widget's
 //   `load`, `tick` to the widgets that have a time-driven field and `notify` to the feed.
 //
@@ -22,7 +26,7 @@
 // in-place model edits, per-field binding groups, one microtask flush, keyed list rows edited
 // in place by the action that knows which row it touched (other list edits replace the array
 // and reconcile by id), and the runtime of tea-inline. The only generic code is the runtime and
-// three small helpers in widgets/widget.js (section, loader, nextId); no widget behaviour is
+// small helpers in widgets/widget.js (section, loader, items, nextId); no widget behaviour is
 // kept as data.
 
 import { templateFiles } from "../../frameworks/tea-inline/framework.js";
@@ -32,7 +36,6 @@ export const framework = "tea-inline";
 
 export const params = {};
 
-const cap = (s) => s[0].toUpperCase() + s.slice(1);
 // A widget's number: widget `wN` is number N, its position in page order counted from 1 (the
 // emitter checks the ids).
 const pos = (id) => Number(id.slice(1));
@@ -47,7 +50,7 @@ const WIDGET_FILE = `import { schedule } from "../runtime.js";
 // (its heading and everything it shows), appended to \`parent\`, and returned as its elements in
 // document order.
 export function section(parent, i, html) {
-  parent.insertAdjacentHTML("beforeend", \`<section data-key=w\${i} data-role=widget>\${html}</section>\`);
+  parent.insertAdjacentHTML("beforeend", \`<section data-key=w\${i} data-role=widget>\${html}\`);
   return parent.lastChild.querySelectorAll(":not(h2,label,option)");
 }
 
@@ -62,6 +65,9 @@ export const loader = (s, all, arms) => (
     schedule(all);
   }, arms)
 );
+
+// A list's initial items, numbered from 1: their texts, or [text, done] pairs for a checkable list.
+export const items = (...xs) => xs.map((x, i) => (x.map ? { id: i + 1, text: x[0], done: x[1] } : { id: i + 1, text: x }));
 
 // A new list item's id: one more than the largest.
 export const nextId = (items) => items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
@@ -139,7 +145,7 @@ function crossReads(nodes, out) {
 // ---------------------------------------------------------------------------------------------
 // One widget: its module.
 
-function widgetFile(w, reads) {
+function widgetFile(w, reads, groupIndex) {
   const field = (name) => w.fields.find((f) => f.name === name);
   const message = (name) => w.messages.find((m) => m.name === name);
   const ids = {};
@@ -148,10 +154,9 @@ function widgetFile(w, reads) {
   // the markup (`E[n]`).
   const ref = (p) => `\0${id(p)}\0`;
 
-  const build = []; // construction lines
   const bindings = []; // { code, own, cross, name }
   const actions = []; // thunks writing the handlers, once the binding groups are known
-  const lists = {}; // list field -> its variable
+  const lists = {}; // list field -> a placeholder for its place in G
 
   const bind = (mk, name) => {
     const deps = { own: new Set(), cross: new Set() };
@@ -164,11 +169,11 @@ function widgetFile(w, reads) {
   // The scheduling call of an action writing \`fields\`.
   const sched = (fields, args = []) => {
     for (const f of new Set(fields)) {
-      if (groupFields.has(f)) args.push("on" + cap(f));
+      if (groupFields.has(f)) args.push(`G[${groupFields.get(f)}]`);
     }
     return args.length ? [`schedule(${args.join(", ")});`] : [];
   };
-  let groupFields = new Set();
+  let groupFields = new Map();
 
   // The code of a click message: its ops, inlined.
   function opLines(m) {
@@ -221,18 +226,18 @@ function widgetFile(w, reads) {
     actions.push(() => {
       const f = m.field && field(m.field);
       const done = sched(writesOf(m));
-      const wrap = (event, body) => [`on(${node}, () => {`, ...body.map((l) => "  " + l), event === "click" ? "});" : `}, "${event}");`];
+      const wrap = (event, body) => [`on(${node}, ${event === "click" ? "()" : "(e)"} => {`, ...body.map((l) => "  " + l), event === "click" ? "});" : `}, "${event}");`];
       switch (m.kind) {
         case "click": return wrap("click", [...opLines(m), ...done]);
         case "check": return wrap("click", [`s.${f.name} = !s.${f.name};`, ...done]);
-        case "select": return wrap("input", [`s.${f.name} = ${node}.value;`, ...done]);
+        case "select": return wrap("input", [`s.${f.name} = e.target.value;`, ...done]);
         case "input":
           if (f.type === "int") {
-            return wrap("input", [`const value = ${node}.valueAsNumber;`,
+            return wrap("input", [`const value = e.target.valueAsNumber;`,
               `if (!Number.isInteger(value) || value < ${f.min} || value > ${f.max}) return;`,
               `s.${f.name} = value;`, ...done]);
           }
-          return wrap("input", [`s.${f.name} = ${node}.value;`, ...done]);
+          return wrap("input", [`s.${f.name} = e.target.value;`, ...done]);
       }
       throw new Error(`unknown message kind ${m.kind}`);
     });
@@ -343,7 +348,7 @@ function widgetFile(w, reads) {
         const f = field(n.field);
         const l = id("ls");
         const u = ref("n");
-        lists[n.field] = l;
+        lists[n.field] = `\u0001${l}\u0001`;
         element(n.tag, {}, "", u);
         const row = [`const node = el("li", null, ${attrs({ "data-key": "item.id", "data-role": str(n.field + "Item") })});`];
         const set = [];
@@ -355,15 +360,15 @@ function widgetFile(w, reads) {
         set.push("text(label, item.text);");
         // The row's binding: the list hands it the item of its id, so the row keeps its item
         // current for its controls' arms; a toggle schedules it as is.
-        row.push(`const set = (next = item) => { item = next; ${set.join(" ")} };`);
+        row.push(`const set = (${n.check ? "next = item" : "next"}) => { item = next; ${set.join(" ")} };`);
         if (n.check) row.push("on(box, () => {", itemAction(n.check), "});");
         if (n.remove) {
           row.push(`on(el("button", node, ${attrs({ "data-role": str(n.remove) })}, ${str(n.removeText)}), () => {`, itemAction(n.remove), "});");
         }
         row.push("return [node, set];");
-        build.push(`const ${l} = list(${u}, () => s.${f.name}, (item) => {`,
-          ...row.map((r) => "  " + r), "});");
-        bindings.push({ code: l, own: [f.name], cross: [], name: l });
+        // The list is its field's first binding, and is referred to as such (G[i][0]).
+        const code = [`list(${u}, () => s.${f.name}, (item) => {`, ...row.map((r) => "  " + r), "})"].join("\n");
+        bindings.push({ code, own: [f.name], cross: [], list: l });
         return;
       }
       case "when": {
@@ -391,38 +396,48 @@ function widgetFile(w, reads) {
   // end, `</p>` before a block element or its parent's end (none of the parents here is one
   // that keeps it, like `<a>`); the parsed DOM is the same.
   html = html.replace(/<\/option>(?=<option|<\/select>)/g, "")
-    .replace(/<\/p>(?=<(?:aside|div|fieldset|footer|header|ol|p|section|ul)[\s>]|<\/|$)/g, "");
+    .replace(/<\/p>(?=<(?:aside|div|fieldset|footer|header|ol|p|section|ul)[\s>]|<\/|$)/g, "")
+    .replace(/(<\/\w+>)+$/, "");
 
   // The bindings: those reading one field of this widget and nothing else are written inline in
-  // that field's group; the others are named and listed in each group they belong to.
-  let named = 0;
-  for (const b of bindings) {
-    if (!b.name && !(b.own.length === 1 && b.cross.length === 0)) b.name = "u" + ++named;
-  }
-  const namedLines = bindings.filter((b) => b.name && !/^ls\d+$/.test(b.name)).map((b) => `const ${b.name} = ${b.code};`);
+  // that field's group (G[i] for the i-th field); each other binding (reading several fields, or
+  // other widgets) is an entry of G of its own, after the groups, and added at mount to the group
+  // of each field of this widget it reads.
   const groups = new Map();
-  for (const b of bindings) for (const f of b.own) groups.set(f, [...(groups.get(f) || []), b.name || b.code]);
+  for (const b of bindings) for (const f of b.own) groups.set(f, groups.get(f) || []);
+  const extra = bindings.filter((b) => !(b.own.length === 1 && b.cross.length === 0));
+  const listRefs = {};
+  for (const b of bindings) {
+    if (extra.includes(b)) continue;
+    const g = groups.get(b.own[0]);
+    if (b.list) {
+      listRefs[b.list] = [b.own[0], g.filter((x) => x.list).length];
+      g.splice(listRefs[b.list][1], 0, b);
+    } else g.push(b);
+  }
   // A field other widgets read: its group also holds their bindings, registered at mount.
-  for (const f of w.fields) if (reads[w.id]?.has(f.name)) groups.set(f.name, [...(groups.get(f.name) || []), `R[widget].${f.name}`]);
-  groupFields = new Set(groups.keys());
-  const groupLines = [...groups].flatMap(([f, items]) => {
-    const flat = `const on${cap(f)} = [${items.join(", ")}];`;
-    return flat.length <= 100 ? [flat] : [`const on${cap(f)} = [`, ...items.map((i) => "  " + i + ","), "];"];
-  });
-  const alone = bindings.filter((b) => b.own.length === 0).map((b) => b.name);
-  const crossPushes = bindings.flatMap((b) => b.cross.map((c) => `R[${pos(c.split(".")[0])}].${c.split(".")[1]}.push(${b.name});`));
+  for (const f of w.fields) if (reads[w.id]?.has(f.name)) groups.set(f.name, groups.get(f.name) || []);
+  groupFields = new Map([...groups.keys()].map((f, i) => [f, i]));
+  extra.forEach((b, i) => (b.name = `G[${groups.size + i}]`));
+  const groupItems = [...[...groups.values()].map((items) => `[${items.map((b) => b.name || b.code).join(", ")}]`), ...extra.map((b) => b.code)];
+  const groupLines = groupItems.length ? ["G.push(", ...groupItems.flatMap((g) => `  ${g},`.split("\n").map((l, i) => (i ? "  " + l : l))), ");"] : [];
+  groupLines.push(...extra.flatMap((b) => b.own.map((f) => `G[${groupFields.get(f)}].push(${b.name});`)));
+  groupIndex[w.id] = groupFields;
+  const crossPushes = bindings.flatMap((b) => b.cross.map((c) => {
+    const [src, f] = c.split(".");
+    if (!groupIndex[src]) throw new Error(`${w.id} reads ${src}, which is not above it`);
+    return `R[${pos(src)}][${groupIndex[src].get(f)}].push(${b.name});`;
+  }));
 
   // External arms.
   const arms = [];
   const tickFields = w.fields.filter((f) => f.tick);
   if (tickFields.length) {
+    // `min(max, value + tick)` changes the value unless it is already the maximum.
     const body = tickFields.flatMap((f) => [
-      `if (s.${f.tickWhen}) {`,
-      `  const value = Math.min(${f.max}, s.${f.name} + ${f.tick});`,
-      `  if (value !== s.${f.name}) {`,
-      `    s.${f.name} = value;`,
-      ...sched([f.name]).map((l) => "    " + l),
-      "  }",
+      `if (s.${f.tickWhen} && s.${f.name} != ${f.max}) {`,
+      `  s.${f.name} = Math.min(${f.max}, s.${f.name} + ${f.tick});`,
+      ...sched([f.name]).map((l) => "  " + l),
       "}",
     ]);
     arms.push(["// The external arm: tick.", "tick() {", ...body.map((l) => "  " + l), "},"]);
@@ -439,35 +454,28 @@ function widgetFile(w, reads) {
     return m ? itemBodies[m[2]]().map((b) => m[1] + "  " + b) : [l];
   });
 
-  const all = [...groups.keys()].map((f) => "on" + cap(f)).concat(alone);
   const body = [
-    ...expand(build),
-    "",
-    ...(namedLines.length ? ["// Bindings reading several fields, or other widgets."] : []),
-    ...namedLines,
     "// The bindings, grouped by the field they read.",
-    ...groupLines,
+    ...expand(groupLines),
     ...(crossPushes.length ? ["", "// Register with the widgets this one reads.", ...crossPushes] : []),
     ...(handlerLines.length ? ["", "// The arms of update, as actions."] : []),
     ...handlerLines.flat(),
-    "",
-    ...(arms.length
-      ? [`return loader(s, [${all.join(", ")}], {`, ...arms.flat().map((l) => "  " + l), "});"]
-      : [`return loader(s, [${all.join(", ")}]);`]),
+    ...(arms.length ? ["", "return {", ...arms.flat().map((l) => "  " + l), "};"] : []),
   ];
   const at = new Map(Object.entries(refs).map(([n, r]) => [r, n]));
-  const text = (body[0] === "" ? body.slice(1) : body).map((l) => (l ? "  " + l : l)).join("\n").replace(/\0\w+\0/g, (r) => `E[${at.get(r)}]`);
+  const text = body.map((l) => (l ? "  " + l : l)).join("\n").replace(/\0\w+\0/g, (r) => `E[${at.get(r)}]`)
+    .replace(/\u0001(\w+)\u0001/g, (_, l) => `G[${groupFields.get(listRefs[l][0])}][${listRefs[l][1]}]`);
 
   const rt = ["el", "text", "prop", "on", "when", "list", "schedule"].filter((n) => new RegExp(`\\b${n}\\(`).test(text));
-  const wi = ["loader", "nextId"].filter((n) => new RegExp(`\\b${n}\\(`).test(text));
+  const wi = ["nextId"].filter((n) => new RegExp(`\\b${n}\\(`).test(text));
   // The widget's markup, and its function: given the markup's elements (in document order, those
-  // the code refers to are E[n]), its state slice, the readers, its number, and the model when it
-  // reads other widgets.
+  // the code refers to are E[n]), its state slice and its (empty) binding table G, and when it
+  // reads other widgets their binding tables R and the model.
   return `import { ${rt.join(", ")} } from "../runtime.js";
 import { ${["W", ...wi].join(", ")} } from "./widget.js";
 
 // Widget ${w.id}: its markup, and its code over the markup's elements.
-W.push([${str(html)}, (E, s, R, widget${text.includes("model[") ? ", model" : ""}) => {
+W.push([${str(html)}, (E, s, G${text.includes("model[") || text.includes("R[") ? ", R, model" : ""}) => {
 ${text}
 }]);
 `;
@@ -475,6 +483,24 @@ ${text}
 
 // ---------------------------------------------------------------------------------------------
 // The app: init, the widgets in page order, and the external arms of update.
+
+// The initial model as a literal, with every list of items numbered 1, 2, … in order written as
+// `items(...)`: the items' texts, or [text, done] pairs for a checkable list.
+function initLiteral(model) {
+  const calls = [];
+  const numbered = (v) => Array.isArray(v) && v.length > 0 && v.every((x, i) => x && x.id === i + 1 && typeof x.text === "string"
+    && Object.keys(x).length === ("done" in x ? 3 : 2) && v.every((y) => "done" in y === "done" in x));
+  const walk = (v) => {
+    if (numbered(v)) {
+      calls.push(`items(${v.map((x) => literal("done" in x ? [x.text, x.done] : x.text)).join(", ")})`);
+      return `\0${calls.length - 1}\0`;
+    }
+    if (Array.isArray(v)) return v.map(walk);
+    if (v && typeof v === "object") return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, walk(x)]));
+    return v;
+  };
+  return literal(walk(model), "  ").replace(/"\\u0000(\d+)\\u0000"/g, (_, i) => calls[i]);
+}
 
 function appFile(spec, reads) {
   const ticking = spec.widgets.filter((w) => w.fields.some((f) => f.tick));
@@ -495,27 +521,27 @@ ${ticking.map((w) => `        views[${pos(w.id)}].tick();`).join("\n")}
         for (const id in msg.state.widgets) views[id.slice(1)](msg.state.widgets[id]);
         break;`);
 
-  const readers = {};
-  for (const [wid, fs] of Object.entries(reads)) readers[pos(wid)] = Object.fromEntries([...fs].map((f) => [f, []]));
+  const init = initLiteral(spec.widgets.map((w) => spec.initialState.widgets[w.id]));
   const imports = [`import { flush, cancel } from "./runtime.js";`,
-    `import { W, section } from "./widgets/widget.js";`,
+    `import { W, section, loader${init.includes("items(") ? ", items" : ""} } from "./widgets/widget.js";`,
     ...spec.widgets.map((w) => `import "./widgets/${w.id}.js";`)];
 
   return `${imports.join("\n")}
 
 export function start(root) {
   // The initial model (TEA's \`init\`: its widgets by number, from 1), fresh for every mount.
-  const model = [, ${literal(spec.widgets.map((w) => spec.initialState.widgets[w.id]), "  ").slice(1)};
+  const model = [, ${init.slice(1)};
   // The dashboard, from its markup like every widget.
-  root.insertAdjacentHTML("beforeend", "<div data-role=dashboard></div>");
+  root.insertAdjacentHTML("beforeend", "<div data-role=dashboard>");
   const board = root.lastChild;
-  // For each field another widget reads, the bindings reading it: the widget schedules them
-  // when it writes the field.
-  const R = ${literal(readers, "  ")};
+  // Every widget's binding table, by number: a widget reading another adds its bindings to the
+  // groups of the fields it reads, which come above it.
+  const R = [];
   // Every widget in page order, given its markup's elements and its number (widget \`wN\` is number N,
   // its position from 1: its slice of the model is \`model[N]\`, its handle \`views[N]\`; \`map\` skips
-  // the hole at 0). A handle is its load for serverSet and snapshot, carrying its external arms.
-  const views = W.map(([html, widget], i) => widget(section(board, i, html), model[i], R, i, model));
+  // the hole at 0). The widget fills its binding table; its handle is its load for serverSet and
+  // snapshot (which runs the whole table), carrying the external arms the widget returns.
+  const views = W.map(([html, widget], i) => loader(model[i], (R[i] = []), widget(section(board, i, html), model[i], R[i], R, model)));
   flush();
 
   // The arms of update still reached by a message: external events.
@@ -550,15 +576,16 @@ export function emit(spec) {
     "src/app.js": appFile(spec, reads),
     "src/widgets/widget.js": WIDGET_FILE,
   };
-  for (const w of spec.widgets) files[`src/widgets/${w.id}.js`] = widgetFile(w, reads);
+  const groupIndex = {};
+  for (const w of spec.widgets) files[`src/widgets/${w.id}.js`] = widgetFile(w, reads, groupIndex);
   return {
     files,
     style: {
       track: "prototype: no framework implements this strategy",
       components: "one module per widget, each written out from its own description; DOM built once from one static HTML string, elements referred to by their place in document order (E[n]); conditional sections swapped out by when while hidden; list rows built with createElement",
       messages: "erased for DOM events: each update arm is inlined into the action its control calls, which writes the widget's fields in place",
-      updates: "each action schedules the per-field binding groups of the fields it writes (known at compile time); one microtask flush",
-      derived: "cross-widget reads register their bindings at mount in R.<widget>.<field>, only for fields some widget reads; the writing action schedules them",
+      updates: "each action schedules the per-field binding groups of the fields it writes (known at compile time), held by place in the widget's binding table G; one microtask flush",
+      derived: "a binding reading another widget adds itself at mount to the group of the field it reads in that widget's binding table (R[widget][group]); the writing action schedules the group",
       lists: "keyed: add and remove schedule their row's edit, toggle its row's binding; other edits replace the array and reconcile by id in one forward pass",
       externalEvents: "receive(msg): serverSet and snapshot replace a widget's state (a copy) and run all its bindings and its readers; tick and notify call the widgets' external arms",
       build: "Vite with no framework plugin, production defaults, hidden source maps",
