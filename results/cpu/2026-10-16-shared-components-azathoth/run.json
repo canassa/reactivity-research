@@ -1,0 +1,696 @@
+{
+  "scenario": "shared-components",
+  "kind": "cpu",
+  "date": "2026-10-16",
+  "started": "2026-10-16T15:42:33.027Z",
+  "finished": "2026-10-16T15:50:00.590Z",
+  "sizes": [
+    16,
+    256
+  ],
+  "seeds": [
+    1
+  ],
+  "sessions": 1,
+  "quick": false,
+  "aa": true,
+  "workers": [
+    "1-2,7-8",
+    "3-4,9-10"
+  ],
+  "scenarioOptions": {
+    "kinds": "all",
+    "summaries": "auto"
+  },
+  "method": {
+    "warmup": 3,
+    "minReps": 10,
+    "maxReps": 20,
+    "chunk": 10,
+    "tol": 0.05,
+    "loads": 5,
+    "sessions": 1,
+    "waitMs": 40,
+    "maxLoad": 4,
+    "throttling": 1,
+    "chromeFlags": [
+      "--disable-background-networking",
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--disable-backgrounding-occluded-windows",
+      "--disable-gpu",
+      "--enable-precise-memory-info",
+      "--window-size=1280,1000"
+    ],
+    "rule": "js-framework-benchmark timeline.ts (via beni bench/ui/lib/trace.mjs), per rep between user-timing marks; see harness/bench/README.md"
+  },
+  "variants": {
+    "beni-direct": {
+      "emitter": "beni-direct",
+      "framework": "beni-direct",
+      "label": "beni browser-direct (6a1b567fa)",
+      "track": "framework",
+      "emitterOptions": {},
+      "versions": {
+        "beni (commit)": "6a1b567fad5410fe80c8bc4e0a1f6733279fd908",
+        "beni version (build id)": "beni 0.1.0-m1 ed7b444253caf5b9868cabe927aa51e3",
+        "beni binary sha256": "85ef6d27418e329aacd5ceefd25f8e81c9594a21916cabda19ed40c5099f246d",
+        "zig, node (beni's flake.lock at that commit)": "zig 0.17.0, node 24",
+        "platform": "browser-direct"
+      }
+    },
+    "beni-tea": {
+      "emitter": "beni-tea",
+      "framework": "beni-tea",
+      "label": "beni browser-tea (6a1b567fa)",
+      "track": "framework",
+      "emitterOptions": {},
+      "versions": {
+        "beni (commit)": "6a1b567fad5410fe80c8bc4e0a1f6733279fd908",
+        "beni version (build id)": "beni 0.1.0-m1 ed7b444253caf5b9868cabe927aa51e3",
+        "beni binary sha256": "85ef6d27418e329aacd5ceefd25f8e81c9594a21916cabda19ed40c5099f246d",
+        "zig, node (beni's flake.lock at that commit)": "zig 0.17.0, node 24",
+        "platform": "browser-tea"
+      }
+    },
+    "digest": {
+      "emitter": "digest",
+      "framework": "digest",
+      "label": "digest (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "elm": {
+      "emitter": "elm",
+      "framework": "elm",
+      "label": "Elm 0.19.3",
+      "track": "framework",
+      "emitterOptions": {},
+      "versions": {
+        "elm (compiler, npm installer)": "0.19.3-0",
+        "@elm_binaries/linux_x64": "0.19.3-0",
+        "uglify-js": "3.19.3",
+        "elm/browser": "1.0.2",
+        "elm/core": "1.0.5",
+        "elm/html": "1.0.1",
+        "elm/json": "1.1.4",
+        "elm/regex": "1.0.0",
+        "elm/time": "1.0.0",
+        "elm/url": "1.0.0",
+        "elm/virtual-dom": "1.0.5"
+      }
+    },
+    "solid": {
+      "emitter": "solid",
+      "framework": "solid",
+      "label": "Solid 1",
+      "track": "framework",
+      "emitterOptions": {},
+      "versions": {
+        "solid-js": "1.9.17",
+        "babel-preset-solid": "1.9.16",
+        "babel-plugin-jsx-dom-expressions": "0.40.11",
+        "@babel/core": "7.29.7",
+        "vite-plugin-solid": "2.11.14",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-dirtybits": {
+      "emitter": "tea-dirtybits",
+      "framework": "tea-dirtybits",
+      "label": "TEA + dirty bits (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "versions": {
+        "tea-dirtybits runtime": "prototype (frameworks/tea-dirtybits/template)",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-inline": {
+      "emitter": "tea-inline",
+      "framework": "tea-inline",
+      "label": "TEA inline (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-local": {
+      "emitter": "tea-local",
+      "framework": "tea-local",
+      "label": "tea-local (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "beni-direct-aa": {
+      "emitter": "beni-direct",
+      "framework": "beni-direct",
+      "label": "beni browser-direct (6a1b567fa) (A/A twin)",
+      "track": "framework",
+      "emitterOptions": {},
+      "versions": {
+        "beni (commit)": "6a1b567fad5410fe80c8bc4e0a1f6733279fd908",
+        "beni version (build id)": "beni 0.1.0-m1 ed7b444253caf5b9868cabe927aa51e3",
+        "beni binary sha256": "85ef6d27418e329aacd5ceefd25f8e81c9594a21916cabda19ed40c5099f246d",
+        "zig, node (beni's flake.lock at that commit)": "zig 0.17.0, node 24",
+        "platform": "browser-direct"
+      },
+      "twinOf": "beni-direct"
+    },
+    "beni-tea-aa": {
+      "emitter": "beni-tea",
+      "framework": "beni-tea",
+      "label": "beni browser-tea (6a1b567fa) (A/A twin)",
+      "track": "framework",
+      "emitterOptions": {},
+      "versions": {
+        "beni (commit)": "6a1b567fad5410fe80c8bc4e0a1f6733279fd908",
+        "beni version (build id)": "beni 0.1.0-m1 ed7b444253caf5b9868cabe927aa51e3",
+        "beni binary sha256": "85ef6d27418e329aacd5ceefd25f8e81c9594a21916cabda19ed40c5099f246d",
+        "zig, node (beni's flake.lock at that commit)": "zig 0.17.0, node 24",
+        "platform": "browser-tea"
+      },
+      "twinOf": "beni-tea"
+    },
+    "digest-aa": {
+      "emitter": "digest",
+      "framework": "digest",
+      "label": "digest (prototype) (A/A twin)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      },
+      "twinOf": "digest"
+    },
+    "elm-aa": {
+      "emitter": "elm",
+      "framework": "elm",
+      "label": "Elm 0.19.3 (A/A twin)",
+      "track": "framework",
+      "emitterOptions": {},
+      "versions": {
+        "elm (compiler, npm installer)": "0.19.3-0",
+        "@elm_binaries/linux_x64": "0.19.3-0",
+        "uglify-js": "3.19.3",
+        "elm/browser": "1.0.2",
+        "elm/core": "1.0.5",
+        "elm/html": "1.0.1",
+        "elm/json": "1.1.4",
+        "elm/regex": "1.0.0",
+        "elm/time": "1.0.0",
+        "elm/url": "1.0.0",
+        "elm/virtual-dom": "1.0.5"
+      },
+      "twinOf": "elm"
+    },
+    "solid-aa": {
+      "emitter": "solid",
+      "framework": "solid",
+      "label": "Solid 1 (A/A twin)",
+      "track": "framework",
+      "emitterOptions": {},
+      "versions": {
+        "solid-js": "1.9.17",
+        "babel-preset-solid": "1.9.16",
+        "babel-plugin-jsx-dom-expressions": "0.40.11",
+        "@babel/core": "7.29.7",
+        "vite-plugin-solid": "2.11.14",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      },
+      "twinOf": "solid"
+    },
+    "tea-dirtybits-aa": {
+      "emitter": "tea-dirtybits",
+      "framework": "tea-dirtybits",
+      "label": "TEA + dirty bits (prototype) (A/A twin)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "versions": {
+        "tea-dirtybits runtime": "prototype (frameworks/tea-dirtybits/template)",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      },
+      "twinOf": "tea-dirtybits"
+    },
+    "tea-inline-aa": {
+      "emitter": "tea-inline",
+      "framework": "tea-inline",
+      "label": "TEA inline (prototype) (A/A twin)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      },
+      "twinOf": "tea-inline"
+    },
+    "tea-local-aa": {
+      "emitter": "tea-local",
+      "framework": "tea-local",
+      "label": "tea-local (prototype) (A/A twin)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      },
+      "twinOf": "tea-local"
+    }
+  },
+  "skipped": [
+    {
+      "variant": "beni-direct",
+      "size": 256,
+      "why": "size 256 is not in its runs.json sizes"
+    }
+  ],
+  "batches": [
+    {
+      "variant": "beni-direct-aa",
+      "size": 16,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 1.33,
+      "loadAfter": 0.95,
+      "seconds": 21.285,
+      "kept": true,
+      "at": "2026-10-16T15:44:04.325Z"
+    },
+    {
+      "variant": "beni-direct",
+      "size": 16,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 1.33,
+      "loadAfter": 0.95,
+      "seconds": 21.813,
+      "kept": true,
+      "at": "2026-10-16T15:44:04.850Z"
+    },
+    {
+      "variant": "beni-tea",
+      "size": 16,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 0.95,
+      "loadAfter": 0.68,
+      "seconds": 21.842,
+      "kept": true,
+      "at": "2026-10-16T15:44:26.192Z"
+    },
+    {
+      "variant": "beni-tea-aa",
+      "size": 16,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 0.95,
+      "loadAfter": 0.68,
+      "seconds": 21.36,
+      "kept": true,
+      "at": "2026-10-16T15:44:26.213Z"
+    },
+    {
+      "variant": "digest-aa",
+      "size": 16,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 0.68,
+      "loadAfter": 0.71,
+      "seconds": 21.216,
+      "kept": true,
+      "at": "2026-10-16T15:44:47.433Z"
+    },
+    {
+      "variant": "digest",
+      "size": 16,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 0.68,
+      "loadAfter": 0.71,
+      "seconds": 21.605,
+      "kept": true,
+      "at": "2026-10-16T15:44:47.800Z"
+    },
+    {
+      "variant": "elm",
+      "size": 16,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 0.71,
+      "loadAfter": 1.11,
+      "seconds": 43.436,
+      "kept": true,
+      "at": "2026-10-16T15:45:30.874Z"
+    },
+    {
+      "variant": "elm-aa",
+      "size": 16,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 0.71,
+      "loadAfter": 1.11,
+      "seconds": 43.45,
+      "kept": true,
+      "at": "2026-10-16T15:45:31.256Z"
+    },
+    {
+      "variant": "solid",
+      "size": 16,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 1.11,
+      "loadAfter": 0.87,
+      "seconds": 20.815,
+      "kept": true,
+      "at": "2026-10-16T15:45:51.696Z"
+    },
+    {
+      "variant": "solid-aa",
+      "size": 16,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 1.11,
+      "loadAfter": 0.87,
+      "seconds": 20.781,
+      "kept": true,
+      "at": "2026-10-16T15:45:52.044Z"
+    },
+    {
+      "variant": "tea-dirtybits",
+      "size": 16,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 0.87,
+      "loadAfter": 1.12,
+      "seconds": 20.875,
+      "kept": true,
+      "at": "2026-10-16T15:46:12.579Z"
+    },
+    {
+      "variant": "tea-dirtybits-aa",
+      "size": 16,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 0.87,
+      "loadAfter": 1.03,
+      "seconds": 21.446,
+      "kept": true,
+      "at": "2026-10-16T15:46:13.497Z"
+    },
+    {
+      "variant": "tea-inline",
+      "size": 16,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 1.12,
+      "loadAfter": 0.81,
+      "seconds": 21.052,
+      "kept": true,
+      "at": "2026-10-16T15:46:33.640Z"
+    },
+    {
+      "variant": "tea-inline-aa",
+      "size": 16,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 1.03,
+      "loadAfter": 0.81,
+      "seconds": 21.284,
+      "kept": true,
+      "at": "2026-10-16T15:46:34.792Z"
+    },
+    {
+      "variant": "tea-local",
+      "size": 16,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 0.81,
+      "loadAfter": 0.58,
+      "seconds": 21.3,
+      "kept": true,
+      "at": "2026-10-16T15:46:54.951Z"
+    },
+    {
+      "variant": "tea-local-aa",
+      "size": 16,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 0.81,
+      "loadAfter": 0.58,
+      "seconds": 21.179,
+      "kept": true,
+      "at": "2026-10-16T15:46:55.981Z"
+    },
+    {
+      "variant": "beni-tea",
+      "size": 256,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 0.58,
+      "loadAfter": 0.99,
+      "seconds": 23.436,
+      "kept": true,
+      "at": "2026-10-16T15:47:18.452Z"
+    },
+    {
+      "variant": "beni-tea-aa",
+      "size": 256,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 0.58,
+      "loadAfter": 0.99,
+      "seconds": 23.67,
+      "kept": true,
+      "at": "2026-10-16T15:47:19.683Z"
+    },
+    {
+      "variant": "digest",
+      "size": 256,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 0.99,
+      "loadAfter": 1.19,
+      "seconds": 22.682,
+      "kept": true,
+      "at": "2026-10-16T15:47:41.163Z"
+    },
+    {
+      "variant": "digest-aa",
+      "size": 256,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 0.99,
+      "loadAfter": 1.26,
+      "seconds": 23.266,
+      "kept": true,
+      "at": "2026-10-16T15:47:42.979Z"
+    },
+    {
+      "variant": "elm",
+      "size": 256,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 1.19,
+      "loadAfter": 1.13,
+      "seconds": 44.407,
+      "kept": true,
+      "at": "2026-10-16T15:48:25.603Z"
+    },
+    {
+      "variant": "elm-aa",
+      "size": 256,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 1.26,
+      "loadAfter": 1.13,
+      "seconds": 44.554,
+      "kept": true,
+      "at": "2026-10-16T15:48:27.559Z"
+    },
+    {
+      "variant": "solid",
+      "size": 256,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 1.13,
+      "loadAfter": 0.88,
+      "seconds": 23.412,
+      "kept": true,
+      "at": "2026-10-16T15:48:49.046Z"
+    },
+    {
+      "variant": "solid-aa",
+      "size": 256,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 1.13,
+      "loadAfter": 0.88,
+      "seconds": 22.958,
+      "kept": true,
+      "at": "2026-10-16T15:48:50.548Z"
+    },
+    {
+      "variant": "tea-dirtybits",
+      "size": 256,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 0.88,
+      "loadAfter": 0.63,
+      "seconds": 23.087,
+      "kept": true,
+      "at": "2026-10-16T15:49:12.167Z"
+    },
+    {
+      "variant": "tea-dirtybits-aa",
+      "size": 256,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 0.88,
+      "loadAfter": 0.9,
+      "seconds": 23.331,
+      "kept": true,
+      "at": "2026-10-16T15:49:13.913Z"
+    },
+    {
+      "variant": "tea-inline",
+      "size": 256,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 0.63,
+      "loadAfter": 0.78,
+      "seconds": 22.854,
+      "kept": true,
+      "at": "2026-10-16T15:49:35.056Z"
+    },
+    {
+      "variant": "tea-inline-aa",
+      "size": 256,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 0.9,
+      "loadAfter": 0.78,
+      "seconds": 22.634,
+      "kept": true,
+      "at": "2026-10-16T15:49:36.581Z"
+    },
+    {
+      "variant": "tea-local",
+      "size": 256,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 0.78,
+      "loadAfter": 0.56,
+      "seconds": 22.801,
+      "kept": true,
+      "at": "2026-10-16T15:49:57.900Z"
+    },
+    {
+      "variant": "tea-local-aa",
+      "size": 256,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 0.78,
+      "loadAfter": 0.59,
+      "seconds": 23.591,
+      "kept": true,
+      "at": "2026-10-16T15:50:00.236Z"
+    }
+  ],
+  "machine": {
+    "hostname": "azathoth",
+    "cpu": "Intel(R) Xeon(R) E-2386G CPU @ 3.50GHz",
+    "threads": 12,
+    "memoryGB": 34,
+    "kernel": "Linux 6.18.55 x64",
+    "governor": "performance",
+    "noTurbo": "0",
+    "boost": null,
+    "taskset": "1-5,7-11"
+  },
+  "versions": {
+    "node": "v26.11.1",
+    "chrome": "Chrome/154.0.8037.97",
+    "chromeBin": "/nix/store/ds7933z0wp7872ic6zqzrwsbpj0m8g6l-google-chrome-154.0.8037.97/bin/google-chrome",
+    "chromeVersionLine": "Google Chrome 154.0.8037.97",
+    "git": {
+      "commit": "b12ae8d4de225528f0fe3387c17520848cbcab2a",
+      "dirty": false
+    }
+  },
+  "wallSeconds": 447.666
+}

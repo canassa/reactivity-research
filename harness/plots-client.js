@@ -277,85 +277,87 @@
         el("div", { text: `Node ${w.run.versions.node} · ${w.run.versions.chrome} · V8 flags ${w.run.jsFlags || "(none)"} · ${versions.join(" · ")}` })));
   }
 
-  // ---- CPU time per event: ./rr bench's script time of one event, against N.
+  // ---- CPU: ./rr bench's absolute numbers, one app per framework (one size and seed).
+  // One bar per framework, in its own colour, with its value above and its name below; the
+  // whisker is the interquartile range when given.
+  function bars({ items, unit, yFmt = fmt }) {
+    const W = 1060, H = 280, L = 56, R = 14, T = 24, B = 70;
+    const max = Math.max(1e-9, ...items.map((it) => it.hi ?? it.value));
+    const ticks = niceTicks(max), top = ticks[ticks.length - 1];
+    const Y = (y) => T + (1 - y / top) * (H - T - B);
+    const band = (W - L - R) / Math.max(1, items.length), bw = Math.min(56, band * 0.6);
+    const svg = sv("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+    for (const t of ticks) {
+      svg.append(sv("line", { class: "gridline", x1: L, x2: W - R, y1: Y(t), y2: Y(t) }));
+      svg.append(sv("text", { x: L - 6, y: Y(t) + 4, "text-anchor": "end", text: yFmt(t) }));
+    }
+    svg.append(sv("text", { x: L - 6, y: 11, "text-anchor": "end", text: unit }));
+    items.forEach((it, i) => {
+      const cx = L + band * (i + 0.5), x = cx - bw / 2, y = Y(it.value), h = Math.max(0, Y(0) - y);
+      const bar = sv("path", { d: roundedTop(x, y, bw, h), fill: it.color });
+      const tip = [[it.color, `${yFmt(it.value)} ${unit}` + (it.lo != null ? ` (IQR ${yFmt(it.lo)}–${yFmt(it.hi)})` : ""), it.name]];
+      bar.addEventListener("pointermove", (e) => showTip(e, it.name, tip));
+      bar.addEventListener("pointerleave", hideTip);
+      svg.append(bar);
+      if (it.lo != null) svg.append(sv("line", { class: "axis", x1: cx, x2: cx, y1: Y(it.lo), y2: Y(it.hi) }));
+      svg.append(sv("text", { x: cx, y: Y(it.hi ?? it.value) - 5, "text-anchor": "middle", text: yFmt(it.value) }));
+      svg.append(sv("text", { x: cx, y: H - B + 16, "text-anchor": "middle", text: it.name }));
+      if (it.sub) svg.append(sv("text", { x: cx, y: H - B + 31, "text-anchor": "middle", class: "sub", text: it.sub }));
+    });
+    svg.append(sv("line", { class: "axis", x1: L, x2: W - R, y1: Y(0), y2: Y(0) }));
+    return svg;
+  }
+
   let cpuEvent = "";   // "" = the median of the local events
   function cpuCard(sc) {
     const c = sc.cpu;
-    if (!c) return card("CPU time per event against N", null, el("p", { class: "note", text: "No CPU results for this scenario yet. Run ./rr bench " + sc.name + " all: it times one event (and the startup) from Chrome traces at several sizes, and this chart appears here." }), sc.variants);
+    if (!c) return card("CPU time", null, el("p", { class: "note", text: "No CPU results for this scenario yet. Run ./rr bench " + sc.name + " all --remote azathoth: it times one event and the startup of one app per framework from Chrome traces, and this card appears here." }), sc.variants);
     const { run, summary } = c;
     const names = Object.keys(run.variants).sort((a, b) => NAMES.indexOf(a) - NAMES.indexOf(b));
-    const label = (n) => n + (run.variants[n].track === "prototype" ? " (prototype)" : "");
+    const sub = (n) => (run.variants[n].track === "prototype" ? "prototype" : "");
     const halves = [...new Map(summary.events.map((e) => [e.half, e.scope])).entries()];
-    const ev = (n, size, half) => summary.events.find((e) => e.variant === n && e.size === size && e.half === half);
-    const sizesOf = (n) => [...new Set(summary.events.filter((e) => e.variant === n).map((e) => e.size))].sort((a, b) => a - b);
-    const point = (n, size) => {
-      if (cpuEvent) {
-        const e = ev(n, size, cpuEvent);
-        return e ? { x: size, y: e.script.median, lo: e.script.p25, hi: e.script.p75 } : null;
-      }
-      const es = summary.events.filter((e) => e.variant === n && e.size === size && e.scope === "local");
-      return es.length ? { x: size, y: median(es.map((e) => e.script.median)), lo: median(es.map((e) => e.script.p25)), hi: median(es.map((e) => e.script.p75)) } : null;
-    };
     const us = (t) => (t >= 100 ? fmt(t) : t >= 10 ? t.toFixed(0) : t.toFixed(1));
-    const series = names.map((n) => ({ name: label(n), color: colorOfName(n), points: sizesOf(n).map((s) => point(n, s)).filter(Boolean), endLabel: true })).filter((s) => s.points.length);
-    const chart = el("div", { class: "chart" });
-    chart.append(lineChart({ series, unit: "µs", width: 1060, height: 380, yLog: true, yFmt: us, spread: "IQR" }));
+    const eventOf = (n) => {
+      if (cpuEvent) {
+        const e = summary.events.find((x) => x.variant === n && x.half === cpuEvent);
+        return e ? { value: e.script.median, lo: e.script.p25, hi: e.script.p75 } : null;
+      }
+      const es = summary.events.filter((x) => x.variant === n && x.scope === "local");
+      return es.length ? { value: median(es.map((x) => x.script.median)), lo: median(es.map((x) => x.script.p25)), hi: median(es.map((x) => x.script.p75)) } : null;
+    };
+    const evItems = names.map((n) => ({ name: n, sub: sub(n), color: colorOfName(n), ...eventOf(n) })).filter((x) => x.value != null);
+    const st = (n) => summary.startup.find((x) => x.variant === n);
+    const startItems = names.filter(st).map((n) => ({ name: n, sub: sub(n), color: colorOfName(n), value: st(n).total.median, lo: st(n).total.p25, hi: st(n).total.p75 }));
+    const heapItems = names.filter(st).map((n) => ({ name: n, sub: sub(n), color: colorOfName(n), value: st(n).heapBytes / 1e6 }));
     const select = el("select", { onchange: (e) => { cpuEvent = e.target.value; render(); } },
       el("option", { value: "", text: "median of the local events" }),
       ...halves.map(([h, scope]) => el("option", { value: h, text: h + (scope === "global" ? " (global by nature)" : ""), ...(cpuEvent === h ? { selected: "" } : {}) })));
     if (!cpuEvent) select.firstChild.selected = true;
-
-    // Growth, next to the call counts' growth from ./rr work over the same sizes where it has them.
-    const w = sc.work;
-    const callsRatio = (n, lo, hi) => {
-      if (!w || !w.run.variants[n]) return "—";
-      const has = (s) => w.run.sizes.includes(s);
-      const [a, b] = has(lo) && has(hi) ? [lo, hi] : [w.run.sizes[0], w.run.sizes[w.run.sizes.length - 1]];
-      const locals = w.run.actions.filter((x) => !x.setup && x.scope === "local").map((x) => x.name);
-      const rs = w.run.seeds.flatMap((seed) => locals.map((act) => {
-        const at = (size) => w.records.find((r) => r.variant === n && r.seed === seed && r.size === size && r.action === act)?.calls;
-        return at(b) / at(a);
-      })).filter((x) => Number.isFinite(x));
-      return rs.length ? `${median(rs).toFixed(2)}× (N=${a}→${b})` : "—";
-    };
-    const growthRows = names.filter((n) => summary.growth[n]).map((n) => {
-      const g = summary.growth[n];
-      return [label(n), `${g.lo}→${g.hi}`, `${us(g.medianLo)} → ${us(g.medianHi)}`, g.medianRatio.toFixed(2) + "×", `${g.maxRatio.toFixed(2)}× (${g.worst})`, callsRatio(n, g.lo, g.hi)];
-    });
-
-    // Startup.
-    const startSeries = names.map((n) => ({ name: label(n), color: colorOfName(n), endLabel: true,
-      points: summary.startup.filter((s) => s.variant === n).sort((a, b) => a.size - b.size).map((s) => ({ x: s.size, y: s.total.median, lo: s.total.p25, hi: s.total.p75 })) })).filter((s) => s.points.length);
-    const startChart = el("div", { class: "chart" });
-    startChart.append(lineChart({ series: startSeries, unit: "ms", width: 1060, height: 300, yFmt: (t) => t.toFixed(t >= 10 ? 0 : 1), spread: "IQR" }));
-
+    const sizes = run.sizes.join(","), seeds = run.seeds.join(",");
     const m = run.machine, v = run.versions, meth = run.method;
     const fwv = Object.entries(run.variants).map(([n, x]) => `${n}: ${Object.entries(x.versions || {}).map(([k, y]) => `${k} ${y}`).join(", ")}`);
-    const rowsAll = summary.events.slice().sort((a, b) => NAMES.indexOf(a.variant) - NAMES.indexOf(b.variant) || a.size - b.size)
+    const rowsAll = summary.events.slice().sort((a, b) => NAMES.indexOf(a.variant) - NAMES.indexOf(b.variant))
       .filter((e) => !cpuEvent || e.half === cpuEvent)
-      .map((e) => [e.variant, e.size, e.half + (e.scope === "global" ? " *" : ""), us(e.script.median), `${us(e.script.p25)}–${us(e.script.p75)}`, `${us(e.script.ci[0])}–${us(e.script.ci[1])}`, e.script.n, e.total.median.toFixed(2)]);
-    const out = [el("h3", { text: "CPU time per event against N" }),
-      el("p", { class: "note", text: "Script time (µs) of one event, from a Chrome trace: from the input event to the first commit after the app's work, the JavaScript inside (js-framework-benchmark's rule, no CPU throttling). Each event is ./rr work's action as real input through the DevTools protocol, repeated from the same state many times on one page; median over the reps, seeds and sessions, with the interquartile range as a pale bar; both axes logarithmic. Flat means the cost is local to what changed." + (run.quick ? " This is a --quick run: one size, one seed, few reps; for development, not for conclusions." : "") }),
+      .map((e) => [e.variant, e.half + (e.scope === "global" ? " *" : ""), us(e.script.median), `${us(e.script.p25)}–${us(e.script.p75)}`, `${us(e.script.ci[0])}–${us(e.script.ci[1])}`, e.script.n, e.total.median.toFixed(2)]);
+    const out = [el("h3", { text: `CPU time (N=${sizes}, seed ${seeds})` }),
+      el("p", { class: "note", text: "One app per framework, at the same size. Script time (µs) of one event, from a Chrome trace: from the input event to the first commit after the app's work, the JavaScript inside (js-framework-benchmark's rule, no CPU throttling). Each event is ./rr work's action as real input through the DevTools protocol, repeated from the same state on one page; the bar is the median over the reps (of the median over the local events, unless one event is picked), the whisker the interquartile range. Lower is faster. Differences under about 10% are within the A/A noise." + (run.quick ? " This is a --quick run: few reps; for development, not for conclusions." : "") }),
       el("div", { class: "controls" }, el("label", {}, "event ", select)),
-      hoverLegend(series.map((s) => [s.name, s.color]), chart), chart,
-      details("Table", table(["variant", "N", "event", "script µs (median)", "IQR", "95% CI of the median", "n", "total ms (median)"], rowsAll)),
-      el("h4", { text: "Growth of a local event's script time, smallest to largest size" }),
-      growthRows.length ? table(["variant", "N", "median script µs", "median ratio", "worst ratio (event)", "calls ratio (./rr work)"], growthRows)
-        : el("p", { class: "note", text: "Needs at least two sizes." }),
-      el("p", { class: "note", text: "ratio = the median script time at the largest size ÷ at the smallest, per local event; the median and the worst over the events. The calls ratio is ./rr work's count of JavaScript calls for the same actions over the same sizes: time and work should grow together." }),
+      el("div", { class: "chart" }, bars({ items: evItems, unit: "µs", yFmt: us })),
+      details("Table", table(["variant", "event", "script µs (median)", "IQR", "95% CI of the median", "n", "total ms (median)"], rowsAll)),
       el("h4", { text: "Startup: navigation to the first paint after mount" }),
-      hoverLegend(startSeries.map((s) => [s.name, s.color]), startChart), startChart,
-      details("Table", table(["variant", "N", "total ms (median)", "IQR", "script ms (median)", "compile ms", "JS heap after mount (MB)", "loads"],
-        summary.startup.slice().sort((a, b) => NAMES.indexOf(a.variant) - NAMES.indexOf(b.variant) || a.size - b.size)
-          .map((s) => [s.variant, s.size, s.total.median.toFixed(1), `${s.total.p25.toFixed(1)}–${s.total.p75.toFixed(1)}`, s.script.median.toFixed(2), s.compileMs.toFixed(2), (s.heapBytes / 1e6).toFixed(2), s.total.n])))];
+      el("div", { class: "chart" }, bars({ items: startItems, unit: "ms", yFmt: (t) => t.toFixed(t >= 10 ? 0 : 1) })),
+      el("h4", { text: "JS heap after mount, after a forced garbage collection" }),
+      el("div", { class: "chart" }, bars({ items: heapItems, unit: "MB", yFmt: (t) => t.toFixed(2) })),
+      details("Table", table(["variant", "startup total ms (median)", "IQR", "script ms (median)", "compile ms", "JS heap after mount (MB)", "loads"],
+        names.filter(st).map((n) => { const s = st(n); return [n, s.total.median.toFixed(1), `${s.total.p25.toFixed(1)}–${s.total.p75.toFixed(1)}`, s.script.median.toFixed(2), s.compileMs.toFixed(2), (s.heapBytes / 1e6).toFixed(2), s.total.n]; })))];
     if (summary.aa) {
       out.push(el("h4", { text: "A/A check: one app under two names" }),
         table(["app", "twin", "cells", "intervals overlap", "median |difference|", "max |difference|"],
           Object.entries(summary.aa).map(([n, x]) => [n, x.twin, x.cells, x.overlapping, (x.medianAbsDiff * 100).toFixed(1) + "%", (x.maxAbsDiff * 100).toFixed(1) + "%"])));
     }
     out.push(el("div", { class: "source" },
-      el("div", { text: `Results: results/cpu/${c.dir} · commit ${v.git ? v.git.commit.slice(0, 7) + (v.git.dirty ? " (dirty)" : "") : "?"} · sizes ${run.sizes.join(",")} × seeds ${run.seeds.join(",")} · ${run.sessions} session(s) · reps ${meth.warmup} warm-up + ${meth.minReps}–${meth.maxReps} (stop at ±${meth.tol * 100}%) · startup ${meth.loads} loads${run.quick ? " · --quick" : ""}` }),
-      el("div", { text: `${m.hostname}: ${m.cpu}, ${m.threads} threads, governor ${m.governor ?? "?"}, no_turbo ${m.noTurbo ?? "—"}, boost ${m.boost ?? "—"}, taskset ${m.taskset ?? "none"} · ${m.kernel} · ${v.chrome} (${v.chromeBin}) · Node ${v.node}` }),
+      el("div", { text: `Results: results/cpu/${c.dir} · commit ${v.git ? v.git.commit.slice(0, 7) + (v.git.dirty ? " (dirty)" : "") : "?"} · N=${sizes} × seed ${seeds} · reps ${meth.warmup} warm-up + ${meth.minReps}–${meth.maxReps} (stop at ±${meth.tol * 100}%) · startup ${meth.loads} loads${run.quick ? " · --quick" : ""}` }),
+      el("div", { text: `${m.hostname}: ${m.cpu}, ${m.threads} threads, governor ${m.governor ?? "?"}, no_turbo ${m.noTurbo ?? "—"}, taskset ${(run.workers || []).filter(Boolean).join(" / ") || m.taskset || "none"} · ${m.kernel} · ${v.chrome} · Node ${v.node}` }),
       el("div", { text: fwv.join(" · ") })));
     return el("section", { class: "card" }, out);
   }
