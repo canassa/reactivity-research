@@ -58,6 +58,9 @@ const num = (w) => Number(w.id.slice(1));
 const mod = (w) => `W${num(w)}`;
 
 // Words beni reserves as identifiers (docs/design/language.md §2.4).
+// Top-level nodes of the big form's view per helper.
+const PART = 8;
+
 const RESERVED = new Set("if then else case of let in type alias pub opaque import as exposing foreign".split(" "));
 
 // ---------------------------------------------------------------------------------------------
@@ -386,17 +389,19 @@ function widgetModule(w, widgets) {
     const head = 8 + `if ${cx} then`.length <= 100 ? [`${IND}if ${cx} then`] : [`${IND}if`, `${IND}${IND}${cx}`, `${IND}then`];
     return [`${name} =`, ...head, `${IND}${IND}${ax}`, `${IND}else`, `${IND}${IND}${bx}`];
   });
-  // The big form's top-level sections are view helpers (`section1 model`, …), each with its own
-  // locals, as one would split a long view; the companion keeps its view whole.
+  // The big form is one flat list of field units, so its view is split into helpers (`part1 model`,
+  // …) of PART consecutive top-level nodes, each with its own locals and returned as a fragment
+  // (`<>…</>`): a helper's view has one root, and an input with a validation is two nodes (label,
+  // error). The companion keeps its view whole.
   const sections = [];
   const topNodes = w.kind === "form" ? w.view : null;
   const viewContent = topNodes
-    ? topNodes.map((n, i) => {
+    ? Array.from({ length: Math.ceil(topNodes.length / PART) }, (_, i) => {
       const c = { reads: new Set(), locals: [] };
-      const body = viewNode(n, w, c, 4);
+      const body = viewNodes(topNodes.slice(i * PART, (i + 1) * PART), w, c, 8);
       for (const r of c.reads) ctx.reads.add(r);
-      sections.push(`section${i + 1} : Model → Html Msg\nsection${i + 1} model =\n${pad([...localsOf(c), ...body], 4).join("\n")}`);
-      return [`{section${i + 1} model}`];
+      sections.push(`part${i + 1} : Model → Html Msg\npart${i + 1} model =\n${pad([...localsOf(c), "<>", ...body, "</>"], 4).join("\n")}`);
+      return [`{part${i + 1} model}`];
     }).flat()
     : viewNodes(w.view, w, ctx, 8);
   const viewBody = [
