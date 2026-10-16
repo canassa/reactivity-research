@@ -462,7 +462,9 @@ async function remoteBench(args, rest) {
   for (const name of scenarios) {
     const local = resultsDir(name, `-${host}`);
     const rel = path.relative(ROOT, local);
-    const argv = passed.map((a) => (a === which ? name : a));
+    // Only the first positional is the scenario: with `all all`, the framework `all` stays.
+    const at = passed.indexOf(which);
+    const argv = passed.map((a, i) => (i === at ? name : a));
     console.log(`remote ${host}: ./rr bench ${argv.join(" ")} --out ${rel}`);
     ssh([
       "set -euo pipefail",
