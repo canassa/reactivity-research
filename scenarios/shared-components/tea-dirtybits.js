@@ -114,9 +114,9 @@ export const kind = [
 export const kind = [
   [(c, s, msg) => [1, { on: s.on.map((on, i) => (i === msg.id ? !on : on)) }]],
   (parent, [, , , items], id) => {
-    const t = html( "<section data-role=widget-toggles><h2></h2><ul></ul><p data-role=count>", parent);
+    const [, , ul, count] = html( "<section data-role=widget-toggles><h2></h2><ul></ul><p data-role=count>", parent);
     const boxes = items.map((name, i) => {
-      const [, , box] = html("<li><label><input type=checkbox data-role=toggle>", t[2]);
+      const [, , box] = html("<li><label><input type=checkbox data-role=toggle>", ul);
       box.dataset.key = i;
       box.after(name);
       onCheck(box, id, 0, i);
@@ -124,7 +124,7 @@ export const kind = [
     });
     return (s) => {
       boxes.forEach((box, i) => prop(box, "checked", s.on[i]));
-      setText(t[3], s.on.filter(Boolean).length + " of " + items.length + " on");
+      setText(count, s.on.filter(Boolean).length + " of " + items.length + " on");
     };
   },
 ];
@@ -205,9 +205,9 @@ export const kind = [
 export const kind = [
   [(c, s, msg) => [1, { active: msg.id }]],
   (parent, [, , , tabs], id) => {
-    const t = html( "<section data-role=widget-tabs><h2></h2><div role=tablist></div><p data-role=tab-content role=tabpanel>", parent);
+    const [, , tablist, panel] = html( "<section data-role=widget-tabs><h2></h2><div role=tablist></div><p data-role=tab-content role=tabpanel>", parent);
     const buttons = tabs.map(([title], i) => {
-      const [button] = html("<button data-role=tab role=tab>", t[2]);
+      const [button] = html("<button data-role=tab role=tab>", tablist);
       button.dataset.key = i;
       button.textContent = title;
       onClick(button, id, 0, i);
@@ -215,7 +215,7 @@ export const kind = [
     });
     return (s) => {
       buttons.forEach((tab, i) => prop(tab, "ariaSelected", String(i === s.active)));
-      setText(t[3], tabs[s.active][1]);
+      setText(panel, tabs[s.active][1]);
     };
   },
 ];
@@ -336,10 +336,10 @@ export const kind = [
 export const kind = [
   [(c, s, msg) => [1, { stars: msg.id }]],
   (parent, [, , , stars, labels], id) => {
-    const t = html( "<section data-role=widget-rating><h2></h2><div></div><p data-role=rating-label>", parent);
+    const [, , div, label] = html( "<section data-role=widget-rating><h2></h2><div></div><p data-role=rating-label>", parent);
     const buttons = [];
     for (let n = 1; n <= stars; n++) {
-      const [button] = html("<button data-role=star>", t[2]);
+      const [button] = html("<button data-role=star>", div);
       button.dataset.key = n;
       onClick(button, id, 0, n);
       buttons.push(button);
@@ -349,7 +349,7 @@ export const kind = [
         prop(button, "ariaPressed", String(i < s.stars));
         setText(button, i < s.stars ? "★" : "☆");
       });
-      setText(t[3], labels[s.stars]);
+      setText(label, labels[s.stars]);
     };
   },
 ];
