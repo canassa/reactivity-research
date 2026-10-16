@@ -22,18 +22,22 @@ factory per widget kind** that the app uses. The factory holds the kind's templa
 and its handlers. Here is the counter, as `scenarios/shared-components/digest.js` emits it:
 
 ```js
-const counter = (s, l, st, mn, mx, v0) => {
-  s.value = v0;                                    // initial state
+const counter = (l, st, mn, mx, v0) => {
+  let value = v0;                                  // the state: plain variables of the factory
   widget("counter", l, `<output data-role=value></output><button data-role=dec>-${st}</button>…`, [
-    () => s.value = Math.max(mn, s.value - st), // dec: the update arms, one per control,
-    () => s.value = Math.min(mx, s.value + st), // inc  in the template's document order
-    () => s.value = v0, // reset
-  ]);
-  text(1, () => s.value);                          // view: one binding per dynamic property,
-  bind(2, "disabled", () => s.value <= mn);        // on the template's element at that position
-  bind(3, "disabled", () => s.value >= mx);        // (0 is the heading)
+    () => value = Math.max(mn, value - st), // dec: the update arms, one per control,
+    () => value = Math.min(mx, value + st), // inc  in the template's document order
+    () => value = v0, // reset
+  ], (v) => ({ value } = v));                      // the setter external replacements use
+  text(1, () => value);                            // view: one binding per dynamic property,
+  bind(2, "disabled", () => value <= mn);          // on the template's element at that position
+  bind(3, "disabled", () => value >= mx);          // (0 is the heading)
 };
 ```
+
+**The state is the factory's own variables** (its parameters where it can be: tabs' `active`,
+panel's `open`), so the minifier gives every reference a one-letter name. The names of the
+fields appear once, in the setter `widget()` stores for external events (`S[id]`).
 
 **Handlers go to controls by position, and bindings name elements by position.** The compiler
 knows the template, so it writes the handlers in the order of the template's controls (its
@@ -87,7 +91,7 @@ factory creates lands in its own widget's list. A click on a counter runs the co
 bindings, whatever the size of the page. `run` is a plain `for…of` over the list, so a binding
 costs one call.
 
-Handlers that read form controls read the element (`s.on[i] = t.checked`, `s.text = t.value`),
+Handlers that read form controls read the element (`on[i] = t.checked`, `str = t.value`),
 so they are idempotent. That matters because a checkbox fires both `click` and `input`.
 
 **The last written value is cached, not compared with the DOM.** An input the user is typing
@@ -104,17 +108,17 @@ from the item template; the item's bindings name its elements by position, and i
 handlers of its controls, which close over `r`:
 
 ```js
-list(3, () => s.items, `<input type=checkbox data-role=toggle><span></span><button data-role=remove>${rm}</button>`, (r) => (
+list(3, () => items, `<input type=checkbox data-role=toggle><span></span><button data-role=remove>${rm}</button>`, (r) => (
   bind(0, "checked", () => r.i.done),
   text(1, () => r.i.text),
   [
     (t) => r.i.done = t.checked, // toggle
-    () => s.items = s.items.filter((i) => i != r.i), // remove
+    () => items = items.filter((i) => i != r.i), // remove
   ]
 ));
 ```
 
-`r.i` is the very object in `s.items` (state is mutated in place, and every event and external
+`r.i` is the very object in `items` (state is mutated in place, and every event and external
 replacement is followed by a digest that refreshes `r.i`), so an item handler needs no id
 lookup.
 
@@ -138,15 +142,17 @@ src = src.map((k) => (k = "w" + (id.slice(1) - k), W[k].push(...w), E[k]));   //
 ### External events
 
 `receive` is app code, and it changes state in place. The adapter only forwards `dispatch` to
-it. Each branch digests only the widgets the event names (`up(k)` runs widget `k`'s list), and
-every clock registers its tick function in `T`, so a tick never visits the rest of the page:
+it. Each branch replaces state through the widget's setter (`S[k]`) and digests only the
+widgets the event names (`run(W[k])` runs widget `k`'s list), and every clock registers its
+tick function in `T`, so a tick never visits the rest of the page. A feed keeps its entries on
+a record its factory returns (`E[k]`), which `notify` pushes into:
 
 ```js
 const receive = (m) => {
-  if (m.type == "serverSet") Object.assign(S[m.widget], m.state), up(m.widget);
-  else if (m.type == "snapshot") for (const k in m.state.widgets) Object.assign(S[k], m.state.widgets[k]), up(k);
-  else if (m.type == "tick") for (const t of T) t();                     // only with a clock
-  else if (m.type == "notify") S[m.widget].entries.push(m.entry), up(m.widget);   // only with a feed
+  if (m.type == "serverSet") S[m.widget](structuredClone(m.state)), run(W[m.widget]);
+  else if (m.type == "snapshot") { const w = structuredClone(m.state.widgets); for (const k in w) S[k](w[k]), run(W[k]); }
+  else if (m.type == "tick") for (const t of T) t();                                 // only with a clock
+  else if (m.type == "notify") E[m.widget].entries.push(m.entry), run(W[m.widget]);  // only with a feed
 };
 
 // in the clock factory
@@ -216,6 +222,50 @@ sources are distances back. Brotli totals, `runs.json` sizes (1 to 256) and seed
   2.5× → 2.1× (unique). Because the cheap actions got cheaper, the tick's share grew at some
   sizes and seeds (`./rr check` unique-components n=64 seed 2: 4.3× → 5.1×, under the 8× limit).
 
+### State in variables, distances, defaults (third pass)
+
+A third pass changed how the compiled code stores state and names things, not the strategy:
+- **State lives in plain variables.** On shared-components a kind's state is its factory's
+  variables. On unique-components a field only its widget uses is a local of the widget's
+  function, and a field another widget reads is a module variable, so the reader's binding
+  reads it directly. The minifier shortens every reference. External replacements go through a
+  setter each widget writes (`(v) => ({ sheets: $sheets, files: w1$files } = v)`), which holds
+  the field names once, where the state literal held them before; feed lists stay on a record,
+  because `notify` pushes into them by name.
+- **unique-components bindings name their element by distance from the previous binding's**
+  (`text(3, …)`, then `text(4, …)` for the element 4 further on). Bindings are made in document
+  order, so the numbers are smaller and repeat more (half of them are 1).
+- **unique-components readers name their sources by distance back** (`dep(2, 5)`), as summary
+  sources already were on shared-components.
+- **unique-components property bindings default to `value`** (`bind(1, () => $venue)`), the
+  number check reuses the handler's parameter, and a one-statement click handler is that
+  statement, not a block in a block.
+
+Brotli totals, adapter excluded, `runs.json` sizes (1 to 256) and seeds (1 to 3), medians:
+
+| | N=1 | N=16 | N=64 | N=256 | fit, all sizes | fit, N ≥ 16 |
+|---|---|---|---|---|---|---|
+| shared-components, before | 1,059 B | 3,196 B | 4,424 B | 7,648 B | 2,105 + 23.86 B/widget | 3,097 + 18.27 B/widget |
+| shared-components, after | **1,053 B** | **3,154 B** | **4,399 B** | **7,634 B** | **2,088 + 23.78** | **3,062 + 18.29** |
+| unique-components, before | 1,438 B | 5,282 B | 13,807 B | 41,281 B | 2,458 + 156.6 B/widget | 3,835 + 148.8 B/widget |
+| unique-components, after | **1,420 B** | **5,068 B** | **13,029 B** | **38,790 B** | **2,400 + 146.7** | **3,680 + 139.5** |
+
+Every size's median is lower on both scenarios (sizes 1 to 256). Calls (`./rr work`, seed 1,
+sizes 16 to 256), record by record: none higher; 12,059 → 12,054 in total (shared-components),
+19,977 → 19,967 (unique-components). A setter call replaces the `up(k)` call each external
+event made before, so the counts stay level.
+
+- **Field names that a widget repeats cost bytes even under brotli,** the lesson of the second
+  pass again: `s.sheets` four times in a widget cost about 2 to 3 bytes per repeat. In variables
+  they become one-letter names. The gain is smaller than an offline renaming suggested (−3,100 B
+  at N=256), because a read field must stay reachable by its readers (a module variable gets a
+  two-letter name) and the setter's structure costs a few bytes per widget.
+- **Distances beat positions:** absolute positions were about 9 B per widget on
+  unique-components (−2,357 B at N=256 when all were zeroed offline). Distances took −1,300 B of
+  that.
+- **On shared-components the state lived in per-kind code,** so variables shrink the baseline
+  (−35 B from N=16) and leave the slope at the rows' data floor.
+
 ## Locality
 
 `./rr check` holds prototypes to a locality rule: the calls one local action costs may grow at
@@ -276,12 +326,32 @@ marked):
 | Constant-fold `cl(s.x + -2, …)` to `cl(s.x - 2, …)` (unique) | ±0 (noise) | dropped |
 | Drop optional closing tags (`</p>`, `</li>`, `</option>`) (unique) | −200 B at N=256, about −0.8 B/widget (offline) | not adopted, as on shared-components: a minifier's choice no compiler of this kind makes by default |
 
+Third pass (`runs.json` sizes and seeds, or offline on the minified N=256 seed 1 bundle where
+marked):
+
+| Idea | Effect | Verdict |
+|---|---|---|
+| State as variables, read fields as module variables, a setter per widget (unique) | −1,330 B at N=256, −64 B at N=16 | kept |
+| The same, read fields on a record (`O.w1.files`) instead of module variables (unique) | −300 B at N=256 | replaced by module variables: a record keeps the read fields' names in every reference |
+| Getters for read fields (`get files() { … }`) | not built | dropped: a getter is a call per read per digest, which the call-count rule forbids |
+| State as factory variables (shared) | −13 B at N=1, −33 B at N=16 | kept |
+| The same, the feed record in a separate map `O` (shared) | +4 B at N=1 | replaced by returning the record as the feed's `E` entry |
+| Bindings by distance from the previous one (unique) | −1,320 B at N=256, −61 B at N=16 | kept |
+| Readers' sources as distances back (unique) | −78 B at N=256 | kept |
+| `bind` defaults to `value`, the property last (unique) | −87 B at N=256, ±4 B below N=16 | kept |
+| The same on shared-components | ±15 B, mixed by size | dropped: noise |
+| Number check on the handler's parameter, no block in a block (unique) | −93 B at N=256, −33 B at N=16 | kept |
+| Separate `val`, `chk`, `dis` binding helpers (unique) | −150 B at N=256, +4 B at N=1 and N=8 | replaced by the default property, which needs no helper |
+| Delta 1 as a default argument (unique) | −31 B at N=256 at best (offline) | dropped: brotli already codes `(1,()=>` as a copy |
+| The item role from the field name in the runtime (`role + "Item"`) (unique) | +8 B at N=16, −58 B at N=128 | dropped: noise |
+| The heading written by the runtime (`"<h2>" + …`) (unique) | +3 B at N=256 (offline) | dropped |
+
 ## Honest limits
 
 - **An event re-runs all of its widget's bindings,** with no memoization: about five, plus a
   list's items and the summaries that read the widget. That is the same granularity as
   tea-local's per-instance patch. It would grow with big components, not with the page.
-- **A widget can only change its own state.** A handler mutates its own `s`, and only the
+- **A widget can only change its own state.** A handler mutates its own variables, and only the
   digest of that widget (and its readers) follows. A kind whose handler wrote to another widget
   would need the compiler to digest that widget too; this scenario has none.
 - **Templates are HTML strings with compile-time constants spliced in.** The emitter escapes
@@ -291,8 +361,11 @@ marked):
 - **Some assumptions are checked at build time, not handled.** The emitter asserts that widget
   ids are `w1…wN` in order and that initial list ids are 1…k. Lists are keyed by an `id` field.
   A different spec would need explicit ids in the rows: a few bytes per widget.
-- **External replacements merge with `Object.assign`.** This assumes `serverSet` and
-  `snapshot` send a widget's whole state, as the scenario specifies.
+- **External replacements assign every field through the widget's setter.** This assumes
+  `serverSet` and `snapshot` send a widget's whole state, as the scenario specifies.
+- **unique-components keeps a read field in a module variable,** which works because every
+  widget there is used once. A widget used twice would need its read fields on a per-instance
+  record, as before.
 - **Disposal relies on detaching the dashboard element:** its listeners are not reachable once
   it is gone, which the serve page confirms (0 listeners, 0 timers).
 - **ARIA attributes are written through reflected properties** (`ariaSelected`, `ariaPressed`,
@@ -304,20 +377,22 @@ marked):
 
 `scenarios/unique-components/digest.js` writes every widget as **its own function**, with no
 per-kind factories and no data rows (the shared-components size win came from rows, which the
-scenario's rule forbids). A widget function holds, as code: its state literal, its template (one
-static HTML string), its handlers (one arrow function per control, in the template's order, the
-ops compiled to statements), its bindings (derived expressions compiled to JavaScript) and, for
-a time-driven field, its tick function. Only initial values and texts are data.
+scenario's rule forbids). A widget function holds, as code: its state (local variables, and
+module variables for the fields other widgets read), its template (one static HTML string), its
+handlers (one arrow function per control, in the template's order, the ops compiled to
+statements), its setter, its bindings (derived expressions compiled to JavaScript) and, for a
+time-driven field, its tick function. Only initial values and texts are data.
 
 It uses `runtime-unique.js` instead of `runtime.js`: the same strategy (binding closures that
 write on change, a local digest, handlers and bindings by position), but it knows nothing about
-widget kinds. `widget(html, s, h)` builds the section, hands `h` to its controls in document
-order, and makes its elements the ones bindings refer to by position (`text(3, …)`).
+widget kinds. `widget(html, h, set, o)` builds the section, hands `h` to its controls in
+document order, keeps the setter (and a feed's record `o`), and makes its elements the ones
+bindings refer to, each by its distance from the previous binding's element (`text(3, …)`).
 Differences from `runtime.js`:
 - the delegated listener finds the widget by `data-role=widget`, because a conditional section
   may itself be a `<section>`;
 - a list item is `<li data-key data-role>` (the item role is `{field}Item`);
-- a reader widget copies its bindings into each source's list (`dep`, a compile-time fact), so
-  a source's change digests the readers too, and nothing else;
+- a reader widget copies its bindings into each source's list (`dep`, a compile-time fact, the
+  sources as distances back), so a source's change digests the readers too, and nothing else;
 - external events deep-copy what they receive (`structuredClone`), because handlers mutate
   the widget's lists in place and must not alter the sender's data.
