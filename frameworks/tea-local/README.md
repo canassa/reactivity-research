@@ -379,6 +379,30 @@ and modals mount and unmount. It adds `template/routed.js` (opt-in, counted as r
 - **Bytes** (brotli, 3 seeds): N=1 about 2.2 kB, 16 about 9.4 kB, 64 about 26.7 kB, 256 about
   77.8 kB. Fit 4364 B + 295.9 B per page (R2 0.991). Runtime 923 B, HTML about 142 B.
 
+### routed-app: batched events, copies and attribution
+
+- **Slot keys are counters, not values.** Several dispatches or clicks may run before the flush, and
+  a slot only sees the model then. So the shell counts route changes (`gen`), a page counts tab
+  changes (`tk`) and modal opens (`mid`), and the slot's key is that counter: a route left and
+  returned to, a tab A to B to A, a modal closed and opened, all remount with fresh state, as the
+  reference does.
+- **`pagePush` follows the model.** It is tested against the shell's route at message time. The
+  page already mounted for that model gets the item; a page still to mount (a `deepLink` in the
+  same task) finds it in the shell's `pushes`, which its factory prepends to its feed and which a
+  route change empties.
+- **Dispatched data is copied** (`notify` and `pagePush` items, the snapshot's global state field
+  by field), since the sender may reuse the objects.
+- **Attribution.** `src/frame.js` (the frame, `place`, `row`, `setProp`, `nextId`, the menu) is
+  counted as app, as `widgets/frame.js` is in the other tea-local scenarios; moving it to the
+  runtime would shrink routed-app's app bytes against theirs for no change in what ships.
+- **Commands** (`cmds`) are imperative sends, the only writes to another instance. A click with
+  both own and global ops runs the global sends first, then the own arm; the two touch disjoint
+  state, so the reference's op order cannot show.
+- **Global watchers are not split per field (a deliberate non-choice).** Every mounted reader re-runs
+  its whole patch on any global change, which is why `serverSet` of a field p1 does not read still
+  costs a constant 33 calls. Per-field watchers would be dependency tracking, which the strategy
+  does not have.
+
 ## derived-graph
 
 `scenarios/derived-graph/tea-local.js` runs the strategy on a planning sheet: N formulas over

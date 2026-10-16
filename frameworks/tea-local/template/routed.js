@@ -10,7 +10,8 @@ import { schedule } from "./runtime.js";
 // A component instance: its model lives in this closure. `sources` are the instances its patch
 // reads (it watches them, so a change to one schedules its patch). `send(tag, value)` first runs
 // the message's command, if it has one (`cmds[tag]`: a message to another instance, as Elm's
-// `Cmd`), then its reducer arm, if it has one (`update[tag]`), and schedules the patch.
+// `Cmd`, but an imperative send: it is the only way a component writes to another instance, and
+// it runs even when the component's own model does not change), then its reducer arm, if it has one (`update[tag]`), and schedules the patch.
 export function component(sources, model, update, patch, cmds) {
   let alive = 1;
   const watchers = new Set();

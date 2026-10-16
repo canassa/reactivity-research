@@ -407,7 +407,7 @@ function message(cx, m) {
         cmd: sends.length ? (sends.length === 1 ? `() => ${sends[0]}` : `() => {\n${sends.map((s) => "  " + s + ";").join("\n")}\n}`) : undefined,
       };
     }
-    case "open": return { arm: arrow("m", `{ ...m, modal: true }`) };
+    case "open": return { arm: arrow("m", `{ ...m, modal: true, mid: m.mid + 1 }`) };
     case "close": return { cmd: `() => self.send(${cx.pageOwn.close()})` };
     case "confirm": {
       const sends = m.ops.filter((op) => op[1][0] === "g").map((op) => globalSend(cx, op));
@@ -511,7 +511,7 @@ function compileComponent(env, kind, comp, parent) {
         names[i] = "Go " + c.slice(1);
       } else if (c[0] === "#") {
         const k = +c.slice(1);
-        arms[i] = arrow("m", `m.tab === ${k} ? m : { ...m, tab: ${k} }`);
+        arms[i] = arrow("m", `m.tab === ${k} ? m : { ...m, tab: ${k}, tk: m.tk + 1 }`);
         names[i] = "Tab" + (k + 1);
       }
     });
@@ -523,11 +523,11 @@ function compileComponent(env, kind, comp, parent) {
     const me = { comp, own, cx };
     if (comp.tabs) {
       cx.reads.m = true;
-      cx.patch.push(`panel(m.tab, (i) => tabs[i]());`);
+      cx.patch.push(`panel(m.tk, () => tabs[m.tab]());`);
     }
     if (comp.modal) {
       cx.reads.m = true;
-      cx.patch.push(`dialog(m.modal, modal);`);
+      cx.patch.push(`dialog(m.modal && m.mid, modal);`);
     }
     if (comp.tabs) {
       const tabs = comp.tabs.map((t) => indent(`() => {\n${indent(compileComponent(env, "tab", t, me))}\n},`));
@@ -553,8 +553,14 @@ function compileComponent(env, kind, comp, parent) {
   if (cx.reads.g) decl.push(`g = global.m`);
 
   const fields = Object.fromEntries(comp.fields.map((f) => [f.name, f.initial]));
-  if (kind === "page" && ("tab" in fields || "modal" in fields)) throw new Error(`${cx.id}: a field named tab or modal`);
-  const init = kind === "page" ? { ...fields, ...(comp.tabs ? { tab: 0 } : {}), ...(comp.modal ? { modal: false } : {}) } : fields;
+  if (kind === "page" && ["tab", "tk", "modal", "mid"].some((k) => k in fields)) throw new Error(`${cx.id}: a field named like the page's own keys`);
+  // `tk` and `mid` count tab changes and modal opens: a slot's key, so a change that comes back
+  // to where it was within one task (tab A to B to A, a modal closed and opened) still remounts.
+  const init = kind === "page" ? { ...fields, ...(comp.tabs ? { tab: 0, tk: 0 } : {}), ...(comp.modal ? { modal: false, mid: 0 } : {}) } : fields;
+  // A page with a feed also starts with the items pushed to it before it mounted (see receive).
+  const feedField = kind === "page" && comp.fields.find((f) => f.feed);
+  if (feedField) init[feedField.name] = "@@pushes@@";
+  const initCode = feedField ? lit(init).replace('"@@pushes@@"', `[...${lit(feedField.initial)}, ...shell.m.pushes]`) : lit(init);
 
   const root = kind === "page" ? `<main data-key=${comp.id} data-role=page><h1>${esc(comp.title)}</h1>`
     : kind === "tab" ? `<section data-key=${comp.id} data-role=panel>`
@@ -567,7 +573,7 @@ function compileComponent(env, kind, comp, parent) {
   if (decl.length) lines.push(`  const ${decl.join(", ")};`);
   lines.push(...cx.patch.map((l) => "  " + l), `};`);
   lines.push(`// type Msg = ${Array.from({ length: next + own.arms.length }, (_, i) => names[i] ?? `Msg${i}`).join(" | ")}`);
-  lines.push(`const ${cx.self} = component([${sources.join(", ")}], ${lit(init)}, ${table(arms, next + own.arms.length)}, patch${cmdKeys.length ? `, {\n${cmdKeys.map((k) => indent(`${k}: ${cmds[k]},`, 4)).join("\n")}\n  }` : ""});`);
+  lines.push(`const ${cx.self} = component([${sources.join(", ")}], ${initCode}, ${table(arms, next + own.arms.length)}, patch${cmdKeys.length ? `, {\n${cmdKeys.map((k) => indent(`${k}: ${cmds[k]},`, 4)).join("\n")}\n  }` : ""});`);
   lines.push(`const ${cx.el} = frame(${host}, ${q(trim(root + cx.html))}, ${cx.self});`);
   lines.push(...cx.create, ...body);
   if (timed) lines.push(`${cx.self}.every(${tickTag}, ${timed.every});`);
@@ -640,7 +646,10 @@ export function emit(spec) {
   const navArms = spec.pinned.map((id) => `    (m) => go(m, ${q(id)}),`);
   const shell = `
   // The shell. type Msg = ${spec.pinned.map((id) => "Go " + id).join(" | ")} | Menu | Go Route
-  const go = (m, route) => (m.route === route && !m.menu ? m : { route, menu: false });
+  // \`gen\` counts route changes: the page slot's key, so a route left and returned to within one
+  // task still remounts. \`pushes\` holds the items pagePush sent to the route before its page
+  // mounted; the page starts with them.
+  const go = (m, route) => (m.route === route ? (m.menu ? { ...m, menu: false } : m) : { route, menu: false, gen: m.gen + 1, pushes: [] });
   const patch = () => {
     const m = self.m, g = global.m;
 ${spec.pinned.map((id, i) => `    setProp(e[${3 + i}], m.route === ${q(id)} ? "page" : null, "ariaCurrent");`).join("\n")}
@@ -650,13 +659,14 @@ ${spec.pinned.map((id, i) => `    setProp(e[${3 + i}], m.route === ${q(id)} ? "p
     setText(e[${5 + K}], \`Signed in as \${g.user}\`);
     setText(e[${6 + K}], \`Cart: \${g.cart.length}\`);
     setText(e[${7 + K}], \`\${g.notices.length} notices\`);
-    route(m.route, (id) => pages[id.slice(1) - 1](app));
+    route(m.gen, () => pages[m.route.slice(1) - 1](app));
   };
   let menu;
-  const self = (shell = component([global], { route: ${q(spec.initialState.route)}, menu: false }, [
+  const self = (shell = component([global], { route: ${q(spec.initialState.route)}, menu: false, gen: 0, pushes: [] }, [
 ${navArms.join("\n")}
     (m) => ({ ...m, menu: !m.menu }),
     go,
+    (m, item) => ({ ...m, pushes: [...m.pushes, item] }),
   ], patch));
   const e = frame(app, "beforeend", ${q(shellHtml)}, self);
   const route = slot(self);`;
@@ -693,6 +703,7 @@ ${G.table().map((a) => indent(a + ",", 4)).join("\n")}
   ]);
 ${shell}
 
+  const item = ({ id, text }) => ({ id, text });
   return {
     // External events, routed to the instances they concern.
     receive(msg) {
@@ -704,21 +715,31 @@ ${shell}
           global.send(["user", "currency", "balance", "online"].indexOf(msg.field), msg.value);
           break;
         case "notify":
-          global.send(4, msg.item);
+          global.send(4, item(msg.item));
           break;
         case "pagePush":
-          // Only the page shown has a subscription.
-          if (route.key === msg.page) route.c.send(route.c.notify, msg.item);
+          // Whether the page is shown is the shell's model now, not the DOM: a deepLink sent
+          // earlier in the same task already counts. The page mounted for that model gets the
+          // item at once; one that is still to mount (its slot runs in the next flush) finds it
+          // in \`pushes\`.
+          if (self.m.route === msg.page) {
+            if (route.key === self.m.gen) route.c.send(route.c.notify, item(msg.item));
+            else self.send(${K + 2}, item(msg.item));
+          }
           break;
-        case "snapshot":
-          global.set(msg.global);
+        case "snapshot": {
+          // Copied: the message's objects are not the app's to keep.
+          const g = msg.global;
+          global.set({ user: g.user, cart: g.cart.map(item), notices: g.notices.map(item), currency: g.currency, balance: g.balance, online: g.online });
           break;
+        }
       }
     },
     dispose() {
       self.destroy();
       global.destroy();
       app.remove();
+      global = shell = undefined;
     },
   };
 }
