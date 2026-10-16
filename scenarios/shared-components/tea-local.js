@@ -5,18 +5,20 @@
 // - One module per widget kind: its message tags and its factory
 //   `kind(parent, heading, ...config, model)`, shared by every widget of that kind. Each widget
 //   is one call of its kind's factory with its own config as positional arguments (label,
-//   limits, items, rules as functions, formats, summary formula) and its initial model.
+//   limits, items, rules as functions, formats, summary formula) and its initial model (unless
+//   its kind's init is a constant, as the rating's: then the factory builds it).
 // - A factory declares one `patch` arrow first (the binding list, where every write is skipped
 //   when its value did not change; it runs after mount), then its instance with the kind's
 //   reducer as a table of arms by message tag, `(model, value) => …` each, then builds the
-//   widget's DOM once (createElement calls) and wires its DOM events to its instance's `send`.
+//   widget's DOM once (createElement calls) and wires its DOM events to its instance's `send`
+//   (`on` returns its node, so a control is built, wired and named in one expression).
 // - A message is sent as its constructor's tag and its argument, if any: `send(tag, value)`.
 // - `send` runs the kind's reducer on the instance's model (held in a closure) and schedules
 //   that instance's patch in a microtask. No global dispatch, dirty bits or dependency graph.
-// - The widget frame registers each instance by widget id, numbering widgets in page order
-//   (w1, w2, …); nothing else keeps it (a factory returns nothing).
-// - Summaries watch the instances they read (named by id): a change to one schedules the
-//   summary's patch, which recomputes its line from the sources' current models.
+// - The widget frame registers each instance in page order (an array, w1 first), numbering
+//   widgets w1, w2, …; nothing else keeps it (a factory returns nothing).
+// - Summaries watch the instances they read (by index in the registry): a change to one
+//   schedules the summary's patch, which recomputes its line from the sources' current models.
 // - External events: `serverSet` and `snapshot` replace instance models (`set`); `tick` and
 //   `notify` are messages to the clock and feed reducers, sent to the instances concerned.
 // - Keyed lists through the runtime's `list` (patch changed rows, forward placement pass on any
@@ -350,7 +352,8 @@ export function clock(parent, heading, startText, stopText, resetText, model) {
   summary: `import { element, setText } from "../runtime.js";
 import { widget, widgets } from "./widget.js";
 
-// No model and no messages: the line is derived from the instances it reads (by widget id).
+// No model and no messages: the line is derived from the instances it reads (by their index in
+// the registry: 2 for w3).
 // Each of them schedules this patch when its model changes.
 export function summary(parent, heading, text, sources) {
   const root = widget(parent, heading, "summary");

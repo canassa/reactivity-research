@@ -3,24 +3,27 @@
 // when every widget is its own component type.
 //
 // Style (recorded in every generated app's rr.json):
-// - One module per widget (`src/widgets/w3.js`): its own initial model, its own reducer (a
-//   table of arms, one per message, written out from the message's kind and ops) and its own
-//   factory `w3(parent)`. Nothing is shared between widgets except generic helpers: the
-//   runtime's DOM, instance and keyed-list helpers, and `widgets/frame.js` (the widget frame and
-//   registry, list rows, conditional placement, next item id, subscriptions).
-// - The factory declares one `patch` arrow first (the binding list, one write per binding,
+// - Each widget is its own block of the app's `dashboard(main)` function, in page order: its own
+//   initial model, its own reducer (a table of arms, one per message, written out from the
+//   message's kind and ops), its own template and binding list. It is what the widget's factory
+//   would be, inlined, since a unique widget's factory is called once (a compiler inlines a
+//   function it calls once): no name and no call per widget, and every block reuses the same
+//   local names. Nothing is shared between widgets except generic helpers: the runtime's DOM,
+//   instance and keyed-list helpers, and `widgets/frame.js` (the widget frame and registry,
+//   list rows, conditional placement, next item id, subscriptions).
+// - The block declares one `patch` arrow first (the binding list, one write per binding,
 //   derived texts compiled to template literals and operators, each skipped when its value did
 //   not change; it runs after mount), then its instance, then builds the widget's DOM once from
 //   its own static template (the markup as one string, its elements addressed by document order;
 //   a list row has a template of its own), its controls wired to messages for its own instance.
 // - The model lives in the instance's closure; `send` runs the widget's reducer and schedules
 //   that instance's patch in a microtask. No global dispatch, dirty bits or dependency graph.
-// - The widget frame registers each instance by widget id (`widgets`), numbering widgets in page
-//   order (w1, w2, …), for the external events that name a widget and for readers: a
-//   cross-widget read takes the earlier widget's instance from it, reads its model in `patch`
-//   and watches it, so its patch is scheduled when the source changes.
-// - External events: `serverSet` and `snapshot` replace instance models (`set`); `notify` is a
-//   method of widgets with a feed (a message to that instance). A widget with a time-driven int
+// - The widget frame registers each instance in page order (`widgets`, w1 first), numbering
+//   widgets w1, w2, …, for the external events that name a widget and for readers: a
+//   cross-widget read reads the earlier widget's model from it in `patch` (`widgets[2].m` for
+//   w3) and watches it, so its patch is scheduled when the source changes.
+// - External events: `serverSet` and `snapshot` replace instance models (`set`); `notify` sends
+//   a feed's Notify message (the instance keeps its tag) to that instance. A widget with a time-driven int
 //   is a subscription, as in Elm's `subscriptions`: while a gate is on it puts its `tick` into
 //   the shared `running` set (the app's `tick` event calls only those), and its reducer has its
 //   own Tick message. So `tick` costs the running widgets, not the number of widgets.
@@ -95,7 +98,7 @@ function textCode(parts, cx) {
 // wiring of its elements, and the patch lines (the binding list).
 //
 // The template's elements are addressed by their index in document order (`e[3]`): the
-// factory gets them from `widget()` as `[section, ...section.querySelectorAll("*")]`, so
+// block gets them from `widget()` as `[section, ...section.querySelectorAll("*")]`, so
 // `e[0]` is the section and `e[1]` its heading. A dynamic text is the only child of its
 // element; the template gives it a placeholder space, the text node `setText` writes.
 
@@ -513,11 +516,11 @@ ${timed ? "      running.clear();\n" : ""}      widgets.length = 0;
   return {
     files,
     style: {
-      components: "one module per widget: its initial model, its own reducer (a table of arms by message tag, written out from its ops) and its own factory; only generic helpers are shared",
+      components: "one block per widget in the app's dashboard function (its factory inlined, as it is called once): its initial model, its own reducer (a table of arms by message tag, written out from its ops), template and bindings; only generic helpers are shared",
       state: "each instance's model in its own closure; send(tag, value) runs the widget's reducer arm for that tag and schedules that instance's binding list",
       updates: "one patch function per instance, every DOM write skipped when unchanged; derived texts compiled to template literals; batched in a microtask",
-      crossWidget: "a reader takes the earlier widgets it reads from the frame's registry (widgets numbered w1, w2, … in page order), reads their models in patch and watches them",
-      externalEvents: "serverSet/snapshot replace instance models; notify is a message to a feed widget; tick calls the widgets of a shared running set, each subscribing while its gate is on",
+      crossWidget: "a reader reads the earlier widgets' models from the frame's registry (instances in page order, w1 first) in patch and watches them",
+      externalEvents: "serverSet/snapshot replace instance models; notify sends a feed widget its Notify message; tick calls the widgets of a shared running set, each subscribing while its gate is on",
       lists: "runtime keyed list by item.id: patch changed rows, one forward placement pass when order or membership changes",
       dom: "one static template per widget (trailing end tags left out), inserted with its section by insertAdjacentHTML, elements addressed by document order; one template per list row, cloned per new item, its elements an array",
       conditionals: "node in the template; while hidden, an empty text node holds its place",
