@@ -49,11 +49,11 @@ const KINDS = {
     args: "l, st, mn, mx, v0",
     body: `
   let value = v0;
-  widget("counter", l, \`<output data-role=value></output><button data-role=dec>-\${st}</button><button data-role=inc>+\${st}</button><button data-role=reset>Reset</button>\`, [
+  widget("counter", l, \`<output data-role=value></output><button data-role=dec>-\${st}</button><button data-role=inc>+\${st}</button><button data-role=reset>Reset</button>\`, (v) => ({ value } = v),
     () => value = Math.max(mn, value - st), // dec
     () => value = Math.min(mx, value + st), // inc
     () => value = v0, // reset
-  ], (v) => ({ value } = v));
+  );
   text(1, () => value);
   bind(2, "disabled", () => value <= mn);
   bind(3, "disabled", () => value >= mx);`,
@@ -64,9 +64,8 @@ const KINDS = {
   toggles: {
     args: "l, names, on",
     body: `
-  widget("toggles", l, \`<ul>\${names.map((n, i) => \`<li><label><input type=checkbox data-role=toggle data-key=\${i}>\${n}</label></li>\`).join("")}</ul><p data-role=count></p>\`,
-    names.map((n, i) => (t) => on[i] = t.checked), // toggle
-    (v) => ({ on } = v));
+  widget("toggles", l, \`<ul>\${names.map((n, i) => \`<li><label><input type=checkbox data-role=toggle data-key=\${i}>\${n}</label></li>\`).join("")}</ul><p data-role=count></p>\`, (v) => ({ on } = v),
+    ...names.map((n, i) => (t) => on[i] = t.checked)); // toggle
   // Each item is li, label, input: the i-th checkbox is element 4 + 3i.
   names.forEach((n, i) => bind(4 + 3 * i, "checked", () => on[i]));
   const count = () => on.filter(Boolean).length;
@@ -79,9 +78,9 @@ const KINDS = {
     args: "l, ph, re, msg, str",
     body: `
   re = RegExp(re);
-  widget("field", l, \`<input type=text data-role=input placeholder="\${ph}"><p data-role=error>\${msg}</p>\`, [
+  widget("field", l, \`<input type=text data-role=input placeholder="\${ph}"><p data-role=error>\${msg}</p>\`, (v) => ({ text: str } = v),
     (t) => str = t.value, // input
-  ], (v) => ({ text: str } = v));
+  );
   bind(1, "value", () => str);
   show(2, () => !re.test(str));`,
     row: (w, s) => [html(w.placeholder), lit(rulePattern(w.rule)), html(w.rule.message), lit(s.text)],
@@ -92,11 +91,11 @@ const KINDS = {
     body: `
   items = items.map(([text, done], i) => ({ id: i + 1, text, done }));
   let draft = "";
-  widget("todo", l, \`<input type=text data-role=draft placeholder="\${ph}"><button data-role=add>\${add}</button><ul></ul><p data-role=left></p>\`, [
+  widget("todo", l, \`<input type=text data-role=draft placeholder="\${ph}"><button data-role=add>\${add}</button><ul></ul><p data-role=left></p>\`, (v) => ({ items, draft } = v),
     (t) => draft = t.value, // draft
     // add: the trimmed draft goes in the parameter, which a click handler has no use for
     (text) => (text = draft.trim()) && (items.push({ id: Math.max(0, ...items.map((i) => i.id)) + 1, text, done: false }), draft = ""),
-  ], (v) => ({ items, draft } = v));
+  );
   bind(1, "value", () => draft);
   list(3, () => items, \`<input type=checkbox data-role=toggle><span></span><button data-role=remove>\${rm}</button>\`, (r) => (
     bind(0, "checked", () => r.i.done),
@@ -118,9 +117,8 @@ const KINDS = {
   tabs: {
     args: "l, titles, texts, active",
     body: `
-  widget("tabs", l, \`<div role=tablist>\${titles.map((t, i) => \`<button role=tab data-role=tab data-key=\${i}>\${t}</button>\`).join("")}</div><p role=tabpanel data-role=tab-content></p>\`,
-    titles.map((t, i) => () => active = i), // tab
-    (v) => ({ active } = v));
+  widget("tabs", l, \`<div role=tablist>\${titles.map((t, i) => \`<button role=tab data-role=tab data-key=\${i}>\${t}</button>\`).join("")}</div><p role=tabpanel data-role=tab-content></p>\`, (v) => ({ active } = v),
+    ...titles.map((t, i) => () => active = i)); // tab
   titles.forEach((t, i) => bind(2 + i, "ariaSelected", () => i == active));
   text(2 + titles.length, () => texts[active]);`,
     row: (w, s) => [arr(w.tabs.map((t) => t.title), html), arr(w.tabs.map((t) => t.content)), lit(s.active)],
@@ -129,9 +127,9 @@ const KINDS = {
   panel: {
     args: "l, sh, hi, body, open",
     body: `
-  widget("panel", l, \`<button data-role=toggle></button><p data-role=body>\${body}</p>\`, [
+  widget("panel", l, \`<button data-role=toggle></button><p data-role=body>\${body}</p>\`, (v) => ({ open } = v),
     () => open = !open, // toggle
-  ], (v) => ({ open } = v));
+  );
   bind(1, "ariaExpanded", () => !!open);
   text(1, () => (open ? hi : sh));
   show(2, () => open);`,
@@ -141,10 +139,10 @@ const KINDS = {
   choice: {
     args: "l, values, labels, xf, ph, option, extra",
     body: `
-  widget("choice", l, \`<select data-role=select>\${values.map((v, i) => \`<option value="\${v}">\${labels[i]}</option>\`).join("")}</select><input type=text data-role=extra placeholder="\${ph}">\`, [
+  widget("choice", l, \`<select data-role=select>\${values.map((v, i) => \`<option value="\${v}">\${labels[i]}</option>\`).join("")}</select><input type=text data-role=extra placeholder="\${ph}">\`, (v) => ({ option, extra } = v),
     (t) => option = t.value, // select
     (t) => extra = t.value, // extra
-  ], (v) => ({ option, extra } = v));
+  );
   bind(1, "value", () => option);
   // The extra input comes after the select's options.
   const n = 2 + values.length;
@@ -157,9 +155,9 @@ const KINDS = {
   amount: {
     args: "l, d, pre, suf, value",
     body: `
-  widget("amount", l, "<input type=number data-role=input><output data-role=formatted></output>", [
+  widget("amount", l, "<input type=number data-role=input><output data-role=formatted></output>", (v) => ({ value } = v),
     (t) => t.value && (value = +t.value), // input
-  ], (v) => ({ value } = v));
+  );
   bind(1, "value", () => value);
   text(2, () => pre + value.toFixed(d) + suf);`,
     metric: `{ m: () => value, p: (n) => l + ": " + n }`,
@@ -174,9 +172,9 @@ const KINDS = {
     args: "l, ph, items, query",
     body: `
   items = items.map((text, i) => ({ id: i + 1, text }));
-  widget("filter", l, \`<input type=text data-role=query placeholder="\${ph}"><ul></ul><p data-role=matches></p>\`, [
+  widget("filter", l, \`<input type=text data-role=query placeholder="\${ph}"><ul></ul><p data-role=matches></p>\`, (v) => ({ query } = v),
     (t) => query = t.value, // query
-  ], (v) => ({ query } = v));
+  );
   bind(1, "value", () => query);
   const shown = () => items.filter((i) => i.text.toLowerCase().includes(query.toLowerCase()));
   // The items are constants: their text is written once.
@@ -193,9 +191,8 @@ const KINDS = {
     args: "l, labels, n",
     body: `
   const stars = labels.slice(1);
-  widget("rating", l, \`<div>\${stars.map((_, i) => \`<button data-role=star data-key=\${i + 1}></button>\`).join("")}</div><p data-role=rating-label></p>\`,
-    stars.map((_, i) => () => n = i + 1), // star
-    (v) => ({ stars: n } = v));
+  widget("rating", l, \`<div>\${stars.map((_, i) => \`<button data-role=star data-key=\${i + 1}></button>\`).join("")}</div><p data-role=rating-label></p>\`, (v) => ({ stars: n } = v),
+    ...stars.map((_, i) => () => n = i + 1)); // star
   stars.forEach((_, i) => {
     bind(2 + i, "ariaPressed", () => i < n);
     text(2 + i, () => (i < n ? "★" : "☆"));
@@ -213,7 +210,7 @@ const KINDS = {
     body: `
   // \`notify\` pushes into the entries: they stay on a record (\`e\`), which the factory returns (E).
   const s = { e: entries.map((text, i) => ({ id: i + 1, text })) };
-  widget("feed", l, \`<ul></ul><p data-role=empty>\${empty}</p>\`, [], (v) => ({ entries: s.e } = v));
+  widget("feed", l, \`<ul></ul><p data-role=empty>\${empty}</p>\`, (v) => ({ entries: s.e } = v));
   list(1, () => s.e, \`<span></span><button data-role=dismiss>\${dismiss}</button>\`, (r) => (
     text(0, () => r.i.text),
     [() => s.e = s.e.filter((e) => e != r.i)] // dismiss
@@ -230,11 +227,11 @@ const KINDS = {
   clock: {
     args: "l, a, b, c, seconds, running",
     body: `
-  const w = widget("clock", l, \`<output data-role=time></output><button data-role=start>\${a}</button><button data-role=stop>\${b}</button><button data-role=reset>\${c}</button>\`, [
+  const w = widget("clock", l, \`<output data-role=time></output><button data-role=start>\${a}</button><button data-role=stop>\${b}</button><button data-role=reset>\${c}</button>\`, (v) => ({ seconds, running } = v),
     () => running = true, // start
     () => running = false, // stop
     () => (seconds = 0, running = false), // reset
-  ], (v) => ({ seconds, running } = v));
+  );
   text(1, () => Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0"));
   bind(2, "disabled", () => running);
   bind(3, "disabled", () => !running);

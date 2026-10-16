@@ -79,10 +79,10 @@ export const list = (i, items, html, make, p = N[i], map = new Map(), w = B) =>
 // The id of the widget being created.
 export let id;
 
-// Create the widget's section: its heading and `html`, with `h`, the handlers of its controls
-// in document order, and `set`, the setter of its whole state. Returns the widget's binding
+// Create the widget's section: its heading and `html`, with `set`, the setter of its whole
+// state, and `h`, the handlers of its controls in document order. Returns the widget's binding
 // list, which the bindings created next fill.
-export const widget = (kind, label, html, h, set) => {
+export const widget = (kind, label, html, set, ...h) => {
   const x = el("section", "<h2></h2>" + html);
   x.firstChild.textContent = label;
   x.dataset.key = id;
