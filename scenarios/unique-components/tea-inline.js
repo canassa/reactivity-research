@@ -165,7 +165,6 @@ function widgetFile(w, reads) {
     const args = [];
     for (const f of new Set(fields)) {
       if (groupFields.has(f)) args.push("on" + cap(f));
-      if (reads[w.id]?.has(f)) args.push(`R[widget].${f}`);
     }
     return args.length ? [`schedule(${args.join(", ")});`] : [];
   };
@@ -399,6 +398,8 @@ function widgetFile(w, reads) {
   const namedLines = bindings.filter((b) => b.name && !/^ls\d+$/.test(b.name)).map((b) => `const ${b.name} = ${b.code};`);
   const groups = new Map();
   for (const b of bindings) for (const f of b.own) groups.set(f, [...(groups.get(f) || []), b.name || b.code]);
+  // A field other widgets read: its group also holds their bindings, registered at mount.
+  for (const f of w.fields) if (reads[w.id]?.has(f.name)) groups.set(f.name, [...(groups.get(f.name) || []), `R[widget].${f.name}`]);
   groupFields = new Set(groups.keys());
   const groupLines = [...groups].flatMap(([f, items]) => {
     const flat = `const on${cap(f)} = [${items.join(", ")}];`;
@@ -430,8 +431,6 @@ function widgetFile(w, reads) {
 
   const handlerLines = actions.map((a) => a());
   const readIds = [...crossIds];
-  const own = Object.keys(reads[w.id] ? Object.fromEntries([...reads[w.id]].map((f) => [f, 1])) : {});
-  const watched = own.map((f) => `R[widget].${f}`);
 
   const all = [...groups.keys()].map((f) => "on" + cap(f)).concat(alone);
   const body = [
@@ -451,7 +450,7 @@ function widgetFile(w, reads) {
     ...handlerLines.flat(),
     "",
     "return {",
-    `  load: loader(s, [${[...all, ...watched].join(", ")}]),`,
+    `  load: loader(s, [${all.join(", ")}]),`,
     ...arms.flat().map((l) => "  " + l),
     "};",
   ];
