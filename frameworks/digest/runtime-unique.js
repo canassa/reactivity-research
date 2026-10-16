@@ -14,8 +14,7 @@ let B; // the bindings being collected: the widget's, or one list item's while i
 let E; // the elements of the template being created (a widget's, or one list item's), by position
 let D; // the dashboard element
 let P; // the position of the element the last binding was made on (bindings come in document order)
-let id; // the id of the widget being created: `w` and its number I in page order
-let I;
+let I; // the number of the widget being created, in page order (its id is `w` and I)
 
 // By widget id: the record of its fields that other code reads (O) and its bindings (W; the list
 // also carries the setter that replaces the widget's whole state, `W[k].s`). T: the time-driven
@@ -105,8 +104,7 @@ export const C = (m, ...a) => a.map((text, i) => ({ id: i + 1, text, done: !!(m 
 export const widget = (set, ...h) => {
   const x = el("section", h.pop());
   x.dataset.role = "widget";
-  x.dataset.key = id;
-  on(x, h, (W[id] = B = []));
+  on(x, h, (W[(x.dataset.key = "w" + ++I)] = B = []));
   D.append(x);
   (B.s = set)();
   E = x.querySelectorAll("*");
@@ -135,7 +133,7 @@ export const app = (defs, receive) => ({
     I = 0;
     D = el("div", "");
     D.dataset.role = "dashboard";
-    for (const f of defs) (id = "w" + ++I), f();
+    for (const f of defs) f();
     for (const k in W) run(W[k]);
     D.addEventListener("click", onEvent);
     D.addEventListener("input", onEvent);
