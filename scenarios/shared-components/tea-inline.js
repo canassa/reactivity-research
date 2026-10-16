@@ -8,10 +8,11 @@
 // - Every `case` arm of the kind's `update` becomes an action: a DOM event calls it directly,
 //   it writes the fields that arm changes and schedules exactly the bindings that read them,
 //   plus the summaries reading that widget (`readers[id]`) when it writes a field they read.
-// - The app is a table of rows (factory, id, initial state, label, the kind's arguments) in page
-//   order, the arguments passed positionally. The model is TEA's model, `{ [id]: state }`, made
-//   on each mount from a copy of every row's initial state (TEA's `init`, split per widget);
-//   each factory takes its slice by id and edits it in place (the compiler proved it unshared).
+// - The app is a table of rows (factory, initial state, label, the kind's arguments) in page
+//   order, the arguments passed positionally; row N is widget wN. The model is TEA's model,
+//   `{ [id]: state }`, made on each mount from a copy of every row's initial state (TEA's
+//   `init`, split per widget); each factory is handed its slice and edits it in place (the
+//   compiler proved it unshared); a summary is handed the model it reads.
 // - External events stay messages: `receive(msg)` is the part of `update` still reached by a
 //   message (serverSet, tick, notify, snapshot), routed to the widget's own arms.
 
@@ -67,8 +68,7 @@ const VALUES = {
 const FACTORIES = {
   counter: {
     uses: ["el", "text", "prop", "on", "schedule"],
-    code: `export function counter(parent, model, readers, id, heading, step, min, max, start) {
-  const s = model[id];
+    code: `export function counter(parent, s, readers, id, heading, step, min, max, start) {
   const root = section(parent, id, heading, "counter");
   const value = el("output", root, { "data-role": "value" });
   const decButton = el("button", root, { "data-role": "dec" }, "-" + step);
@@ -103,8 +103,7 @@ const FACTORIES = {
 
   toggles: {
     uses: ["el", "text", "prop", "on", "schedule"],
-    code: `export function toggles(parent, model, readers, id, heading, items) {
-  const s = model[id];
+    code: `export function toggles(parent, s, readers, id, heading, items) {
   const root = section(parent, id, heading, "toggles");
   const ul = el("ul", root);
   // One binding per checkbox, each reading its own \`on[i]\`.
@@ -130,8 +129,7 @@ const FACTORIES = {
 
   field: {
     uses: ["el", "prop", "on", "when", "schedule"],
-    code: `export function field(parent, model, readers, id, heading, placeholder, message, invalid) {
-  const s = model[id];
+    code: `export function field(parent, s, readers, id, heading, placeholder, message, invalid) {
   const root = section(parent, id, heading, "field");
   const input = el("input", root, { type: "text", "data-role": "input", placeholder: placeholder });
   const error = when(el("p", root, { "data-role": "error" }, message));
@@ -150,8 +148,7 @@ const FACTORIES = {
 
   todo: {
     uses: ["el", "text", "prop", "on", "list", "schedule"],
-    code: `export function todo(parent, model, readers, id, heading, placeholder, addText, removeText) {
-  const s = model[id];
+    code: `export function todo(parent, s, readers, id, heading, placeholder, addText, removeText) {
   const root = section(parent, id, heading, "todo");
   const draft = el("input", root, { type: "text", "data-role": "draft", placeholder: placeholder });
   const addButton = el("button", root, { "data-role": "add" }, addText);
@@ -207,8 +204,7 @@ const FACTORIES = {
 
   tabs: {
     uses: ["el", "text", "prop", "on", "schedule"],
-    code: `export function tabs(parent, model, readers, id, heading, tabs) {
-  const s = model[id];
+    code: `export function tabs(parent, s, readers, id, heading, tabs) {
   const root = section(parent, id, heading, "tabs");
   const bar = el("div", root, { role: "tablist" });
   // Every tab button and the content read \`active\`.
@@ -230,8 +226,7 @@ const FACTORIES = {
 
   panel: {
     uses: ["el", "text", "prop", "on", "when", "schedule"],
-    code: `export function panel(parent, model, readers, id, heading, showText, hideText, bodyText) {
-  const s = model[id];
+    code: `export function panel(parent, s, readers, id, heading, showText, hideText, bodyText) {
   const root = section(parent, id, heading, "panel");
   const button = el("button", root, { "data-role": "toggle" });
   const body = when(el("p", root, { "data-role": "body" }, bodyText));
@@ -256,8 +251,7 @@ const FACTORIES = {
 
   choice: {
     uses: ["el", "prop", "on", "when", "schedule"],
-    code: `export function choice(parent, model, readers, id, heading, options, extraFor, extraPlaceholder) {
-  const s = model[id];
+    code: `export function choice(parent, s, readers, id, heading, options, extraFor, extraPlaceholder) {
   const root = section(parent, id, heading, "choice");
   const select = el("select", root, { "data-role": "select" });
   for (const option of options) el("option", select, { value: option.value }, option.label);
@@ -289,8 +283,7 @@ const FACTORIES = {
 
   amount: {
     uses: ["el", "text", "prop", "on", "schedule"],
-    code: `export function amount(parent, model, readers, id, heading, format) {
-  const s = model[id];
+    code: `export function amount(parent, s, readers, id, heading, format) {
   const root = section(parent, id, heading, "amount");
   const input = el("input", root, { type: "number", "data-role": "input" });
   const output = el("output", root, { "data-role": "formatted" });
@@ -311,8 +304,7 @@ const FACTORIES = {
 
   filter: {
     uses: ["el", "text", "prop", "on", "list", "schedule"],
-    code: `export function filter(parent, model, readers, id, heading, pool, placeholder) {
-  const s = model[id];
+    code: `export function filter(parent, s, readers, id, heading, pool, placeholder) {
   const root = section(parent, id, heading, "filter");
   const query = el("input", root, { type: "text", "data-role": "query", placeholder: placeholder });
   const shown = () => {
@@ -340,8 +332,7 @@ const FACTORIES = {
 
   rating: {
     uses: ["el", "text", "prop", "on", "schedule"],
-    code: `export function rating(parent, model, readers, id, heading, stars, labels) {
-  const s = model[id];
+    code: `export function rating(parent, s, readers, id, heading, stars, labels) {
   const root = section(parent, id, heading, "rating");
   const row = el("div", root);
   // Every star and the label read \`stars\`.
@@ -367,8 +358,7 @@ const FACTORIES = {
 
   feed: {
     uses: ["el", "text", "on", "when", "list", "schedule"],
-    code: `export function feed(parent, model, readers, id, heading, emptyText, dismissText) {
-  const s = model[id];
+    code: `export function feed(parent, s, readers, id, heading, emptyText, dismissText) {
   const root = section(parent, id, heading, "feed");
   const entries = list(el("ul", root), () => s.entries, (entry) => {
     const node = el("li", null, { "data-key": entry.id });
@@ -403,8 +393,7 @@ const FACTORIES = {
     uses: ["el", "text", "prop", "on", "schedule"],
     code: `const formatTime = (seconds) => \`\${Math.floor(seconds / 60)}:\${String(seconds % 60).padStart(2, "0")}\`;
 
-export function clock(parent, model, readers, id, heading, startText, stopText, resetText) {
-  const s = model[id];
+export function clock(parent, s, readers, id, heading, startText, stopText, resetText) {
   const root = section(parent, id, heading, "clock");
   const time = el("output", root, { "data-role": "time" });
   const startButton = el("button", root, { "data-role": "start" }, startText);
@@ -557,7 +546,7 @@ function formatNumber(n) {
 
   const table = spec.widgets.map((w) => {
     const ind = "    ";
-    const config = [w.kind, str(w.id), w.kind === "summary" ? "null" : literal(spec.initialState.widgets[w.id], ind), str(w.label)];
+    const config = [w.kind, w.kind === "summary" ? "null" : literal(spec.initialState.widgets[w.id], ind), str(w.label)];
     for (const name of PARAMS[w.kind]) {
       if (FUNCTIONS[name]) config.push(FUNCTIONS[name](w));
       else if (VALUES[name]) config.push(literal(VALUES[name](w), ind));
@@ -593,9 +582,9 @@ ${clocks.map((w) => `        views.${w.id}.tick();`).join("\n")}
 
   return `${imports.join("\n")}
 ${consts.length ? "\n" + consts.join("\n\n") + "\n" : ""}
-// The page: every widget in order, as its kind's factory, its id, its initial state (its slice
-// of TEA's \`init\`, copied on every mount; none for a summary), its label, and the arguments of
-// its kind (limits, items, rules, formats, summary sources).
+// The page: every widget in order (row N is widget \`wN\`), as its kind's factory, its initial
+// state (its slice of TEA's \`init\`, copied on every mount; none for a summary), its label, and
+// the arguments of its kind (limits, items, rules, formats, summary sources).
 const WIDGETS = [
 ${table.join("\n")}
 ];
@@ -608,9 +597,11 @@ export function start(root) {
   const readers = ${literal(readers, "  ")};
   // Each widget's handle: \`load\` for serverSet and snapshot, and its external arms.
   const views = {};
-  for (const [factory, id, init, ...config] of WIDGETS) {
-    if (init) model[id] = structuredClone(init);
-    views[id] = factory(board, model, readers, id, ...config);
+  let n = 0;
+  for (const [factory, init, ...config] of WIDGETS) {
+    const id = "w" + ++n;
+    // A widget gets its state slice (a fresh copy of its initial state), a summary the model.
+    views[id] = factory(board, init ? (model[id] = structuredClone(init)) : model, readers, id, ...config);
   }
   flush();
 
@@ -632,6 +623,8 @@ ${cases.join("\n")}
 }
 
 export function emit(spec) {
+  // Widgets are numbered in page order (their ids are w1, w2, …): the app derives ids from rows.
+  if (spec.widgets.some((w, i) => w.id !== `w${i + 1}`)) throw new Error("widget ids are not w1, w2, … in order");
   const files = {
     ...templateFiles({ name: "dashboard", title: "Dashboard" }),
     "src/app.js": appFile(spec),
