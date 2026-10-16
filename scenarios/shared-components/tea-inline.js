@@ -303,8 +303,10 @@ const FACTORIES = {
 
   filter: {
     uses: ["el", "text", "prop", "on", "list", "schedule"],
-    code: `export function filter(parent, s, readers, id, heading, pool, placeholder) {
+    code: `export function filter(parent, s, readers, id, heading, texts, placeholder) {
   const root = section(parent, id, heading, "filter");
+  // The pool's items, numbered 1, 2, … in order.
+  const pool = texts.map((text, i) => ({ id: i + 1, text }));
   const query = el("input", root, { type: "text", "data-role": "query", placeholder: placeholder });
   const shown = () => {
     const q = s.query.toLowerCase();
@@ -480,7 +482,7 @@ function metricExpr(src, slice, itemsName) {
     case "todo": return `${slice}.items.filter((item) => !item.done).length`;
     case "rating": return `${slice}.stars`;
     case "clock": return `${slice}.seconds`;
-    case "filter": return `${itemsName}.filter((item) => item.text.toLowerCase().includes(${slice}.query.toLowerCase())).length`;
+    case "filter": return `${itemsName}.filter((text) => text.toLowerCase().includes(${slice}.query.toLowerCase())).length`;
     case "feed": return `${slice}.entries.length`;
   }
   throw new Error(`a summary cannot read ${src.kind}`);
@@ -498,6 +500,13 @@ const PHRASES = {
 };
 
 const byId = (spec, id) => spec.widgets.find((x) => x.id === id);
+
+// A filter's pool as its texts: its items are numbered 1, 2, … in order (checked), so the factory
+// numbers them again.
+function filterTexts(w) {
+  if (w.items.some((item, i) => item.id !== i + 1)) throw new Error(`${w.id}: filter items are not numbered 1, 2, … in order`);
+  return w.items.map((item) => item.text);
+}
 const itemsName = (w) => `${camelCase(w.label)}Items`;
 
 // The text function of a summary, as source, indented by `indent`.
@@ -542,7 +551,7 @@ function appFile(spec) {
   const readFilters = spec.widgets.filter((w) => read.has(w.id) && w.kind === "filter");
   const needsFormat = summaries.some((w) => w.sources.some((id) => byId(spec, id).kind === "amount"));
 
-  const consts = readFilters.map((w) => `const ${itemsName(w)} = ${literal(w.items)};`);
+  const consts = readFilters.map((w) => `const ${itemsName(w)} = ${literal(filterTexts(w))};`);
   if (needsFormat) {
     consts.push(`// Round to at most two decimals for display.
 function formatNumber(n) {
@@ -556,7 +565,7 @@ function formatNumber(n) {
     for (const name of PARAMS[w.kind]) {
       if (FUNCTIONS[name]) config.push(FUNCTIONS[name](w));
       else if (VALUES[name]) config.push(literal(VALUES[name](w), ind));
-      else if (w.kind === "filter" && name === "items" && read.has(w.id)) config.push(itemsName(w));
+      else if (w.kind === "filter" && name === "items") config.push(read.has(w.id) ? itemsName(w) : literal(filterTexts(w), ind));
       else config.push(literal(w[name], ind));
     }
     if (w.kind === "summary") config.push(literal(w.sources.map((id) => Number(id.slice(1)))), summaryText(spec, w, ind));
