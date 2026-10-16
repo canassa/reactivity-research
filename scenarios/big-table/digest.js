@@ -35,7 +35,18 @@ import { templateFiles } from "../../frameworks/digest/framework.js";
 
 export const framework = "digest";
 
-export const params = {};
+export const params = {
+  rowDigest: {
+    default: "changed",
+    choices: ["changed", "all"],
+    help: "what a table's digest does with its rows: re-check only the rows that are new or replaced (in-place edits digest their rows by hand), or every row, as the other digest runtimes do",
+  },
+};
+
+// The runtime names the generated code uses (the import list), collected as it is written; and
+// whether the table's digest re-checks every row.
+let USED, ALL;
+const use = (name) => (USED.add(name), name);
 
 const lit = (v) => JSON.stringify(v);
 const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" };
@@ -53,10 +64,10 @@ const MARK = {
 function format(c, v) {
   switch (c.format) {
     case "plain": return v;
-    case "grouped": return `g(${v})`;
-    case "unit": return `g(${v}) + ${lit(" " + c.unit)}`;
-    case "currency": return `cur(${lit(c.symbol)}, ${v})`;
-    case "percent": return `pct(${v})`;
+    case "grouped": return `${use("g")}(${v})`;
+    case "unit": return `${use("g")}(${v}) + ${lit(" " + c.unit)}`;
+    case "currency": return `${use("cur")}(${lit(c.symbol)}, ${v})`;
+    case "percent": return `${use("pct")}(${v})`;
   }
   throw new Error(`digest: unknown number format ${c.format}`);
 }
@@ -80,7 +91,7 @@ function expr(e) {
 
 // One table's function.
 function tableCode(t) {
-  const col = (name) => t.columns.find((c) => c.name === name);
+  const text = use("text"), col = (name) => t.columns.find((c) => c.name === name);
   const initial = { rows: [], selected: null, nextId: 1, rng: t.rng };
   const hasSelect = !!t.marker;
 
@@ -132,53 +143,53 @@ function tableCode(t) {
     switch (c.kind) {
       case "id":
         html.push("<td>");
-        binds.push(`text(${ref(td)}, () => r.i.id)`);
+        binds.push(`${text}(${ref(td)}, () => r.i.id)`);
         break;
       case "label": case "text": {
         if (c.select) {
           const a = n++;
           html.push(`<td><a data-role=${c.select}>`);
-          binds.push(`text(${ref(a)}, () => ${v})`);
-          hs.push(`() => sel(o, m, r)`);
+          binds.push(`${text}(${ref(a)}, () => ${v})`);
+          hs.push(ALL ? `() => o.selected = r.i.id` : `() => ${use("sel")}(o, m, r)`);
         } else {
           html.push("<td>");
-          binds.push(`text(${ref(td)}, () => ${v})`);
+          binds.push(`${text}(${ref(td)}, () => ${v})`);
         }
         break;
       }
       case "number":
         html.push("<td>");
-        binds.push(`text(${ref(td)}, () => ${format(c, v)})`);
+        binds.push(`${text}(${ref(td)}, () => ${format(c, v)})`);
         break;
       case "date":
         html.push("<td>");
-        binds.push(`text(${ref(td)}, () => ${DATE[c.format]}(${v}))`);
+        binds.push(`${text}(${ref(td)}, () => ${use(DATE[c.format])}(${v}))`);
         break;
       case "status": {
         const s = n++;
         html.push(`<td><${c.tag}>`);
-        binds.push(`text(${ref(s)}, () => ${v})`);
+        binds.push(`${text}(${ref(s)}, () => ${v})`);
         break;
       }
       case "flag": {
         const f = n++;
         html.push(`<td><input type=checkbox data-role=${c.toggle}>`);
-        binds.push(`bind(${ref(f)}, () => ${v}, "checked")`);
-        hs.push(`() => ${v} = X.checked`);
+        binds.push(`${use("bind")}(${ref(f)}, () => ${v}, "checked")`);
+        hs.push(`() => ${v} = ${use("X")}.checked`);
         break;
       }
       case "computed": {
         html.push("<td>");
         const e = c.expr;
         const code = e[0] === "if" ? expr(e) : e[0] === "len" ? expr(e) : format(c, expr(e));
-        binds.push(`text(${ref(td)}, () => ${code})`);
+        binds.push(`${text}(${ref(td)}, () => ${code})`);
         break;
       }
       case "remove": {
         n++;
         html.push(`<td><${c.element} data-role=${c.role}>${c.glyph ? `<span aria-hidden=true>${esc(c.text)}` : esc(c.text)}`);
         if (c.glyph) n++;
-        hs.push(`() => ((o.rows = o.rows.filter((x) => x != r.i)), go(b))`);
+        hs.push(ALL ? `() => o.rows = o.rows.filter((x) => x != r.i)` : `() => ((o.rows = o.rows.filter((x) => x != r.i)), ${use("go")}(b))`);
         break;
       }
       case "bump": {
@@ -198,11 +209,11 @@ function tableCode(t) {
       case "create": return `() => ((o.rows = []), mk(${op.count})), // ${op.name}`;
       case "append": return `() => mk(${op.count}), // ${op.name}`;
       case "clear": return `() => (o.rows = []), // ${op.name}`;
-      case "swap": return `() => swap(o.rows, ${op.i}, ${op.j}), // ${op.name}`;
+      case "swap": return `() => ${use("swap")}(o.rows, ${op.i}, ${op.j}), // ${op.name}`;
       case "sort": {
         const c = op.column === "id" ? { kind: "id", name: "id" } : col(op.column);
         const key = c.kind === "status" ? `${poolOf.get(c.name)}.indexOf(r.${c.name})` : c.kind === "flag" ? `+r.${c.name}` : `r.${c.name}`;
-        return `() => o.rows.sort(by((r) => ${key}, ${op.dir === "desc" ? -1 : 1})), // ${op.name}`;
+        return `() => o.rows.sort(${use("by")}((r) => ${key}, ${op.dir === "desc" ? -1 : 1})), // ${op.name}`;
       }
       case "removeChecked": return `() => (o.rows = o.rows.filter((r) => !r.${op.column})), // ${op.name}`;
       case "updateEvery": {
@@ -213,11 +224,11 @@ function tableCode(t) {
           case "label": case "text": e = `${v} += ${lit(op.suffix)}`; break;
           case "number": e = `${v} += ${op.delta}`; break;
           case "date": e = `${v} = ((${v} - 1 + ${op.days}) % 365) + 1`; break;
-          case "status": e = `${v} = nx(${v}, ${poolOf.get(c.name)})`; break;
+          case "status": e = `${v} = ${use("nx")}(${v}, ${poolOf.get(c.name)})`; break;
           case "flag": e = `${v} = !${v}`; break;
           default: throw new Error(`digest: updateEvery on a ${c.kind} column`);
         }
-        return `() => every(o, m, ${op.k}, (r) => ${e}), // ${op.name}`;
+        return `() => ${use("every")}(o, m, ${op.k}, (r) => ${e}), // ${op.name}`;
       }
     }
     throw new Error(`digest: unknown operation ${op.kind}`);
@@ -226,7 +237,7 @@ function tableCode(t) {
   const head = `<h2>${esc(t.title)}</h2><div>${t.ops.map((op) => `<button data-role=${op.name}>${esc(op.text)}`).join("")}</div><table>`
     + (t.thead ? `<thead><tr>${t.columns.map((c) => `<th>${esc(c.header)}`).join("")}` : "") + "<tbody>";
   const mark = hasSelect ? `, ${lit(MARK[t.marker.attr].prop)}, ${lit(t.marker.value)}, ${MARK[t.marker.attr].off}` : "";
-  const rowsCall = `rows(o, m, \`${tpl(html.join(""))}\`, (r) => (\n${[...binds, `[${hs.join(", ")}]`].map((b) => `    ${b}`).join(",\n")}\n  )${mark});`;
+  const rowsCall = `${use("rows")}(o, m, \`${tpl(html.join(""))}\`, (r) => (\n${[...binds, `[${hs.join(", ")}]`].map((b) => `    ${b}`).join(",\n")}\n  )${mark});`;
 
   const body = [
     `const o = { rows: [], selected: null, nextId: 1, rng: ${initial.rng} }, m = new Map();`,
@@ -234,33 +245,37 @@ function tableCode(t) {
     ...pools.map((p) => p),
     `const mk = (n) => {\n    while (n--) o.rows.push({ id: o.nextId++, ${cells.join(", ")} });\n  };`,
     ...(t.initialRows ? [`mk(${t.initialRows});`] : []),
-    `const b = table(o, m, \`${tpl(head)}\`,\n${toolbar.map((h) => `    ${h}`).join("\n")}\n  );`,
+    `const b = ${use("table")}(o, m, \`${tpl(head)}\`,\n${toolbar.map((h) => `    ${h}`).join("\n")}\n  );`,
     rowsCall,
   ];
   return `// ${t.id}\nconst ${t.id} = () => {\n${body.map((l) => "  " + l).join("\n")}\n};`;
 }
 
-function appFile(spec) {
+function appFile(spec, options) {
+  USED = new Set();
+  ALL = options.rowDigest === "all";
   spec.tables.forEach((t, i) => {
     if (t.id !== `t${i + 1}`) throw new Error(`digest expects sequential table ids, got ${t.id} at ${i}`);
     if (t.marker && !MARK[t.marker.attr]) throw new Error(`digest: unknown selection marker ${t.marker.attr}`);
   });
   const code = spec.tables.map(tableCode);
   const ids = spec.tables.map((t) => t.id).join(", ");
+  const upd = ALL ? "(r.i[m.column] = c.value)" : "((r.i[m.column] = c.value), go(r.b))";
   const receive = `const receive = (m, x = W[m.table], o = x?.o, r) => {
-  if (m.type == "serverUpdate") for (const c of m.changes) (r = x.m.get(c.id)) && ((r.i[m.column] = c.value), go(r.b));
-  else if (m.type == "serverDelete") {
+  if (m.type == "serverUpdate") {
+    for (const c of m.changes) (r = x.m.get(c.id)) && ${upd};${ALL ? "\n    go(x.b);" : ""}
+  } else if (m.type == "serverDelete") {
     o.rows = o.rows.filter((r) => !m.ids.includes(r.id));
     go(x.b);
   } else if (m.type == "serverRows") {
     o.rows = structuredClone(m.rows);
-    o.nextId = Math.max(o.nextId, ...m.rows.map((r) => r.id + 1));
+    o.nextId = m.rows.reduce((n, r) => Math.max(n, r.id + 1), o.nextId);
     go(x.b);
   } else for (const k in m.state.tables) Object.assign(W[k].o, structuredClone(m.state.tables[k])), go(W[k].b);
 };`;
-  const all = code.join("\n\n") + "\n\n" + receive;
-  const names = ["table", "rows", "bind", "text", "go", "sel", "every", "swap", "by", "nx", "g", "cur", "pct", "md", "dm", "nd", "W", "X"]
-    .filter((x) => new RegExp(`(^|[^\\w."])${x}\\b(?!:)`, "m").test(all.replace(/`[^`]*`/g, "``")));
+  use("W");
+  use("go");
+  const names = [...USED].sort();
   return `// Generated by scenarios/big-table/digest.js. Do not edit.
 import { app, ${names.join(", ")} } from "./runtime.js";
 
@@ -274,15 +289,34 @@ export default app([${ids}], receive);
 `;
 }
 
-export function emit(spec) {
+// rowDigest "all": the runtime as the other digest runtimes behave. The table's digest runs the
+// list of every row (not only the new and replaced ones), and a row control belongs to the
+// table's list (so it digests every row), which makes the by-hand row digests unnecessary: the
+// one in `every`, and the previous row's in `sel` (not used in this variant).
+const ALL_EDITS = [
+  ['proto = el("tr", html), y = 0) => {', 'proto = el("tr", html), y = 0, w = B) => {'],
+  ["if (r.i !== i) (r.i = i), go(r.b);", "(r.i = i), go(r.b);"],
+  ["on(r.n, make(r), B);", "on(r.n, make(r), w);"],
+  ["f(o.rows[i]), go(m.get(o.rows[i].id).b);", "f(o.rows[i]);"],
+];
+
+export function emit(spec, options = {}) {
+  const files = templateFiles({ name: "big-table", title: "Big table", runtime: "runtime-table.js" });
+  if (options.rowDigest === "all") {
+    for (const [from, to] of ALL_EDITS) {
+      if (!files["src/runtime.js"].includes(from)) throw new Error(`digest: runtime-table.js no longer contains: ${from}`);
+      files["src/runtime.js"] = files["src/runtime.js"].replace(from, () => to);
+    }
+  }
   return {
     files: {
-      ...templateFiles({ name: "big-table", title: "Big table", runtime: "runtime-table.js" }),
-      "src/app.js": appFile(spec),
+      ...files,
+      "src/app.js": appFile(spec, options),
     },
     style: {
       approach: "compiled dirty checking with one binding list per table (its rows' reconciler) and one per row; an event digests the list of the control it came from, so a row control costs the same at any number of rows and tables",
       components: "one function per table, written out in full from its description (state, pools, row builder, template, toolbar handlers, row template, row bindings, row controls' handlers); no column descriptors, no op tables, no interpreter",
+      rowDigest: `${options.rowDigest ?? "changed"}: ` + (options.rowDigest === "all" ? "the table digest runs every row list, and a row control belongs to the table list (as in the other digest runtimes), so no by-hand row digest exists" : "the table digest runs a row list only for a new or replaced row; every in-place edit (every k-th, serverUpdate, the previously selected row) digests its rows by hand"),
       lists: "a table's list holds the rows' reconciler; a row has its own list; no dependencies between lists (tables share nothing); the reconciler re-checks a row only when it is new or its object was replaced, in-place edits digest their rows themselves",
       state: "plain mutable object per table with the protocol's fields (rows, selected, nextId, rng); rows are plain objects edited in place; initial rows built at start-up by the table's own row builder; snapshots are deep-copied and assigned",
       templates: "one static HTML string per table (heading, toolbar, header) and one per row; end tags omitted where the next tag closes them; the row is cloned from a prototype; nodes are found by position, bindings by distance from the previous one",

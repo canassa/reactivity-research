@@ -152,6 +152,6 @@ export const app = (defs, receive) => ({
   // The listeners are on the page element, so removing it removes them.
   dispose() {
     D.remove();
-    B = E = T = W = D = null;
+    B = E = T = W = D = X = null;
   },
 });
