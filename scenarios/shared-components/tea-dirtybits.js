@@ -75,21 +75,8 @@ const METRIC_BIT = {
 // dirty bits and message tags (numbers, as Elm --optimize tags constructors; external events
 // keep their names) and exports `kind`, the pair [reducer, DOM factory].
 
-const WIDGET_FILE = `import { html } from "../runtime.js";
-
-// A widget's static markup (its <section>, its heading, then the kind's own elements), keyed and
-// labelled: every element, in document order.
-export function section(parent, id, label, markup) {
-  const t = html(markup, parent);
-  t[0].dataset.key = id;
-  t[1].textContent = label;
-  return t;
-}
-`;
-
 const KINDS = {
-  counter: `import { setText, prop, onClick } from "../runtime.js";
-import { section } from "./widget.js";
+  counter: `import { html, setText, prop, onClick } from "../runtime.js";
 
 // Dirty bits: value 1. Message tags: inc 0, dec 1, reset 2.
 
@@ -100,9 +87,9 @@ export const kind = [
     ([, , , step, min], s) => [1, { value: Math.max(min, s.value - step) }],
     ([, , , , , , start]) => [1, { value: start }],
   ],
-  (parent, [, , label, step, min, max], id) => {
-    const [, , value, dec, inc, reset] = section(parent, id, label,
-      "<section data-role=widget-counter><h2></h2><output data-role=value></output><button data-role=dec></button><button data-role=inc></button><button data-role=reset>Reset");
+  (parent, [, , , step, min, max], id) => {
+    const [, , value, dec, inc, reset] = html(
+      "<section data-role=widget-counter><h2></h2><output data-role=value></output><button data-role=dec></button><button data-role=inc></button><button data-role=reset>Reset", parent);
     dec.textContent = "-" + step;
     inc.textContent = "+" + step;
     onClick(dec, id, 1);
@@ -118,15 +105,14 @@ export const kind = [
 `,
 
   toggles: `import { html, setText, prop, onCheck } from "../runtime.js";
-import { section } from "./widget.js";
 
 // Dirty bits: on 1. Message tags: toggle 0 (id: the toggle's index).
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
   [(c, s, msg) => [1, { on: s.on.map((on, i) => (i === msg.id ? !on : on)) }]],
-  (parent, [, , label, items], id) => {
-    const t = section(parent, id, label, "<section data-role=widget-toggles><h2></h2><ul></ul><p data-role=count>");
+  (parent, [, , , items], id) => {
+    const t = html( "<section data-role=widget-toggles><h2></h2><ul></ul><p data-role=count>", parent);
     const boxes = items.map((name, i) => {
       const [, , box] = html("<li><label><input type=checkbox data-role=toggle>", t[2]);
       box.dataset.key = i;
@@ -142,16 +128,15 @@ export const kind = [
 ];
 `,
 
-  field: `import { prop, onInput, branch } from "../runtime.js";
-import { section } from "./widget.js";
+  field: `import { html, prop, onInput, branch } from "../runtime.js";
 
 // Dirty bits: text 1. Message tags: edit 0.
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
   [(c, s, msg) => [1, { text: msg.value }]],
-  (parent, [, , label, placeholder, valid, message], id) => {
-    const [, , input, p] = section(parent, id, label, "<section data-role=widget-field><h2></h2><input type=text data-role=input><p data-role=error>");
+  (parent, [, , , placeholder, valid, message], id) => {
+    const [, , input, p] = html( "<section data-role=widget-field><h2></h2><input type=text data-role=input><p data-role=error>", parent);
     input.placeholder = placeholder;
     p.textContent = message;
     onInput(input, id, 0);
@@ -165,7 +150,6 @@ export const kind = [
 `,
 
   todo: `import { html, setText, prop, onClick, onCheck, onInput, list } from "../runtime.js";
-import { section } from "./widget.js";
 
 // Dirty bits: items 1, draft 2. Message tags: editDraft 0, add 1, toggle 2, remove 3.
 
@@ -183,9 +167,9 @@ export const kind = [
     (c, s, msg) => [1, { ...s, items: s.items.map((item) => (item.id === msg.id ? { ...item, done: !item.done } : item)) }],
     (c, s, msg) => [1, { ...s, items: s.items.filter((item) => item.id !== msg.id) }],
   ],
-  (parent, [, , label, placeholder, addText, removeText], id) => {
-    const [, , draft, add, ul, left] = section(parent, id, label,
-      "<section data-role=widget-todo><h2></h2><input type=text data-role=draft><button data-role=add></button><ul></ul><p data-role=left>");
+  (parent, [, , , placeholder, addText, removeText], id) => {
+    const [, , draft, add, ul, left] = html(
+      "<section data-role=widget-todo><h2></h2><input type=text data-role=draft><button data-role=add></button><ul></ul><p data-role=left>", parent);
     draft.placeholder = placeholder;
     add.textContent = addText;
     onInput(draft, id, 0);
@@ -212,15 +196,14 @@ export const kind = [
 `,
 
   tabs: `import { html, setText, prop, onClick } from "../runtime.js";
-import { section } from "./widget.js";
 
 // Dirty bits: active 1. Message tags: select 0 (id: the tab's index).
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
   [(c, s, msg) => [1, { active: msg.id }]],
-  (parent, [, , label, tabs], id) => {
-    const t = section(parent, id, label, "<section data-role=widget-tabs><h2></h2><div role=tablist></div><p data-role=tab-content role=tabpanel>");
+  (parent, [, , , tabs], id) => {
+    const t = html( "<section data-role=widget-tabs><h2></h2><div role=tablist></div><p data-role=tab-content role=tabpanel>", parent);
     const buttons = tabs.map(([title], i) => {
       const [button] = html("<button data-role=tab role=tab>", t[2]);
       button.dataset.key = i;
@@ -236,16 +219,15 @@ export const kind = [
 ];
 `,
 
-  panel: `import { setText, prop, onClick, branch } from "../runtime.js";
-import { section } from "./widget.js";
+  panel: `import { html, setText, prop, onClick, branch } from "../runtime.js";
 
 // Dirty bits: open 1. Message tags: toggle 0.
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
   [(c, s) => [1, { open: !s.open }]],
-  (parent, [, , label, showText, hideText, body], id) => {
-    const [, , toggle, p] = section(parent, id, label, "<section data-role=widget-panel><h2></h2><button data-role=toggle></button><p data-role=body>");
+  (parent, [, , , showText, hideText, body], id) => {
+    const [, , toggle, p] = html( "<section data-role=widget-panel><h2></h2><button data-role=toggle></button><p data-role=body>", parent);
     p.textContent = body;
     onClick(toggle, id, 0);
     const shown = branch(p);
@@ -259,7 +241,6 @@ export const kind = [
 `,
 
   choice: `import { html, prop, onInput, branch } from "../runtime.js";
-import { section } from "./widget.js";
 
 // Dirty bits: option 1, extra 2. Message tags: choose 0, editExtra 1.
 
@@ -269,8 +250,8 @@ export const kind = [
     (c, s, msg) => [1, { ...s, option: msg.value }],
     (c, s, msg) => [2, { ...s, extra: msg.value }],
   ],
-  (parent, [, , label, options, extraFor, extraPlaceholder], id) => {
-    const [, , select, input] = section(parent, id, label, "<section data-role=widget-choice><h2></h2><select data-role=select></select><input type=text data-role=extra>");
+  (parent, [, , , options, extraFor, extraPlaceholder], id) => {
+    const [, , select, input] = html( "<section data-role=widget-choice><h2></h2><select data-role=select></select><input type=text data-role=extra>", parent);
     for (const [value, label] of options) {
       const [o] = html("<option>", select);
       o.value = value;
@@ -292,16 +273,15 @@ export const kind = [
 ];
 `,
 
-  amount: `import { send, setText, prop } from "../runtime.js";
-import { section } from "./widget.js";
+  amount: `import { html, send, setText, prop } from "../runtime.js";
 
 // Dirty bits: value 1. Message tags: set 0.
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
   [(c, s, msg) => [1, { value: msg.value }]],
-  (parent, [, , label, format], id) => {
-    const [, , input, formatted] = section(parent, id, label, "<section data-role=widget-amount><h2></h2><input type=number data-role=input><output data-role=formatted>");
+  (parent, [, , , format], id) => {
+    const [, , input, formatted] = html( "<section data-role=widget-amount><h2></h2><input type=number data-role=input><output data-role=formatted>", parent);
     // Only a valid number becomes a message; anything else stays in the input as typed.
     input.addEventListener("input", () => {
       const value = input.valueAsNumber;
@@ -316,7 +296,6 @@ export const kind = [
 `,
 
   filter: `import { html, setText, prop, onInput, list } from "../runtime.js";
-import { section } from "./widget.js";
 
 // Dirty bits: query 1. Message tags: edit 0.
 
@@ -329,8 +308,8 @@ export function matches(items, query) {
 // The kind: its reducer and its DOM factory.
 export const kind = [
   [(c, s, msg) => [1, { query: msg.value }]],
-  (parent, [, , label, items, placeholder], id) => {
-    const [, , input, ul, count] = section(parent, id, label, "<section data-role=widget-filter><h2></h2><input type=text data-role=query><ul></ul><p data-role=matches>");
+  (parent, [, , , items, placeholder], id) => {
+    const [, , input, ul, count] = html( "<section data-role=widget-filter><h2></h2><input type=text data-role=query><ul></ul><p data-role=matches>", parent);
     input.placeholder = placeholder;
     onInput(input, id, 0);
     const rows = list(ul, (item) => {
@@ -348,15 +327,14 @@ export const kind = [
 `,
 
   rating: `import { html, setText, prop, onClick } from "../runtime.js";
-import { section } from "./widget.js";
 
 // Dirty bits: stars 1. Message tags: rate 0 (id: the star's number).
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
   [(c, s, msg) => [1, { stars: msg.id }]],
-  (parent, [, , label, stars, labels], id) => {
-    const t = section(parent, id, label, "<section data-role=widget-rating><h2></h2><div></div><p data-role=rating-label>");
+  (parent, [, , , stars, labels], id) => {
+    const t = html( "<section data-role=widget-rating><h2></h2><div></div><p data-role=rating-label>", parent);
     const buttons = [];
     for (let n = 1; n <= stars; n++) {
       const [button] = html("<button data-role=star>", t[2]);
@@ -376,7 +354,6 @@ export const kind = [
 `,
 
   feed: `import { html, setText, onClick, branch, list } from "../runtime.js";
-import { section } from "./widget.js";
 
 // Dirty bits: entries 1. Message tags: dismiss 0; \`notify\` is an external event.
 
@@ -386,8 +363,8 @@ export const kind = [
     0: (c, s, msg) => [1, { entries: s.entries.filter((entry) => entry.id !== msg.id) }],
     notify: (c, s, msg) => [1, { entries: [...s.entries, msg.entry] }],
   },
-  (parent, [, , label, emptyText, dismissText], id) => {
-    const [, , ul, p] = section(parent, id, label, "<section data-role=widget-feed><h2></h2><ul></ul><p data-role=empty>");
+  (parent, [, , , emptyText, dismissText], id) => {
+    const [, , ul, p] = html( "<section data-role=widget-feed><h2></h2><ul></ul><p data-role=empty>", parent);
     p.textContent = emptyText;
     const entries = list(ul, (entry) => {
       const [li, label, dismiss] = html("<li><span></span><button data-role=dismiss>");
@@ -404,8 +381,7 @@ export const kind = [
 ];
 `,
 
-  clock: `import { setText, prop, onClick } from "../runtime.js";
-import { section } from "./widget.js";
+  clock: `import { html, setText, prop, onClick } from "../runtime.js";
 
 // Dirty bits: seconds 1, running 2. Message tags: start 0, stop 1, reset 2; \`tick\` is an
 // external event.
@@ -424,9 +400,9 @@ export const kind = [
     2: () => [3, { seconds: 0, running: false }],
     tick: (c, s) => s.running && [1, { ...s, seconds: s.seconds + 1 }],
   },
-  (parent, [, , label, startText, stopText, resetText], id) => {
-    const [, , time, start, stop, reset] = section(parent, id, label,
-      "<section data-role=widget-clock><h2></h2><output data-role=time></output><button data-role=start></button><button data-role=stop></button><button data-role=reset>");
+  (parent, [, , , startText, stopText, resetText], id) => {
+    const [, , time, start, stop, reset] = html(
+      "<section data-role=widget-clock><h2></h2><output data-role=time></output><button data-role=start></button><button data-role=stop></button><button data-role=reset>", parent);
     start.textContent = startText;
     stop.textContent = stopText;
     reset.textContent = resetText;
@@ -444,16 +420,15 @@ export const kind = [
 ];
 `,
 
-  summary: `import { setText } from "../runtime.js";
-import { section } from "./widget.js";
+  summary: `import { html, setText } from "../runtime.js";
 
 // The kind: no reducer, and its DOM factory. A summary has no state of its own:
 // \`text(widgets)\` derives its line from other widgets, and the app's patch calls it
 // again only when a field it reads is dirty.
 export const kind = [
   0,
-  (parent, [, , label, text], id) => {
-    const [, , line] = section(parent, id, label, "<section data-role=widget-summary><h2></h2><p data-role=summary>");
+  (parent, [, , , text], id) => {
+    const [, , line] = html( "<section data-role=widget-summary><h2></h2><p data-role=summary>", parent);
     return (widgets) => setText(line, text(widgets));
   },
 ];
@@ -633,6 +608,9 @@ export function view(root, model) {
   for (const id in WIDGETS) {
     const row = WIDGETS[id];
     (patches[id] = row[0][1](dash, row, id))(row[1] ? w[id] : w, -1);
+    // The kind's view appended the widget's section: key it and write its label into its heading.
+    dash.lastChild.dataset.key = id;
+    dash.lastChild.firstChild.textContent = row[2];
   }
   return (model, dirty) => {
     const w = model.widgets;
@@ -647,7 +625,6 @@ export function emit(spec) {
   const files = {
     ...templateFiles({ name: "dashboard", title: "Dashboard" }),
     "src/app.js": appFile(spec),
-    "src/widgets/widget.js": WIDGET_FILE,
   };
   const kinds = [...new Set(spec.widgets.map((w) => w.kind))];
   for (const kind of kinds) files[`src/widgets/${kind}.js`] = KINDS[kind];
