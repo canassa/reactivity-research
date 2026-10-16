@@ -360,7 +360,7 @@ function widgetFile(w, reads) {
         if (n.remove) {
           row.push(`on(el("button", node, ${attrs({ "data-role": str(n.remove) })}, ${str(n.removeText)}), "click", () => {`, itemAction(n.remove), "});");
         }
-        row.push("return { node, set };");
+        row.push("return [node, set];");
         build.push(`const ${l} = list(${u}, () => s.${f.name}, (item) => {`,
           ...row.map((r) => "  " + r), "});");
         bindings.push({ code: l, own: [f.name], cross: [], name: l });

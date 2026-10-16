@@ -174,7 +174,7 @@ const FACTORIES = {
       items.drop(item.id);
       schedule(onItems);
     });
-    return { node, set };
+    return [node, set];
   });
   const left = el("p", root, { "data-role": "left" });
 
@@ -311,10 +311,7 @@ const FACTORIES = {
     return pool.filter((item) => item.text.toLowerCase().includes(q));
   };
   // A derived list: a new array on every change, so the list reconciles it by key.
-  const items = list(el("ul", root), shown, (item) => ({
-    node: el("li", null, { "data-key": item.id }, item.text),
-    set() {},
-  }));
+  const items = list(el("ul", root), shown, (item) => [el("li", null, { "data-key": item.id }, item.text), () => {}]);
   const matches = el("p", root, { "data-role": "matches" });
 
   const onQuery = [() => prop(query, "value", s.query), items, () => text(matches, \`\${shown().length} matches\`), readers[id]];
@@ -368,13 +365,10 @@ const FACTORIES = {
       entries.drop(entry.id);
       schedule(onEntries);
     });
-    return {
-      node,
-      set(next) {
-        entry = next;
-        text(label, entry.text);
-      },
-    };
+    return [node, (next) => {
+      entry = next;
+      text(label, entry.text);
+    }];
   });
   const empty = when(el("p", root, { "data-role": "empty" }, emptyText));
 

@@ -75,7 +75,7 @@ export function when(node) {
 // Keyed lists
 
 // A keyed list (by \`item.id\`) owning every child of \`parent\`. \`items()\` reads the array from
-// the model; \`row(item)\` builds a row once and returns \`{ node, set(item) }\`, \`set\` being the
+// the model; \`row(item)\` builds a row once and returns \`[node, set(item)]\`, \`set\` being the
 // row's binding (an action that edits an item in place schedules its row's \`set\` itself).
 //
 // The list is itself a binding, for when the array itself was replaced (a server push, a
@@ -91,9 +91,9 @@ export function list(parent, items, row) {
 
   const make = (item) => {
     const r = row(item);
-    r.set(item);
+    r[1](item);
     rows.set(item.id, r);
-    return r.node;
+    return r[0];
   };
 
   const binding = () => {
@@ -106,12 +106,12 @@ export function list(parent, items, row) {
         const r = old.get(item.id);
         if (r) {
           old.delete(item.id);
-          r.set(item);
+          r[1](item);
           rows.set(item.id, r);
-          nodes.push(r.node);
+          nodes.push(r[0]);
         } else nodes.push(make(item));
       }
-      for (const r of old.values()) r.node.remove();
+      for (const r of old.values()) r[0].remove();
       let at = parent.firstChild;
       for (const node of nodes) node === at ? (at = at.nextSibling) : parent.insertBefore(node, at);
     }
@@ -120,7 +120,7 @@ export function list(parent, items, row) {
 
   binding.add = (item) => schedule(() => rows.has(item.id) || parent.append(make(item)));
   binding.drop = (k) => schedule(() => {
-    rows.get(k)?.node.remove();
+    rows.get(k)?.[0].remove();
     rows.delete(k);
   });
   return binding;
