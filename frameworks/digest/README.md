@@ -24,16 +24,25 @@ and its handlers. Here is the counter, as `scenarios/shared-components/digest.js
 ```js
 const counter = (s, l, st, mn, mx, v0) => {
   s.value = v0;                                    // initial state
-  widget("counter", l, `<output data-role=value></output><button data-role=dec>-${st}</button>…`, {
-    dec: () => { s.value = Math.max(mn, s.value - st); },   // update arms, keyed by data-role
-    inc: () => { s.value = Math.min(mx, s.value + st); },
-    reset: () => { s.value = v0; },
-  });
-  text("value", () => s.value);                    // view: one binding per dynamic property
-  bind(role("dec"), "disabled", () => s.value <= mn);
-  bind(role("inc"), "disabled", () => s.value >= mx);
+  widget("counter", l, `<output data-role=value></output><button data-role=dec>-${st}</button>…`, [
+    () => s.value = Math.max(mn, s.value - st), // dec: the update arms, one per control,
+    () => s.value = Math.min(mx, s.value + st), // inc  in the template's document order
+    () => s.value = v0, // reset
+  ]);
+  text(1, () => s.value);                          // view: one binding per dynamic property,
+  bind(2, "disabled", () => s.value <= mn);        // on the template's element at that position
+  bind(3, "disabled", () => s.value >= mx);        // (0 is the heading)
 };
 ```
+
+**Handlers go to controls by position, and bindings name elements by position.** The compiler
+knows the template, so it writes the handlers in the order of the template's controls (its
+buttons, inputs and selects), and `widget()` hands them out in that order (`c.h = h[i]`, the
+way Solid stores `$$click` on the element). A binding names its element by its index in the
+template. Neither needs a `data-role` lookup or repeats a role name in the code; the
+`data-role` attributes stay in the template, where the contract wants them. Where a template
+repeats a control (toggles, tabs, rating stars), the factory computes the positions from the
+stride (the i-th checkbox of toggles is element 4 + 3i).
 
 **Each instance is one row of data:** the factory, then the instance's constants and initial
 state. The app is the table of rows in page order:
@@ -61,25 +70,24 @@ feed).
 ### From an event to the DOM
 
 The runtime puts one delegated `click` and one `input` listener on the dashboard element. It
-finds the section the event came from, looks up the handler for the target's `data-role`, and
-calls it with the element and the nearest `data-key`. Then it digests **that section's
-bindings only**:
+calls the target's handler with the element, then digests **the target's section's bindings
+only**:
 
 ```js
 const onEvent = ({ target: t }) => {
-  const x = t.closest("section"), f = x?.h?.[t.dataset.role];
-  if (f) { f(t, t.closest("[data-key]").dataset.key); run(x.b); }   // x.b: this widget's list
+  if (t.h) { t.h(t); run(t.closest("section").b); }   // .b: this widget's list
 };
 
-// a binding: write n[k] only when f() changed since the last write
-const bind = (n, k, f, last, u) => (B.push((u = () => last !== (last = f()) && (n[k] = last))), u);
+// a binding: write the i-th element's n[k] only when f() changed since the last write
+const bind = (i, k, f, last, n = N[i]) => B.push(() => last !== (last = f()) && (n[k] = last));
 ```
 
-`widget()` starts a fresh list for each section (`W[id] = X.b = B = []`), so every binding the
+`widget()` starts a fresh list for each section (`W[id] = x.b = B = []`), so every binding the
 factory creates lands in its own widget's list. A click on a counter runs the counter's three
-bindings, whatever the size of the page.
+bindings, whatever the size of the page. `run` is a plain `for…of` over the list, so a binding
+costs one call.
 
-Handlers that read form controls read the element (`s.on[k] = t.checked`, `s.text = t.value`),
+Handlers that read form controls read the element (`s.on[i] = t.checked`, `s.text = t.value`),
 so they are idempotent. That matters because a checkbox fires both `click` and `input`.
 
 **The last written value is cached, not compared with the DOM.** An input the user is typing
@@ -91,31 +99,40 @@ last value, and the binding stays silent, so the input keeps what the user typed
 
 A list is one more binding. It reconciles items by `id` in place and runs each item's own
 bindings. Item bindings read `r.i`, the item's current value, so a snapshot that sends new item
-objects with the same ids updates the existing nodes:
+objects with the same ids updates the existing nodes. The runtime makes the `<li data-key>`
+from the item template; the item's bindings name its elements by position, and it returns the
+handlers of its controls, which close over `r`:
 
 ```js
-list($("ul"), () => s.items, (r, i) => {
-  const li = el("li", `<input type=checkbox data-role=toggle><span></span><button data-role=remove>${rm}</button>`);
-  li.dataset.key = i.id;
-  bind(li.firstChild, "checked", () => r.i.done);
-  bind(li.children[1], "textContent", () => r.i.text);
-  return li;
-});
+list(3, () => s.items, `<input type=checkbox data-role=toggle><span></span><button data-role=remove>${rm}</button>`, (r) => (
+  bind(0, "checked", () => r.i.done),
+  text(1, () => r.i.text),
+  [
+    (t) => r.i.done = t.checked, // toggle
+    () => s.items = s.items.filter((i) => i != r.i), // remove
+  ]
+));
 ```
 
+`r.i` is the very object in `s.items` (state is mutated in place, and every event and external
+replacement is followed by a digest that refreshes `r.i`), so an item handler needs no id
+lookup.
+
 Conditional content (`panel` body, `field` error, `choice` extra input, `feed` "no news") is a
-binding that inserts or removes one node before the sibling it had in the template. It touches
-nothing else.
+binding that swaps one node with an empty text node that keeps its place. It touches nothing
+else.
 
 ### Summaries
 
 A summary is a binding that reads other widgets. The compiler knows its sources, so instead of a
 subscription it **adds the same binding to each source's list**: a source's digest runs the
-summary line too, and nothing else on the page.
+summary line too, and nothing else on the page. The row gives the sources as distances back
+from the summary (a summary reads recent widgets, so the numbers stay short as the page grows):
 
 ```js
-const u = text("summary", () => { const v = src.map((e) => e.m()); … });
-src = src.map((i) => (W["w" + i].push(u), E["w" + i]));   // E: what a source exposes, m() and p(n)
+const w = widget("summary", l, "<p data-role=summary></p>");
+text(1, () => { const v = src.map((e) => e.m()); … });
+src = src.map((k) => (k = "w" + (id.slice(1) - k), W[k].push(...w), E[k]));   // E: m() and p(n)
 ```
 
 ### External events
@@ -168,6 +185,37 @@ Where the bytes go:
   widget, one `push` per summary source, and a list of clocks. The compiler already knows who
   reads whom, so the wiring is a few lines of code paid once, never per instance.
 
+### Positional handlers and bindings (second pass)
+
+The table above is from the first local version. A second pass, on both scenarios, changed how
+the code finds its elements, not the strategy: handlers go to controls by document order
+instead of a map keyed by `data-role`, bindings name elements by position instead of querying
+`data-role`, item handlers close over their item (`r.i`) instead of looking up `data-key`,
+`run` is a `for…of` instead of a `forEach` callback, a reader copies its bindings into its
+sources' lists instead of a closure that runs its list, and (shared-components) summary
+sources are distances back. Brotli totals, `runs.json` sizes (1 to 256) and seeds (1 to 3):
+
+| | N=1 | N=16 | N=256 | fit, all sizes | fit, N ≥ 16 |
+|---|---|---|---|---|---|
+| shared-components, before | 1,068 B | 3,298 B | 7,810 B | 2,172 + 24.26 B/widget | 3,203 + 18.45 B/widget |
+| shared-components, after | **1,059 B** | **3,196 B** | **7,648 B** | **2,105 + 23.86** | **3,097 + 18.27** |
+| unique-components, before | 1,445 B | 5,551 B | 44,363 B | 2,520 + 168.7 B/widget | 3,983 + 160.5 B/widget |
+| unique-components, after | **1,438 B** | **5,282 B** | **41,281 B** | **2,458 + 156.6** | **3,835 + 148.8** |
+
+- **On unique-components the role-name keys were 7% of the bundle.** Every message's name was
+  written twice: as `data-role` in the template and as the handler's key. Brotli copies the
+  second one, but a copy of a name that occurs once per widget still costs 2 to 3 bytes, about
+  11 B per widget. Positions are short numbers instead.
+- **On shared-components the gain is in the factories** (−106 B of baseline from N=16): no
+  `role("…")` lookups, no keyed handler maps. The rows were already at the data floor; the
+  summaries' shorter source numbers are the only per-instance change (−0.18 B/widget).
+- **Every action costs fewer calls,** none more (`./rr work`, seed 1, every size 16 to 256):
+  15,257 → 12,059 calls in total on shared-components, 32,025 → 19,977 on unique-components.
+  Median local action, N=16 → 256: 35 → 41 became 30 → 31 (shared), 86 → 125 became 50 → 64
+  (unique). The worst growth is still a tick, which calls every clock: 2.5× → 2.6× (shared),
+  2.5× → 2.1× (unique). Because the cheap actions got cheaper, the tick's share grew at some
+  sizes and seeds (`./rr check` unique-components n=64 seed 2: 4.3× → 5.1×, under the 8× limit).
+
 ## Locality
 
 `./rr check` holds prototypes to a locality rule: the calls one local action costs may grow at
@@ -217,6 +265,17 @@ Every number below comes from the same quick measurement: sizes 1, 4, 16, 64 and
 | Compare against the live DOM instead of a cached last value | no size change | dropped: it breaks the amount rule (an invalid input would be overwritten on the next digest) and fights the caret |
 | Global digest: every binding of the page after every event (the first version) | −35 B at N=1, −60 B baseline (N ≥ 16) | dropped: work grows with the page (16× for 16× widgets), which the locality rule excludes. See [Locality](#locality) |
 
+Second pass (`runs.json` sizes and seeds, or offline on the minified N=256 seed 1 bundle where
+marked):
+
+| Idea | Effect | Verdict |
+|---|---|---|
+| Handlers by control position, bindings by element position (both scenarios) | unique: −12 B/widget; shared: −106 B baseline | kept |
+| Summary sources as distances back, no empty prefix for list summaries (shared) | −0.18 B/widget, +7 B baseline | kept |
+| A helper for the number-input check (`s.n = int(t, lo, hi, s.n)`) (unique) | −63 B at N=256 before the helper's own ~30 B (offline) | dropped: brotli already makes the repeated inline check nearly free, and it costs a call per keystroke |
+| Constant-fold `cl(s.x + -2, …)` to `cl(s.x - 2, …)` (unique) | ±0 (noise) | dropped |
+| Drop optional closing tags (`</p>`, `</li>`, `</option>`) (unique) | −200 B at N=256, about −0.8 B/widget (offline) | not adopted, as on shared-components: a minifier's choice no compiler of this kind makes by default |
+
 ## Honest limits
 
 - **An event re-runs all of its widget's bindings,** with no memoization: about five, plus a
@@ -232,8 +291,6 @@ Every number below comes from the same quick measurement: sizes 1, 4, 16, 64 and
 - **Some assumptions are checked at build time, not handled.** The emitter asserts that widget
   ids are `w1…wN` in order and that initial list ids are 1…k. Lists are keyed by an `id` field.
   A different spec would need explicit ids in the rows: a few bytes per widget.
-- **A conditional node must have a stable next sibling.** All four conditionals here are the
-  last child, so this holds. Two adjacent conditionals would need an anchor comment.
 - **External replacements merge with `Object.assign`.** This assumes `serverSet` and
   `snapshot` send a widget's whole state, as the scenario specifies.
 - **Disposal relies on detaching the dashboard element:** its listeners are not reachable once
@@ -248,19 +305,19 @@ Every number below comes from the same quick measurement: sizes 1, 4, 16, 64 and
 `scenarios/unique-components/digest.js` writes every widget as **its own function**, with no
 per-kind factories and no data rows (the shared-components size win came from rows, which the
 scenario's rule forbids). A widget function holds, as code: its state literal, its template (one
-static HTML string), its handlers (one arrow function per message, the ops compiled to
-statements), its bindings (derived expressions compiled to JavaScript) and, for a time-driven
-field, its tick function. Only initial values and texts are data.
+static HTML string), its handlers (one arrow function per control, in the template's order, the
+ops compiled to statements), its bindings (derived expressions compiled to JavaScript) and, for
+a time-driven field, its tick function. Only initial values and texts are data.
 
 It uses `runtime-unique.js` instead of `runtime.js`: the same strategy (binding closures that
-write on change, a local digest), but it knows nothing about widget kinds. `widget(html, s, h)`
-builds the section and returns the template's elements in document order, and bindings refer to
-them by position (`e[3]`). Differences from `runtime.js`:
-- a hidden node leaves an empty text node, so adjacent conditionals work (the shared limit
-  above does not apply);
+write on change, a local digest, handlers and bindings by position), but it knows nothing about
+widget kinds. `widget(html, s, h)` builds the section, hands `h` to its controls in document
+order, and makes its elements the ones bindings refer to by position (`text(3, …)`).
+Differences from `runtime.js`:
 - the delegated listener finds the widget by `data-role=widget`, because a conditional section
   may itself be a `<section>`;
-- a reader widget adds its whole binding list to each source's list (`dep`, a compile-time
-  fact), so a source's change digests the readers too, and nothing else;
+- a list item is `<li data-key data-role>` (the item role is `{field}Item`);
+- a reader widget copies its bindings into each source's list (`dep`, a compile-time fact), so
+  a source's change digests the readers too, and nothing else;
 - external events deep-copy what they receive (`structuredClone`), because handlers mutate
   the widget's lists in place and must not alter the sender's data.
