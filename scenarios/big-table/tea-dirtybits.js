@@ -260,10 +260,11 @@ ${cases.map((c) => `      ${c}`).join("\n")}
     `// The reducer: its arms by message tag.\nconst arms = [\n${indent(arms)}\n];`, view,
   ].filter(Boolean).join("\n\n");
   const rt = ["html", "send", "setChecked", "setText"].filter((h) => new RegExp(`\\b${h}\\(`).test(body) || (h === "send" && /\bsend\(/.test(body)));
-  const gr = ["at", "clone", "cut", "dMon", "drop", "edit", "every", "grid", "group", "idOf", "mmDd", "monD", "money", "pct", "swap"].filter((h) => new RegExp(`\\b${h}\\(`).test(body));
+  const has = (names) => names.filter((h) => new RegExp(`\\b${h}\\(`).test(body));
+  const imp = (names, file) => (has(names).length ? `import { ${has(names).join(", ")} } from "${file}";\n` : "");
   return `import { ${rt.join(", ")} } from "../runtime.js";
-import { ${gr.join(", ")} } from "../grid.js";
-import { TABLES } from "./registry.js";
+import { clone, grid, idOf } from "../grid.js";
+${imp(["at", "cut", "drop", "edit", "every", "swap"], "../rows.js")}${imp(["dMon", "group", "mmDd", "monD", "money", "pct"], "../format.js")}import { TABLES } from "./registry.js";
 
 // Dirty bits: ${bits.join(", ")}.
 // Message tags: ${tags.map((n, i) => `${n} ${i}`).join(", ")}.
@@ -277,7 +278,7 @@ TABLES.${t.id} = [view, arms, ${init}];
 function appFile(spec) {
   const ids = spec.tables.map((t) => t.id);
   return `import { dirty, html } from "./runtime.js";
-import { drop, kept, maxId } from "./grid.js";
+import { drop, kept, maxId } from "./rows.js";
 import { TABLES } from "./tables/registry.js";
 // Every table in page order: each module adds its own [view, reducer, initial state].
 ${ids.map((id) => `import "./tables/${id}.js";`).join("\n")}
@@ -358,6 +359,8 @@ export function emit(spec) {
   const files = {
     ...templateFiles({ name: "big-table", title: "Big table" }),
     "src/grid.js": templateFile("grid.js"),
+    "src/rows.js": templateFile("rows.js"),
+    "src/format.js": templateFile("format.js"),
     "src/tables/registry.js": REGISTRY,
   };
   for (const t of spec.tables) files[`src/tables/${t.id}.js`] = tableModule(t);

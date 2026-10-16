@@ -292,7 +292,10 @@ two scenarios use (bitwise operators are 32-bit). What it adds:
 ## big-table
 
 The emitter for `big-table` (`scenarios/big-table/tea-dirtybits.js`) keeps the strategy with rows
-as dynamic data. What it adds (`template/grid.js`, new, included only here, counted as runtime):
+as dynamic data. What it adds: `template/grid.js` (the keyed grid, its bit-driven patch and the row
+template cloner: generic machinery, counted as runtime), and `template/rows.js` (the reducers' row
+edits) and `template/format.js` (number and date formats), which are scenario code and count as
+app, as every js-framework-benchmark entry ships its own helpers. All three are included only here:
 
 - **Dirty bits.** A table's own: rows 1, selected 2, gone 4, moved 8, added 16. A row's cells:
   one bit per data column from 32 up, in the same word. An arm returns `[bits, fields, payload]`.

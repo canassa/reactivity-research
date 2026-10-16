@@ -43,3 +43,10 @@ remove, toggle, bump flat at 13 to 22 calls and blocks; the rest grow with the r
   17,937 to 17,894; N=256 54,596 to 54,493. Fit N >= 4: 4,397 + 197.9 to 4,402 + 197.2.
 - Rechecked: big-table at sizes 1, 4, 16, 64 x seeds 1-3 (locality 1.0x), the other three
   scenarios; work at N=16 to 256 flat; rows axis above.
+
+## Runtime/app split (same day)
+
+The formatters and the reducers' row helpers moved out of `grid.js` into `rows.js` and
+`format.js`, classified as app like vanilla's, Solid's and tea-local's helpers; `grid.js` keeps
+the grid, `clone` and `idOf`. Runtime/app (seed 1): N=1 872/1,482 (was 1,116/1,237), N=64 892/16,887,
+N=256 892/52,526. Totals move only by brotli noise (2,500, 17,919, 53,566).
