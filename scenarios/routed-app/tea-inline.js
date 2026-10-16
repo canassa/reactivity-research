@@ -237,7 +237,10 @@ function makeUnit(kind, comp, page, ctx) {
     u.actions.push(() => {
       const f = m.field && fieldOf(m.field);
       const done = sched(m.kind === "open" || m.kind === "close" ? [] : writesOf(m));
-      const wrap = (event, body) => [`on(${node}, ${event === "click" ? "()" : "(e)"} => {`, ...body.map((l) => "  " + l), event === "click" ? "});" : `}, "${event}");`];
+      // A control that writes state outside its unit does nothing once the unit has left (a stale
+      // click in the same task as the navigation): its node is no longer in the page.
+      const outside = m.kind !== "open" && m.kind !== "close" && writesOf(m).some((k) => k[0] !== "f");
+      const wrap = (event, body) => [`on(${node}, ${event === "click" ? "()" : "(e)"} => {`, ...(outside ? [`  if (!${node}.isConnected) return;`] : []), ...body.map((l) => "  " + l), event === "click" ? "});" : `}, "${event}");`];
       const v = m.field && lv(m.field);
       switch (m.kind) {
         case "click": return wrap("click", [...opLines(m), ...done]);
@@ -269,7 +272,7 @@ function makeUnit(kind, comp, page, ctx) {
       if (m.op === "toggle") return ["item.done = !item.done;", ...sched([key(m.field)], ["set"])];
       // Removed by identity from the current array: a click on a row that something else has
       // dropped already (a snapshot, a clear) changes nothing.
-      return [`${v} = ${v}.filter((x) => x !== item);`, ...sched([key(m.field)])];
+      return [...(m.field[0] === "f" ? [] : ["if (!node.isConnected) return;"]), `${v} = ${v}.filter((x) => x !== item);`, ...sched([key(m.field)])];
     };
     return `@@${name}@@`;
   }
@@ -682,7 +685,7 @@ export function start(root) {
   // Navigation by delegation: the nav bar, the menu and the pages' links are buttons whose key is the page.
   app.addEventListener("click", (e) => {
     const { role, key } = e.target.dataset;
-    if (role?.endsWith("Link")) go(+key.slice(1));
+    if (/^(nav|menu|page)Link$/.test(role)) go(+key.slice(1));
   });
   flush();
 
@@ -697,11 +700,11 @@ export function start(root) {
         schedule(GR[msg.field]);
         break;
       case "notify":
-        g.notices = [...g.notices, msg.item];
+        g.notices = [...g.notices, structuredClone(msg.item)];
         schedule(GR.notices);
         break;
       case "pagePush":
-        if (msg.page == "p" + route) page.push?.(msg.item);
+        if (msg.page == "p" + route) page.push?.(structuredClone(msg.item));
         break;
       case "snapshot":
         Object.assign(g, structuredClone(msg.global));

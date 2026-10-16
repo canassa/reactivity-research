@@ -13,6 +13,9 @@ import { schedule } from "./runtime.js";
 // first render is scheduled. Returns the arms `fn` returned, plus `down`, which disposes the unit
 // (once: a second call does nothing).
 export function up(ref, at, html, fn) {
+  // A stale event (a click on a page that left in the same task) reaches a detached `ref`: build
+  // nothing, so nothing registers or starts a timer that no `down` would ever end.
+  if (!ref.isConnected) return { down() {} };
   ref.insertAdjacentHTML(at, html);
   const root = at == "afterend" ? ref.nextSibling : ref.lastChild;
   const G = [];
