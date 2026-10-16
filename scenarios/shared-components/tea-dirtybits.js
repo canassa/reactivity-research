@@ -659,7 +659,13 @@ function appFile(spec) {
     .filter((id) => spec.widgets.find((x) => x.id === id).kind === "filter"));
   const configs = spec.widgets.filter((w) => named.has(w.id))
     .map((w) => `const ${configName(w)} = ${configLiteral(spec, w, "")};\n`);
-  const table = spec.widgets.map((w) => `  ${w.id}: [${w.kind}.kind, ${named.has(w.id) ? configName(w) : configLiteral(spec, w, "  ")}],`);
+  if (Object.keys(spec.initialState).join() !== "widgets") throw new Error("the model is expected to be { widgets }");
+  const slices = spec.initialState.widgets;
+  const table = spec.widgets.map((w) => {
+    const entry = [`${w.kind}.kind`, named.has(w.id) ? configName(w) : configLiteral(spec, w, "  ")];
+    if (slices[w.id] !== undefined) entry.push(literal(slices[w.id], "  "));
+    return `  ${w.id}: [${entry.join(", ")}],`;
+  });
   const tick = clocks.length
     ? `    case "tick":
       for (const id of ${literal(clocks.map((w) => w.id))}) model = route(model, id, msg);
@@ -670,15 +676,17 @@ function appFile(spec) {
 
   return `${imports.join("\n")}
 
-${configs.length ? configs.join("\n") + "\n" : ""}// Every widget in page order: its kind and its config, the only per-widget code (the kinds'
-// modules do the rest).
+${configs.length ? configs.join("\n") + "\n" : ""}// Every widget in page order: its kind, its config and its initial state (summaries have
+// none), the only per-widget code (the kinds' modules do the rest).
 const WIDGETS = {
 ${table.join("\n")}
 };
 
 // The initial model: one slice per widget with state.
 export function init() {
-  return ${literal(spec.initialState, "  ")};
+  const widgets = {};
+  for (const id in WIDGETS) if (WIDGETS[id][2]) widgets[id] = WIDGETS[id][2];
+  return { widgets };
 }
 
 // All bits: a widget whose whole state was replaced.
