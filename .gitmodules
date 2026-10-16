@@ -1,0 +1,4 @@
+[submodule "references/marko"]
+	path = references/marko
+	url = https://github.com/marko-js/marko
+	shallow = true

@@ -185,6 +185,7 @@ generated/             emitter output: gitignored, reproducible from the generat
     n64-s1/
       …
 harness/               the size runner and the serve page
+references/            upstream sources kept for reading, pinned as submodules, never part of a measurement
 results/               raw measurements, one directory per run, with versions (committed)
 reports/               written findings, answer first
 notes/                 a short log of each working session
