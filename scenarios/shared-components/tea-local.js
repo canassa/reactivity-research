@@ -225,7 +225,7 @@ export function tabs(parent, id, heading, tabs, model) {
 
   function patch() {
     const m = self.m;
-    buttons.forEach((button, i) => setProp(button, "ariaSelected", i === m.active ? "true" : "false"));
+    buttons.forEach((button, i) => setProp(button, "ariaSelected", \`\${i === m.active}\`));
     setText(content, tabs[m.active].content);
   }
   return self;
@@ -247,7 +247,7 @@ export function panel(parent, id, heading, showText, hideText, body, model) {
 
   function patch() {
     const m = self.m;
-    setProp(toggle, "ariaExpanded", m.open ? "true" : "false");
+    setProp(toggle, "ariaExpanded", \`\${m.open}\`);
     setText(toggle, m.open ? hideText : showText);
     show(root, text, m.open);
   }
@@ -360,7 +360,7 @@ export function rating(parent, id, heading, stars, labels, model) {
   function patch() {
     const m = self.m;
     buttons.forEach((button, i) => {
-      setProp(button, "ariaPressed", i < m.stars ? "true" : "false");
+      setProp(button, "ariaPressed", \`\${i < m.stars}\`);
       setText(button, i < m.stars ? "★" : "☆");
     });
     setText(label, labels[m.stars]);
