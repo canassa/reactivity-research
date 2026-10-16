@@ -102,4 +102,4 @@ The adapter (`template/adapter.js`, excluded from size) maps `mount`, `dispatch`
   adapter, the rest as app.
 - `template/`: the HTML shell, the Vite config, the adapter and the runtime, copied into every
   app.
-- `../../scenarios/dashboard/tea-dirtybits.js`: the emitter (the "compiler") for the dashboard.
+- `../../scenarios/shared-components/tea-dirtybits.js`: the emitter (the "compiler") for the dashboard.

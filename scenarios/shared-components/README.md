@@ -1,6 +1,6 @@
-# Scenario: dashboard
+# Scenario: shared-components
 
-The contract of the `dashboard` scenario. It adds to the global contract in `CLAUDE.md` and never
+The contract of the `shared-components` scenario. It adds to the global contract in `CLAUDE.md` and never
 relaxes it.
 
 ## What it models
@@ -9,6 +9,11 @@ relaxes it.
 counter, a form field, a small list, tabs, a summary…), each with its own state, events and update
 logic, plus a few widgets that read the state of others. That is how most real apps grow: not
 more data, but more different pieces of UI.
+
+**Shared components.** The widgets come from a fixed catalogue of kinds, and each kind is used many
+times with its own configuration. From N = 16 every kind is present, so further growth is the cost
+of one more **use** of an existing kind. Its sibling, `unique-components`, measures the other axis:
+every widget a different component, used once.
 
 It measures what each approach costs at the start (**baseline**) and what each added feature costs
 (**slope**): per-component scaffolding, update wiring per feature, and how much runtime a new kind

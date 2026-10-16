@@ -12,7 +12,7 @@ platforms, measured separately from **one source**:
 
 This directory holds what both setups share for every scenario. Each links these files into its
 own directory (`beni.js`, `template/*`), so a change here changes both setups' measurement hash.
-The dashboard's source, also shared, is `scenarios/dashboard/shared/beni.js`.
+The dashboard's source, also shared, is `scenarios/shared-components/shared/beni.js`.
 
 ## The pinned compiler
 
@@ -94,13 +94,13 @@ its own file and bucket.
 
 ## The dashboard source
 
-One generator, `scenarios/dashboard/shared/beni.js`, writes the app for both platforms
+One generator, `scenarios/shared-components/shared/beni.js`, writes the app for both platforms
 (`browser-direct`'s `Tea` is `browser-tea`'s API, "so one source builds on both"); the emitters
-`scenarios/dashboard/beni-tea.js` and `beni-direct.js` only pick the framework. Its style is
+`scenarios/shared-components/beni-tea.js` and `beni-direct.js` only pick the framework. Its style is
 described at its top and in each setup's README. Every generated module is laid out exactly as
 `beni fmt` writes it:
 
 ```sh
-cp -r generated/dashboard/n16-s1/beni-tea/src /tmp/src && frameworks/beni/compiler/6a1b567fad54/zig-out/bin/beni fmt /tmp/src
-diff -r generated/dashboard/n16-s1/beni-tea/src /tmp/src   # no output
+cp -r generated/shared-components/n16-s1/beni-tea/src /tmp/src && frameworks/beni/compiler/6a1b567fad54/zig-out/bin/beni fmt /tmp/src
+diff -r generated/shared-components/n16-s1/beni-tea/src /tmp/src   # no output
 ```

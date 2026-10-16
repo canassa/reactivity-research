@@ -1,4 +1,5 @@
-// The dashboard scenario generator and its reference.
+// The shared-components scenario generator and its reference: a dashboard of widgets from a
+// fixed catalogue of kinds, each kind used many times.
 //
 // This module is the single source of truth for the scenario (see README.md). It runs both in
 // Node (the CLI generates specs with it) and in the browser (the serve panel uses the reference
@@ -9,7 +10,7 @@
 // function of (spec, state, …): the reference `update` and `render`, and the builders of
 // external events (`serverState`, `notifyEntry`, `snapshot`).
 
-export const scenario = "dashboard";
+export const scenario = "shared-components";
 
 export const KINDS = [
   "counter", "toggles", "field", "todo", "tabs", "panel", "choice",

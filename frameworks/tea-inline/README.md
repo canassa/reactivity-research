@@ -88,6 +88,6 @@ The app itself is a table of `[factory, config]` rows in page order, plus `init(
 - `template/reconcile.js`: `reconcileArrays`, unchanged.
 - `template/adapter.js`: the contract (`mount`, `dispatch`, `settled`, `dispose`), excluded from
   size.
-- `../../scenarios/dashboard/tea-inline.js`: the emitter, with one factory per widget kind.
+- `../../scenarios/shared-components/tea-inline.js`: the emitter, with one factory per widget kind.
 - The build is Vite with no framework plugin, the same bundler and minifier as the Solid setup.
   Source maps are hidden.

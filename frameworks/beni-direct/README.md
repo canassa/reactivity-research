@@ -11,7 +11,7 @@ attribution, shared with [`beni-tea`](../beni-tea/).
 
 ## How the app is written
 
-Exactly as for beni-tea, from the same generator (`scenarios/dashboard/shared/beni.js`):
+Exactly as for beni-tea, from the same generator (`scenarios/shared-components/shared/beni.js`):
 `browser-direct`'s `Tea` is `browser-tea`'s API, "so one source builds on both". See
 [`../beni-tea/README.md`](../beni-tea/README.md) for the style. Two of its choices come from this
 platform's ownership checker, which proves every in-place list edit safe or refuses the build:
@@ -26,8 +26,8 @@ platform's ownership checker, which proves every in-place list edit safe or refu
 
 ```sh
 frameworks/beni/install.sh                    # once: the pinned compiler
-./rr check dashboard beni-direct --size 64
-./rr measure dashboard beni-direct --out /tmp/beni-direct-m
+./rr check shared-components beni-direct --size 64
+./rr measure shared-components beni-direct --out /tmp/beni-direct-m
 ```
 
 ## Limit: no N=256 (the ownership checker's width cap)

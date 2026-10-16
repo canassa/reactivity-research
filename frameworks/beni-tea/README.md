@@ -9,8 +9,8 @@ byte attribution, which this setup shares with [`beni-direct`](../beni-direct/).
 
 ## How the app is written
 
-The emitter (`scenarios/dashboard/beni-tea.js`, generator in
-`scenarios/dashboard/shared/beni.js`) writes the app the way beni's README, its getting-started
+The emitter (`scenarios/shared-components/beni-tea.js`, generator in
+`scenarios/shared-components/shared/beni.js`) writes the app the way beni's README, its getting-started
 guide and its Conduit example write one:
 
 - **One module per widget kind** (`src/Widget/Counter.beni`, …), written once: a `Config` for
@@ -68,9 +68,9 @@ guide and its Conduit example write one:
 
 ```sh
 frameworks/beni/install.sh                 # once: the pinned compiler
-./rr check dashboard beni-tea --size 64    # the interaction script in headless Chrome
-./rr serve dashboard beni-tea --local      # by hand
-./rr measure dashboard beni-tea --out /tmp/beni-tea-m
+./rr check shared-components beni-tea --size 64    # the interaction script in headless Chrome
+./rr serve shared-components beni-tea --local      # by hand
+./rr measure shared-components beni-tea --out /tmp/beni-tea-m
 ```
 
 The build is `beni build --release --source-maps` (beni's own minifier); the bundle is one ES
@@ -79,7 +79,7 @@ module, `dist/_main.js`.
 ## What it ships
 
 Measured 2026-10-16 (sizes 1–256, seeds 1–3, brotli 11), next to the setups of
-`results/2026-10-16-dashboard-3/`:
+`results/2026-10-16-shared-components-3/`:
 
 | | N=1 total | baseline + slope, all sizes | baseline + slope, N ≥ 16 |
 |---|---|---|---|

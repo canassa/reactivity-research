@@ -1,5 +1,5 @@
 {
-  "scenario": "dashboard",
+  "scenario": "shared-components",
   "kind": "work",
   "date": "2026-10-16",
   "sizes": [
@@ -10,7 +10,9 @@
     256
   ],
   "seeds": [
-    1
+    1,
+    2,
+    3
   ],
   "runs": 2,
   "jsFlags": "--no-turbofan --no-maglev",
@@ -106,34 +108,6 @@
     }
   ],
   "variants": {
-    "beni-direct": {
-      "emitter": "beni-direct",
-      "framework": "beni-direct",
-      "label": "beni browser-direct (6a1b567fa)",
-      "track": "framework",
-      "emitterOptions": {},
-      "versions": {
-        "beni (commit)": "6a1b567fad5410fe80c8bc4e0a1f6733279fd908",
-        "beni version (build id)": "beni 0.1.0-m1 ee040d874c1f0f73e43a0e7ef109007d",
-        "beni binary sha256": "c50cd632b076a5d2c2f75b7ba6a41e0897556d3f2adc20a52a396bfc49632dcc",
-        "zig, node (beni's flake.lock at that commit)": "zig 0.17.0, node 24",
-        "platform": "browser-direct"
-      }
-    },
-    "beni-tea": {
-      "emitter": "beni-tea",
-      "framework": "beni-tea",
-      "label": "beni browser-tea (6a1b567fa)",
-      "track": "framework",
-      "emitterOptions": {},
-      "versions": {
-        "beni (commit)": "6a1b567fad5410fe80c8bc4e0a1f6733279fd908",
-        "beni version (build id)": "beni 0.1.0-m1 ee040d874c1f0f73e43a0e7ef109007d",
-        "beni binary sha256": "c50cd632b076a5d2c2f75b7ba6a41e0897556d3f2adc20a52a396bfc49632dcc",
-        "zig, node (beni's flake.lock at that commit)": "zig 0.17.0, node 24",
-        "platform": "browser-tea"
-      }
-    },
     "digest": {
       "emitter": "digest",
       "framework": "digest",
@@ -219,20 +193,13 @@
       }
     }
   },
-  "failures": [
-    {
-      "variant": "beni-direct",
-      "size": 256,
-      "error": "Error: beni build failed in /home/canassa/src/github.com/canassa/reactivity-research/generated/dashboard/n256-s1/beni-direct:"
-    }
-  ],
   "versions": {
     "node": "v26.11.1",
     "chrome": "Google Chrome 154.0.8037.97",
     "platform": "linux 6.12.112 x64",
     "git": {
-      "commit": "7b7cf4da855d7cb93f61715effb25db4422c5243",
-      "dirty": true
+      "commit": "f0b9559c39d3efd101dd3d8f8d0e1a0a5aeadd4d",
+      "dirty": false
     }
   },
   "method": "Profiler.startPreciseCoverage({ callCount: true, detailed: true }); per action: take (reset), perform, await settled(), take; summed over the app's own scripts (URLs under /<variant>/); calls = function invocations, blocks = basic-block executions"

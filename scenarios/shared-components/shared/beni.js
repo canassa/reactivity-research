@@ -1,6 +1,6 @@
 // The dashboard scenario written in beni: one source for both of beni's browser platforms
 // (browser-tea and browser-direct; browser-direct's `Tea` is "the API of browser-tea's Tea, so
-// one source builds on both"). The two emitters (scenarios/dashboard/beni-tea.js and
+// one source builds on both"). The two emitters (scenarios/shared-components/beni-tea.js and
 // beni-direct.js) call `emitDashboard` with their own framework's template files. It lives in
 // the scenario's shared folder, which every measurement's inputs hash covers.
 //

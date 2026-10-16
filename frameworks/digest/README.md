@@ -19,7 +19,7 @@ first version digested the whole page after every event. That is now a dead end:
 
 The compiler sees the app's description (each kind's state, messages and view) and emits **one
 factory per widget kind** that the app uses. The factory holds the kind's template, its bindings
-and its handlers. Here is the counter, as `scenarios/dashboard/digest.js` emits it:
+and its handlers. Here is the counter, as `scenarios/shared-components/digest.js` emits it:
 
 ```js
 const counter = (s, l, st, mn, mx, v0) => {

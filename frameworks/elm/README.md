@@ -51,7 +51,7 @@ elm-format would. Elm projects run it in the editor or CI, not in the build, so 
 not use it:
 
 ```sh
-cd generated/dashboard/n16-s1/elm && ../../../../frameworks/elm/node_modules/.bin/elm-format --validate src
+cd generated/shared-components/n16-s1/elm && ../../../../frameworks/elm/node_modules/.bin/elm-format --validate src
 ```
 
 It prints `[]` when every file already matches.

@@ -1,6 +1,6 @@
 {
   "$comment": "The predefined runs of ./rr report: per scenario, per emitter, the sizes, seeds and options. A list in options measures every value as its own variant. Sizes and seeds live only here, per framework.",
-  "dashboard": {
+  "shared-components": {
     "solid": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3]

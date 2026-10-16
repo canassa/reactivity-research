@@ -163,9 +163,12 @@ scenarios/
     vue.js             … in Vue
     react.js
     vanilla.js
-  dashboard/
+  shared-components/   a dashboard of widgets from a fixed catalogue of kinds, each used many times
     spec.js
     solid.js
+    shared/            code several of this scenario's emitters share
+    …
+  unique-components/   the same kind of app, but every widget a different component, used once
     …
 frameworks/
   solid/               shared by every Solid emitter: adapter, build config, pinned package.json +
@@ -220,13 +223,13 @@ the same selection: a scenario, a framework (or `all`), and the generator's opti
 scenario README).
 
 ```sh
-./rr generate dashboard solid --size 16 --seed 1   # write generated/dashboard/n16-s1/solid/
-./rr build    dashboard solid --size 16 --seed 1   # generate + the production build
-./rr measure  dashboard all                        # every size and seed: sizes into results/
-./rr serve    dashboard solid --size 16 --seed 1   # build, serve, and expose through cloudflared
-./rr plots    dashboard                          # build the plots page from results/, serve it through cloudflared
+./rr generate shared-components solid --size 16 --seed 1   # write generated/shared-components/n16-s1/solid/
+./rr build    shared-components solid --size 16 --seed 1   # generate + the production build
+./rr measure  shared-components all                        # every size and seed: sizes into results/
+./rr serve    shared-components solid --size 16 --seed 1   # build, serve, and expose through cloudflared
+./rr plots    shared-components                          # build the plots page from results/, serve it through cloudflared
 ./rr report                                      # measure every run in runs.json that changed, then serve the plots
-./rr check    dashboard solid                    # quick aid: run the script on one small build in headless Chrome
+./rr check    shared-components solid                    # quick aid: run the script on one small build in headless Chrome
 ./rr hub                                         # one long-lived address for the plots and every app
 ```
 
@@ -237,7 +240,7 @@ scenario README).
   any size, that can send the scenario's external events through `dispatch` (including a
   whole-state snapshot), step through the scenario's interaction script, and reset;
 - `--local` serves without the tunnel; `Ctrl-C` stops both the server and the tunnel;
-- several frameworks can be served side by side (`./rr serve dashboard solid,vue,react`), one
+- several frameworks can be served side by side (`./rr serve shared-components solid,vue,react`), one
   page per framework from the same spec, so they can be compared by eye.
 
 **`./rr hub`** serves everything at one address that stays the same while it runs: an index, the
