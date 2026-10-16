@@ -52,14 +52,14 @@ export function on(node, type, handler) {
 const controls = "button,input,select";
 const clicked = "button,[type=checkbox]";
 
-// The events of a view (Elm's `onClick msg` and `onInput Tag`): `tags` holds one message tag per
-// control under `root`, in document order. A button or checkbox sends its message when clicked,
-// with `id` as its argument (a list row's item id, or none); a text input, select or number input
-// sends its value on input, a number input as a number (the reducer takes it only if it is an
-// integer in range).
-export function wire(root, self, tags, id) {
+// The events of a view (Elm's `onClick msg` and `onInput Tag`): the controls under `root` send
+// the messages `first`, `first + 1`, … in document order (the compiler numbers a component's
+// messages that way). A button or checkbox sends its message when clicked, with `id` as its
+// argument (a list row's item id, or none); a text input, select or number input sends its value
+// on input, a number input as a number (the reducer takes it only if it is an integer in range).
+export function wire(root, self, first, id) {
   for (const node of root.querySelectorAll(controls)) {
-    const tag = tags.shift();
+    const tag = first++;
     const click = node.matches(clicked);
     node.addEventListener(click ? "click" : "input", () =>
       self.send(tag, click ? id : node.type === "number" ? node.valueAsNumber : node.value),

@@ -115,7 +115,7 @@ function compileNode(w, n, cx) {
   const create = (line) => cx.create.push("  " + line);
   const msgOf = (name) => w.messages.find((m) => m.name === name);
   const fieldOf = (name) => w.fields.find((f) => f.name === name);
-  const tag = (name) => w.messages.findIndex((m) => m.name === name);
+  const tag = (name) => w.messages.findIndex((m) => m.name === name); // ordered by messageOrder
   // Open an element in the template; returns its reference.
   const open = (tag, a = {}) => {
     cx.html += `<${tag}${attrs(a)}>`;
@@ -221,7 +221,8 @@ function compileNode(w, n, cx) {
       create(`const ${l} = list(${u}, (item) => {`);
       create(`  const li = ${r}();`);
       create(`  const [${kids.join(", ")}] = li.children;`);
-      create(`  wire(li, self, [${tags.join(", ")}], item.id);`);
+      tags.forEach((t, i) => { if (t !== tags[0] + i) throw new Error(`${w.id}: row tags not consecutive`); });
+      create(`  wire(li, self, ${tags[0] ?? 0}, item.id);`);
       create(`  return {`);
       create(`    node: li,`);
       create(`    patch(item) {`);
@@ -319,7 +320,28 @@ const RUNTIME = ["wire", "setText", "setProp", "instance", "list", "template"];
 const FRAME = ["widget", "widgets", "place", "nextId", "subscribe"];
 
 // Returns { code, sources }: the module, and the earlier widgets its factory takes.
+// Message tags are the compiler's to choose: the controls of the widget's template take 0, 1,
+// 2, ... in document order, then each list row's controls, in order, then the other messages.
+// So `wire` needs no tag list: a control's tag is its position.
+function messageOrder(w) {
+  const section = [];
+  const rows = [];
+  const walk = (nodes) => {
+    for (const n of nodes) {
+      if (n.el === "list") rows.push(...[n.check, n.remove].filter(Boolean));
+      else if (n.el === "when" || n.el === "group") walk(n.children);
+      else if (n.msg) section.push(n.msg);
+    }
+  };
+  walk(w.view);
+  const order = [...section, ...rows];
+  if (new Set(order).size !== order.length) throw new Error(`${w.id}: a message sent by two controls`);
+  return [...order, ...w.messages.map((m) => m.name).filter((name) => !order.includes(name))];
+}
+
 function widgetFile(spec, w) {
+  const order = messageOrder(w);
+  w = { ...w, messages: order.map((name) => w.messages.find((m) => m.name === name)) };
   const cx = {
     create: [], patch: [], wire: [], templates: [], html: "", index: 2, own: false, sources: new Set(), options: new Set(), counts: {},
     name(prefix) { this.counts[prefix] = (this.counts[prefix] ?? 0) + 1; return prefix + this.counts[prefix]; },
@@ -361,7 +383,8 @@ function widgetFile(spec, w) {
   for (const s of sources) fn.push(`  const ${s} = widgets.get(${q(s)});`);
   fn.push(`  // type Msg = ${msgNames.join(" | ")}`);
   fn.push(`  const self = instance(${lit(spec.initialState.widgets[w.id])}, update, patch);`);
-  fn.push(`  const e = widget(parent, ${q(w.id)}, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))}${[", self", ...cx.wire].join(", ")});`);
+  cx.wire.forEach((t, i) => { if (t !== i) throw new Error(`${w.id}: control tags out of order`); });
+  fn.push(`  const e = widget(parent, ${q(w.id)}, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))}, self);`);
   fn.push(...cx.create);
   // Subscribe to the clock while the gate is on, as soon as the model changes (not at the next
   // render), so a tick right after the gate opens is not missed.
@@ -400,13 +423,13 @@ function widgetFile(spec, w) {
 const FRAME_FILE = `import { element, wire } from "../runtime.js";
 
 // The frame every widget shares: its keyed section, holding the widget's own template (its
-// heading and view), its controls wired to the message \`tags\` (see \`wire\`). Returns the section
-// and the template's elements, in document order.
-export function widget(parent, id, html, self, ...tags) {
+// heading and view), its controls wired to the messages 0, 1, 2, ... (see \`wire\`). Returns the
+// section and the template's elements, in document order.
+export function widget(parent, id, html, self) {
   widgets.set(id, self);
   const section = element(parent, "section", { "data-key": id, "data-role": "widget" });
   section.innerHTML = html;
-  wire(section, self, tags);
+  wire(section, self, 0);
   return [section, ...section.querySelectorAll("*")];
 }
 
