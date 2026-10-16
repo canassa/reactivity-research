@@ -56,6 +56,11 @@ function stepExpression(step) {
       t.dispatchEvent(new Event("input", { bubbles: true }));
       t.dispatchEvent(new Event("change", { bubbles: true }));
     } else if (step.do === "dispatch") window.rr.dispatch(structuredClone(step.msg));
+    else if (step.do === "clock") window.__rrHooks.fireIntervals();
+    // The app's own mount and dispose, counted like any action (the panel's state goes stale,
+    // but nothing reads it after this).
+    else if (step.do === "dispose") window.rr.dispose();
+    else if (step.do === "mount") window.rr.mount(document.getElementById("root"));
     else throw new Error("unknown step " + step.do);
     await window.rr.settled();
   })()`;
@@ -96,7 +101,8 @@ async function runPage(chrome, url, prefix, list, ref, spec) {
       const sum = sumCoverage(result, prefix);
       if (sum.scripts === 0) throw new Error(`no coverage for the app's scripts under ${prefix}`);
       out.push({ calls: sum.calls, blocks: sum.blocks });
-      if (step.msg) state = ref.update(spec, state, step.msg);
+      if (step.do === "mount") state = spec.initialState;
+      else if (step.msg) state = ref.update(spec, state, step.msg);
     }
     await page.cdp("Profiler.stopPreciseCoverage");
     if (page.errors.length) throw new Error(`page errors in ${url}: ${page.errors.slice(0, 3).join("; ")}`);
