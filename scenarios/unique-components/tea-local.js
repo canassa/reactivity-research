@@ -21,7 +21,8 @@
 // - The widget frame registers each instance in page order (`widgets`, w1 first), numbering
 //   widgets w1, w2, …, for the external events that name a widget and for readers: a
 //   cross-widget read reads the earlier widget's model from it in `patch` (`widgets[2].m` for
-//   w3) and watches it, so its patch is scheduled when the source changes.
+//   w3); its instance is made by the frame's `reader([2], …)`, which has its patch watch the
+//   sources, so its patch is scheduled when one changes.
 // - External events: `serverSet` and `snapshot` replace instance models (`set`); `notify` sends
 //   a feed's Notify message (the instance keeps its tag) to that instance. A widget with a time-driven int
 //   is a subscription, as in Elm's `subscriptions`: while a gate is on it puts its `tick` into
@@ -321,7 +322,7 @@ function branch(w, m, cx) {
 // One widget: a block of the app's dashboard function.
 
 const RUNTIME = ["setText", "instance", "list"];
-const FRAME = ["setProp", "widget", "widgets", "running", "row", "place", "nextId", "subscribe"];
+const FRAME = ["setProp", "reader", "widget", "widgets", "running", "row", "place", "nextId", "subscribe"];
 
 // Message tags are the compiler's to choose: the controls of the widget's template take 0, 1,
 // 2, ... in document order, then each list row's controls, in order, then the other messages.
@@ -387,15 +388,17 @@ function widgetBlock(spec, w) {
   fn.push(`{`, `  // ${w.id}: ${w.label} (${w.kind})`);
   // The binding list (it runs after mount, once `self` and `e` are set).
   const patchFn = [];
-  patchFn.push(sources.length ? `  function patch() {` : `  const patch = () => {`);
+  patchFn.push(`  const patch = () => {`);
   if (cx.own) patchFn.push(`    const m = self.m;`);
   for (const s of sources) patchFn.push(`    const m${s.slice(1)} = widgets[${s.slice(1) - 1}].m;`);
   patchFn.push(...cx.patch.map((l) => "    " + l));
-  patchFn.push(sources.length ? `  }` : `  };`);
-  if (!sources.length) fn.push(...patchFn);
+  patchFn.push(`  };`);
+  fn.push(...patchFn);
   // The model, and the reducer: one function per message, indexed by its tag.
   fn.push(`  // type Msg = ${msgNames.join(" | ")}`);
-  fn.push(`  const self = instance(${lit(spec.initialState.widgets[w.id])}, [`, ...cases.map((c) => `    ${c.replace(/\n/g, "\n    ")},`), `  ], patch);`);
+  // A reader's instance watches the earlier widgets it reads (by index in the registry).
+  const make = sources.length ? `reader([${sources.map((s) => s.slice(1) - 1).join(", ")}], ` : "instance(";
+  fn.push(`  const self = ${make}${lit(spec.initialState.widgets[w.id])}, [`, ...cases.map((c) => `    ${c.replace(/\n/g, "\n    ")},`), `  ], patch);`);
   cx.wire.forEach((t, i) => { if (t !== i) throw new Error(`${w.id}: control tags out of order`); });
   fn.push(`  const e = widget(main, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))}, self);`);
   fn.push(...cx.create);
@@ -403,16 +406,13 @@ function widgetBlock(spec, w) {
   // render), so a tick right after the gate opens is not missed.
   if (timed.length) fn.push(`  subscribe(self, ${tickIndex}, (m) => ${gate});`);
   if (feed) fn.push(`  self.notify = ${notifyIndex}; // the tag of Notify, sent by the app`);
-  // The earlier widgets it reads, watched by its patch.
-  for (const s of sources) fn.push(`  widgets[${s.slice(1) - 1}].watch(patch);`);
-  if (sources.length) fn.push(...patchFn);
   fn.push(`}`);
   return fn.map((l) => "  " + l).join("\n");
 }
 
 // ---------------------------------------------------------------------------------------------
 
-const FRAME_FILE = `import { wire } from "../runtime.js";
+const FRAME_FILE = `import { wire, instance } from "../runtime.js";
 
 // A property write, skipped if unchanged: a form control's value, unless \`key\` names another.
 export function setProp(node, value, key = "value") {
@@ -426,6 +426,13 @@ export function widget(parent, html, self) {
   // Widgets are numbered in page order (w1, w2, …): w1 is widgets[0].
   parent.insertAdjacentHTML("beforeend", \`<section data-key=w\${widgets.push(self)} data-role=widget>\${html}\`);
   return wire(parent.lastChild, self, 0);
+}
+
+// The instance of a widget that reads earlier ones (\`sources\`, their indexes in the registry):
+// its patch watches them, so a change to one schedules it.
+export function reader(sources, model, update, patch) {
+  for (const i of sources) widgets[i].watch(patch);
+  return instance(model, update, patch);
 }
 
 // Conditional content, built in the template: while hidden, an empty text node holds its place
@@ -527,7 +534,7 @@ ${timed ? "      running.clear();\n" : ""}      widgets.length = 0;
       components: "one block per widget in the app's dashboard function (its factory inlined, as it is called once): its initial model, its own reducer (a table of arms by message tag, written out from its ops), template and bindings; only generic helpers are shared",
       state: "each instance's model in its own closure; send(tag, value) runs the widget's reducer arm for that tag and schedules that instance's binding list",
       updates: "one patch function per instance, every DOM write skipped when unchanged; derived texts compiled to template literals; batched in a microtask",
-      crossWidget: "a reader reads the earlier widgets' models from the frame's registry (instances in page order, w1 first) in patch and watches them",
+      crossWidget: "a reader reads the earlier widgets' models from the frame's registry (instances in page order, w1 first) in patch; its instance, made by the frame's reader, has its patch watch them",
       externalEvents: "serverSet/snapshot replace instance models; notify sends a feed widget its Notify message; tick calls the widgets of a shared running set, each subscribing while its gate is on",
       lists: "runtime keyed list by item.id: patch changed rows, one forward placement pass when order or membership changes",
       dom: "one static template per widget (trailing end tags left out), inserted with its section by insertAdjacentHTML, elements addressed by document order; one template per list row, cloned per new item, its elements an array",
