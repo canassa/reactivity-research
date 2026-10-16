@@ -15,7 +15,7 @@ pieces the scenario needs. No emitter yet.
   40 rows); the panel's comparison now ignores an empty `class` (it did not before: `class=""`
   was a mismatch); the panel stylesheet highlights the selected row; `./rr report` and
   `./rr bench all` pass over a scenario with no frameworks in `runs.json`.
-- **Work** (`harness/work/big-table.js`): 25 local actions on t1-t4 plus the snapshot; `--rows`
+- **Work** (`harness/work/big-table.js`): 24 local actions on t1-t4 (after 4 untimed setup creates) plus the snapshot; `--rows`
   already passed through as a scenario option. **Bench** (`harness/bench/big-table.js`): the nine
   js-framework-benchmark operations as do/undo pairs with untimed `serverRows` resets.
 - **README:** decisions recorded, the description format documented, the worked example
