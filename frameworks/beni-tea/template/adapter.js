@@ -1,0 +1,1 @@
+../../beni/template/adapter.js
