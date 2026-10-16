@@ -59,7 +59,8 @@ widget) is a fresh object, and each factory is handed its own slice and its numb
 which has no state, is handed the model it reads and its sources' numbers). The model and the
 readers are keyed by number (`model[N]`, `readers[N]`); only a section's `data-key` spells
 `wN`. Tabs and options travel as `[title, content]` and `[value, label]` pairs, a filter's pool
-as its texts (the compiler checks they are numbered 1, 2, … and the factory numbers them).
+as its texts and a todo's initial items as `[text, done]` pairs (the compiler checks they are
+numbered 1, 2, … and the factory numbers them).
 (Spelling the arguments positionally and keeping each initial state in its row saved about 5%
 at N=256; deriving ids from row order about 6% more: property names, ids and a second tree
 keyed by id no longer repeat per widget.)
@@ -83,7 +84,9 @@ keyed by id no longer repeat per widget.)
   the rest of the DOM; while hidden, the node is swapped with an empty text node kept on it
   (`node.anchor`). Nothing is built lazily.
 - **Derived values.** A summary reads other widgets' state. At mount it adds its binding to the
-  `readers` of each widget it reads. A widget schedules its readers only from the actions that
+  `readers` of each widget it reads. Summaries read only widgets above them (the compiler checks),
+  so the app gives each widget its empty `readers[N]` list as it mounts, and a page without
+  summaries has none at all. A widget schedules its readers only from the actions that
   write a field a summary reads: `todo` does it on `add`, `toggle` and `remove`, but not on
   `editDraft`. The readers sit in the binding group of the field they read, so the action
   schedules one group.
@@ -125,30 +128,44 @@ keyed by id no longer repeat per widget.)
 kinds to share: every widget is its own module (`src/widgets/<id>.js`), written out from its
 description. The emitter compiles each widget's expressions to JavaScript, works out the fields
 each binding reads, and inlines every message into the action of its control, which writes the
-fields in place and schedules the per-field binding groups (`onVisits = [...]`); a field other
-widgets read lists their bindings (`R[widget].<field>`, registered at mount) in its own group;
-a binding reading another widget reads its slice in place (`model[3].email`). An enum cycle is
+fields in place and schedules the per-field binding groups. The groups live in the widget's
+**binding table** `G`, by place: `G[0]`, `G[1]`, … one per field, then every binding that
+reads several fields or other widgets, which adds itself at mount to the group of each field
+it reads (`G[0].push(G[4])`). A list is the first binding of its field's group, and its row
+edits are `G[1][0].add(item)` and `G[1][0].drop(item.id)`. A binding reading another widget
+reads its slice in place (`model[3].email`) and adds itself to the group of that field in that
+widget's table (`R[3][1].push(G[5])`): widgets read only widgets above them (the compiler
+checks), so the table is there already, and the writing widget lists nobody. An enum cycle is
 a chain of comparisons (`s.tone == "A" ? "B" : …`), since the compiler knows the options, and
 comparisons of values of one known type use loose equality.
 
 A widget's whole markup, conditional sections included, is one static HTML string, with the end
-tags HTML makes optional left out (`</option>`, and `</p>` before a block or its parent's end).
+tags HTML makes optional left out (`</option>`, and `</p>` before a block or its parent's end),
+and the run of end tags at its very end left out too, with the section's own (the parser closes
+them at the end of the string, as it does for Solid's templates).
 Each widget module adds `[markup, function]` to the array `W` when the app imports it, in page
 order, and the app mounts them with one `W.map`, so no widget is named or numbered in the
 bundle: for widget number N, `section` parses the markup once into the widget's section (keyed
 `wN`) and the app calls the function with the markup's elements and the widget's slice as its
-first parameters (`(E, s, readers, widget[, model])`). The code refers to an element by its
+first parameters, then its empty binding table (`(E, s, G[, R, model])`); the app, not the
+widget, then hands the table to `loader`, which schedules it all and returns the handle (with
+the external arms the widget returns, if any). The code refers to an element by its
 place, `E[n]`, counting in document order every element but headings, labels and options (which
-no code refers to, so `section` leaves them out). The initial model is an array by number. The
-only generic code beyond the runtime is three helpers in `widgets/widget.js` (`section`,
-`loader`, `nextId`) and `W`.
+no code refers to, so `section` leaves them out). The initial model is an array by number, its
+lists numbered 1, 2, … written as `items("a", "b")` (texts, or `[text, done]` pairs). The only
+generic code beyond the runtime is four helpers in `widgets/widget.js` (`section`, `loader`,
+`items`, `nextId`) and `W`. An input handler reads its control as `e.target`, which spells
+the same in every widget, where `E[n]` does not.
 
 Why it is written this way: the minifier names each widget function's locals itself, skipping
 the letters of the runtime functions that widget happens to use, so a widget's every own
 variable is a letter that differs from its neighbours'. Destructuring the elements into one
 variable each, or naming another widget's slice, cost about 4% at N=256 against `E[n]` and
 `model[N]`; passing the elements and the slice as parameters, which get the same two letters
-in every widget, saved 1.4% more.
+in every widget, saved 1.4% more. The binding table goes further the same way: one parameter,
+the same letter in every widget, for every group, list and shared binding, which were each a
+local with a letter of its own (−7% at N=256 in round 4, most of it from the table and from
+readers pushing into the source's table instead of a registry keyed by field name).
 
 What did not help here: building list rows from a parsed template or from markup (more bytes than
 `el(...)` calls at N=256), a single binding as a bare function instead of a one-item group, and
@@ -159,7 +176,14 @@ fields in local variables (as digest does; the minifier's per-function letters m
 widgets differ, +2% at N=256), keeping the binding groups in one object by field name (`G.tone`,
 +4.6%), fusing a field's bindings into one function (fewer calls, more bytes), or marking the
 referenced elements with an attribute removed at mount (−0.8% at N=256 but +25 B for small
-apps). In shared-components, building factories from static markup also lost: the per-widget
+apps). Round 4 dead ends: pushing the shared bindings into `G` first, in a `G.push` of their
+own before the groups that list them (+160 B at N=256 against adding them to their groups
+afterwards), the widget's own readers as a parameter, a handle table keyed by `wN`,
+`W.push(markup, function)` without the pair, an int handler reusing its event parameter (all
+noise or larger), `items` split into one helper per kind of list (small apps grew), and
+exporting the runtime's pending set instead of `cancel` (+560 B at N=256 in unique-components:
+one top-level name less shifts every minified letter). In shared-components, building
+factories from static markup also lost: the per-widget
 texts then need one assignment each. Expect the slope to be the cost of per-widget DOM
 construction and actions, with no shared factory to amortize it.
 
