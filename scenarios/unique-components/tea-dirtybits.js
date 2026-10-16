@@ -8,7 +8,7 @@
 //   bits of the fields it writes), its initial state, and its DOM factory `view(parent, id)`,
 //   which builds the DOM once from one static template (nodes found by position) and returns a
 //   static `patch(s, d, w)` that runs only the bindings whose bits are set. The module adds
-//   the triple [initial state, reducer, view] under its id to the registry in widget.js when
+//   the triple [view, reducer, initial state] under its id to the registry in widget.js when
 //   the app imports it (in page order), so no binding is named per widget. Bits and message
 //   tags are numbers. No tables of ops or view
 //   trees: nothing is interpreted at runtime.
@@ -432,17 +432,8 @@ import { ${helpers.has("nextId") ? "WIDGETS, nextId" : "WIDGETS"} } from "./widg
 // Dirty bits: ${bits.join(", ")}.
 // Message tags: ${tags.join(", ")}.
 
-// The widget: its initial state, its reducer and its DOM factory.
+// The widget: its DOM factory, its reducer and its initial state.
 WIDGETS.${w.id} = [
-  ${literal(Object.fromEntries(w.fields.map((f) => [f.name, f.initial])), "  ")},
-
-  (s, msg) => {
-    switch (msg.type) {
-${indent(arms)}
-    }
-    return s;
-  },
-
   // Builds the widget once and returns its static patch.
   (parent, id) => {
     const t = html(${J(trimTemplate(markup))}, parent);
@@ -452,6 +443,15 @@ ${indent(body)}
 ${indent(patch)}
     };
   },
+
+  (s, msg) => {
+    switch (msg.type) {
+${indent(arms)}
+    }
+    return s;
+  },
+
+  ${literal(Object.fromEntries(w.fields.map((f) => [f.name, f.initial])), "  ")},
 ];
 `;
   return { file, reads, bit: own };
@@ -479,13 +479,13 @@ function appFile(spec, mods) {
   }
   return `import { take, touch, html } from "./runtime.js";
 import { WIDGETS } from "./widgets/widget.js";
-// Every widget in page order: each module adds its own [initial state, reducer, view].
+// Every widget in page order: each module adds its own [view, reducer, initial state].
 ${imports.join("\n")}
 
 // The initial model: one slice per widget, from its module.
 export function init() {
   const widgets = {};
-  for (const id in WIDGETS) widgets[id] = WIDGETS[id][0];
+  for (const id in WIDGETS) widgets[id] = WIDGETS[id][2];
   return { widgets };
 }
 
@@ -528,7 +528,7 @@ export function view(root, model) {
   const dash = html("<div data-role=dashboard></div>", root)[0];
   const w = model.widgets;
   const patches = {};
-  for (const id in WIDGETS) (patches[id] = WIDGETS[id][2](dash, id))(w[id], -1, w);
+  for (const id in WIDGETS) (patches[id] = WIDGETS[id][0](dash, id))(w[id], -1, w);
   return (model, dirty) => {
     const w = model.widgets;
 ${edges.join("\n")}
