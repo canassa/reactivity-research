@@ -291,8 +291,7 @@ export function rating(parent, heading, stars, labels) {
   const row = element(root, "div");
   const buttons = [];
   for (let n = 1; n <= stars; n++) {
-    const button = on(element(row, "button", { "data-role": "star", "data-key": n }, " "), "click", () => self.send(0, n));
-    buttons.push(button);
+    buttons.push(on(element(row, "button", { "data-role": "star", "data-key": n }, " "), "click", () => self.send(0, n)));
   }
   const label = element(root, "p", { "data-role": "rating-label" }, " ");
 }
@@ -305,7 +304,7 @@ export function feed(parent, heading, emptyText, dismissText, model) {
   const patch = () => {
     const m = self.m;
     entries(m.entries);
-    show(root, empty, m.entries.length === 0);
+    show(root, empty, !m.entries.length);
   };
   // type Msg = Dismiss Int | Notify Entry
   const self = instance(model, [
