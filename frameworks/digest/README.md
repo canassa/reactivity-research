@@ -954,3 +954,61 @@ big-component writes it. `./rr check unique-components digest` still passes (loc
 costs 61 calls instead of 57 at N=16-128 (81 instead of 77 at 256). Sizes: N=1 1,609 to 1,599 B,
 N=16 4,793 to 4,814, N=64 12,616 to 12,620, N=256 35,617 to 35,682 (fit 2,339 + 134.5 to 2,333 +
 134.7 B/widget).
+
+## derived-graph
+
+**digest fails this scenario's locality check. This is a dead end, kept as the honest result**, as
+in big-component, and for the same reason.
+
+`scenarios/derived-graph/digest.js` writes the sheet and the items section as one function, with
+`runtime-graph.js` as the runtime and `graph-helpers.js` (`num`, `sum`, `avg`, `maxOf`, `minOf`,
+`top`, `grp`) as app code. State is plain variables, one per input and per formula. Each formula is
+one line, `calc(() => $x = <its expression as JavaScript>)`, each display one `text(d, () =>
+\`Label tok: ${cur($x)}\`)` on the element at distance d from the previous binding's, and each
+control one arrow function given to the controls in document order. The sheet is **one binding
+list**, formulas and displays in unit order, so one pass leaves every value consistent. Items are
+the big-table mechanism: a reconciler list for the rows and one list per row; a row control
+digests its own row, and the handler digests the sheet by hand when the edit changes something the
+sheet reads (a quantity, the active flag, a removed row). The page is correct: `./rr check
+derived-graph digest` passes every step at sizes 1, 4, 16, 64 (and 256), seeds 1-3, and
+`--fanout low` and `high` at 16, with no mismatch, focus loss or replaced keyed node.
+
+**Locality** (`./rr work`, seed 1, 2,000 rows, calls per local action): the chain input costs
+26,603 at N=16, then 36,285, 80,549, 231,407 and 455,288 at N=256 (17.1×). The check, with 30
+rows, reports 13.8× (median 696 to 9,371 calls; worst: toggle). The fail is the median: every
+action that touches the sheet re-runs every formula and display, so its cost is the size of the
+sheet. The only flat actions are the ones that never reach it: a note keystroke (26 calls) and the
+markup (46,009: one cell per row, nothing else).
+
+**Rows axis** (N=64, `--rows 1000` against `10000`): the chain input costs 40,326 against 420,285
+(10.4×), and every other sheet action grows the same: nothing is memoized, so a chain edit
+re-sums the aggregates over the items. The markup is 23,009 against 230,009 (10×, one cell per
+row); a note, 26 and 26. Item edits cost 45,097 against 483,263 for a quantity.
+
+**Why it is not rescued by a list per unit.** The readers that joined a source's list (the
+summary in shared-components) worked because they were one level deep. Here a formula reads any
+earlier cell and chains go six levels, so an input's list would have to carry its whole downstream
+closure, computed by the compiler and copied into each ancestor's list. I measured that closure
+from the spec (seed 1, `--fanout mid`): the 1,991 read edges at N=256 become 11,260
+(binding, list) pairs (10,645 to 12,925 over the seeds), the largest closure is 613 to 663
+bindings, and the items' closure is about 1,000. The closed inputs' closures are the same at
+every N (12 and 9 bindings), so such a version would be local, but:
+- the compiler would have to know, for every binding, which cells it reads and, for every handler,
+  which cells it writes, and emit the exact set of bindings each action runs. That is tea-inline's
+  per-field scheduling by the fields an action writes, under another name;
+- what would be left of digest is that a run re-executes a closure and lets each binding check
+  itself, which changes how many bindings of a closure run, not what decides which ones;
+- the lists would be drawn per cell, the granularity digest's own section says it does not try,
+  and any coarser list (every k units) is the arbitrary chunking the owner rejected.
+
+So the flat sheet is digest's honest form for a scenario without boundaries, and it is O(N) per
+event. The per-cell form was not built and is not measured.
+
+**Sizes** (`./rr measure`, brotli, median of 3 seeds, not committed): `--fanout mid` N=1 1,967 B,
+N=16 3,642, N=64 7,557, N=256 21,744 (html about 145, runtime 804 at every N, app the rest). Fit
+over N ≥ 16: 2,597 B + 75.3 B per unit (R² 0.999); `low`: 2,656 + 59.0 (N=256 17,527); `high`:
+2,529 + 100.0 (N=256 28,075). Not a competitive
+point, since it does not stay local; it is the size of the flat version.
+
+Style choices are in the emitter's `style`. `runs.json` has no `digest` entry for derived-graph
+(a `$comment`, as for big-component) and lists it under `$bench.also`, timed for reference only.
