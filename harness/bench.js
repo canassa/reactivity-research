@@ -443,7 +443,9 @@ async function remoteBench(args, rest) {
   if (!args.chrome && defaults.chrome) passed.push("--chrome", defaults.chrome);
   const q = (s) => `'${String(s).replace(/'/g, `'\\''`)}'`;
   const ssh = (script) => {
-    const r = spawnSync("ssh", [host, "bash", "-lc", q(script)], { stdio: "inherit" });
+    // -n and no stdin: with an inherited stdin that never closes (a background job), the session
+    // stayed open after the remote script had exited.
+    const r = spawnSync("ssh", ["-n", host, "bash", "-lc", q(script)], { stdio: ["ignore", "inherit", "inherit"] });
     if (r.status !== 0) throw new Error(`ssh ${host} failed (exit ${r.status})`);
   };
 
