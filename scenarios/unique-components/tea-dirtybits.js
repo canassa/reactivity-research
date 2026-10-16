@@ -214,7 +214,7 @@ function widgetModule(w) {
     }
     return out;
   };
-  const W = J(w.id);
+  const W = "id";
 
   // Elements are numbered in document order, as `html` returns them: `t[0]` is the section.
   let count = 0;
@@ -384,7 +384,7 @@ function widgetModule(w) {
   const body = [];
   node(); // the section
   node(); // its heading
-  const markup = `<section data-role=widget data-key=${w.id}><h2>${esc(w.label)}</h2>${build(w.view, root, body, "  ")}</section>`;
+  const markup = `<section data-role=widget><h2>${esc(w.label)}</h2>${build(w.view, root, body, "  ")}</section>`;
   let patch = patchBody(root, "    ");
   // Patches take the whole model (`w`) only when the widget reads another widget.
   const args = reads.size ? "s, d, w" : "s, d";
@@ -417,8 +417,9 @@ ${arms.join("\n")}
 }
 
 // Builds the widget once and returns its static patch.
-export function view(parent) {
+export function view(parent, id) {
   const t = html(${J(markup)}, parent);
+  t[0].dataset.key = id;
 ${body.join("\n")}
   return (${args}) => {
 ${patch.join("\n")}
@@ -502,7 +503,7 @@ export function view(root, model) {
   const dash = html("<div data-role=dashboard></div>", root)[0];
   const w = model.widgets;
   const patches = {};
-  for (const id in WIDGETS) (patches[id] = WIDGETS[id][2](dash))(w[id], -1, w);
+  for (const id in WIDGETS) (patches[id] = WIDGETS[id][2](dash, id))(w[id], -1, w);
   return (model, dirty) => {
     const w = model.widgets;
 ${edges.join("\n")}
