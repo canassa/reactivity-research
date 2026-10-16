@@ -94,7 +94,7 @@ export function show(parent, node, shown) {
 // reducer and schedules the instance's `patch` (its binding list) and whoever watches it.
 // There is no global dispatch, no dirty bits and no dependency tracking.
 
-export function instance(model, update, patch, config) {
+export function instance(model, update, patch) {
   const watchers = [];
   const set = (next) => {
     if (next === self.m) return;
@@ -106,7 +106,7 @@ export function instance(model, update, patch, config) {
   schedule(patch); // the first render, in the flush after mount
   const self = {
     m: model,
-    send: (msg) => set(update(self.m, msg, config)),
+    send: (msg) => set(update(self.m, msg)),
     set,
     watch: (watcher) => watchers.push(watcher),
   };

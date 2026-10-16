@@ -2,10 +2,11 @@
 // ideal compiler would emit from a TEA source of the dashboard, with local message routing.
 //
 // Style (recorded in every generated app's rr.json):
-// - One module per widget kind: its message tags, its reducer `update(model, msg, config)` and
-//   its factory `kind(parent, config, model)`, shared by every widget of that kind. Each widget
-//   is one call of its kind's factory with its own config (label, limits, items, rules as
-//   functions, formats, summary formula) and its initial model.
+// - One module per widget kind: its message tags, its reducer `update(model, msg)` and its
+//   factory `kind(parent, id, heading, ...config, model)`, shared by every widget of that kind.
+//   Each widget is one call of its kind's factory with its own config as positional arguments
+//   (label, limits, items, rules as functions, formats, summary formula) and its initial model.
+//   A reducer that reads the config (the counter's limits) is declared in the factory.
 // - A factory builds the widget's DOM once (createElement calls), wires its DOM events to its
 //   own instance's `send`, and declares one `patch` function: the binding list, where every
 //   write is skipped when its value did not change.
@@ -74,20 +75,12 @@ const Inc = [0];
 const Dec = [1];
 const Reset = [2];
 
-function update(model, msg, c) {
-  switch (msg[0]) {
-    case 0: return { value: Math.min(c.max, model.value + c.step) };
-    case 1: return { value: Math.max(c.min, model.value - c.step) };
-    case 2: return { value: c.start };
-  }
-}
-
-export function counter(parent, c, model) {
-  const self = instance(model, update, patch, c);
-  const root = widget(parent, c, "counter", self);
+export function counter(parent, id, heading, step, min, max, start, model) {
+  const self = instance(model, update, patch);
+  const root = widget(parent, id, heading, "counter", self);
   const value = element(root, "output", { "data-role": "value" }, " ");
-  const dec = element(root, "button", { "data-role": "dec" }, "-" + c.step);
-  const inc = element(root, "button", { "data-role": "inc" }, "+" + c.step);
+  const dec = element(root, "button", { "data-role": "dec" }, "-" + step);
+  const inc = element(root, "button", { "data-role": "inc" }, "+" + step);
   const reset = element(root, "button", { "data-role": "reset" }, "Reset");
   on(dec, "click", () => self.send(Dec));
   on(inc, "click", () => self.send(Inc));
@@ -96,8 +89,16 @@ export function counter(parent, c, model) {
   function patch() {
     const m = self.m;
     setText(value, m.value);
-    setProp(dec, "disabled", m.value <= c.min);
-    setProp(inc, "disabled", m.value >= c.max);
+    setProp(dec, "disabled", m.value <= min);
+    setProp(inc, "disabled", m.value >= max);
+  }
+  // The reducer reads the widget's limits, so it closes over them.
+  function update(model, msg) {
+    switch (msg[0]) {
+      case 0: return { value: Math.min(max, model.value + step) };
+      case 1: return { value: Math.max(min, model.value - step) };
+      case 2: return { value: start };
+    }
   }
   return self;
 }
@@ -109,11 +110,11 @@ function update(model, msg) {
   return { on: model.on.map((on, i) => (i === msg[1] ? !on : on)) };
 }
 
-export function toggles(parent, c, model) {
+export function toggles(parent, id, heading, items, model) {
   const self = instance(model, update, patch);
-  const root = widget(parent, c, "toggles", self);
+  const root = widget(parent, id, heading, "toggles", self);
   const ul = element(root, "ul");
-  const boxes = c.items.map((name, i) => {
+  const boxes = items.map((name, i) => {
     const label = element(element(ul, "li"), "label");
     const box = element(label, "input", { type: "checkbox", "data-role": "toggle", "data-key": i });
     label.append(name);
@@ -125,7 +126,7 @@ export function toggles(parent, c, model) {
   function patch() {
     const m = self.m;
     boxes.forEach((box, i) => setProp(box, "checked", m.on[i]));
-    setText(count, \`\${m.on.filter(Boolean).length} of \${c.items.length} on\`);
+    setText(count, \`\${m.on.filter(Boolean).length} of \${items.length} on\`);
   }
   return self;
 }
@@ -137,16 +138,16 @@ function update(model, msg) {
   return { text: msg[1] };
 }
 
-export function field(parent, c, model) {
+export function field(parent, id, heading, placeholder, validate, model) {
   const self = instance(model, update, patch);
-  const root = widget(parent, c, "field", self);
-  const input = element(root, "input", { type: "text", "data-role": "input", placeholder: c.placeholder });
+  const root = widget(parent, id, heading, "field", self);
+  const input = element(root, "input", { type: "text", "data-role": "input", placeholder: placeholder });
   on(input, "input", () => self.send([0, input.value]));
   const error = element(null, "p", { "data-role": "error" }, " ");
 
   function patch() {
     const m = self.m;
-    const problem = c.validate(m.text);
+    const problem = validate(m.text);
     setProp(input, "value", m.text);
     if (problem) setText(error, problem);
     show(root, error, problem);
@@ -171,17 +172,17 @@ function update(model, msg) {
   }
 }
 
-export function todo(parent, c, model) {
+export function todo(parent, id, heading, placeholder, addText, removeText, model) {
   const self = instance(model, update, patch);
-  const root = widget(parent, c, "todo", self);
-  const draft = element(root, "input", { type: "text", "data-role": "draft", placeholder: c.placeholder });
+  const root = widget(parent, id, heading, "todo", self);
+  const draft = element(root, "input", { type: "text", "data-role": "draft", placeholder: placeholder });
   on(draft, "input", () => self.send([0, draft.value]));
-  on(element(root, "button", { "data-role": "add" }, c.addText), "click", () => self.send([1]));
+  on(element(root, "button", { "data-role": "add" }, addText), "click", () => self.send([1]));
   const items = list(element(root, "ul"), (item) => {
     const li = element(null, "li");
     const box = element(li, "input", { type: "checkbox", "data-role": "toggle" });
     const label = element(li, "span", null, " ");
-    const remove = element(li, "button", { "data-role": "remove" }, c.removeText);
+    const remove = element(li, "button", { "data-role": "remove" }, removeText);
     on(box, "change", () => self.send([2, item.id]));
     on(remove, "click", () => self.send([3, item.id]));
     return {
@@ -211,11 +212,11 @@ function update(model, msg) {
   return { active: msg[1] };
 }
 
-export function tabs(parent, c, model) {
+export function tabs(parent, id, heading, tabs, model) {
   const self = instance(model, update, patch);
-  const root = widget(parent, c, "tabs", self);
+  const root = widget(parent, id, heading, "tabs", self);
   const tablist = element(root, "div", { role: "tablist" });
-  const buttons = c.tabs.map((tab, i) => {
+  const buttons = tabs.map((tab, i) => {
     const button = element(tablist, "button", { role: "tab", "data-role": "tab", "data-key": i }, tab.title);
     on(button, "click", () => self.send([0, i]));
     return button;
@@ -225,7 +226,7 @@ export function tabs(parent, c, model) {
   function patch() {
     const m = self.m;
     buttons.forEach((button, i) => setProp(button, "ariaSelected", i === m.active ? "true" : "false"));
-    setText(content, c.tabs[m.active].content);
+    setText(content, tabs[m.active].content);
   }
   return self;
 }
@@ -237,18 +238,18 @@ function update(model) {
   return { open: !model.open };
 }
 
-export function panel(parent, c, model) {
+export function panel(parent, id, heading, showText, hideText, body, model) {
   const self = instance(model, update, patch);
-  const root = widget(parent, c, "panel", self);
+  const root = widget(parent, id, heading, "panel", self);
   const toggle = element(root, "button", { "data-role": "toggle" }, " ");
   on(toggle, "click", () => self.send([0]));
-  const body = element(null, "p", { "data-role": "body" }, c.body);
+  const text = element(null, "p", { "data-role": "body" }, body);
 
   function patch() {
     const m = self.m;
     setProp(toggle, "ariaExpanded", m.open ? "true" : "false");
-    setText(toggle, m.open ? c.hideText : c.showText);
-    show(root, body, m.open);
+    setText(toggle, m.open ? hideText : showText);
+    show(root, text, m.open);
   }
   return self;
 }
@@ -263,20 +264,20 @@ function update(model, msg) {
   }
 }
 
-export function choice(parent, c, model) {
+export function choice(parent, id, heading, options, extraFor, extraPlaceholder, model) {
   const self = instance(model, update, patch);
-  const root = widget(parent, c, "choice", self);
+  const root = widget(parent, id, heading, "choice", self);
   const select = element(root, "select", { "data-role": "select" });
-  for (const option of c.options) element(select, "option", { value: option.value }, option.label);
+  for (const option of options) element(select, "option", { value: option.value }, option.label);
   on(select, "change", () => self.send([0, select.value]));
-  const extra = element(null, "input", { type: "text", "data-role": "extra", placeholder: c.extraPlaceholder });
+  const extra = element(null, "input", { type: "text", "data-role": "extra", placeholder: extraPlaceholder });
   on(extra, "input", () => self.send([1, extra.value]));
 
   function patch() {
     const m = self.m;
     setProp(select, "value", m.option);
     setProp(extra, "value", m.extra);
-    show(root, extra, c.extraFor.includes(m.option));
+    show(root, extra, extraFor.includes(m.option));
   }
   return self;
 }
@@ -288,9 +289,9 @@ function update(model, msg) {
   return { value: msg[1] };
 }
 
-export function amount(parent, c, model) {
+export function amount(parent, id, heading, format, model) {
   const self = instance(model, update, patch);
-  const root = widget(parent, c, "amount", self);
+  const root = widget(parent, id, heading, "amount", self);
   const input = element(root, "input", { type: "number", "data-role": "input" });
   // Only a valid number is a message; anything else stays in the input, unsent.
   on(input, "input", () => {
@@ -302,7 +303,7 @@ export function amount(parent, c, model) {
   function patch() {
     const m = self.m;
     if (input.valueAsNumber !== m.value) input.value = m.value;
-    setText(formatted, c.format(m.value));
+    setText(formatted, format(m.value));
   }
   return self;
 }
@@ -314,10 +315,10 @@ function update(model, msg) {
   return { query: msg[1] };
 }
 
-export function filter(parent, c, model) {
+export function filter(parent, id, heading, items, placeholder, model) {
   const self = instance(model, update, patch);
-  const root = widget(parent, c, "filter", self);
-  const input = element(root, "input", { type: "text", "data-role": "query", placeholder: c.placeholder });
+  const root = widget(parent, id, heading, "filter", self);
+  const input = element(root, "input", { type: "text", "data-role": "query", placeholder: placeholder });
   on(input, "input", () => self.send([0, input.value]));
   // The items are fixed per widget, so a row never changes once built.
   const shown = list(element(root, "ul"), (item) => ({
@@ -329,7 +330,7 @@ export function filter(parent, c, model) {
   function patch() {
     const m = self.m;
     const query = m.query.toLowerCase();
-    const matches = c.items.filter((item) => item.text.toLowerCase().includes(query));
+    const matches = items.filter((item) => item.text.toLowerCase().includes(query));
     setProp(input, "value", m.query);
     shown(matches);
     setText(count, \`\${matches.length} matches\`);
@@ -344,25 +345,25 @@ function update(model, msg) {
   return { stars: msg[1] };
 }
 
-export function rating(parent, c, model) {
+export function rating(parent, id, heading, stars, labels, model) {
   const self = instance(model, update, patch);
-  const root = widget(parent, c, "rating", self);
+  const root = widget(parent, id, heading, "rating", self);
   const row = element(root, "div");
-  const stars = [];
-  for (let n = 1; n <= c.stars; n++) {
+  const buttons = [];
+  for (let n = 1; n <= stars; n++) {
     const button = element(row, "button", { "data-role": "star", "data-key": n }, " ");
-    stars.push(button);
+    buttons.push(button);
     on(button, "click", () => self.send([0, n]));
   }
   const label = element(root, "p", { "data-role": "rating-label" }, " ");
 
   function patch() {
     const m = self.m;
-    stars.forEach((button, i) => {
+    buttons.forEach((button, i) => {
       setProp(button, "ariaPressed", i < m.stars ? "true" : "false");
       setText(button, i < m.stars ? "★" : "☆");
     });
-    setText(label, c.labels[m.stars]);
+    setText(label, labels[m.stars]);
   }
   return self;
 }
@@ -379,16 +380,16 @@ function update(model, msg) {
   }
 }
 
-export function feed(parent, c, model) {
+export function feed(parent, id, heading, emptyText, dismissText, model) {
   const self = instance(model, update, patch);
-  const root = widget(parent, c, "feed", self);
+  const root = widget(parent, id, heading, "feed", self);
   const entries = list(element(root, "ul"), (entry) => {
     const li = element(null, "li");
     const label = element(li, "span", null, " ");
-    on(element(li, "button", { "data-role": "dismiss" }, c.dismissText), "click", () => self.send([0, entry.id]));
+    on(element(li, "button", { "data-role": "dismiss" }, dismissText), "click", () => self.send([0, entry.id]));
     return { node: li, patch: (next) => setText(label, next.text) };
   });
-  const empty = element(null, "p", { "data-role": "empty" }, c.emptyText);
+  const empty = element(null, "p", { "data-role": "empty" }, emptyText);
 
   function patch() {
     const m = self.m;
@@ -416,13 +417,13 @@ function formatTime(seconds) {
   return \`\${Math.floor(seconds / 60)}:\${String(seconds % 60).padStart(2, "0")}\`;
 }
 
-export function clock(parent, c, model) {
+export function clock(parent, id, heading, startText, stopText, resetText, model) {
   const self = instance(model, update, patch);
-  const root = widget(parent, c, "clock", self);
+  const root = widget(parent, id, heading, "clock", self);
   const time = element(root, "output", { "data-role": "time" }, " ");
-  const start = element(root, "button", { "data-role": "start" }, c.startText);
-  const stop = element(root, "button", { "data-role": "stop" }, c.stopText);
-  const reset = element(root, "button", { "data-role": "reset" }, c.resetText);
+  const start = element(root, "button", { "data-role": "start" }, startText);
+  const stop = element(root, "button", { "data-role": "stop" }, stopText);
+  const reset = element(root, "button", { "data-role": "reset" }, resetText);
   on(start, "click", () => self.send([0]));
   on(stop, "click", () => self.send([1]));
   on(reset, "click", () => self.send([2]));
@@ -440,12 +441,12 @@ export function clock(parent, c, model) {
   summary: `${HEAD(["element", "setText"])}
 // No model and no messages: the line is derived from the instances it reads. Each of them
 // schedules this patch when its model changes.
-export function summary(parent, c, sources) {
-  const root = widget(parent, c, "summary");
+export function summary(parent, id, heading, text, sources) {
+  const root = widget(parent, id, heading, "summary");
   const line = element(root, "p", { "data-role": "summary" }, " ");
 
   function patch() {
-    setText(line, c.text(...sources.map((source) => source.m)));
+    setText(line, text(...sources.map((source) => source.m)));
   }
   for (const source of sources) source.watch(patch);
   patch();
@@ -460,10 +461,10 @@ export const widgets = new Map();
 
 // The frame every widget shares: its keyed section and its heading. It registers the widget's
 // instance (a summary has none, and no event names it).
-export function widget(parent, c, kind, self) {
-  widgets.set(c.id, self);
-  const section = element(parent, "section", { "data-key": c.id, "data-role": "widget-" + kind });
-  element(section, "h2", null, c.label);
+export function widget(parent, id, heading, kind, self) {
+  widgets.set(id, self);
+  const section = element(parent, "section", { "data-key": id, "data-role": "widget-" + kind });
+  element(section, "h2", null, heading);
   return section;
 }
 `;
@@ -533,21 +534,24 @@ function needsFormatNumber(spec) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// The app: one config and one factory call per widget, and the routing of external events.
+// The app: one factory call per widget, with its config, and the routing of external events.
 
-function config(spec, w, readFilters) {
-  const entries = [`id: "${w.id}"`, `label: ${JSON.stringify(w.label)}`];
+// The factory call's arguments: the parent, the widget's id, label and config fields in its
+// kind's order, and `last` (the initial model, or a summary's sources).
+function args(spec, w, readFilters, last) {
+  const entries = ["main", `"${w.id}"`, JSON.stringify(w.label)];
   for (const name of PARAMS[w.kind]) {
     let code;
     if (name === "text") code = summaryText(spec, w, "    ");
     else if (FUNCTIONS[name]) code = FUNCTIONS[name](w);
     else if (w.kind === "filter" && name === "items" && readFilters.has(w.id)) code = itemsName(w);
     else code = literal(w[name], "    ");
-    entries.push(`${name}: ${code}`);
+    entries.push(code);
   }
-  const flat = `{ ${entries.join(", ")} }`;
+  entries.push(last);
+  const flat = entries.join(", ");
   if (flat.length <= 80 && !flat.includes("\n")) return flat;
-  return `{\n${entries.map((e) => "    " + e + ",").join("\n")}\n  }`;
+  return `\n${entries.map((e) => "    " + e).join(",\n")},\n  `;
 }
 
 function appFile(spec) {
@@ -574,9 +578,8 @@ function appFile(spec) {
   // Only the widgets the app refers to (summary sources, clocks) need a name.
   const named = new Set([...spec.widgets.flatMap((w) => w.sources ?? []), ...clocks.map((w) => w.id)]);
   const calls = spec.widgets.map((w) => {
-    const c = config(spec, w, readFilters);
-    if (w.kind === "summary") return `  ${w.kind}(main, ${c}, [${w.sources.join(", ")}]);`;
-    const call = `${w.kind}(main, ${c}, ${literal(spec.initialState.widgets[w.id], "  ")});`;
+    if (w.kind === "summary") return `  ${w.kind}(${args(spec, w, readFilters, `[${w.sources.join(", ")}]`)});`;
+    const call = `${w.kind}(${args(spec, w, readFilters, literal(spec.initialState.widgets[w.id], "    "))});`;
     return named.has(w.id) ? `  const ${w.id} = ${call}` : `  ${call}`;
   });
 
