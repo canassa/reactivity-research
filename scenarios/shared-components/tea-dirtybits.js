@@ -175,9 +175,10 @@ export const kind = [
     (c, s, msg) => [2, { ...s, draft: msg.value }],
     (c, s) => {
       const text = s.draft.trim();
-      if (text === "") return;
-      const id = s.items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
-      return [3, { items: [...s.items, { id, text, done: false }], draft: "" }];
+      return text !== "" && [3, {
+        items: [...s.items, { id: s.items.reduce((max, item) => Math.max(max, item.id), 0) + 1, text, done: false }],
+        draft: "",
+      }];
     },
     (c, s, msg) => [1, { ...s, items: s.items.map((item) => (item.id === msg.id ? { ...item, done: !item.done } : item)) }],
     (c, s, msg) => [1, { ...s, items: s.items.filter((item) => item.id !== msg.id) }],
