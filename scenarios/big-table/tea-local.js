@@ -84,10 +84,7 @@ export function mmDd(day) {
   return \`\${String(m + 1).padStart(2, "0")}-\${String(d).padStart(2, "0")}\`;
 }
 
-export function has(rows, id) {
-  for (const r of rows) if (r.id === id) return true;
-  return false;
-}
+export const has = (rows, id) => rows.some((r) => r.id === id);
 
 // The model with other rows; the selection goes with its row.
 export function rowsOf(m, rows) {
@@ -98,37 +95,31 @@ export function rowsOf(m, rows) {
 // Changes one row (found by its key); every other row object is kept.
 export function edit(m, id, change) {
   const rows = m.rows.slice();
-  let i = 0;
-  while (rows[i].id !== id) i++;
+  const i = rows.findIndex((r) => r.id === id);
   rows[i] = change(rows[i]);
   return { ...m, rows };
 }
 
 // The messages of the external events (the first three constructors of every table).
 export function loadRows(m, rows) {
-  let top = 0;
-  for (const r of rows) top = Math.max(top, r.id);
+  const top = rows.reduce((max, r) => Math.max(max, r.id), 0);
   return { ...m, rows, selected: m.selected != null && has(rows, m.selected) ? m.selected : null, nextId: Math.max(m.nextId, top + 1) };
 }
 
 export function setColumn(m, { column, changes }) {
   const values = new Map(changes.map((c) => [c.id, c.value]));
-  let rows = m.rows;
-  for (let i = 0; i < rows.length; i++) {
-    const r = rows[i];
-    if (values.has(r.id) && r[column] !== values.get(r.id)) {
-      if (rows === m.rows) rows = rows.slice();
-      rows[i] = { ...r, [column]: values.get(r.id) };
-    }
-  }
-  return rows === m.rows ? m : { ...m, rows };
+  let changed = false;
+  const rows = m.rows.map((r) => {
+    if (!values.has(r.id) || r[column] === values.get(r.id)) return r;
+    changed = true;
+    return { ...r, [column]: values.get(r.id) };
+  });
+  return changed ? { ...m, rows } : m;
 }
 
 export function dropIds(m, ids) {
   const gone = new Set(ids);
-  const rows = [];
-  for (const r of m.rows) if (!gone.has(r.id)) rows.push(r);
-  return rowsOf(m, rows);
+  return rowsOf(m, m.rows.filter((r) => !gone.has(r.id)));
 }
 `;
 
@@ -377,6 +368,7 @@ ${indent(blocks.join("\n"))}
           at(msg).send(2, msg.ids);
           break;
         case "snapshot":
+          // Each instance takes its model directly from the payload (same shape as the model).
           tables.forEach((t, i) => t.set(msg.state.tables["t" + (i + 1)]));
           break;
       }
@@ -398,7 +390,6 @@ ${indent(blocks.join("\n"))}
       externalEvents: "serverRows, serverUpdate and serverDelete are messages to the table's instance (routed by table id); a snapshot sets every instance's model",
       lists: "runtime keyed list (src/table.js) whose rows are the tr nodes: patch changed rows, one forward placement pass when order or membership changes",
       dom: "the table's markup as one static template (trailing end tags left out), the row as a template cloned per new row, placeholders for dynamic texts",
-      loops: "O(rows) scans in reducers and helpers are plain loops, not callbacks (./rr work counts function calls)",
       build: "Vite production build, no framework plugin, hidden source maps",
     },
   };

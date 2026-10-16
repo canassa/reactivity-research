@@ -313,25 +313,33 @@ the app.
 - **Runtime addition:** `template/table.js` (opt-in, counted as runtime): `keyed` (rows are
   nodes, `get(id)`), `mark`, `rowEvents`. The number and date formatters, the PRNG step and the
   reducer steps of the external events are generic app helpers (`tables/frame.js`).
-- **Loops, not callbacks, for scans.** `./rr work` counts function calls, so the O(rows) scans in
-  reducers (find a row, drop ids, apply server changes) are plain loops. Calls therefore
-  understate scan work; `blocks` counts some of it, but not the plain walk of the keyed list.
+- **Reducer helpers use the ordinary array methods** (`findIndex`, `filter`, `some`, `map`,
+  `reduce`), as the other tea-local emitters do. `./rr work` counts function calls, so the
+  rows-proportional cost shows in the counts.
 
 ### Results
 
 - `./rr check big-table tea-local` passes at sizes 1, 4, 16 and 64 with seeds 1-3, locality
-  included: 1.0x from N=16 to 256 (median 17 calls, 17 at both ends). Builds are byte-identical.
-- Calls per local action are flat in N (select 10, swap 11, remove 14, toggle 17, bump 25,
-  `serverUpdate` 53); only the snapshot grows (27,367 to 36,071, global).
-- **Rows axis** (N=16, `--rows 1000` against `10000`, calls): select 10 to 10, remove 14 to 14,
-  `serverDelete` 12 to 12, `serverUpdate` 53 to 53, toggle 17 to 17, bump 25 to 25, swap 11 to 11.
-  `updateEvery` is proportional: 311 to 3011 (t1), 1511 to 15011 (t3), 515 to 5015 (t4). Create,
-  append, sort and `serverRows` are proportional (about 7 calls per row in table 1, 19 in table 3).
-  These flat call counts hide scans that are loops: remove, toggle, bump, `serverUpdate` and
-  `serverDelete` slice or filter the rows array and walk the keyed list, O(rows) with no calls
-  (blocks for remove: 2,021 to 20,021). Select and swap have no scan: select binds nothing to
-  the rows, swap's rows walk only reorders.
-- **Bytes** (brotli, mean of 3 seeds): N=1 2230, 16 6592, 64 14488, 256 41256. Fit 4182 B +
-  147.6 B per table over N >= 4 (3562 + 151.2 over all sizes). Runtime 887 B (874 at N=1), HTML
+  included: 1.0x from N=16 to 256 (median 498 calls at both ends). Builds are byte-identical.
+- Over **N** every local action is flat (the table grows by tables, not rows); only the snapshot
+  grows (27,367 to 36,071 calls, global).
+- **Rows axis** (N=16, `--rows 1000` against `10000`, calls; reported, not enforced):
+  - **O(1) in rows:** select (10 to 10) and swap (11 to 11). Select binds nothing to the rows
+    (the marker is found by key); swap copies the array and the keyed walk finds two nodes out of
+    place.
+  - **O(rows):** remove (t1 1021 to 10021, t2 498 to 5040), `serverDelete` (498 to 5040),
+    `serverUpdate` (1053 to 10053), `removeChecked` (1010 to 10010), `serverRows` (3647 to
+    36076). Each filters or maps the rows array, then the keyed list walks every row.
+  - **Toggle and bump look flat (20 to 20, 31 to 31) but are not O(1).** The action targets a row
+    near the front, so `findIndex` stops after a few callbacks. The reducer still slices the rows
+    array (a copy of 10,000 pointers) and the keyed list walks all rows, comparing each row object;
+    neither makes a call, and the blocks count does not see the list's plain walk either. Treat
+    them as O(rows) with a small constant, not as a result.
+  - **Proportional by nature:** `updateEvery` (311 to 3011 in t1), create, append, sort. Clear
+    is flat (11 to 11).
+  - Any message that changes `rows` makes the keyed list visit every row. Rows as instances
+    would remove that for toggle and bump only.
+- **Bytes** (brotli, mean of 3 seeds): N=1 2203, 16 6546, 64 14445, 256 41213. Fit 4134 B +
+  147.6 B per table over N >= 4 (3518 + 151.2 over all sizes). Runtime 887 B (874 at N=1), HTML
   about 145 B; the rest is app code. The per-table cost is its pools, row builder, row template,
   patch and reducer arms.
