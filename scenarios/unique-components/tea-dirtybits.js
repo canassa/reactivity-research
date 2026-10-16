@@ -27,17 +27,10 @@ export const params = {};
 const J = JSON.stringify;
 const OPS = { "==": "===", "!=": "!==", "<": "<", "<=": "<=", ">": ">", ">=": ">=", and: "&&", or: "||" };
 
-const WIDGET_FILE = `import { element, text } from "../runtime.js";
+const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" };
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ESC[c]);
 
-// A widget's <section> and its heading.
-export function section(parent, id, label) {
-  const root = element(parent, "section", "widget");
-  root.setAttribute("data-key", id);
-  text(element(root, "h2"), label);
-  return root;
-}
-
-// A new item's id: one more than the largest.
+const WIDGET_FILE = `// A new item's id: one more than the largest.
 export function nextId(items) {
   return items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
 }
@@ -49,12 +42,16 @@ export function nextId(items) {
 function widgetModule(w) {
   const fieldOf = (name) => w.fields.find((f) => f.name === name);
   const msgOf = (name) => w.messages.find((m) => m.name === name);
-  const own = (name) => name.toUpperCase();
+  // Dirty bits, written as numbers (the compiler knows them): one per field in order, then one
+  // per field of another widget the view reads, in order of first use.
+  const own = (name) => 1 << w.fields.findIndex((f) => f.name === name);
   const optsName = (name) => "OPTS_" + name.toUpperCase();
-  const reads = new Map(); // foreign bit name -> [widget id, field]
+  const reads = new Map(); // "widget.field" -> [bit, widget id, field]
   const helpers = new Set(["mark"]);
   const use = (...names) => names.forEach((n) => helpers.add(n));
-  const bitList = (names) => (names.length === 1 ? names[0] : names.join(" | "));
+  const bitList = (bits) => bits.reduce((a, b) => a | b, 0);
+  // Messages are tagged by their index, as Elm --optimize tags constructors.
+  const tag = (name) => w.messages.findIndex((m) => m.name === name);
   const usedOpts = new Set();
 
   // An expression of the widget's fields (`s`) and of other widgets' (`w`); `deps` collects
@@ -64,9 +61,9 @@ function widgetModule(w) {
     switch (e[0]) {
       case "f": deps.add(own(e[1])); return `s.${e[1]}`;
       case "w": {
-        const bit = `${e[1].toUpperCase()}_${e[2].toUpperCase()}`;
-        reads.set(bit, [e[1], e[2]]);
-        deps.add(bit);
+        const key = `${e[1]}.${e[2]}`;
+        if (!reads.has(key)) reads.set(key, [1 << (w.fields.length + reads.size), e[1], e[2]]);
+        deps.add(reads.get(key)[0]);
         return `w.${e[1]}.${e[2]}`;
       }
       case "k": return J(e[1]);
@@ -165,7 +162,7 @@ function widgetModule(w) {
   for (const m of w.messages) {
     const a = arm(m);
     const full = a.values.size === w.fields.length;
-    arms.push(`    case ${J(m.name)}: {\n${[...a.guard, `mark(${a.bits});`, `return ${write(a.values, full)};`].map((l) => "      " + l).join("\n")}\n    }`);
+    arms.push(`    case ${tag(m.name)}: { // ${m.name}\n${[...a.guard, `mark(${a.bits});`, `return ${write(a.values, full)};`].map((l) => "      " + l).join("\n")}\n    }`);
   }
   // External events: a feed receives notifications; time-driven fields advance while gated.
   const feed = w.fields.find((f) => f.feed);
@@ -194,7 +191,8 @@ function widgetModule(w) {
   }
 
   // -------------------------------------------------------------------------------------------
-  // The view: explicit element calls, and bindings grouped by the bits they depend on.
+  // The view: one static template (escaped at build time), nodes found by their position in it,
+  // and bindings grouped by the bits they depend on.
 
   let uid = 0;
   const name = (p = "e") => p + ++uid;
@@ -210,208 +208,207 @@ function widgetModule(w) {
   const patchBody = (sc, ind) => {
     const out = [];
     for (const g of sc.groups.values()) {
-      const mask = g.deps.length === 1 ? g.deps[0] : `(${g.deps.join(" | ")})`;
+      const mask = bitList(g.deps);
       if (g.stmts.length === 1) out.push(`${ind}if (d & ${mask}) ${g.stmts[0]}`);
       else out.push(`${ind}if (d & ${mask}) {`, ...g.stmts.map((s) => `${ind}  ${s}`), `${ind}}`);
     }
     return out;
   };
+  const W = J(w.id);
 
-  function build(nodes, P, sc, out, ind) {
+  // Elements are numbered in document order, as `html` returns them: `t[0]` is the section.
+  let count = 0;
+  const node = () => `t[${count++}]`;
+
+  // Appends the markup of `nodes` to the returned string; handlers go to `out`, bindings to `sc`.
+  function build(nodes, sc, out, ind) {
     const L = (line) => out.push(ind + line);
-    const send = (type, extra = "") => `send({ widget: ${J(w.id)}, type: ${J(type)}${extra} })`;
+    let h = "";
     for (const n of nodes) {
       switch (n.el) {
         case "text": {
-          use("element", "text");
           const deps = new Set();
           const t = textOf(n.parts, deps);
-          if (t.stat !== undefined) L(`text(element(${P}, ${J(n.tag)}), ${J(t.stat)});`);
+          const e = node();
+          if (t.stat !== undefined) h += `<${n.tag}>${esc(t.stat)}</${n.tag}>`;
           else {
-            const x = name();
             use("setText");
-            L(`const ${x} = text(element(${P}, ${J(n.tag)}), "");`);
-            bind(sc, deps, `setText(${x}, ${t.src});`);
+            h += `<${n.tag}></${n.tag}>`;
+            bind(sc, deps, `setText(${e}, ${t.src});`);
           }
           break;
         }
         case "button": {
-          use("element", "text", "on");
-          const b = name();
-          L(`const ${b} = element(${P}, "button", ${J(n.msg)});`);
+          use("onClick");
+          const b = node();
           const deps = new Set();
           const t = textOf(n.text, deps);
-          if (t.stat !== undefined) L(`text(${b}, ${J(t.stat)});`);
+          if (t.stat !== undefined) h += `<button data-role=${n.msg}>${esc(t.stat)}</button>`;
           else {
-            const x = name();
             use("setText");
-            L(`const ${x} = text(${b}, "");`);
-            bind(sc, deps, `setText(${x}, ${t.src});`);
+            h += `<button data-role=${n.msg}></button>`;
+            bind(sc, deps, `setText(${b}, ${t.src});`);
           }
           if (n.disabled) {
             const d = new Set();
             use("prop");
             bind(sc, d, `prop(${b}, "disabled", ${ex(n.disabled, d)});`);
           }
-          L(`on(${b}, "click", () => ${send(n.msg)});`);
+          L(`onClick(${b}, ${W}, ${tag(n.msg)});`);
           break;
         }
         case "input": {
-          use("element", "text", "on", "prop");
+          use("prop");
           const m = msgOf(n.msg);
           const f = fieldOf(m.field);
-          let Q = P;
           if (n.label) {
-            Q = name();
-            L(`const ${Q} = element(${P}, "label");`);
-            L(`text(${Q}, ${J(n.label)});`);
+            node();
+            h += `<label>${esc(n.label)}`;
           }
-          const i = name();
-          L(`const ${i} = element(${Q}, "input", ${J(n.msg)});`);
+          const i = node();
           if (f.type === "int") {
-            L(`${i}.setAttribute("type", "number");`);
+            use("send");
+            h += `<input type=number data-role=${n.msg}>`;
             // Only an integer within range becomes a message; anything else stays as typed.
-            L(`on(${i}, "input", () => {`);
+            L(`${i}.addEventListener("input", () => {`);
             L(`  const value = ${i}.valueAsNumber;`);
-            L(`  if (Number.isInteger(value) && value >= ${f.min} && value <= ${f.max}) ${send(n.msg, ", value")};`);
+            L(`  if (Number.isInteger(value) && value >= ${f.min} && value <= ${f.max}) send({ widget: ${W}, type: ${tag(n.msg)}, value });`);
             L(`});`);
             bind(sc, new Set([own(f.name)]), `prop(${i}, "valueAsNumber", s.${f.name});`);
           } else {
-            L(`${i}.setAttribute("type", "text");`);
-            if (n.placeholder) L(`${i}.setAttribute("placeholder", ${J(n.placeholder)});`);
-            L(`on(${i}, "input", () => ${send(n.msg, `, value: ${i}.value`)});`);
+            use("onInput");
+            h += `<input type=text data-role=${n.msg}${n.placeholder ? ` placeholder="${esc(n.placeholder)}"` : ""}>`;
+            L(`onInput(${i}, ${W}, ${tag(n.msg)});`);
             bind(sc, new Set([own(f.name)]), `prop(${i}, "value", s.${f.name});`);
           }
+          if (n.label) h += `</label>`;
           if (n.invalid) {
             use("branch");
             const e = name();
-            L(`const ${e} = branch(${P}, () => {`);
-            L(`  const p = element(null, "p", ${J(n.msg + "Error")});`);
-            L(`  text(p, ${J(n.invalid.message)});`);
-            L(`  return [p];`);
-            L(`});`);
+            h += `<p data-role=${n.msg}Error>${esc(n.invalid.message)}</p>`;
+            L(`const ${e} = branch(${node()});`);
             const deps = new Set();
-            bind(sc, deps, `${e}(${ex(n.invalid.when, deps)}, s, d, w);`);
+            bind(sc, deps, `${e}(${ex(n.invalid.when, deps)});`);
           }
           break;
         }
         case "check": {
-          use("element", "text", "on", "prop");
+          use("onCheck", "prop");
           const m = msgOf(n.msg);
-          const l = name();
-          const i = name();
-          L(`const ${l} = element(${P}, "label");`);
-          L(`const ${i} = element(${l}, "input", ${J(n.msg)});`);
-          L(`${i}.setAttribute("type", "checkbox");`);
-          L(`text(${l}, ${J(n.label)});`);
-          L(`on(${i}, "change", () => ${send(n.msg)});`);
+          node();
+          const i = node();
+          h += `<label><input type=checkbox data-role=${n.msg}>${esc(n.label)}</label>`;
+          L(`onCheck(${i}, ${W}, ${tag(n.msg)});`);
           bind(sc, new Set([own(m.field)]), `prop(${i}, "checked", s.${m.field});`);
           break;
         }
         case "select": {
-          use("element", "text", "on", "prop");
+          use("onInput", "prop");
           const m = msgOf(n.msg);
-          usedOpts.add(m.field);
-          let Q = P;
           if (n.label) {
-            Q = name();
-            L(`const ${Q} = element(${P}, "label");`);
-            L(`text(${Q}, ${J(n.label)});`);
+            node();
+            h += `<label>${esc(n.label)}`;
           }
-          const e = name();
-          L(`const ${e} = element(${Q}, "select", ${J(n.msg)});`);
-          L(`for (const option of ${optsName(m.field)}) {`);
-          L(`  const o = element(${e}, "option");`);
-          L(`  o.value = option;`);
-          L(`  text(o, option);`);
-          L(`}`);
-          L(`on(${e}, "change", () => ${send(n.msg, `, value: ${e}.value`)});`);
+          const e = node();
+          h += `<select data-role=${n.msg}>`;
+          for (const o of fieldOf(m.field).options) {
+            node();
+            h += `<option value="${esc(o)}">${esc(o)}</option>`;
+          }
+          h += `</select>`;
+          if (n.label) h += `</label>`;
+          L(`onInput(${e}, ${W}, ${tag(n.msg)});`);
           bind(sc, new Set([own(m.field)]), `prop(${e}, "value", s.${m.field});`);
           break;
         }
         case "list": {
-          use("element", "text", "setText", "list");
-          const f = fieldOf(n.field);
+          use("html", "setText", "list");
           const l = name();
-          L(`const ${l} = list(element(${P}, ${J(n.tag)}), (item) => {`);
-          L(`  const li = element(null, "li", ${J(n.field + "Item")});`);
-          L(`  li.setAttribute("data-key", item.id);`);
+          h += `<${n.tag}></${n.tag}>`;
+          let row = `<li data-role=${n.field}Item>`;
+          let k = 1;
+          const box = n.check ? `r[${k++}]` : null;
+          if (n.check) row += `<input type=checkbox data-role=${n.check}>`;
+          const label = `r[${k++}]`;
+          row += `<span></span>`;
+          const remove = n.remove ? `r[${k++}]` : null;
+          if (n.remove) row += `<button data-role=${n.remove}>${esc(n.removeText)}</button>`;
+          row += `</li>`;
+          L(`const ${l} = list(${node()}, (item) => {`);
+          L(`  const r = html(${J(row)});`);
+          L(`  r[0].dataset.key = item.id;`);
           if (n.check) {
-            use("on", "prop");
-            L(`  const box = element(li, "input", ${J(n.check)});`);
-            L(`  box.setAttribute("type", "checkbox");`);
-            L(`  on(box, "change", () => ${send(n.check, ", id: item.id")});`);
+            use("onCheck", "prop");
+            L(`  onCheck(${box}, ${W}, ${tag(n.check)}, item.id);`);
           }
-          L(`  const label = text(element(li, "span"), "");`);
           if (n.remove) {
-            use("on");
-            L(`  const remove = element(li, "button", ${J(n.remove)});`);
-            L(`  text(remove, ${J(n.removeText)});`);
-            L(`  on(remove, "click", () => ${send(n.remove, ", id: item.id")});`);
+            use("onClick");
+            L(`  onClick(${remove}, ${W}, ${tag(n.remove)}, item.id);`);
           }
-          L(`  const patch = (item) => {`);
-          if (n.check) L(`    prop(box, "checked", item.done);`);
-          L(`    setText(label, item.text);`);
-          L(`  };`);
-          L(`  patch(item);`);
-          L(`  return { node: li, patch };`);
+          if (n.check) {
+            L(`  return [r[0], (item) => {`);
+            L(`    prop(${box}, "checked", item.done);`);
+            L(`    setText(${label}, item.text);`);
+            L(`  }];`);
+          } else L(`  return [r[0], (item) => setText(${label}, item.text)];`);
           L(`});`);
-          void f;
           bind(sc, new Set([own(n.field)]), `${l}(s.${n.field});`);
           break;
         }
         case "group": {
-          use("element");
-          const g = name();
-          L(`const ${g} = element(${P}, ${J(n.tag)});`);
-          build(n.children, g, sc, out, ind);
+          node();
+          h += `<${n.tag}>${build(n.children, sc, out, ind)}</${n.tag}>`;
           break;
         }
         case "when": {
-          use("element", "branch");
+          use("branch");
           const c = name();
+          const e = node();
           const inner = scope();
-          const body = [];
-          const nd = name();
-          build(n.children, nd, inner, body, ind + "  ");
-          L(`const ${c} = branch(${P}, () => {`);
-          L(`  const ${nd} = element(null, ${J(n.tag)});`);
-          out.push(...body);
-          const patch = patchBody(inner, ind + "    ");
+          h += `<${n.tag}>${build(n.children, inner, out, ind)}</${n.tag}>`;
+          const patch = patchBody(inner, ind + "  ");
           if (patch.length) {
-            L(`  return [${nd}, (s, d, w) => {`);
+            L(`const ${c} = branch(${e}, (s, d, w) => {`);
             out.push(...patch);
-            L(`  }];`);
-          } else L(`  return [${nd}];`);
-          L(`});`);
+            L(`});`);
+          } else L(`const ${c} = branch(${e});`);
           const deps = new Set(inner.deps);
           const cond = ex(n.cond, deps);
-          bind(sc, deps, `${c}(${cond}, s, d, w);`);
+          bind(sc, deps, patch.length ? `${c}(${cond}, s, d, w);` : `${c}(${cond});`);
           break;
         }
         default: throw new Error(`unknown view node ${n.el}`);
       }
     }
+    return h;
   }
 
   const root = scope();
   const body = [];
-  build(w.view, "root", root, body, "  ");
-  const patch = patchBody(root, "    ");
+  node(); // the section
+  node(); // its heading
+  const markup = `<section data-role=widget data-key=${w.id}><h2>${esc(w.label)}</h2>${build(w.view, root, body, "  ")}</section>`;
+  let patch = patchBody(root, "    ");
+  // Patches take the whole model (`w`) only when the widget reads another widget.
+  const args = reads.size ? "s, d, w" : "s, d";
+  if (!reads.size) {
+    const drop = (l) => l.replace("(s, d, w) =>", "(s, d) =>").replace(", s, d, w);", ", s, d);");
+    patch = patch.map(drop);
+    body.forEach((l, i) => (body[i] = drop(l)));
+  }
 
   // -------------------------------------------------------------------------------------------
   // The module
 
-  let bit = 0;
-  const bits = [...w.fields.map((f) => own(f.name)), ...reads.keys()]
-    .map((b) => `export const ${b} = ${1 << bit++};`);
+  const bits = [...w.fields.map((f) => `${f.name} ${own(f.name)}`), ...[...reads].map(([k, [b]]) => `${k} ${b}`)];
+  const tags = w.messages.map((m, i) => `${m.name} ${i}`);
   const opts = [...usedOpts].map((f) => `const ${optsName(f)} = ${J(fieldOf(f).options)};`);
+  helpers.add("html");
   const imports = [...helpers].sort().filter((h) => h !== "nextId");
   const file = `import { ${imports.join(", ")} } from "../runtime.js";
-import { section${helpers.has("nextId") ? ", nextId" : ""} } from "./widget.js";
-
-export const id = ${J(w.id)};
-${bits.join("\n")}
+${helpers.has("nextId") ? `import { nextId } from "./widget.js";\n` : ""}
+// Dirty bits: ${bits.join(", ")}.
+// Message tags: ${tags.join(", ")}.
 ${opts.length ? opts.join("\n") + "\n" : ""}
 export const init = ${literal(Object.fromEntries(w.fields.map((f) => [f.name, f.initial])), "")};
 
@@ -422,23 +419,22 @@ ${arms.join("\n")}
   return s;
 }
 
-export function view(parent, s, send, w) {
-  const root = section(parent, ${J(w.id)}, ${J(w.label)});
+// Builds the widget once and returns its static patch.
+export function view(parent) {
+  const t = html(${J(markup)}, parent);
 ${body.join("\n")}
-  const patch = (s, d, w) => {
+  return (${args}) => {
 ${patch.join("\n")}
   };
-  patch(s, -1, w);
-  return patch;
 }
 `;
-  return { file, reads };
+  return { file, reads, bit: own };
 }
 
 // ---------------------------------------------------------------------------------------------
 // The app module
 
-function appFile(spec, reads) {
+function appFile(spec, mods) {
   const ids = spec.widgets.map((w) => w.id);
   const imports = ids.map((id) => `import * as ${id} from "./widgets/${id}.js";`);
   // A tick reaches only the time-driven widgets whose gate is on (checked inline, so a tick costs
@@ -448,24 +444,25 @@ function appFile(spec, reads) {
     return `      if (${gates.join(" || ")}) model = route(model, ${J(w.id)}, msg);`;
   });
   // One line per cross-widget read: a dirty bit of the source becomes a bit of the reader.
+  // The compiler knows every bit, so it writes them as numbers.
   const edges = [];
   for (const w of spec.widgets) {
-    for (const [bit, [src, field]] of reads[w.id]) {
-      edges.push(`    if (dirty.${src} & ${src}.${field.toUpperCase()}) dirty.${w.id} |= ${w.id}.${bit};`);
+    for (const [key, [bit, src, field]] of mods[w.id].reads) {
+      edges.push(`    if (dirty.${src} & ${mods[src].bit(field)}) dirty.${w.id} |= ${bit}; // ${key} -> ${w.id}`);
     }
   }
-  return `import { take, touch, element } from "./runtime.js";
+  return `import { take, touch, html } from "./runtime.js";
 ${imports.join("\n")}
 
-// Every widget in page order: each module is that widget's own bits, reducer and view.
-const WIDGETS = [${ids.join(", ")}];
-const BY_ID = {};
-for (const m of WIDGETS) BY_ID[m.id] = m;
+// Every widget in page order: each module is that widget's own initial state, reducer and view.
+const WIDGETS = {
+${ids.map((id) => `  ${id}: [${id}.init, ${id}.update, ${id}.view],`).join("\n")}
+};
 
 // The initial model: one slice per widget, from its module.
 export function init() {
   const widgets = {};
-  for (const m of WIDGETS) widgets[m.id] = m.init;
+  for (const id in WIDGETS) widgets[id] = WIDGETS[id][0];
   return { widgets };
 }
 
@@ -480,7 +477,7 @@ function set(model, id, s, bits) {
 // Run one widget's reducer and file the bits its arm marked under that widget.
 function route(model, id, msg) {
   const s = model.widgets[id];
-  const next = BY_ID[id].update(s, msg);
+  const next = WIDGETS[id][1](s, msg);
   const bits = take();
   return next === s ? model : set(model, id, next, bits);
 }
@@ -504,11 +501,11 @@ ${ticks.join("\n")}
 
 // Builds every widget once. The returned patch first turns dirty bits that other widgets read
 // into the readers' bits, then runs each dirty widget's patch.
-export function view(root, model, send) {
-  const dash = element(root, "div", "dashboard");
+export function view(root, model) {
+  const dash = html("<div data-role=dashboard></div>", root)[0];
   const w = model.widgets;
   const patches = {};
-  for (const m of WIDGETS) patches[m.id] = m.view(dash, w[m.id], send, w);
+  for (const id in WIDGETS) (patches[id] = WIDGETS[id][2](dash))(w[id], -1, w);
   return (model, dirty) => {
     const w = model.widgets;
 ${edges.join("\n")}
@@ -523,13 +520,13 @@ export function emit(spec) {
     ...templateFiles({ name: "unique-components", title: "Unique components" }),
     "src/widgets/widget.js": WIDGET_FILE,
   };
-  const reads = {};
+  const mods = {};
   for (const w of spec.widgets) {
     const m = widgetModule(w);
     files[`src/widgets/${w.id}.js`] = m.file;
-    reads[w.id] = m.reads;
+    mods[w.id] = m;
   }
-  files["src/app.js"] = appFile(spec, reads);
+  files["src/app.js"] = appFile(spec, mods);
   return {
     files,
     style: {

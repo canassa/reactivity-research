@@ -56,391 +56,342 @@ const DERIVED = {
   },
 };
 
-// The dirty bit a summary reads from each kind it can summarize.
+// The dirty bit a summary reads from each kind it can summarize (value, on, items, stars,
+// seconds, query, entries: each the first field of its kind).
 const METRIC_BIT = {
-  counter: "VALUE", amount: "VALUE", toggles: "ON", todo: "ITEMS", rating: "STARS",
-  clock: "SECONDS", filter: "QUERY", feed: "ENTRIES",
+  counter: 1, amount: 1, toggles: 1, todo: 1, rating: 1, clock: 1, filter: 1, feed: 1,
 };
 
 // ---------------------------------------------------------------------------------------------
-// The widget kinds: one module each, shared by every instance of the kind.
+// The widget kinds: one module each, shared by every instance of the kind. Each module lists its
+// dirty bits and message tags (numbers, as Elm --optimize tags constructors; external events
+// keep their names) and exports `kind`, its reducer and DOM factory.
 
-const WIDGET_FILE = `import { element, text } from "../runtime.js";
+const WIDGET_FILE = `import { html } from "../runtime.js";
 
-// A widget's <section> and its heading.
-export function section(parent, c, kind) {
-  const root = element(parent, "section", "widget-" + kind);
-  root.setAttribute("data-key", c.id);
-  text(element(root, "h2"), c.label);
-  return root;
+// A widget's <section> with its heading and the kind's static markup \`inner\`: every element, in
+// document order.
+export function section(parent, id, c, kind, inner) {
+  const t = html(\`<section data-role=widget-\${kind}><h2></h2>\${inner}</section>\`, parent);
+  t[0].dataset.key = id;
+  t[1].textContent = c.label;
+  return t;
 }
 `;
 
 const KINDS = {
-  counter: `import { mark, element, text, setText, prop, on } from "../runtime.js";
+  counter: `import { mark, setText, prop, onClick } from "../runtime.js";
 import { section } from "./widget.js";
 
-export const VALUE = 1;
+// Dirty bits: value 1. Message tags: inc 0, dec 1, reset 2.
 
-export function update(c, s, msg) {
+function update(c, s, msg) {
   switch (msg.type) {
-    case "inc":
-      mark(VALUE);
+    case 0:
+      mark(1);
       return { value: Math.min(c.max, s.value + c.step) };
-    case "dec":
-      mark(VALUE);
+    case 1:
+      mark(1);
       return { value: Math.max(c.min, s.value - c.step) };
-    case "reset":
-      mark(VALUE);
+    case 2:
+      mark(1);
       return { value: c.start };
   }
   return s;
 }
 
-export function view(parent, c, s, send) {
-  const root = section(parent, c, "counter");
-  const value = text(element(root, "output", "value"), "");
-  const dec = element(root, "button", "dec");
-  text(dec, "-" + c.step);
-  on(dec, "click", () => send({ widget: c.id, type: "dec" }));
-  const inc = element(root, "button", "inc");
-  text(inc, "+" + c.step);
-  on(inc, "click", () => send({ widget: c.id, type: "inc" }));
-  const reset = element(root, "button", "reset");
-  text(reset, "Reset");
-  on(reset, "click", () => send({ widget: c.id, type: "reset" }));
-
-  const patch = (s, dirty) => {
-    if (dirty & VALUE) {
+function view(parent, c, id) {
+  const [, , value, dec, inc, reset] = section(parent, id, c, "counter",
+    "<output data-role=value></output><button data-role=dec></button><button data-role=inc></button><button data-role=reset>Reset</button>");
+  dec.textContent = "-" + c.step;
+  inc.textContent = "+" + c.step;
+  onClick(dec, id, 1);
+  onClick(inc, id, 0);
+  onClick(reset, id, 2);
+  return (s, d) => {
+    if (d & 1) {
       setText(value, s.value);
       prop(dec, "disabled", s.value <= c.min);
       prop(inc, "disabled", s.value >= c.max);
     }
   };
-  patch(s, -1);
-  return patch;
 }
+
+export const kind = { update, view };
 `,
 
-  toggles: `import { mark, element, text, setText, prop, on } from "../runtime.js";
+  toggles: `import { mark, html, setText, prop, onCheck } from "../runtime.js";
 import { section } from "./widget.js";
 
-export const ON = 1;
+// Dirty bits: on 1. Message tags: toggle 0 (id: the toggle's index).
 
-export function update(c, s, msg) {
+function update(c, s, msg) {
   switch (msg.type) {
-    case "toggle":
-      mark(ON);
-      return { on: s.on.map((on, i) => (i === msg.index ? !on : on)) };
+    case 0:
+      mark(1);
+      return { on: s.on.map((on, i) => (i === msg.id ? !on : on)) };
   }
   return s;
 }
 
-export function view(parent, c, s, send) {
-  const root = section(parent, c, "toggles");
-  const list = element(root, "ul");
+function view(parent, c, id) {
+  const t = section(parent, id, c, "toggles", "<ul></ul><p data-role=count></p>");
   const boxes = c.items.map((name, i) => {
-    const label = element(element(list, "li"), "label");
-    const box = element(label, "input", "toggle");
-    box.setAttribute("type", "checkbox");
-    box.setAttribute("data-key", i);
-    on(box, "change", () => send({ widget: c.id, type: "toggle", index: i }));
-    text(label, name);
+    const [, , box] = html("<li><label><input type=checkbox data-role=toggle></label></li>", t[2]);
+    box.dataset.key = i;
+    box.after(name);
+    onCheck(box, id, 0, i);
     return box;
   });
-  const count = element(root, "p", "count");
-  const onCount = text(count, "");
-  text(count, " of " + c.items.length + " on");
-
-  const patch = (s, dirty) => {
-    if (dirty & ON) {
+  return (s, d) => {
+    if (d & 1) {
       boxes.forEach((box, i) => prop(box, "checked", s.on[i]));
-      setText(onCount, s.on.filter(Boolean).length);
+      setText(t[3], s.on.filter(Boolean).length + " of " + c.items.length + " on");
     }
   };
-  patch(s, -1);
-  return patch;
 }
+
+export const kind = { update, view };
 `,
 
-  field: `import { mark, element, text, prop, on, when } from "../runtime.js";
+  field: `import { mark, prop, onInput, branch } from "../runtime.js";
 import { section } from "./widget.js";
 
-export const TEXT = 1;
+// Dirty bits: text 1. Message tags: edit 0.
 
-export function update(c, s, msg) {
+function update(c, s, msg) {
   switch (msg.type) {
-    case "edit":
-      mark(TEXT);
-      return { text: msg.text };
+    case 0:
+      mark(1);
+      return { text: msg.value };
   }
   return s;
 }
 
-export function view(parent, c, s, send) {
-  const root = section(parent, c, "field");
-  const input = element(root, "input", "input");
-  input.setAttribute("type", "text");
-  input.setAttribute("placeholder", c.placeholder);
-  on(input, "input", () => send({ widget: c.id, type: "edit", text: input.value }));
-  const error = when(root, (parent) => {
-    const p = element(parent, "p", "error");
-    text(p, c.message);
-    return p;
-  });
-
-  const patch = (s, dirty) => {
-    if (dirty & TEXT) {
+function view(parent, c, id) {
+  const [, , input, p] = section(parent, id, c, "field", "<input type=text data-role=input><p data-role=error></p>");
+  input.placeholder = c.placeholder;
+  p.textContent = c.message;
+  onInput(input, id, 0);
+  const error = branch(p);
+  return (s, d) => {
+    if (d & 1) {
       prop(input, "value", s.text);
       error(!c.valid(s.text));
     }
   };
-  patch(s, -1);
-  return patch;
 }
+
+export const kind = { update, view };
 `,
 
-  todo: `import { mark, element, text, setText, prop, on, list } from "../runtime.js";
+  todo: `import { mark, html, setText, prop, onClick, onCheck, onInput, list } from "../runtime.js";
 import { section } from "./widget.js";
 
-export const ITEMS = 1;
-export const DRAFT = 2;
+// Dirty bits: items 1, draft 2. Message tags: editDraft 0, add 1, toggle 2, remove 3.
 
-export function update(c, s, msg) {
+function update(c, s, msg) {
   switch (msg.type) {
-    case "editDraft":
-      mark(DRAFT);
-      return { ...s, draft: msg.text };
-    case "add": {
+    case 0:
+      mark(2);
+      return { ...s, draft: msg.value };
+    case 1: {
       const text = s.draft.trim();
       if (text === "") return s;
-      mark(ITEMS | DRAFT);
+      mark(3);
       const id = s.items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
       return { items: [...s.items, { id, text, done: false }], draft: "" };
     }
-    case "toggle":
-      mark(ITEMS);
+    case 2:
+      mark(1);
       return { ...s, items: s.items.map((item) => (item.id === msg.id ? { ...item, done: !item.done } : item)) };
-    case "remove":
-      mark(ITEMS);
+    case 3:
+      mark(1);
       return { ...s, items: s.items.filter((item) => item.id !== msg.id) };
   }
   return s;
 }
 
-export function view(parent, c, s, send) {
-  const root = section(parent, c, "todo");
-  const draft = element(root, "input", "draft");
-  draft.setAttribute("type", "text");
-  draft.setAttribute("placeholder", c.placeholder);
-  on(draft, "input", () => send({ widget: c.id, type: "editDraft", text: draft.value }));
-  const add = element(root, "button", "add");
-  text(add, c.addText);
-  on(add, "click", () => send({ widget: c.id, type: "add" }));
-  const items = list(element(root, "ul"), (item) => {
-    const li = element(null, "li");
-    li.setAttribute("data-key", item.id);
-    const box = element(li, "input", "toggle");
-    box.setAttribute("type", "checkbox");
-    on(box, "change", () => send({ widget: c.id, type: "toggle", id: item.id }));
-    const label = text(element(li, "span"), "");
-    const remove = element(li, "button", "remove");
-    text(remove, c.removeText);
-    on(remove, "click", () => send({ widget: c.id, type: "remove", id: item.id }));
+function view(parent, c, id) {
+  const [, , draft, add, ul, left] = section(parent, id, c, "todo",
+    "<input type=text data-role=draft><button data-role=add></button><ul></ul><p data-role=left></p>");
+  draft.placeholder = c.placeholder;
+  add.textContent = c.addText;
+  onInput(draft, id, 0);
+  onClick(add, id, 1);
+  const items = list(ul, (item) => {
+    const [li, box, label, remove] = html("<li><input type=checkbox data-role=toggle><span></span><button data-role=remove></button></li>");
+    li.dataset.key = item.id;
+    remove.textContent = c.removeText;
+    onCheck(box, id, 2, item.id);
+    onClick(remove, id, 3, item.id);
     const patch = (item) => {
       prop(box, "checked", item.done);
       setText(label, item.text);
     };
     patch(item);
-    return { node: li, patch };
+    return [li, patch];
   });
-  const leftLine = element(root, "p", "left");
-  const left = text(leftLine, "");
-  text(leftLine, " left");
-
-  const patch = (s, dirty) => {
-    if (dirty & DRAFT) prop(draft, "value", s.draft);
-    if (dirty & ITEMS) {
+  return (s, d) => {
+    if (d & 2) prop(draft, "value", s.draft);
+    if (d & 1) {
       items(s.items);
-      setText(left, s.items.filter((item) => !item.done).length);
+      setText(left, s.items.filter((item) => !item.done).length + " left");
     }
   };
-  patch(s, -1);
-  return patch;
 }
+
+export const kind = { update, view };
 `,
 
-  tabs: `import { mark, element, text, setText, attr, on } from "../runtime.js";
+  tabs: `import { mark, html, setText, attr, onClick } from "../runtime.js";
 import { section } from "./widget.js";
 
-export const ACTIVE = 1;
+// Dirty bits: active 1. Message tags: select 0 (id: the tab's index).
 
-export function update(c, s, msg) {
+function update(c, s, msg) {
   switch (msg.type) {
-    case "select":
-      mark(ACTIVE);
-      return { active: msg.index };
+    case 0:
+      mark(1);
+      return { active: msg.id };
   }
   return s;
 }
 
-export function view(parent, c, s, send) {
-  const root = section(parent, c, "tabs");
-  const tablist = element(root, "div");
-  tablist.setAttribute("role", "tablist");
+function view(parent, c, id) {
+  const t = section(parent, id, c, "tabs", "<div role=tablist></div><p data-role=tab-content role=tabpanel></p>");
   const tabs = c.tabs.map((tab, i) => {
-    const button = element(tablist, "button", "tab");
-    button.setAttribute("role", "tab");
-    button.setAttribute("data-key", i);
-    text(button, tab.title);
-    on(button, "click", () => send({ widget: c.id, type: "select", index: i }));
+    const [button] = html("<button data-role=tab role=tab></button>", t[2]);
+    button.dataset.key = i;
+    button.textContent = tab.title;
+    onClick(button, id, 0, i);
     return button;
   });
-  const panel = element(root, "p", "tab-content");
-  panel.setAttribute("role", "tabpanel");
-  const content = text(panel, "");
-
-  const patch = (s, dirty) => {
-    if (dirty & ACTIVE) {
-      tabs.forEach((tab, i) => attr(tab, "aria-selected", i === s.active ? "true" : "false"));
-      setText(content, c.tabs[s.active].content);
+  return (s, d) => {
+    if (d & 1) {
+      tabs.forEach((tab, i) => attr(tab, "aria-selected", String(i === s.active)));
+      setText(t[3], c.tabs[s.active].content);
     }
   };
-  patch(s, -1);
-  return patch;
 }
+
+export const kind = { update, view };
 `,
 
-  panel: `import { mark, element, text, setText, attr, on, when } from "../runtime.js";
+  panel: `import { mark, setText, attr, onClick, branch } from "../runtime.js";
 import { section } from "./widget.js";
 
-export const OPEN = 1;
+// Dirty bits: open 1. Message tags: toggle 0.
 
-export function update(c, s, msg) {
+function update(c, s, msg) {
   switch (msg.type) {
-    case "toggle":
-      mark(OPEN);
+    case 0:
+      mark(1);
       return { open: !s.open };
   }
   return s;
 }
 
-export function view(parent, c, s, send) {
-  const root = section(parent, c, "panel");
-  const toggle = element(root, "button", "toggle");
-  const label = text(toggle, "");
-  on(toggle, "click", () => send({ widget: c.id, type: "toggle" }));
-  const body = when(root, (parent) => {
-    const p = element(parent, "p", "body");
-    text(p, c.body);
-    return p;
-  });
-
-  const patch = (s, dirty) => {
-    if (dirty & OPEN) {
-      attr(toggle, "aria-expanded", s.open ? "true" : "false");
-      setText(label, s.open ? c.hideText : c.showText);
+function view(parent, c, id) {
+  const [, , toggle, p] = section(parent, id, c, "panel", "<button data-role=toggle></button><p data-role=body></p>");
+  p.textContent = c.body;
+  onClick(toggle, id, 0);
+  const body = branch(p);
+  return (s, d) => {
+    if (d & 1) {
+      attr(toggle, "aria-expanded", String(s.open));
+      setText(toggle, s.open ? c.hideText : c.showText);
       body(s.open);
     }
   };
-  patch(s, -1);
-  return patch;
 }
+
+export const kind = { update, view };
 `,
 
-  choice: `import { mark, element, text, prop, on, when } from "../runtime.js";
+  choice: `import { mark, html, prop, onInput, branch } from "../runtime.js";
 import { section } from "./widget.js";
 
-export const OPTION = 1;
-export const EXTRA = 2;
+// Dirty bits: option 1, extra 2. Message tags: choose 0, editExtra 1.
 
-export function update(c, s, msg) {
+function update(c, s, msg) {
   switch (msg.type) {
-    case "choose":
-      mark(OPTION);
-      return { ...s, option: msg.option };
-    case "editExtra":
-      mark(EXTRA);
-      return { ...s, extra: msg.text };
+    case 0:
+      mark(1);
+      return { ...s, option: msg.value };
+    case 1:
+      mark(2);
+      return { ...s, extra: msg.value };
   }
   return s;
 }
 
-export function view(parent, c, s, send) {
-  const root = section(parent, c, "choice");
-  const select = element(root, "select", "select");
+function view(parent, c, id) {
+  const [, , select, input] = section(parent, id, c, "choice", "<select data-role=select></select><input type=text data-role=extra>");
   for (const option of c.options) {
-    const o = element(select, "option");
-    o.setAttribute("value", option.value);
-    text(o, option.label);
+    const [o] = html("<option></option>", select);
+    o.value = option.value;
+    o.textContent = option.label;
   }
-  on(select, "change", () => send({ widget: c.id, type: "choose", option: select.value }));
-  const extra = when(root, (parent) => {
-    const input = element(parent, "input", "extra");
-    input.setAttribute("type", "text");
-    input.setAttribute("placeholder", c.extraPlaceholder);
-    on(input, "input", () => send({ widget: c.id, type: "editExtra", text: input.value }));
-    return input;
-  });
-
-  const patch = (s, dirty) => {
-    if (dirty & OPTION) prop(select, "value", s.option);
-    if (dirty & (OPTION | EXTRA)) {
-      const input = extra(c.extraFor.includes(s.option));
-      if (input) prop(input, "value", s.extra);
+  input.placeholder = c.extraPlaceholder;
+  onInput(select, id, 0);
+  onInput(input, id, 1);
+  const extra = branch(input);
+  return (s, d) => {
+    if (d & 1) prop(select, "value", s.option);
+    if (d & 3) {
+      const show = c.extraFor.includes(s.option);
+      extra(show);
+      if (show) prop(input, "value", s.extra);
     }
   };
-  patch(s, -1);
-  return patch;
 }
+
+export const kind = { update, view };
 `,
 
-  amount: `import { mark, element, text, setText, prop, on } from "../runtime.js";
+  amount: `import { mark, send, setText, prop } from "../runtime.js";
 import { section } from "./widget.js";
 
-export const VALUE = 1;
+// Dirty bits: value 1. Message tags: set 0.
 
-export function update(c, s, msg) {
+function update(c, s, msg) {
   switch (msg.type) {
-    case "set":
-      mark(VALUE);
+    case 0:
+      mark(1);
       return { value: msg.value };
   }
   return s;
 }
 
-export function view(parent, c, s, send) {
-  const root = section(parent, c, "amount");
-  const input = element(root, "input", "input");
-  input.setAttribute("type", "number");
+function view(parent, c, id) {
+  const [, , input, formatted] = section(parent, id, c, "amount", "<input type=number data-role=input><output data-role=formatted></output>");
   // Only a valid number becomes a message; anything else stays in the input as typed.
-  on(input, "input", () => {
+  input.addEventListener("input", () => {
     const value = input.valueAsNumber;
-    if (!Number.isNaN(value)) send({ widget: c.id, type: "set", value });
+    if (!Number.isNaN(value)) send({ widget: id, type: 0, value });
   });
-  const formatted = text(element(root, "output", "formatted"), "");
-
-  const patch = (s, dirty) => {
-    if (dirty & VALUE) {
+  return (s, d) => {
+    if (d & 1) {
       prop(input, "value", String(s.value));
       setText(formatted, c.format(s.value));
     }
   };
-  patch(s, -1);
-  return patch;
 }
+
+export const kind = { update, view };
 `,
 
-  filter: `import { mark, element, text, setText, prop, on, list } from "../runtime.js";
+  filter: `import { mark, html, setText, prop, onInput, list } from "../runtime.js";
 import { section } from "./widget.js";
 
-export const QUERY = 1;
+// Dirty bits: query 1. Message tags: edit 0.
 
-export function update(c, s, msg) {
+function update(c, s, msg) {
   switch (msg.type) {
-    case "edit":
-      mark(QUERY);
-      return { query: msg.query };
+    case 0:
+      mark(1);
+      return { query: msg.value };
   }
   return s;
 }
@@ -450,187 +401,168 @@ export function matches(c, query) {
   return c.items.filter((item) => item.text.toLowerCase().includes(q));
 }
 
-export function view(parent, c, s, send) {
-  const root = section(parent, c, "filter");
-  const input = element(root, "input", "query");
-  input.setAttribute("type", "text");
-  input.setAttribute("placeholder", c.placeholder);
-  on(input, "input", () => send({ widget: c.id, type: "edit", query: input.value }));
-  const items = list(element(root, "ul"), (item) => {
-    const li = element(null, "li");
-    li.setAttribute("data-key", item.id);
-    const label = text(li, item.text);
-    return { node: li, patch: (item) => setText(label, item.text) };
+function view(parent, c, id) {
+  const [, , input, ul, count] = section(parent, id, c, "filter", "<input type=text data-role=query><ul></ul><p data-role=matches></p>");
+  input.placeholder = c.placeholder;
+  onInput(input, id, 0);
+  const items = list(ul, (item) => {
+    const [li] = html("<li></li>");
+    li.dataset.key = item.id;
+    li.textContent = item.text;
+    return [li, (item) => setText(li, item.text)];
   });
-  const count = element(root, "p", "matches");
-  const found = text(count, "");
-  text(count, " matches");
-
-  const patch = (s, dirty) => {
-    if (dirty & QUERY) {
+  return (s, d) => {
+    if (d & 1) {
       prop(input, "value", s.query);
       const shown = matches(c, s.query);
       items(shown);
-      setText(found, shown.length);
+      setText(count, shown.length + " matches");
     }
   };
-  patch(s, -1);
-  return patch;
 }
+
+export const kind = { update, view };
 `,
 
-  rating: `import { mark, element, text, setText, attr, on } from "../runtime.js";
+  rating: `import { mark, html, setText, attr, onClick } from "../runtime.js";
 import { section } from "./widget.js";
 
-export const STARS = 1;
+// Dirty bits: stars 1. Message tags: rate 0 (id: the star's number).
 
-export function update(c, s, msg) {
+function update(c, s, msg) {
   switch (msg.type) {
-    case "rate":
-      mark(STARS);
-      return { stars: msg.stars };
+    case 0:
+      mark(1);
+      return { stars: msg.id };
   }
   return s;
 }
 
-export function view(parent, c, s, send) {
-  const root = section(parent, c, "rating");
-  const row = element(root, "div");
+function view(parent, c, id) {
+  const t = section(parent, id, c, "rating", "<div></div><p data-role=rating-label></p>");
   const stars = [];
   for (let n = 1; n <= c.stars; n++) {
-    const button = element(row, "button", "star");
-    button.setAttribute("data-key", n);
-    on(button, "click", () => send({ widget: c.id, type: "rate", stars: n }));
-    stars.push([button, text(button, "")]);
+    const [button] = html("<button data-role=star></button>", t[2]);
+    button.dataset.key = n;
+    onClick(button, id, 0, n);
+    stars.push(button);
   }
-  const label = text(element(root, "p", "rating-label"), "");
-
-  const patch = (s, dirty) => {
-    if (dirty & STARS) {
-      stars.forEach(([button, star], i) => {
-        attr(button, "aria-pressed", i < s.stars ? "true" : "false");
-        setText(star, i < s.stars ? "★" : "☆");
+  return (s, d) => {
+    if (d & 1) {
+      stars.forEach((button, i) => {
+        attr(button, "aria-pressed", String(i < s.stars));
+        setText(button, i < s.stars ? "★" : "☆");
       });
-      setText(label, c.labels[s.stars]);
+      setText(t[3], c.labels[s.stars]);
     }
   };
-  patch(s, -1);
-  return patch;
 }
+
+export const kind = { update, view };
 `,
 
-  feed: `import { mark, element, text, setText, on, when, list } from "../runtime.js";
+  feed: `import { mark, html, setText, onClick, branch, list } from "../runtime.js";
 import { section } from "./widget.js";
 
-export const ENTRIES = 1;
+// Dirty bits: entries 1. Message tags: dismiss 0; \`notify\` is an external event.
 
-export function update(c, s, msg) {
+function update(c, s, msg) {
   switch (msg.type) {
-    case "dismiss":
-      mark(ENTRIES);
+    case 0:
+      mark(1);
       return { entries: s.entries.filter((entry) => entry.id !== msg.id) };
     case "notify":
-      mark(ENTRIES);
+      mark(1);
       return { entries: [...s.entries, msg.entry] };
   }
   return s;
 }
 
-export function view(parent, c, s, send) {
-  const root = section(parent, c, "feed");
-  const entries = list(element(root, "ul"), (entry) => {
-    const li = element(null, "li");
-    li.setAttribute("data-key", entry.id);
-    const label = text(element(li, "span"), entry.text);
-    const dismiss = element(li, "button", "dismiss");
-    text(dismiss, c.dismissText);
-    on(dismiss, "click", () => send({ widget: c.id, type: "dismiss", id: entry.id }));
-    return { node: li, patch: (entry) => setText(label, entry.text) };
+function view(parent, c, id) {
+  const [, , ul, p] = section(parent, id, c, "feed", "<ul></ul><p data-role=empty></p>");
+  p.textContent = c.emptyText;
+  const entries = list(ul, (entry) => {
+    const [li, label, dismiss] = html("<li><span></span><button data-role=dismiss></button></li>");
+    li.dataset.key = entry.id;
+    label.textContent = entry.text;
+    dismiss.textContent = c.dismissText;
+    onClick(dismiss, id, 0, entry.id);
+    return [li, (entry) => setText(label, entry.text)];
   });
-  const empty = when(root, (parent) => {
-    const p = element(parent, "p", "empty");
-    text(p, c.emptyText);
-    return p;
-  });
-
-  const patch = (s, dirty) => {
-    if (dirty & ENTRIES) {
+  const empty = branch(p);
+  return (s, d) => {
+    if (d & 1) {
       entries(s.entries);
       empty(s.entries.length === 0);
     }
   };
-  patch(s, -1);
-  return patch;
 }
+
+export const kind = { update, view };
 `,
 
-  clock: `import { mark, element, text, setText, prop, on } from "../runtime.js";
+  clock: `import { mark, setText, prop, onClick } from "../runtime.js";
 import { section } from "./widget.js";
 
-export const SECONDS = 1;
-export const RUNNING = 2;
+// Dirty bits: seconds 1, running 2. Message tags: start 0, stop 1, reset 2; \`tick\` is an
+// external event.
 
-export function update(c, s, msg) {
+function update(c, s, msg) {
   switch (msg.type) {
-    case "start":
-      mark(RUNNING);
+    case 0:
+      mark(2);
       return { ...s, running: true };
-    case "stop":
-      mark(RUNNING);
+    case 1:
+      mark(2);
       return { ...s, running: false };
-    case "reset":
-      mark(SECONDS | RUNNING);
+    case 2:
+      mark(3);
       return { seconds: 0, running: false };
     case "tick":
       if (!s.running) return s;
-      mark(SECONDS);
+      mark(1);
       return { ...s, seconds: s.seconds + 1 };
   }
   return s;
 }
 
-export function formatTime(seconds) {
+function formatTime(seconds) {
   const s = seconds % 60;
   return Math.floor(seconds / 60) + ":" + (s < 10 ? "0" : "") + s;
 }
 
-export function view(parent, c, s, send) {
-  const root = section(parent, c, "clock");
-  const time = text(element(root, "output", "time"), "");
-  const start = element(root, "button", "start");
-  text(start, c.startText);
-  on(start, "click", () => send({ widget: c.id, type: "start" }));
-  const stop = element(root, "button", "stop");
-  text(stop, c.stopText);
-  on(stop, "click", () => send({ widget: c.id, type: "stop" }));
-  const reset = element(root, "button", "reset");
-  text(reset, c.resetText);
-  on(reset, "click", () => send({ widget: c.id, type: "reset" }));
-
-  const patch = (s, dirty) => {
-    if (dirty & SECONDS) setText(time, formatTime(s.seconds));
-    if (dirty & RUNNING) {
+function view(parent, c, id) {
+  const [, , time, start, stop, reset] = section(parent, id, c, "clock",
+    "<output data-role=time></output><button data-role=start></button><button data-role=stop></button><button data-role=reset></button>");
+  start.textContent = c.startText;
+  stop.textContent = c.stopText;
+  reset.textContent = c.resetText;
+  onClick(start, id, 0);
+  onClick(stop, id, 1);
+  onClick(reset, id, 2);
+  return (s, d) => {
+    if (d & 1) setText(time, formatTime(s.seconds));
+    if (d & 2) {
       prop(start, "disabled", s.running);
       prop(stop, "disabled", !s.running);
     }
   };
-  patch(s, -1);
-  return patch;
 }
+
+export const kind = { update, view };
 `,
 
-  summary: `import { element, text, setText } from "../runtime.js";
+  summary: `import { setText } from "../runtime.js";
 import { section } from "./widget.js";
 
 // A summary has no state of its own: \`c.text(widgets)\` derives its line from other widgets,
 // and the app's patch calls it again only when a field it reads is dirty.
-export function view(parent, c, widgets) {
-  const root = section(parent, c, "summary");
-  const line = text(element(root, "p", "summary"), "");
-  const patch = (widgets) => setText(line, c.text(widgets));
-  patch(widgets);
-  return patch;
+function view(parent, c, id) {
+  const [, , line] = section(parent, id, c, "summary", "<p data-role=summary></p>");
+  return (widgets) => setText(line, c.text(widgets));
 }
+
+export const kind = { view };
 
 // Round to at most two decimals for display.
 export function num(n) {
@@ -694,7 +626,7 @@ function summaryText(spec, w, indent) {
 function summaryTrigger(spec, w) {
   return w.sources.map((id) => {
     const src = spec.widgets.find((x) => x.id === id);
-    return `dirty.${id} & ${src.kind}.${METRIC_BIT[src.kind]}`;
+    return `dirty.${id} & ${METRIC_BIT[src.kind]}`;
   }).join(" || ");
 }
 
@@ -704,7 +636,7 @@ function summaryTrigger(spec, w) {
 // A widget's config object, written at `indent`.
 function configLiteral(spec, w, indent) {
   const inner = indent + "  ";
-  const fields = [`id: ${JSON.stringify(w.id)}`, `label: ${JSON.stringify(w.label)}`];
+  const fields = [`label: ${JSON.stringify(w.label)}`];
   for (const name of PARAMS[w.kind]) {
     const value = DERIVED[name] ? DERIVED[name](w) : literal(w[name], inner);
     fields.push(`${name}: ${value}`);
@@ -722,7 +654,7 @@ function appFile(spec) {
   const clocks = plain.filter((w) => w.kind === "clock");
 
   const imports = [
-    `import { take, touch, element } from "./runtime.js";`,
+    `import { take, touch, html } from "./runtime.js";`,
     ...kinds.map((k) => `import * as ${k} from "./widgets/${k}.js";`),
   ];
   // Configs are written inline in the widget table, except filters a summary reads, which are
@@ -731,7 +663,7 @@ function appFile(spec) {
     .filter((id) => spec.widgets.find((x) => x.id === id).kind === "filter"));
   const configs = spec.widgets.filter((w) => named.has(w.id))
     .map((w) => `const ${configName(w)} = ${configLiteral(spec, w, "")};\n`);
-  const table = spec.widgets.map((w) => `  [${w.kind}, ${named.has(w.id) ? configName(w) : configLiteral(spec, w, "  ")}],`);
+  const table = spec.widgets.map((w) => `  ${w.id}: [${w.kind}.kind, ${named.has(w.id) ? configName(w) : configLiteral(spec, w, "  ")}],`);
   const tick = clocks.length
     ? `    case "tick":
       for (const id of ${literal(clocks.map((w) => w.id))}) model = route(model, id, msg);
@@ -744,11 +676,9 @@ function appFile(spec) {
 
 ${configs.length ? configs.join("\n") + "\n" : ""}// Every widget in page order: its kind and its config, the only per-widget code (the kinds'
 // modules do the rest).
-const WIDGETS = [
+const WIDGETS = {
 ${table.join("\n")}
-];
-const BY_ID = {};
-for (const entry of WIDGETS) BY_ID[entry[1].id] = entry;
+};
 
 // The initial model: one slice per widget with state.
 export function init() {
@@ -765,7 +695,7 @@ function set(model, id, s, bits) {
 
 // Run one widget's reducer and file the bits its arm marked under that widget.
 function route(model, id, msg) {
-  const [kind, c] = BY_ID[id];
+  const [kind, c] = WIDGETS[id];
   const s = model.widgets[id];
   const next = kind.update(c, s, msg);
   const bits = take();
@@ -787,12 +717,15 @@ ${tick}
 
 // Builds every widget once. The returned patch runs each dirty widget's patch, then the
 // summaries whose sources have a dirty bit they read.
-export function view(root, model, send) {
-  const dash = element(root, "div", "dashboard");
+export function view(root, model) {
+  const dash = html("<div data-role=dashboard></div>", root)[0];
   const w = model.widgets;
   const patches = {};
   // A summary's state is the whole model: it derives its line from other widgets.
-  for (const [kind, c] of WIDGETS) patches[c.id] = kind.view(dash, c, c.text ? w : w[c.id], send);
+  for (const id in WIDGETS) {
+    const [kind, c] = WIDGETS[id];
+    (patches[id] = kind.view(dash, c, id))(c.text ? w : w[id], -1);
+  }
   return (model, dirty) => {
     const w = model.widgets;
     for (const id in dirty) patches[id](w[id], dirty[id]);
@@ -818,9 +751,9 @@ export function emit(spec) {
       updates: "reducer arms mark compile-time dirty bits; a static patch per kind runs only the bindings whose bits are set, batched in a microtask",
       externalEvents: "through the same reducer (send); serverSet and snapshot mark every bit of the widgets they replace",
       lists: "keyed by id: changed rows patched, order reconciled with Solid 2's reconcileArrays",
-      conditionals: "nodes built when shown, removed when hidden",
+      conditionals: "built once with the template, swapped for an empty comment while hidden",
       derived: "summaries recomputed when a dirty bit they read is set (static dependencies)",
-      events: "addEventListener on each element; the handler builds a message and sends it",
+      events: "addEventListener on each element, sending a message (numeric tags) built when wired, or carrying the control's value",
       build: "Vite with no framework plugin, production defaults, hidden source maps",
     },
   };
