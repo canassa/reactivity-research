@@ -70,17 +70,16 @@ export function html(source, parent) {
 }
 
 // Events that send a message to a widget, like Elm's `onClick Msg` and `onInput Msg`. A click or
-// a checkbox change sends a constant message (with the item's id in a list row), built once
+// a checkbox toggle sends a constant message (with the item's id in a list row), built once
 // when the event is wired; an input sends the control's value.
 export function onClick(n, widget, type, id) {
   const msg = { widget, type, id };
   n.addEventListener("click", () => send(msg));
 }
 
-export function onCheck(n, widget, type, id) {
-  const msg = { widget, type, id };
-  n.addEventListener("change", () => send(msg));
-}
+// A checkbox toggles on its click event, which the keyboard fires too (React's onChange for a
+// checkbox listens to it as well), so onCheck is onClick.
+export { onClick as onCheck };
 
 export function onInput(n, widget, type) {
   n.addEventListener("input", () => send({ widget, type, value: n.value }));
