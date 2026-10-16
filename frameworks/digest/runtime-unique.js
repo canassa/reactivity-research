@@ -93,8 +93,8 @@ export const nx = (a, v) => a[(a.indexOf(v) + 1) % a.length];
 export const add = (l, text) => l.push({ id: Math.max(0, ...l.map((i) => i.id)) + 1, text, done: false });
 // A list from its items' texts, as arguments; the ids are 1, 2, …
 export const L = (...a) => a.map((text, i) => ({ id: i + 1, text }));
-// A checkable list from its items as [text, done] pairs.
-export const C = (...a) => a.map(([text, done], i) => ({ id: i + 1, text, done: !!done }));
+// A checkable list from a bit mask of the done items (bit i: item i), then its items' texts.
+export const C = (m, ...a) => a.map((text, i) => ({ id: i + 1, text, done: !!(m & (1 << i)) }));
 
 // Create the widget's section, with `set`, the setter of its whole state, then the handlers of its
 // controls in document order, then its template (its heading and content, the last argument),

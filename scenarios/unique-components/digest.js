@@ -133,12 +133,13 @@ function handler(m, fields) {
   throw new Error(`digest: unknown message kind ${m.kind}`);
 }
 
-// A field's initial value: as it is; a list's items as texts or [text, done] pairs when
-// their ids are 1, 2, …
+// A field's initial value: as it is; a list's items as their texts when their ids are 1, 2, …,
+// after a bit mask of which are done for a checkable list (bit i: item i).
 function initial(f, v) {
   if (f.type !== "list") return lit(v);
-  if (v.every((it, i) => it.id === i + 1)) {
-    return `${f.checkable ? "C" : "L"}(${v.map((it) => lit(f.checkable ? [it.text, it.done ? 1 : 0] : it.text)).join(", ")})`;
+  if (v.every((it, i) => it.id === i + 1) && v.length < 31) {
+    const texts = v.map((it) => lit(it.text));
+    return f.checkable ? `C(${[v.reduce((m, it, i) => m | (it.done ? 1 << i : 0), 0), ...texts].join(", ")})` : `L(${texts.join(", ")})`;
   }
   return lit(v);
 }
