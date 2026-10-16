@@ -1,0 +1,9 @@
+{
+  "name": "rr-framework-tea-inline",
+  "private": true,
+  "type": "module",
+  "description": "Pinned toolchain for the tea-inline prototype: Vite alone, no framework plugin",
+  "dependencies": {
+    "vite": "8.3.4"
+  }
+}
