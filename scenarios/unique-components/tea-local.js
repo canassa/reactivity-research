@@ -447,9 +447,11 @@ export function emit(spec) {
     files[`src/widgets/${w.id}.js`] = code;
     calls.push(`  widgets.${w.id} = ${w.id}(${["main", ...sources.map((s) => "widgets." + s)].join(", ")});`);
   }
+  // Only an app with a time-driven widget has ticks to route, and only one with a feed, notify.
+  const timed = spec.widgets.some((w) => w.fields.some((f) => f.tick));
+  const feeds = spec.widgets.some((w) => w.fields.some((f) => f.feed));
   files["src/app.js"] = `import { element } from "./runtime.js";
-import { running } from "./widgets/frame.js";
-${spec.widgets.map((w) => `import { ${w.id} } from "./widgets/${w.id}.js";`).join("\n")}
+${timed ? `import { running } from "./widgets/frame.js";\n` : ""}${spec.widgets.map((w) => `import { ${w.id} } from "./widgets/${w.id}.js";`).join("\n")}
 
 export function App(root) {
   const main = element(root, "div", { "data-role": "dashboard" });
@@ -463,20 +465,19 @@ ${calls.join("\n")}
         case "serverSet":
           widgets[msg.widget].set(msg.state);
           break;
-        case "tick":
+${timed ? `        case "tick":
           for (const tick of running) tick();
           break;
-        case "notify":
+` : ""}${feeds ? `        case "notify":
           widgets[msg.widget].notify(msg.item);
           break;
-        case "snapshot":
+` : ""}        case "snapshot":
           for (const id in msg.state.widgets) widgets[id].set(msg.state.widgets[id]);
           break;
       }
     },
     dispose() {
-      running.clear();
-      main.remove();
+${timed ? "      running.clear();\n" : ""}      main.remove();
     },
   };
 }
