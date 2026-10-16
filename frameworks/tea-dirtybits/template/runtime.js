@@ -7,13 +7,9 @@
 // ---------------------------------------------------------------------------------------------
 // Dirty bits. A component's reducer arm returns its new state with the bits of the fields it
 // writes, `[state, bits]` (or nothing when the state is unchanged); the app's reducer files
-// those bits under the component instance (touch).
+// those bits under the component instance in `dirty`, which the next patch takes.
 
-let dirty = {};
-
-export function touch(id, b) {
-  dirty[id] |= b;
-}
+export let dirty = {};
 
 // ---------------------------------------------------------------------------------------------
 // The loop. `view(root, model)` builds the DOM once and returns `patch(model, dirty)`. `send`
@@ -86,7 +82,7 @@ export function onInt(n, widget, type, min, max) {
 
 // An element's text, written only when it differs.
 export function setText(n, value) {
-  value = String(value);
+  value = "" + value;
   if (n.textContent !== value) n.textContent = value;
 }
 

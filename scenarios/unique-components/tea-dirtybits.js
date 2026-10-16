@@ -506,7 +506,7 @@ function appFile(spec, mods) {
       edges.push(`    if (dirty.${src} & ${mods[src].bit(field)}) dirty.${w.id} |= ${bit}; // ${key} -> ${w.id}`);
     }
   }
-  return `import { touch, html } from "./runtime.js";
+  return `import { dirty, html } from "./runtime.js";
 import { WIDGETS } from "./widgets/widget.js";
 // Every widget in page order: each module adds its own [view, reducer, initial state].
 ${imports.join("\n")}
@@ -518,11 +518,9 @@ export function init() {
   return { widgets };
 }
 
-// All bits: a widget whose whole state was replaced.
-const ALL = -1;
-
+// A widget's new slice, with the bits that changed (-1, every bit, for a slice replaced whole).
 function set(model, id, s, bits) {
-  touch(id, bits);
+  dirty[id] |= bits;
   return { ...model, widgets: { ...model.widgets, [id]: s } };
 }
 
@@ -537,14 +535,12 @@ function route(model, id, msg) {
 export function update(model, msg) {
   switch (msg.type) {
     case "serverSet":
-      return set(model, msg.widget, msg.state, ALL);
+      return set(model, msg.widget, msg.state, -1);
     case "snapshot":
-      for (const id in msg.state.widgets) touch(id, ALL);
+      for (const id in msg.state.widgets) dirty[id] = -1;
       return msg.state;
     case "tick": {
-      const ws = model.widgets;
-${ticks.join("\n")}
-      return model;
+${[...(ticks.length ? ["      const ws = model.widgets;"] : []), ...ticks, "      return model;"].join("\n")}
     }
   }
   return route(model, msg.widget, msg);
@@ -554,7 +550,7 @@ ${ticks.join("\n")}
 // The returned patch first turns dirty bits that other widgets read into the readers' bits, then
 // runs each dirty widget's patch.
 export function view(root, model) {
-  const dash = html("<div data-role=dashboard></div>", root)[0];
+  const dash = html("<div data-role=dashboard>", root)[0];
   const w = model.widgets;
   const patches = {};
   for (const id in WIDGETS) {

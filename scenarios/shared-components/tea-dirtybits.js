@@ -561,7 +561,7 @@ function appFile(spec) {
   const clocks = plain.filter((w) => w.kind === "clock");
 
   const imports = [
-    `import { touch, html } from "./runtime.js";`,
+    `import { dirty, html } from "./runtime.js";`,
     ...kinds.map((k) => `import * as ${k} from "./widgets/${k}.js";`),
   ];
   // The items of a filter a summary reads are named, so the summary can call `filter.matches`
@@ -595,11 +595,9 @@ export function init() {
   return { widgets };
 }
 
-// All bits: a widget whose whole state was replaced.
-const ALL = -1;
-
+// A widget's new slice, with the bits that changed (-1, every bit, for a slice replaced whole).
 function set(model, id, s, bits) {
-  touch(id, bits);
+  dirty[id] |= bits;
   return { ...model, widgets: { ...model.widgets, [id]: s } };
 }
 
@@ -615,9 +613,9 @@ function route(model, id, msg) {
 export function update(model, msg) {
   switch (msg.type) {
     case "serverSet":
-      return set(model, msg.widget, msg.state, ALL);
+      return set(model, msg.widget, msg.state, -1);
     case "snapshot":
-      for (const id in msg.state.widgets) touch(id, ALL);
+      for (const id in msg.state.widgets) dirty[id] = -1;
       return msg.state;
 ${tick}
   }
