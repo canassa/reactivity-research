@@ -25,6 +25,8 @@ const lit = (v) => JSON.stringify(v);
 // A constant that is spliced into a template as HTML: escaped here, at build time.
 const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" };
 const html = (s) => lit(String(s).replace(/[&<>"]/g, (c) => ESC[c]));
+// Booleans as 0/1.
+const bit = (b) => (b ? "1" : "0");
 const arr = (xs, f = lit) => `[${xs.map(f).join(",")}]`;
 
 // Positions are the ids: the runtime numbers widgets w1, w2, … and list items 1, 2, … in
@@ -66,7 +68,7 @@ const KINDS = {
   const count = () => s.on.filter(Boolean).length;
   text("count", () => count() + " of " + names.length + " on");`,
     metric: `{ m: count, p: (n) => n + " on in " + l }`,
-    row: (w, s) => [arr(w.items, html), arr(s.on)],
+    row: (w, s) => [arr(w.items, html), arr(s.on, bit)],
   },
 
   field: {
@@ -112,7 +114,7 @@ const KINDS = {
     metric: `{ m: left, p: (n) => n + " left in " + l }`,
     row: (w, s) => {
       sequential(s.items, (i) => i + 1);
-      return [html(w.placeholder), html(w.addText), html(w.removeText), arr(s.items, (it) => `[${lit(it.text)},${lit(it.done)}]`)];
+      return [html(w.placeholder), html(w.addText), html(w.removeText), arr(s.items, (it) => `[${lit(it.text)},${bit(it.done)}]`)];
     },
   },
 
@@ -135,10 +137,10 @@ const KINDS = {
   widget("panel", l, \`<button data-role=toggle></button><p data-role=body>\${body}</p>\`, {
     toggle: () => { s.open = !s.open; },
   });
-  bind(role("toggle"), "ariaExpanded", () => "" + s.open);
+  bind(role("toggle"), "ariaExpanded", () => "" + !!s.open);
   text("toggle", () => (s.open ? hi : sh));
   show(role("body"), () => s.open);`,
-    row: (w, s) => [lit(w.showText), lit(w.hideText), html(w.body), lit(s.open)],
+    row: (w, s) => [lit(w.showText), lit(w.hideText), html(w.body), bit(s.open)],
   },
 
   choice: {
@@ -153,9 +155,9 @@ const KINDS = {
   bind(role("select"), "value", () => s.option);
   const extra = role("extra");
   bind(extra, "value", () => s.extra);
-  show(extra, () => xf.includes(s.option));`,
+  show(extra, () => xf.includes(values.indexOf(s.option)));`,
     row: (w, s) => [arr(w.options.map((o) => o.value), html), arr(w.options.map((o) => o.label), html),
-      arr(w.extraFor), html(w.extraPlaceholder), lit(s.option), lit(s.extra)],
+      arr(w.extraFor.map((v) => w.options.findIndex((o) => o.value === v))), html(w.extraPlaceholder), lit(s.option), lit(s.extra)],
   },
 
   amount: {
@@ -256,7 +258,7 @@ const KINDS = {
     // A clock always answers tick; a summary may also read it.
     returns: `{ t: tick }`,
     metric: `{ t: tick, m: () => s.seconds, p: (n) => n + "s on " + l }`,
-    row: (w, s) => [html(w.startText), html(w.stopText), html(w.resetText), lit(s.seconds), lit(s.running)],
+    row: (w, s) => [html(w.startText), html(w.stopText), html(w.resetText), lit(s.seconds), bit(s.running)],
   },
 
   summary: {
