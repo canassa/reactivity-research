@@ -136,12 +136,13 @@
       "seeds": [1, 2, 3]
     },
     "beni-tea": {
-      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "$comment": "Only N=1: from N=2 (seed 2) up, tables whose selection marker is aria-selected replace the selected <tr> instead of updating it, because beni cannot remove an aria-* attribute and refuses an optional one; that fails the node-identity rule, so those sizes do not count. N=1 (table 1 is js-framework-benchmark, marked by class) passes and is kept for the CPU bench. See notes/2026-10-16-beni-big-table.md.",
+      "sizes": [1],
       "seeds": [1, 2, 3]
     },
     "beni-direct": {
-      "$comment": "No 16 and up: beni's ownership checker (its 64-path width cap) refuses the app from N=16 tables, every seed; N=1 to 15 build. See notes/2026-10-16-beni-big-table.md.",
-      "sizes": [1, 2, 4, 8],
+      "$comment": "Only N=1: from N=2 (seed 2) up, tables whose selection marker is aria-selected replace the selected <tr> instead of updating it, because beni cannot remove an aria-* attribute and refuses an optional one; that fails the node-identity rule, so those sizes do not count. N=1 (table 1 is js-framework-benchmark, marked by class) passes and is kept for the CPU bench. See notes/2026-10-16-beni-big-table.md. Its ownership checker also refuses N=16 and up.",
+      "sizes": [1],
       "seeds": [1, 2, 3]
     }
   }
