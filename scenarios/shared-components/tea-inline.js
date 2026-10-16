@@ -111,17 +111,15 @@ const FACTORIES = {
     const label = el("label", el("li", ul));
     const box = el("input", label, { type: "checkbox", "data-role": "toggle", "data-key": i });
     label.append(name);
-    on(box, "change", () => toggle(i));
+    // The arm of update: toggle(i) writes \`on[i]\`.
+    on(box, "change", () => {
+      s.on[i] = !s.on[i];
+      schedule(boxes[i], onCount);
+    });
     return () => prop(box, "checked", s.on[i]);
   });
   const count = el("p", root, { "data-role": "count" });
   const onCount = [() => text(count, \`\${s.on.filter(Boolean).length} of \${items.length} on\`), readers[id]];
-
-  // The arm of update: toggle(i) writes \`on[i]\`.
-  const toggle = (i) => {
-    s.on[i] = !s.on[i];
-    schedule(boxes[i], onCount);
-  };
 
   return { load: loader(s, [boxes, onCount]) };
 }`,
@@ -156,8 +154,18 @@ const FACTORIES = {
     const node = el("li", null, { "data-key": item.id });
     const box = el("input", node, { type: "checkbox", "data-role": "toggle" });
     const label = el("span", node);
-    on(box, "change", () => toggle(item.id));
-    on(el("button", node, { "data-role": "remove" }, removeText), "click", () => remove(item.id));
+    // The arms of update for this row's item: toggle(id), remove(id).
+    on(box, "change", () => {
+      const found = s.items.find((other) => other.id === item.id);
+      found.done = !found.done;
+      items.patch(found);
+      schedule(onItems);
+    });
+    on(el("button", node, { "data-role": "remove" }, removeText), "click", () => {
+      s.items.splice(s.items.findIndex((other) => other.id === item.id), 1);
+      items.drop(item.id);
+      schedule(onItems);
+    });
     return {
       node,
       set(item) {
@@ -171,7 +179,7 @@ const FACTORIES = {
   const onDraft = () => prop(draft, "value", s.draft);
   const onItems = [() => text(left, \`\${s.items.filter((item) => !item.done).length} left\`), readers[id]];
 
-  // The arms of update: editDraft, add, toggle(id), remove(id). The list edits tell the list
+  // The arms of update: editDraft, add. The list edits (here and in the rows) tell the list
   // which rows changed.
   on(draft, "input", () => {
     s.draft = draft.value;
@@ -186,17 +194,6 @@ const FACTORIES = {
     items.add(item);
     schedule(onDraft, onItems);
   });
-  const toggle = (id) => {
-    const item = s.items.find((item) => item.id === id);
-    item.done = !item.done;
-    items.patch(item);
-    schedule(onItems);
-  };
-  const remove = (id) => {
-    s.items.splice(s.items.findIndex((item) => item.id === id), 1);
-    items.drop(id);
-    schedule(onItems);
-  };
 
   return { load: loader(s, [onDraft, items, onItems]) };
 }`,
@@ -363,19 +360,17 @@ const FACTORIES = {
   const entries = list(el("ul", root), () => s.entries, (entry) => {
     const node = el("li", null, { "data-key": entry.id });
     const label = el("span", node);
-    on(el("button", node, { "data-role": "dismiss" }, dismissText), "click", () => dismiss(entry.id));
+    // The arm of update for this row's entry: dismiss(id).
+    on(el("button", node, { "data-role": "dismiss" }, dismissText), "click", () => {
+      s.entries.splice(s.entries.findIndex((other) => other.id === entry.id), 1);
+      entries.drop(entry.id);
+      schedule(onEntries);
+    });
     return { node, set: (entry) => text(label, entry.text) };
   });
   const empty = when(el("p", root, { "data-role": "empty" }, emptyText));
 
   const onEntries = [() => empty(s.entries.length === 0), readers[id]];
-
-  // The arm of update: dismiss(id).
-  const dismiss = (id) => {
-    s.entries.splice(s.entries.findIndex((entry) => entry.id === id), 1);
-    entries.drop(id);
-    schedule(onEntries);
-  };
 
   return {
     load: loader(s, [entries, onEntries]),
