@@ -27,7 +27,7 @@ export function templateFiles({ name, title }) {
   };
 }
 
-// A template file only some scenarios include (big-component's `words.js`).
+// A template file only some scenarios include (big-component's `words.js`, big-table's `grid.js`).
 export function templateFile(file) {
   return fs.readFileSync(path.join(HERE, "template", file), "utf8");
 }
@@ -36,7 +36,7 @@ export function templateFile(file) {
 // framework's library code.
 export function classify(source) {
   if (source.includes("/node_modules/") || source.startsWith("\0") || source.includes("vite/")) return "runtime";
-  if (/(^|\/)src\/(runtime|words)\.js$/.test(source)) return "runtime";
+  if (/(^|\/)src\/(runtime|words|grid)\.js$/.test(source)) return "runtime";
   if (/(^|\/)src\/adapter\.js$/.test(source)) return "adapter";
   return "app";
 }
