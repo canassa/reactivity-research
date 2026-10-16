@@ -30,9 +30,12 @@ export function templateFiles({ name, title }) {
 // Which bucket a source-map source belongs to. The Marko runtime is in node_modules/marko; the
 // compiled templates map back to src/**/*.marko. Their template strings (`$template`, `$walks`)
 // carry no mappings of their own, and the measurement assigns unmapped characters to the source
-// that follows them, which is the template's own code (see README.md, "Attribution").
+// that follows them, which is the template's own code (see README.md, "Attribution"). Vite's
+// module-preload polyfill has no mapping at all and comes first, so the measurement counts it as
+// tooling, never through this function. Virtual modules (`\0…`, e.g. Vite's helpers) and
+// node_modules (Marko, and Vite's own client code) are runtime.
 export function classify(source) {
-  if (source.includes("/node_modules/") || source.startsWith("\0") || source.includes("vite/")) return "runtime";
+  if (source.includes("/node_modules/") || source.startsWith("\0")) return "runtime";
   if (/(^|\/)src\/adapter\.js$/.test(source)) return "adapter";
   return "app";
 }
@@ -52,8 +55,10 @@ export async function build(dir) {
   const outDir = path.join(dir, "dist");
   fs.rmSync(outDir, { recursive: true, force: true });
   const vite = path.join(HERE, "node_modules", "vite", "bin", "vite.js");
-  // MARKO_DEBUG would override the production `optimize` setting (@marko/vite), so it is cleared.
-  const env = { ...process.env };
+  // NODE_ENV=production, as Marko's Vite example builds (`cross-env NODE_ENV=production vite
+  // build`), whatever the caller's environment. MARKO_DEBUG would override the production
+  // `optimize` setting (@marko/vite), so it is cleared.
+  const env = { ...process.env, NODE_ENV: "production" };
   delete env.MARKO_DEBUG;
   try {
     execFileSync(process.execPath, [vite, "build", "--logLevel", "warn"], { cwd: dir, env, stdio: "pipe", encoding: "utf8" });

@@ -11,19 +11,22 @@ let mounted;
 // after the type ("1click" on the handler function), and nothing ever removes it
 // (references/marko/packages/runtime-tags/src/dom/event.ts:30-34, called from event.ts:21-23 and
 // controllable.ts:558-559). `destroy()` leaves those listeners behind. While the app is mounted
-// the adapter records the listeners added on `document`; dispose() removes them and deletes the
-// mark, so a later mount registers them again. This depends on an undocumented runtime detail
-// (see frameworks/marko/README.md); it is the same compromise as Solid's clearDelegatedEvents.
-let delegated = [];
-function recordDocumentListeners() {
+// the adapter notes the capturing listeners added on `document`; dispose() removes those that
+// carry Marko's mark (set right after the call, so it is checked at dispose) and deletes the mark,
+// so a later mount registers them again. Listeners added by anything else are left alone. This
+// depends on an undocumented runtime detail (see frameworks/marko/README.md); it is the same
+// compromise as Solid's clearDelegatedEvents.
+let added = [];
+function noteDocumentListeners() {
   document.addEventListener = function (type, handler, options) {
-    delegated.push([type, handler, options]);
+    if (options === true && typeof handler === "function") added.push([type, handler]);
     return EventTarget.prototype.addEventListener.call(this, type, handler, options);
   };
 }
 
 function mount(root) {
-  recordDocumentListeners();
+  if (mounted) throw new Error("rr.mount: the app is already mounted; call rr.dispose() first");
+  noteDocumentListeners();
   mounted = App.mount({}, root);
 }
 
@@ -51,14 +54,16 @@ function settled() {
 }
 
 function dispose() {
+  if (!mounted) return;
   mounted.destroy();
   mounted = undefined;
   delete document.addEventListener;
-  for (const [type, handler, options] of delegated) {
-    document.removeEventListener(type, handler, options);
+  for (const [type, handler] of added) {
+    if (handler[1 + type] !== 1) continue;
+    document.removeEventListener(type, handler, true);
     delete handler[1 + type];
   }
-  delegated = [];
+  added = [];
 }
 
 window.rr = { mount, dispatch, settled, dispose };
