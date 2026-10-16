@@ -456,12 +456,12 @@ export function summary(parent, c, sources) {
 const WIDGET_FILE = `import { element } from "../runtime.js";
 
 // The instances by widget id, for the external events that name a widget.
-export const widgets = {};
+export const widgets = new Map();
 
-// The frame every widget shares: its keyed section and its heading. A widget with a model
-// registers its instance.
+// The frame every widget shares: its keyed section and its heading. It registers the widget's
+// instance (a summary has none, and no event names it).
 export function widget(parent, c, kind, self) {
-  if (self) widgets[c.id] = self;
+  widgets.set(c.id, self);
   const section = element(parent, "section", { "data-key": c.id, "data-role": "widget-" + kind });
   element(section, "h2", null, c.label);
   return section;
@@ -581,7 +581,7 @@ function appFile(spec) {
   });
 
   const cases = [`      case "serverSet":
-        widgets[msg.widget].set(msg.state);
+        widgets.get(msg.widget).set(msg.state);
         break;`];
   if (clocks.length) {
     cases.push(`      case "tick":
@@ -590,11 +590,11 @@ function appFile(spec) {
   }
   if (hasFeed) {
     cases.push(`      case "notify":
-        widgets[msg.widget].send(notify(msg.entry));
+        widgets.get(msg.widget).send(notify(msg.entry));
         break;`);
   }
   cases.push(`      case "snapshot":
-        for (const id in msg.state.widgets) widgets[id].set(msg.state.widgets[id]);
+        for (const id in msg.state.widgets) widgets.get(id).set(msg.state.widgets[id]);
         break;`);
 
   return `${imports.join("\n")}
@@ -612,7 +612,7 @@ ${cases.join("\n")}
     },
     dispose() {
       main.remove();
-      for (const id in widgets) delete widgets[id];
+      widgets.clear();
     },
   };
 }
