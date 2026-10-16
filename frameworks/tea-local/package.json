@@ -1,0 +1,9 @@
+{
+  "name": "rr-framework-tea-local",
+  "private": true,
+  "type": "module",
+  "description": "Pinned build toolchain for the tea-local prototype: Vite, no framework plugin",
+  "dependencies": {
+    "vite": "8.3.4"
+  }
+}
