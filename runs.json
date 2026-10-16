@@ -181,13 +181,13 @@
       "seeds": [1, 2, 3]
     },
     "beni-tea": {
-      "$comment": "./rr check passes (0 mismatches, 0 focus losses, nothing left after dispose) except one keyed-replacement rule from N=4: beni's shipped vocabulary has aria-* only as a String that is never removed, so the nav bar's aria-current is two button branches in an if and the buttons of the page left and the page entered are replaced (sizes 1 passes outright); see notes/2026-10-17-routed-app-beni.md.",
-      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "$comment": "Only N=1: from N=4 up the nav bar replaces the pinned buttons whose aria-current changes, because beni's shipped HTML vocabulary types aria-* as String (never removed); that fails the node-identity rule. Upstream fix: pub attribute \"aria-current\" : Maybe String. See notes/2026-10-17-routed-app-beni.md.",
+      "sizes": [1],
       "seeds": [1, 2, 3]
     },
     "beni-direct": {
-      "$comment": "Same navLink limit as beni-tea. No size cap here: a page's model is one constructor of Main's page type, so update's summary never passes the ownership checker's 64-path width cap (it does for the flat models of shared-components and big-table).",
-      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "$comment": "Only N=1: from N=4 up the nav bar replaces the pinned buttons whose aria-current changes, because beni's shipped HTML vocabulary types aria-* as String (never removed); that fails the node-identity rule. Upstream fix: pub attribute \"aria-current\" : Maybe String. See notes/2026-10-17-routed-app-beni.md.",
+      "sizes": [1],
       "seeds": [1, 2, 3]
     }
   },
