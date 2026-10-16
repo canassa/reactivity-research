@@ -605,13 +605,22 @@ const configName = (w) => w.id.toUpperCase() + "_ITEMS";
 // The source of a summary's `text(widgets)` function.
 function summaryText(spec, w, indent) {
   const sources = w.sources.map((id) => spec.widgets.find((x) => x.id === id));
+  // A breakdown shows each term twice (alone and in the total), so it names them; otherwise
+  // each term is read once, in place.
+  const named = w.formula === "breakdown";
   const names = [];
-  const lines = sources.map((src) => {
+  const lines = [];
+  for (const src of sources) {
+    const expr = metricExpr(src, `widgets.${src.id}`, configName(src));
+    if (!named) {
+      names.push(expr);
+      continue;
+    }
     let name = camelCase(src.label);
     while (names.includes(name)) name += "2";
     names.push(name);
-    return `const ${name} = ${metricExpr(src, `widgets.${src.id}`, configName(src))};`;
-  });
+    lines.push(`const ${name} = ${expr};`);
+  }
   // Only amounts can hold fractions; their terms (and any total including them) are rounded.
   const decimal = sources.map((src) => src.kind === "amount");
   const show = (i) => (decimal[i] ? `\${summary.num(${names[i]})}` : `\${${names[i]}}`);
@@ -620,6 +629,7 @@ function summaryText(spec, w, indent) {
   if (w.formula === "sum") text = `${tplText(w.prefix)}: \${${total}}`;
   else if (w.formula === "breakdown") text = `${tplText(w.prefix)}: ${names.map((_, i) => show(i)).join(" + ")} = \${${total}}`;
   else text = sources.map((src, i) => PHRASES[src.kind](show(i), src)).join("; ");
+  if (!named) return `(widgets) => \`${text}\``;
   const body = [...lines, `return \`${text}\`;`].map((l) => indent + "  " + l).join("\n");
   return `(widgets) => {\n${body}\n${indent}}`;
 }
