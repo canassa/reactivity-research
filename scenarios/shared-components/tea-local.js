@@ -508,13 +508,18 @@ const itemsName = (w) => `${camelCase(w.label)}Items`;
 function summaryText(spec, w, indent) {
   const sources = w.sources.map((id) => byId(spec, id));
   const params = sources.map((src) => "m" + src.id.slice(1));
+  const exprs = sources.map((src, i) => metricExpr(src, params[i], itemsName(src)));
+  // A breakdown uses each term twice (alone and in the total), so it names them; otherwise each
+  // term is used once, in place.
+  const named = w.formula === "breakdown";
   const names = [];
-  const lines = sources.map((src, i) => {
+  const lines = !named ? [] : sources.map((src, i) => {
     let name = camelCase(src.label);
     while (names.includes(name)) name += "2";
     names.push(name);
-    return `const ${name} = ${metricExpr(src, params[i], itemsName(src))};`;
+    return `const ${name} = ${exprs[i]};`;
   });
+  if (!named) names.push(...exprs);
   // Only amounts can hold fractions; their terms (and any total including them) are rounded.
   const decimal = sources.map((src) => src.kind === "amount");
   const show = (i) => (decimal[i] ? `\${formatNumber(${names[i]})}` : `\${${names[i]}}`);
@@ -523,6 +528,7 @@ function summaryText(spec, w, indent) {
   if (w.formula === "sum") text = `${tplText(w.prefix)}: \${${total}}`;
   else if (w.formula === "breakdown") text = `${tplText(w.prefix)}: ${names.map((_, i) => show(i)).join(" + ")} = \${${total}}`;
   else text = sources.map((src, i) => PHRASES[src.kind](show(i), src)).join("; ");
+  if (!named) return `(${params.join(", ")}) => \`${text}\``;
   const body = [...lines, `return \`${text}\`;`].map((l) => indent + "  " + l).join("\n");
   return `(${params.join(", ")}) => {\n${body}\n${indent}}`;
 }
