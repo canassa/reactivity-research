@@ -92,10 +92,12 @@ export function rowsOf(m, rows) {
   return m.selected != null && !has(rows, m.selected) ? { ...m, rows, selected: null } : { ...m, rows };
 }
 
-// Changes one row (found by its key); every other row object is kept.
+// Changes one row (found by its key); every other row object is kept. A row already gone (a
+// stale click) changes nothing.
 export function edit(m, id, change) {
+  const i = m.rows.findIndex((r) => r.id === id);
+  if (i < 0) return m;
   const rows = m.rows.slice();
-  const i = rows.findIndex((r) => r.id === id);
   rows[i] = change(rows[i]);
   return { ...m, rows };
 }
@@ -286,10 +288,11 @@ function tableBlock(t) {
     throw new Error(`unknown operation ${op.kind}`);
   };
 
-  // The row controls: the control of column i is the arm at base + i.
+  // The row controls: the control of column i is the arm at base + i. A control of a row already
+  // gone (a stale click: a second remove, a row a server push dropped) changes nothing.
   const slots = new Map();
   cols.forEach((c, i) => {
-    if ((c.kind === "label" || c.kind === "text") && c.select) slots.set(i, `(m, id) => (m.selected === id ? m : { ...m, selected: id })`);
+    if ((c.kind === "label" || c.kind === "text") && c.select) slots.set(i, `(m, id) => (m.selected === id || !has(m.rows, id) ? m : { ...m, selected: id })`);
     if (c.kind === "flag") slots.set(i, `(m, id) => edit(m, id, (r) => ({ ...r, ${c.name}: !r${prop(c.name)} }))`);
     if (c.kind === "remove") slots.set(i, `(m, id) => dropIds(m, [id])`);
     if (c.kind === "bump") slots.set(i, `(m, id) => edit(m, id, (r) => ({ ...r, ${c.column}: r${prop(c.column)} + ${c.delta} }))`);
@@ -342,7 +345,7 @@ export function emit(spec) {
   };
   const used = (names, code) => names.filter((h) => new RegExp(`\\b${h}\\b`).test(code));
   const code = blocks.join("\n");
-  const FRAME = ["tables", "add", "next", "group", "money", "percent", "monD", "dMon", "mmDd", "edit", "rowsOf", "loadRows", "setColumn", "dropIds"];
+  const FRAME = ["tables", "add", "next", "group", "money", "percent", "monD", "dMon", "mmDd", "edit", "has", "rowsOf", "loadRows", "setColumn", "dropIds"];
   files["src/app.js"] = `import { instance, template, setText, setProp, wire } from "./runtime.js";
 import { keyed, mark, rowEvents } from "./table.js";
 import { ${used(FRAME, code).join(", ")} } from "./tables/frame.js";
