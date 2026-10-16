@@ -3,7 +3,7 @@
 //
 // Style (recorded in every generated app's rr.json):
 // - One module per widget kind: its message tags, its reducer `update(model, tag, value)` and its
-//   factory `kind(parent, id, heading, ...config, model)`, shared by every widget of that kind.
+//   factory `kind(parent, heading, ...config, model)`, shared by every widget of that kind.
 //   Each widget is one call of its kind's factory with its own config as positional arguments
 //   (label, limits, items, rules as functions, formats, summary formula) and its initial model.
 //   A reducer that reads the config (the counter's limits) is declared in the factory.
@@ -29,7 +29,7 @@ export const framework = "tea-local";
 
 export const params = {};
 
-// The config fields each kind takes, beyond id and label.
+// The config fields each kind takes, beyond the label.
 const PARAMS = {
   counter: ["step", "min", "max", "start"],
   toggles: ["items"],
@@ -73,7 +73,7 @@ import { widget } from "./widget.js";
 const KINDS = {
   counter: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 
-export function counter(parent, id, heading, step, min, max, start, model) {
+export function counter(parent, heading, step, min, max, start, model) {
   const patch = () => {
     const m = self.m;
     setText(value, m.value);
@@ -86,7 +86,7 @@ export function counter(parent, id, heading, step, min, max, start, model) {
     (model, value) => ({ value: Math.max(min, model.value - step) }),
     (model, value) => ({ value: start }),
   ], patch);
-  const root = widget(parent, id, heading, "counter", self);
+  const root = widget(parent, heading, "counter", self);
   const value = element(root, "output", { "data-role": "value" }, " ");
   const dec = element(root, "button", { "data-role": "dec" }, "-" + step);
   const inc = element(root, "button", { "data-role": "inc" }, "+" + step);
@@ -99,7 +99,7 @@ export function counter(parent, id, heading, step, min, max, start, model) {
 
   toggles: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 
-export function toggles(parent, id, heading, items, model) {
+export function toggles(parent, heading, items, model) {
   const patch = () => {
     const m = self.m;
     boxes.forEach((box, i) => setProp(box, "checked", m.on[i]));
@@ -107,7 +107,7 @@ export function toggles(parent, id, heading, items, model) {
   };
   // type Msg = Toggle Int
   const self = instance(model, [(model, value) => ({ on: model.on.map((on, i) => (i === value ? !on : on)) })], patch);
-  const root = widget(parent, id, heading, "toggles", self);
+  const root = widget(parent, heading, "toggles", self);
   const ul = element(root, "ul");
   const boxes = items.map((name, i) => {
     const label = element(element(ul, "li"), "label");
@@ -122,7 +122,7 @@ export function toggles(parent, id, heading, items, model) {
 
   field: `${HEAD(["element", "on", "setText", "setProp", "show", "instance"])}
 
-export function field(parent, id, heading, placeholder, validate, model) {
+export function field(parent, heading, placeholder, validate, model) {
   const patch = () => {
     const m = self.m;
     const problem = validate(m.text);
@@ -132,7 +132,7 @@ export function field(parent, id, heading, placeholder, validate, model) {
   };
   // type Msg = Edit String
   const self = instance(model, [(model, value) => ({ text: value })], patch);
-  const root = widget(parent, id, heading, "field", self);
+  const root = widget(parent, heading, "field", self);
   const input = element(root, "input", { type: "text", "data-role": "input", placeholder: placeholder });
   on(input, "input", () => self.send(0, input.value));
   const error = element(null, "p", { "data-role": "error" }, " ");
@@ -141,7 +141,7 @@ export function field(parent, id, heading, placeholder, validate, model) {
 
   todo: `${HEAD(["element", "on", "setText", "setProp", "instance", "list"])}
 
-export function todo(parent, id, heading, placeholder, addText, removeText, model) {
+export function todo(parent, heading, placeholder, addText, removeText, model) {
   const patch = () => {
     const m = self.m;
     setProp(draft, "value", m.draft);
@@ -160,7 +160,7 @@ export function todo(parent, id, heading, placeholder, addText, removeText, mode
     (model, value) => ({ ...model, items: model.items.map((item) => (item.id === value ? { ...item, done: !item.done } : item)) }),
     (model, value) => ({ ...model, items: model.items.filter((item) => item.id !== value) }),
   ], patch);
-  const root = widget(parent, id, heading, "todo", self);
+  const root = widget(parent, heading, "todo", self);
   const draft = element(root, "input", { type: "text", "data-role": "draft", placeholder: placeholder });
   on(draft, "input", () => self.send(0, draft.value));
   on(element(root, "button", { "data-role": "add" }, addText), "click", () => self.send(1));
@@ -183,7 +183,7 @@ export function todo(parent, id, heading, placeholder, addText, removeText, mode
 
   tabs: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 
-export function tabs(parent, id, heading, tabs, model) {
+export function tabs(parent, heading, tabs, model) {
   const patch = () => {
     const m = self.m;
     buttons.forEach((button, i) => setProp(button, "ariaSelected", \`\${i === m.active}\`));
@@ -191,7 +191,7 @@ export function tabs(parent, id, heading, tabs, model) {
   };
   // type Msg = Select Int
   const self = instance(model, [(model, value) => ({ active: value })], patch);
-  const root = widget(parent, id, heading, "tabs", self);
+  const root = widget(parent, heading, "tabs", self);
   const tablist = element(root, "div", { role: "tablist" });
   const buttons = tabs.map((tab, i) => {
     const button = element(tablist, "button", { role: "tab", "data-role": "tab", "data-key": i }, tab.title);
@@ -204,7 +204,7 @@ export function tabs(parent, id, heading, tabs, model) {
 
   panel: `${HEAD(["element", "on", "setText", "show", "setProp", "instance"])}
 
-export function panel(parent, id, heading, showText, hideText, body, model) {
+export function panel(parent, heading, showText, hideText, body, model) {
   const patch = () => {
     const m = self.m;
     setProp(toggle, "ariaExpanded", \`\${m.open}\`);
@@ -213,7 +213,7 @@ export function panel(parent, id, heading, showText, hideText, body, model) {
   };
   // type Msg = Toggle
   const self = instance(model, [(model, value) => ({ open: !model.open })], patch);
-  const root = widget(parent, id, heading, "panel", self);
+  const root = widget(parent, heading, "panel", self);
   const toggle = element(root, "button", { "data-role": "toggle" }, " ");
   on(toggle, "click", () => self.send(0));
   const text = element(null, "p", { "data-role": "body" }, body);
@@ -222,7 +222,7 @@ export function panel(parent, id, heading, showText, hideText, body, model) {
 
   choice: `${HEAD(["element", "on", "setProp", "show", "instance"])}
 
-export function choice(parent, id, heading, options, extraFor, extraPlaceholder, model) {
+export function choice(parent, heading, options, extraFor, extraPlaceholder, model) {
   const patch = () => {
     const m = self.m;
     setProp(select, "value", m.option);
@@ -234,7 +234,7 @@ export function choice(parent, id, heading, options, extraFor, extraPlaceholder,
     (model, value) => ({ ...model, option: value }),
     (model, value) => ({ ...model, extra: value }),
   ], patch);
-  const root = widget(parent, id, heading, "choice", self);
+  const root = widget(parent, heading, "choice", self);
   const select = element(root, "select", { "data-role": "select" });
   for (const option of options) element(select, "option", { value: option.value }, option.label);
   on(select, "change", () => self.send(0, select.value));
@@ -245,7 +245,7 @@ export function choice(parent, id, heading, options, extraFor, extraPlaceholder,
 
   amount: `${HEAD(["element", "on", "setText", "instance"])}
 
-export function amount(parent, id, heading, format, model) {
+export function amount(parent, heading, format, model) {
   const patch = () => {
     const m = self.m;
     if (input.valueAsNumber !== m.value) input.value = m.value;
@@ -253,7 +253,7 @@ export function amount(parent, id, heading, format, model) {
   };
   // type Msg = Set Float
   const self = instance(model, [(model, value) => ({ value: value })], patch);
-  const root = widget(parent, id, heading, "amount", self);
+  const root = widget(parent, heading, "amount", self);
   const input = element(root, "input", { type: "number", "data-role": "input" });
   // Only a valid number is a message; anything else stays in the input, unsent.
   on(input, "input", () => {
@@ -266,7 +266,7 @@ export function amount(parent, id, heading, format, model) {
 
   filter: `${HEAD(["element", "on", "setText", "setProp", "instance", "list"])}
 
-export function filter(parent, id, heading, items, placeholder, model) {
+export function filter(parent, heading, items, placeholder, model) {
   const patch = () => {
     const m = self.m;
     const query = m.query.toLowerCase();
@@ -277,7 +277,7 @@ export function filter(parent, id, heading, items, placeholder, model) {
   };
   // type Msg = Edit String
   const self = instance(model, [(model, value) => ({ query: value })], patch);
-  const root = widget(parent, id, heading, "filter", self);
+  const root = widget(parent, heading, "filter", self);
   const input = element(root, "input", { type: "text", "data-role": "query", placeholder: placeholder });
   on(input, "input", () => self.send(0, input.value));
   // The items are fixed per widget, so a row never changes once built.
@@ -288,7 +288,7 @@ export function filter(parent, id, heading, items, placeholder, model) {
 
   rating: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 
-export function rating(parent, id, heading, stars, labels, model) {
+export function rating(parent, heading, stars, labels, model) {
   const patch = () => {
     const m = self.m;
     buttons.forEach((button, i) => {
@@ -299,7 +299,7 @@ export function rating(parent, id, heading, stars, labels, model) {
   };
   // type Msg = Rate Int
   const self = instance(model, [(model, value) => ({ stars: value })], patch);
-  const root = widget(parent, id, heading, "rating", self);
+  const root = widget(parent, heading, "rating", self);
   const row = element(root, "div");
   const buttons = [];
   for (let n = 1; n <= stars; n++) {
@@ -314,7 +314,7 @@ export function rating(parent, id, heading, stars, labels, model) {
   feed: `${HEAD(["element", "on", "setText", "show", "instance", "list"])}
 export const notify = 1; // the tag of Notify, sent by the app
 
-export function feed(parent, id, heading, emptyText, dismissText, model) {
+export function feed(parent, heading, emptyText, dismissText, model) {
   const patch = () => {
     const m = self.m;
     entries(m.entries);
@@ -325,7 +325,7 @@ export function feed(parent, id, heading, emptyText, dismissText, model) {
     (model, value) => ({ entries: model.entries.filter((entry) => entry.id !== value) }),
     (model, value) => ({ entries: [...model.entries, value] }),
   ], patch);
-  const root = widget(parent, id, heading, "feed", self);
+  const root = widget(parent, heading, "feed", self);
   const entries = list(element(root, "ul"), (entry) => {
     const li = element(null, "li");
     const label = element(li, "span", null, " ");
@@ -343,7 +343,7 @@ function formatTime(seconds) {
   return \`\${Math.floor(seconds / 60)}:\${String(seconds % 60).padStart(2, "0")}\`;
 }
 
-export function clock(parent, id, heading, startText, stopText, resetText, model) {
+export function clock(parent, heading, startText, stopText, resetText, model) {
   const patch = () => {
     const m = self.m;
     setText(time, formatTime(m.seconds));
@@ -357,7 +357,7 @@ export function clock(parent, id, heading, startText, stopText, resetText, model
     (model, value) => ({ seconds: 0, running: false }),
     (model, value) => (model.running ? { ...model, seconds: model.seconds + 1 } : model),
   ], patch);
-  const root = widget(parent, id, heading, "clock", self);
+  const root = widget(parent, heading, "clock", self);
   const time = element(root, "output", { "data-role": "time" }, " ");
   const start = element(root, "button", { "data-role": "start" }, startText);
   const stop = element(root, "button", { "data-role": "stop" }, stopText);
@@ -373,8 +373,8 @@ import { widget, widgets } from "./widget.js";
 
 // No model and no messages: the line is derived from the instances it reads (by widget id).
 // Each of them schedules this patch when its model changes.
-export function summary(parent, id, heading, text, sources) {
-  const root = widget(parent, id, heading, "summary");
+export function summary(parent, heading, text, sources) {
+  const root = widget(parent, heading, "summary");
   const line = element(root, "p", { "data-role": "summary" }, " ");
 
   function patch() {
@@ -393,8 +393,10 @@ const WIDGET_FILE = `import { element } from "../runtime.js";
 export const widgets = new Map();
 
 // The frame every widget shares: its keyed section and its heading. It registers the widget's
-// instance (a summary has none, and no event names it).
-export function widget(parent, id, heading, kind, self) {
+// instance (a summary has none, and no event names it) under its id: widgets are numbered in
+// page order, so the next one is w1, w2, … (the registry is emptied on dispose).
+export function widget(parent, heading, kind, self) {
+  const id = "w" + (widgets.size + 1);
   widgets.set(id, self);
   const section = element(parent, "section", { "data-key": id, "data-role": "widget-" + kind });
   element(section, "h2", null, heading);
@@ -475,10 +477,10 @@ function needsFormatNumber(spec) {
 // ---------------------------------------------------------------------------------------------
 // The app: one factory call per widget, with its config, and the routing of external events.
 
-// The factory call's arguments: the parent, the widget's id, label and config fields in its
+// The factory call's arguments: the parent, the widget's label and config fields in its
 // kind's order, and `last` (the initial model, or a summary's sources).
 function args(spec, w, readFilters, last) {
-  const entries = ["main", `"${w.id}"`, JSON.stringify(w.label)];
+  const entries = ["main", JSON.stringify(w.label)];
   for (const name of PARAMS[w.kind]) {
     let code;
     if (name === "text") code = summaryText(spec, w, "    ");
@@ -494,6 +496,8 @@ function args(spec, w, readFilters, last) {
 }
 
 function appFile(spec) {
+  // The frame numbers the widgets in page order (see WIDGET_FILE): the ids must be w1, w2, ….
+  if (spec.widgets.some((w, i) => w.id !== `w${i + 1}`)) throw new Error("widget ids are not w1, w2, … in order");
   const kinds = [...new Set(spec.widgets.map((w) => w.kind))];
   const plain = spec.widgets.filter((w) => w.kind !== "summary");
   const clocks = plain.filter((w) => w.kind === "clock");
