@@ -93,7 +93,7 @@ function inner(e, deps) {
   const go = (x) => inner(x, deps);
   switch (e[0]) {
     case "f": deps.own.add(e[1]); return `s.${e[1]}`;
-    case "w": deps.cross.add(`${e[1]}.${e[2]}`); return `${e[1]}.${e[2]}`;
+    case "w": deps.cross.add(`${e[1]}.${e[2]}`); return `model[${pos(e[1])}].${e[2]}`;
     case "k": return str(e[1]);
     case "+": case "-": return `(${go(e[1])} ${e[0]} ${go(e[2])})`;
     case "count": case "len": return `${go(e[1])}.length`;
@@ -143,17 +143,18 @@ function widgetFile(w, reads) {
   const message = (name) => w.messages.find((m) => m.name === name);
   const ids = {};
   const id = (p) => p + (ids[p] = (ids[p] || 0) + 1);
+  // An element the code refers to: a placeholder, written at the end as the element's place in
+  // the markup (`E[n]`).
+  const ref = (p) => `\0${id(p)}\0`;
 
   const build = []; // construction lines
   const bindings = []; // { code, own, cross, name }
   const actions = []; // thunks writing the handlers, once the binding groups are known
   const lists = {}; // list field -> its variable
-  const crossIds = new Set();
 
   const bind = (mk, name) => {
     const deps = { own: new Set(), cross: new Set() };
     const code = mk(deps);
-    deps.cross.forEach((c) => crossIds.add(c.split(".")[0]));
     bindings.push({ code, own: [...deps.own], cross: [...deps.cross], name });
   };
 
@@ -273,14 +274,14 @@ function widgetFile(w, reads) {
         const p = partsCode(n.parts, { own: new Set(), cross: new Set() });
         if (p.static !== undefined) element(n.tag, {}, p.static);
         else {
-          const t = id("t");
+          const t = ref("t");
           element(n.tag, {}, "", t);
           bind((deps) => `() => text(${t}, ${partsCode(n.parts, deps).code})`);
         }
         return;
       }
       case "button": {
-        const b = id("b");
+        const b = ref("b");
         const p = partsCode(n.text, { own: new Set(), cross: new Set() });
         element("button", { "data-role": n.msg }, p.static ?? "", b);
         if (p.static === undefined) bind((deps) => `() => text(${b}, ${partsCode(n.text, deps).code})`);
@@ -296,7 +297,7 @@ function widgetFile(w, reads) {
           open("label");
           html += escText(n.label);
         }
-        const i = id("i");
+        const i = ref("i");
         const o = { type: num ? "number" : "text", "data-role": n.msg };
         if (n.placeholder) o.placeholder = n.placeholder;
         element("input", o, null, i);
@@ -304,7 +305,7 @@ function widgetFile(w, reads) {
         bind((deps) => `() => prop(${i}, "value", ${num ? `String(${exprCode(["f", f.name], deps)})` : exprCode(["f", f.name], deps)})`);
         handler(i, m);
         if (n.invalid) {
-          const e = id("e");
+          const e = ref("e");
           element("p", { "data-role": n.msg + "Error" }, n.invalid.message, e);
           bind((deps) => `() => when(${e}, ${exprCode(n.invalid.when, deps)})`);
         }
@@ -312,7 +313,7 @@ function widgetFile(w, reads) {
       }
       case "check": {
         const m = message(n.msg);
-        const c = id("c");
+        const c = ref("c");
         open("label");
         element("input", { type: "checkbox", "data-role": n.msg }, null, c);
         html += escText(n.label);
@@ -328,7 +329,7 @@ function widgetFile(w, reads) {
           open("label");
           html += escText(n.label);
         }
-        const o = id("o");
+        const o = ref("o");
         open("select", { "data-role": n.msg }, o);
         for (const value of f.options) element("option", { value }, value);
         close("select");
@@ -340,7 +341,7 @@ function widgetFile(w, reads) {
       case "list": {
         const f = field(n.field);
         const l = id("ls");
-        const u = id("n");
+        const u = ref("n");
         lists[n.field] = l;
         element(n.tag, {}, "", u);
         const row = [`const node = el("li", null, ${attrs({ "data-key": "item.id", "data-role": str(n.field + "Item") })});`];
@@ -365,7 +366,7 @@ function widgetFile(w, reads) {
         return;
       }
       case "when": {
-        const g = id("g");
+        const g = ref("g");
         open(n.tag, {}, g);
         for (const c of n.children) node(c);
         close(n.tag);
@@ -436,14 +437,12 @@ function widgetFile(w, reads) {
     const m = /^(\s*)@@(\w+)@@$/.exec(l);
     return m ? itemBodies[m[2]]().map((b) => m[1] + "  " + b) : [l];
   });
-  const readIds = [...crossIds];
 
   const all = [...groups.keys()].map((f) => "on" + cap(f)).concat(alone);
   const body = [
     "const s = model[widget];",
-    ...readIds.map((x) => `const ${x} = model[${pos(x)}];`),
-    "// The DOM, built once from its markup; the elements the code refers to, in document order.",
-    `const [${Array.from(refs, (r) => r || "").join(", ")}] = section(parent, widget, ${str(html)});`,
+    "// The DOM, built once from its markup; its elements in document order (those the code refers to are E[n]).",
+    `const E = section(parent, widget, ${str(html)});`,
     ...expand(build),
     "",
     ...(namedLines.length ? ["// Bindings reading several fields, or other widgets."] : []),
@@ -458,7 +457,8 @@ function widgetFile(w, reads) {
       ? [`return loader(s, [${all.join(", ")}], {`, ...arms.flat().map((l) => "  " + l), "});"]
       : [`return loader(s, [${all.join(", ")}]);`]),
   ];
-  const text = body.map((l) => (l ? "  " + l : l)).join("\n");
+  const at = new Map(Object.entries(refs).map(([n, r]) => [r, n]));
+  const text = body.map((l) => (l ? "  " + l : l)).join("\n").replace(/\0\w+\0/g, (r) => `E[${at.get(r)}]`);
 
   const rt = ["el", "text", "prop", "on", "when", "list", "schedule"].filter((n) => new RegExp(`\\b${n}\\(`).test(text));
   const wi = ["section", "loader", "nextId"].filter((n) => new RegExp(`\\b${n}\\(`).test(text));
