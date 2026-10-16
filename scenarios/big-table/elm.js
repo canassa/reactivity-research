@@ -278,7 +278,12 @@ ${recordUpdate([["rows", "rows"], ["selected", `${U("keepSelected")} rows model.
     const pat = `${ctlCtor.get(c.role)} id`;
     switch (c.kind) {
       case "select":
-        branch(pat, recordUpdate([["selected", "Just id"]]));
+        // A row already gone (a stale click, after a server push dropped it) is not selected.
+        branch(pat, `            if ${U("hasRow")} id model.rows then
+${recordUpdate([["selected", "Just id"]], 16)}
+
+            else
+                model`);
         break;
       case "remove":
         if (hasSelect) {
@@ -725,16 +730,19 @@ setCells set changes rows =
                     row
         )
         rows`, imports: { "Array": ["Array"], "Dict": [] } },
+  hasRow: { code: `hasRow : Int -> Array { r | id : Int } -> Bool
+hasRow id rows =
+    Array.foldl (\\row found -> found || row.id == id) False rows`, imports: { "Array": ["Array"] } },
   keepSelected: { code: `keepSelected : Array { r | id : Int } -> Maybe Int -> Maybe Int
 keepSelected rows =
     Maybe.andThen
         (\\id ->
-            if Array.foldl (\\row found -> found || row.id == id) False rows then
+            if hasRow id rows then
                 Just id
 
             else
                 Nothing
-        )`, imports: { "Array": ["Array"] } },
+        )`, needs: ["hasRow"], imports: { "Array": ["Array"] } },
   nextAfter: { code: `nextAfter : Int -> Array { r | id : Int } -> Int
 nextAfter current rows =
     Array.foldl (\\row highest -> max (row.id + 1) highest) current rows`, imports: { "Array": ["Array"] } },
