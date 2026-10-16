@@ -348,6 +348,7 @@ function widgetFile(spec, w) {
 
   const fn = [];
   fn.push(`export function ${w.id}(parent${sources.map((s) => ", " + s).join("")}) {`);
+  fn.push(`  // type Msg = ${msgNames.join(" | ")}`);
   fn.push(`  const self = instance(${lit(spec.initialState.widgets[w.id])}, update, patch);`);
   fn.push(`  const e = widget(parent, ${q(w.id)}, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))});`);
   fn.push(...cx.create);
@@ -355,6 +356,7 @@ function widgetFile(spec, w) {
   // render), so a tick right after the gate opens is not missed.
   if (timed.length) fn.push(`  subscribe(self, [${tickIndex}], (m) => ${gate});`);
   fn.push(``);
+  fn.push(`  function update(m, msg) {`, `    switch (msg[0]) {`, ...cases.map((c) => c.replace(/^/gm, "    ")), `    }`, `  }`, ``);
   fn.push(`  function patch() {`);
   if (cx.own) fn.push(`    const m = self.m;`);
   for (const s of sources) fn.push(`    const m${s.slice(1)} = ${s}.m;`);
@@ -375,13 +377,6 @@ function widgetFile(spec, w) {
     `// ${w.label} (${w.kind})`,
     ...optionLines,
     ...cx.templates,
-    ``,
-    `// type Msg = ${msgNames.join(" | ")}`,
-    `function update(m, msg) {`,
-    `  switch (msg[0]) {`,
-    ...cases,
-    `  }`,
-    `}`,
     ``,
     body,
     ``,
