@@ -58,8 +58,18 @@ export async function build(dir) {
 
 // A static template's markup with the closing tags at its very end left out, as Solid's
 // compiler writes its templates: the HTML parser closes every element still open at the end of
-// the input, so the parsed nodes are the same.
+// the input, so the parsed nodes are the same. Before that, the end tags HTML makes optional
+// are left out too, as an HTML minifier's optional-tag pass does: `</option>` before another
+// option or the end of its select, `</li>` before another item or the end of its list, and
+// `</p>` before an element that closes a paragraph or the end of its parent.
+const CLOSES_P = "address|article|aside|blockquote|details|dialog|div|dl|fieldset|figcaption|figure|footer|form|h[1-6]|header|hgroup|hr|main|menu|nav|ol|p|pre|search|section|table|ul";
+const OPTIONAL_END = [
+  /<\/option>(?=<option[\s>]|<\/select>)/g,
+  /<\/li>(?=<li[\s>]|<\/[ou]l>)/g,
+  new RegExp(`</p>(?=<(?:${CLOSES_P})[\\s>]|</(?!(?:a|audio|del|ins|map|noscript|video)>)[a-z][a-z0-9]*>)`, "g"),
+];
 export function trimTemplate(markup) {
+  for (const re of OPTIONAL_END) markup = markup.replace(re, "");
   return markup.replace(/(<\/[a-z][a-z0-9]*>)+$/, "");
 }
 
