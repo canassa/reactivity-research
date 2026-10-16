@@ -32,9 +32,10 @@ const el = (tag, html) => {
 };
 
 // Give the controls of a template (its buttons, inputs and selects, in document order) their
-// handlers, in the same order. The delegated listener calls the target's handler.
-const on = (n, h, i = 0) => {
-  for (const c of n.querySelectorAll("button,input,select")) c.h = h[i++];
+// handlers, in the same order, and the binding list `b` of their widget. The delegated listener
+// calls the target's handler, then digests its list.
+const on = (n, h, b, i = 0) => {
+  for (const c of n.querySelectorAll("button,input,select")) (c.h = h[i++]), (c.b = b);
 };
 
 // Write `N[i][k] = f()` whenever f() changes. `i` is the element's position in the template (0 is
@@ -49,7 +50,7 @@ export const show = (i, f, last, n = N[i], c = new Text()) =>
 // A keyed list in element `i`: `items()` gives the current items (each with an `id`). An item is
 // an `<li data-key>` made from `html`; `make(r)` registers its bindings, which read `r.i`, the
 // item's current value, and returns the handlers of the item's controls.
-export const list = (i, items, html, make, p = N[i], map = new Map()) =>
+export const list = (i, items, html, make, p = N[i], map = new Map(), w = B) =>
   B.push(() => {
     const old = map;
     map = new Map();
@@ -62,7 +63,7 @@ export const list = (i, items, html, make, p = N[i], map = new Map()) =>
         r = { b: (B = []), n: el("li", html), i };
         r.n.dataset.key = i.id;
         N = r.n.children;
-        on(r.n, make(r));
+        on(r.n, make(r), w);
       }
       r.i = i;
       map.set(i.id, r);
@@ -86,11 +87,11 @@ export const widget = (kind, label, html, h, set) => {
   x.firstChild.textContent = label;
   x.dataset.key = id;
   x.dataset.role = "widget-" + kind;
-  on(x, h);
+  on(x, h, (W[id] = B = []));
   D.append(x);
   N = x.querySelectorAll("*");
   S[id] = set;
-  return (W[id] = x.b = B = []);
+  return B;
 };
 
 // One delegated handler for clicks and input, on the dashboard element. Handlers read the
@@ -99,7 +100,7 @@ export const widget = (kind, label, html, h, set) => {
 const onEvent = ({ target: t }) => {
   if (t.h) {
     t.h(t);
-    run(t.closest("section").b);
+    run(t.b);
   }
 };
 

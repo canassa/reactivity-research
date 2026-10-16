@@ -33,9 +33,10 @@ const el = (tag, html) => {
 };
 
 // Give the controls of a template (its buttons, inputs and selects, in document order) their
-// handlers, in the same order. The delegated listener calls the target's handler.
-const on = (n, h, i = 0) => {
-  for (const c of n.querySelectorAll("button,input,select")) c.h = h[i++];
+// handlers, in the same order, and the binding list `b` of their widget. The delegated listener
+// calls the target's handler, then digests its list.
+const on = (n, h, b, i = 0) => {
+  for (const c of n.querySelectorAll("button,input,select")) (c.h = h[i++]), (c.b = b);
 };
 
 // Write `n[k] = f()` whenever f() changes (`k` is an input's value unless given). A binding names
@@ -53,7 +54,7 @@ export const show = (d, f, last, n = E[(P += d)], c = new Text()) =>
 // an `id`). An item is an `<li data-key data-role=role>` made from `html`; `make(r)` registers
 // its bindings, which read `r.i`, the item's current value, and returns the handlers of the
 // item's controls.
-export const list = (d, items, role, html, make, p = E[(P += d)], map = new Map()) =>
+export const list = (d, items, role, html, make, p = E[(P += d)], map = new Map(), w = B) =>
   B.push(() => {
     const old = map;
     map = new Map();
@@ -68,7 +69,7 @@ export const list = (d, items, role, html, make, p = E[(P += d)], map = new Map(
         r.n.dataset.role = role;
         E = r.n.children;
         P = 0;
-        on(r.n, make(r));
+        on(r.n, make(r), w);
       }
       r.i = i;
       map.set(i.id, r);
@@ -96,11 +97,10 @@ export const widget = (html, h, set, o) => {
   const x = el("section", html);
   x.dataset.key = id;
   x.dataset.role = "widget";
-  on(x, h);
+  on(x, h, (W[id] = B = []));
   D.append(x);
   S[id] = set;
   O[id] = o;
-  W[id] = x.b = B = [];
   E = x.querySelectorAll("*");
   P = 0;
 };
@@ -117,7 +117,7 @@ export const dep = (...d) => {
 const onEvent = ({ target: t }) => {
   if (t.h) {
     t.h(t);
-    run(t.closest("[data-role=widget]").b);
+    run(t.b);
   }
 };
 
