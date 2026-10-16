@@ -305,10 +305,8 @@ function widgetFile(w, reads) {
         handler(i, m);
         if (n.invalid) {
           const e = id("e");
-          const v = id("v");
           element("p", { "data-role": n.msg + "Error" }, n.invalid.message, e);
-          build.push(`const ${v} = when(${e});`);
-          bind((deps) => `() => ${v}(${exprCode(n.invalid.when, deps)})`);
+          bind((deps) => `() => when(${e}, ${exprCode(n.invalid.when, deps)})`);
         }
         return;
       }
@@ -368,12 +366,10 @@ function widgetFile(w, reads) {
       }
       case "when": {
         const g = id("g");
-        const v = id("v");
         open(n.tag, {}, g);
         for (const c of n.children) node(c);
         close(n.tag);
-        build.push(`const ${v} = when(${g});`);
-        bind((deps) => `() => ${v}(${exprCode(n.cond, deps)})`);
+        bind((deps) => `() => when(${g}, ${exprCode(n.cond, deps)})`);
         return;
       }
       case "group": {

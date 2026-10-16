@@ -63,12 +63,13 @@ export function on(node, type, handler) {
   node.addEventListener(type, handler);
 }
 
-// A conditional block: `node`, built once in place, swaps with an empty text node to hide it.
-// `show(cond)` puts whichever should be in the page in the place of the other (a no-op when it
-// already is: `replaceWith` does nothing on a node out of the page).
-export function when(node) {
-  const anchor = new Text();
-  return (cond) => (cond ? anchor : node).replaceWith(cond ? node : anchor);
+// A conditional block: `node`, built once in place, swaps with an empty text node (made on first
+// use and kept on the node) to hide it. `when(node, cond)` puts whichever should be in the page in
+// the place of the other (a no-op when it already is: `replaceWith` does nothing on a node out of
+// the page).
+export function when(node, cond) {
+  const anchor = (node.anchor ||= new Text());
+  (cond ? anchor : node).replaceWith(cond ? node : anchor);
 }
 
 // ---------------------------------------------------------------------------------------------

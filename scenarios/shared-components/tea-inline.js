@@ -134,9 +134,9 @@ const FACTORIES = {
     code: `export function field(parent, s, readers, id, heading, placeholder, message, invalid) {
   const root = section(parent, id, heading, "field");
   const input = el("input", root, { type: "text", "data-role": "input", placeholder: placeholder });
-  const error = when(el("p", root, { "data-role": "error" }, message));
+  const error = el("p", root, { "data-role": "error" }, message);
 
-  const onText = [() => prop(input, "value", s.text), () => error(invalid(s.text))];
+  const onText = [() => prop(input, "value", s.text), () => when(error, invalid(s.text))];
 
   // The arm of update: edit(text).
   on(input, "input", () => {
@@ -228,14 +228,14 @@ const FACTORIES = {
     code: `export function panel(parent, s, readers, id, heading, showText, hideText, bodyText) {
   const root = section(parent, id, heading, "panel");
   const button = el("button", root, { "data-role": "toggle" });
-  const body = when(el("p", root, { "data-role": "body" }, bodyText));
+  const body = el("p", root, { "data-role": "body" }, bodyText);
 
   const onOpen = [
     () => {
       prop(button, "ariaExpanded", String(s.open));
       text(button, s.open ? hideText : showText);
     },
-    () => body(s.open),
+    () => when(body, s.open),
   ];
 
   // The arm of update: toggle.
@@ -255,7 +255,6 @@ const FACTORIES = {
   const select = el("select", root, { "data-role": "select" });
   for (const [value, label] of options) el("option", select, { value }, label);
   const input = el("input", root, { type: "text", "data-role": "extra", placeholder: extraPlaceholder });
-  const extra = when(input);
   // The arm of update: editExtra(text).
   on(input, "input", () => {
     s.extra = input.value;
@@ -265,7 +264,7 @@ const FACTORIES = {
   // The extra input reads \`option\` (whether it is shown) and \`extra\`.
   const onExtra = () => {
     const shown = extraFor.includes(s.option);
-    extra(shown);
+    when(input, shown);
     if (shown) prop(input, "value", s.extra);
   };
   const onOption = [() => prop(select, "value", s.option), onExtra];
@@ -372,9 +371,9 @@ const FACTORIES = {
       text(label, entry.text);
     }];
   });
-  const empty = when(el("p", root, { "data-role": "empty" }, emptyText));
+  const empty = el("p", root, { "data-role": "empty" }, emptyText);
 
-  const onEntries = [() => empty(s.entries.length === 0), readers[id]];
+  const onEntries = [() => when(empty, s.entries.length === 0), readers[id]];
 
   return loader(s, [entries, onEntries], {
     // The external arm: notify(entry).
