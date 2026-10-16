@@ -95,16 +95,11 @@ import { section } from "./widget.js";
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  ([, , , step, min, max, start], s, msg) => {
-    switch (msg.type) {
-      case 0:
-        return [{ value: Math.min(max, s.value + step) }, 1];
-      case 1:
-        return [{ value: Math.max(min, s.value - step) }, 1];
-      case 2:
-        return [{ value: start }, 1];
-    }
-  },
+  [
+    ([, , , step, , max], s) => [{ value: Math.min(max, s.value + step) }, 1],
+    ([, , , step, min], s) => [{ value: Math.max(min, s.value - step) }, 1],
+    ([, , , , , , start]) => [{ value: start }, 1],
+  ],
   (parent, [, , label, step, min, max], id) => {
     const [, , value, dec, inc, reset] = section(parent, id, label, "counter",
       "<output data-role=value></output><button data-role=dec></button><button data-role=inc></button><button data-role=reset>Reset");
@@ -129,7 +124,7 @@ import { section } from "./widget.js";
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  (c, s, msg) => [{ on: s.on.map((on, i) => (i === msg.id ? !on : on)) }, 1],
+  [(c, s, msg) => [{ on: s.on.map((on, i) => (i === msg.id ? !on : on)) }, 1]],
   (parent, [, , label, items], id) => {
     const t = section(parent, id, label, "toggles", "<ul></ul><p data-role=count>");
     const boxes = items.map((name, i) => {
@@ -154,7 +149,7 @@ import { section } from "./widget.js";
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  (c, s, msg) => [{ text: msg.value }, 1],
+  [(c, s, msg) => [{ text: msg.value }, 1]],
   (parent, [, , label, placeholder, valid, message], id) => {
     const [, , input, p] = section(parent, id, label, "field", "<input type=text data-role=input><p data-role=error>");
     input.placeholder = placeholder;
@@ -176,22 +171,17 @@ import { section } from "./widget.js";
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  (c, s, msg) => {
-    switch (msg.type) {
-      case 0:
-        return [{ ...s, draft: msg.value }, 2];
-      case 1: {
-        const text = s.draft.trim();
-        if (text === "") return;
-        const id = s.items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
-        return [{ items: [...s.items, { id, text, done: false }], draft: "" }, 3];
-      }
-      case 2:
-        return [{ ...s, items: s.items.map((item) => (item.id === msg.id ? { ...item, done: !item.done } : item)) }, 1];
-      case 3:
-        return [{ ...s, items: s.items.filter((item) => item.id !== msg.id) }, 1];
-    }
-  },
+  [
+    (c, s, msg) => [{ ...s, draft: msg.value }, 2],
+    (c, s) => {
+      const text = s.draft.trim();
+      if (text === "") return;
+      const id = s.items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
+      return [{ items: [...s.items, { id, text, done: false }], draft: "" }, 3];
+    },
+    (c, s, msg) => [{ ...s, items: s.items.map((item) => (item.id === msg.id ? { ...item, done: !item.done } : item)) }, 1],
+    (c, s, msg) => [{ ...s, items: s.items.filter((item) => item.id !== msg.id) }, 1],
+  ],
   (parent, [, , label, placeholder, addText, removeText], id) => {
     const [, , draft, add, ul, left] = section(parent, id, label, "todo",
       "<input type=text data-role=draft><button data-role=add></button><ul></ul><p data-role=left>");
@@ -228,7 +218,7 @@ import { section } from "./widget.js";
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  (c, s, msg) => [{ active: msg.id }, 1],
+  [(c, s, msg) => [{ active: msg.id }, 1]],
   (parent, [, , label, tabs], id) => {
     const t = section(parent, id, label, "tabs", "<div role=tablist></div><p data-role=tab-content role=tabpanel>");
     const buttons = tabs.map(([title], i) => {
@@ -253,7 +243,7 @@ import { section } from "./widget.js";
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  (c, s, msg) => [{ open: !s.open }, 1],
+  [(c, s) => [{ open: !s.open }, 1]],
   (parent, [, , label, showText, hideText, body], id) => {
     const [, , toggle, p] = section(parent, id, label, "panel", "<button data-role=toggle></button><p data-role=body>");
     p.textContent = body;
@@ -275,14 +265,10 @@ import { section } from "./widget.js";
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  (c, s, msg) => {
-    switch (msg.type) {
-      case 0:
-        return [{ ...s, option: msg.value }, 1];
-      case 1:
-        return [{ ...s, extra: msg.value }, 2];
-    }
-  },
+  [
+    (c, s, msg) => [{ ...s, option: msg.value }, 1],
+    (c, s, msg) => [{ ...s, extra: msg.value }, 2],
+  ],
   (parent, [, , label, options, extraFor, extraPlaceholder], id) => {
     const [, , select, input] = section(parent, id, label, "choice", "<select data-role=select></select><input type=text data-role=extra>");
     for (const [value, label] of options) {
@@ -313,7 +299,7 @@ import { section } from "./widget.js";
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  (c, s, msg) => [{ value: msg.value }, 1],
+  [(c, s, msg) => [{ value: msg.value }, 1]],
   (parent, [, , label, format], id) => {
     const [, , input, formatted] = section(parent, id, label, "amount", "<input type=number data-role=input><output data-role=formatted>");
     // Only a valid number becomes a message; anything else stays in the input as typed.
@@ -342,7 +328,7 @@ export function matches(items, query) {
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  (c, s, msg) => [{ query: msg.value }, 1],
+  [(c, s, msg) => [{ query: msg.value }, 1]],
   (parent, [, , label, items, placeholder], id) => {
     const [, , input, ul, count] = section(parent, id, label, "filter", "<input type=text data-role=query><ul></ul><p data-role=matches>");
     input.placeholder = placeholder;
@@ -369,7 +355,7 @@ import { section } from "./widget.js";
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  (c, s, msg) => [{ stars: msg.id }, 1],
+  [(c, s, msg) => [{ stars: msg.id }, 1]],
   (parent, [, , label, stars, labels], id) => {
     const t = section(parent, id, label, "rating", "<div></div><p data-role=rating-label>");
     const buttons = [];
@@ -397,13 +383,9 @@ import { section } from "./widget.js";
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  (c, s, msg) => {
-    switch (msg.type) {
-      case 0:
-        return [{ entries: s.entries.filter((entry) => entry.id !== msg.id) }, 1];
-      case "notify":
-        return [{ entries: [...s.entries, msg.entry] }, 1];
-    }
+  {
+    0: (c, s, msg) => [{ entries: s.entries.filter((entry) => entry.id !== msg.id) }, 1],
+    notify: (c, s, msg) => [{ entries: [...s.entries, msg.entry] }, 1],
   },
   (parent, [, , label, emptyText, dismissText], id) => {
     const [, , ul, p] = section(parent, id, label, "feed", "<ul></ul><p data-role=empty>");
@@ -438,17 +420,11 @@ function formatTime(seconds) {
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  (c, s, msg) => {
-    switch (msg.type) {
-      case 0:
-        return [{ ...s, running: true }, 2];
-      case 1:
-        return [{ ...s, running: false }, 2];
-      case 2:
-        return [{ seconds: 0, running: false }, 3];
-      case "tick":
-        return s.running && [{ ...s, seconds: s.seconds + 1 }, 1];
-    }
+  {
+    0: (c, s) => [{ ...s, running: true }, 2],
+    1: (c, s) => [{ ...s, running: false }, 2],
+    2: () => [{ seconds: 0, running: false }, 3],
+    tick: (c, s) => s.running && [{ ...s, seconds: s.seconds + 1 }, 1],
   },
   (parent, [, , label, startText, stopText, resetText], id) => {
     const [, , time, start, stop, reset] = section(parent, id, label, "clock",
@@ -633,7 +609,7 @@ function set(model, id, s, bits) {
 // Run one widget's reducer and file the bits its arm marked under that widget.
 function route(model, id, msg) {
   const row = WIDGETS[id];
-  const next = row[0][0](row, model.widgets[id], msg);
+  const next = row[0][0][msg.type](row, model.widgets[id], msg);
   // An arm returns its new slice with the bits it marked, or nothing when the slice is unchanged.
   return next ? set(model, id, ...next) : model;
 }

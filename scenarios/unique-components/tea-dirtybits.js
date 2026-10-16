@@ -202,17 +202,17 @@ function widgetModule(w) {
   for (const m of messages) {
     const a = arm(m);
     const full = a.values.size === w.fields.length;
-    arms.push({ head: `case ${tag(m.name)}: { // ${m.name}`, lines: [...a.guard, `return ${a.when ? a.when + " && " : ""}[${write(a.values, full)}, ${a.bits}];`] });
+    arms.push({ key: tag(m.name), name: m.name, lines: [...a.guard, `return ${a.when ? a.when + " && " : ""}[${write(a.values, full)}, ${a.bits}];`] });
   }
   // External events: a feed receives notifications; time-driven fields advance while gated.
   const feed = w.fields.find((f) => f.feed);
   if (feed) {
-    arms.push({ head: `case "notify": {`, lines: [`return [{ ...s, ${feed.name}: [...s.${feed.name}, msg.item] }, ${own(feed.name)}];`] });
+    arms.push({ key: "notify", lines: [`return [{ ...s, ${feed.name}: [...s.${feed.name}, msg.item] }, ${own(feed.name)}];`] });
   }
   const ticks = w.fields.filter((f) => f.tick);
   if (ticks.length === 1) {
     const f = ticks[0];
-    arms.push({ head: `case "tick": {`, lines: [
+    arms.push({ key: "tick", lines: [
       `if (!s.${f.tickWhen}) return;`,
       `const ${f.name} = Math.min(${f.max}, s.${f.name} + ${f.tick});`,
       `if (${f.name} !== s.${f.name}) return [{ ...s, ${f.name} }, ${own(f.name)}];`,
@@ -225,13 +225,23 @@ function widgetModule(w) {
     bits |= ${own(f.name)};
   }
 }`);
-    arms.push({ head: `case "tick": {`, lines: [`let next = s;`, `let bits = 0;`, ...body, `if (bits) return [next, bits];`] });
+    arms.push({ key: "tick", lines: [`let next = s;`, `let bits = 0;`, ...body, `if (bits) return [next, bits];`] });
   }
-  // A widget with a single message needs no test of its tag (as Elm compiles a case on a type
-  // with one constructor): the reducer is that arm.
-  const reducer = arms.length === 1
-    ? `(s, msg) => {\n${arms[0].lines.map((l) => "    " + l).join("\n")}\n  }`
-    : `(s, msg) => {\n    switch (msg.type) {\n${arms.map((a) => `      ${a.head}\n${a.lines.join("\n").split("\n").map((l) => "        " + l).join("\n")}\n      }`).join("\n")}\n    }\n  }`;
+  // The reducer is compiled to a table of its arms by message tag, as a switch over dense tags
+  // compiles to a jump table: an array when every tag is a number, else an object with the
+  // external events by name. Each arm is a function of the slice (and the message, when it
+  // reads it); the app reducer calls the arm of the message's tag.
+  const armFn = (a, ind) => {
+    const body = a.lines.join("\n");
+    const args = /\bmsg\b/.test(body) ? "(s, msg)" : "(s)";
+    if (a.lines.length === 1 && body.startsWith("return ")) return `${args} => ${body.slice(7, -1)}`;
+    return `${args} => {\n${body.split("\n").map((l) => ind + "  " + l).join("\n")}\n${ind}}`;
+  };
+  const numeric = arms.every((a, i) => a.key === i);
+  const table = numeric
+    ? `[\n${arms.map((a) => `    ${armFn(a, "    ")}, // ${a.name}`).join("\n")}\n  ]`
+    : `{\n${arms.map((a) => `    ${a.key}: ${armFn(a, "    ")},${a.name ? " // " + a.name : ""}`).join("\n")}\n  }`;
+  const reducer = table;
 
   // -------------------------------------------------------------------------------------------
   // The view: one static template (escaped at build time), nodes found by their position in it,
@@ -519,7 +529,7 @@ function set(model, id, s, bits) {
 
 // Run one widget's reducer and file the bits its arm marked under that widget.
 function route(model, id, msg) {
-  const next = WIDGETS[id][1](model.widgets[id], msg);
+  const next = WIDGETS[id][1][msg.type](model.widgets[id], msg);
   // An arm returns its new slice with the bits it marked, or nothing when the slice is unchanged.
   return next ? set(model, id, ...next) : model;
 }
