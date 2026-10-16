@@ -34,16 +34,19 @@ import { scriptCheck, checkReport } from "./check.js";
 import { benchHandler, startupLoads, eventReps } from "./bench/lib/driver.js";
 import { describe, median } from "./bench/lib/stats.js";
 
-const FLAGS = ["sizes", "seeds", "sessions", "taskset", "chrome", "out", "quick", "aa", "maxLoad", "remote", "wait", "loads", "jobs"];
+const FLAGS = ["sizes", "seeds", "sessions", "taskset", "chrome", "out", "quick", "aa", "maxLoad", "remote", "wait", "loads", "jobs", "workers", "workerTasksets"];
 const BOOLEANS = ["quick", "aa"];
 export const DEFAULT_SIZES = [16, 64, 256];
 export const DEFAULT_SEEDS = [1, 2];
 
 // The method, in the numbers it uses. --quick is for development: one size, one seed, one
 // session, few reps, no load gating.
-const FULL = { warmup: 5, minReps: 10, maxReps: 40, chunk: 5, tol: 0.03, loads: 10, sessions: 2 };
-const QUICK = { warmup: 2, minReps: 5, maxReps: 5, chunk: 5, tol: 0.03, loads: 3, sessions: 1 };
-const WAIT_MS = 40;       // after each input: a frame (Elm renders on rAF) and its commit, with room
+// One session: the two seeds already give two pages per framework and size, which is what a
+// second session added. The stop rule is ±5%: at ±3% tiny events ran every action to the cap.
+const FULL = { warmup: 3, minReps: 10, maxReps: 20, chunk: 10, tol: 0.05, loads: 5, sessions: 1 };
+const QUICK = { warmup: 2, minReps: 5, maxReps: 5, chunk: 5, tol: 0.05, loads: 3, sessions: 1 };
+const WAIT_MS = 40;       // after each warm-up input: a frame (Elm renders on rAF) and its commit, with room
+const MIN_WAIT_MS = 20;   // the floor of the per-action wait the warm-up reps set (see eventReps)
 const LOAD_WAIT_S = 120;  // how long to wait for the load to fall below --max-load before a batch
 const REDOS = 2;          // how many times a batch measured above --max-load is redone
 
@@ -55,7 +58,9 @@ const CHROME_FLAGS = [
 
 // Known remote machines: the taskset and the Chrome to use there unless the flags say otherwise.
 export const REMOTES = {
-  azathoth: { taskset: "1-5,7-11", chrome: "/nix/store/ds7933z0wp7872ic6zqzrwsbpj0m8g6l-google-chrome-154.0.8037.97/bin/google-chrome" },
+  // workers: one Chrome per entry, each on its own two physical cores (CPU n and n+6 are siblings);
+  // core 0 and core 5 are left to the OS and the harness.
+  azathoth: { taskset: "1-5,7-11", workers: ["1-2,7-8", "3-4,9-10"], chrome: "/nix/store/ds7933z0wp7872ic6zqzrwsbpj0m8g6l-google-chrome-154.0.8037.97/bin/google-chrome" },
 };
 const REMOTE_DIR = "src/github.com/canassa/reactivity-research";
 
@@ -88,7 +93,13 @@ async function benchScenario(name, which, args) {
   if (args.loads) m.loads = Number(args.loads);
   const sessions = Number(args.sessions ?? m.sessions);
   const waitMs = Number(args.wait ?? WAIT_MS);
-  const maxLoad = Number(args.maxLoad ?? 1.0);
+  // Worker tasksets: --workers N splits nothing by itself (each Chrome gets --taskset); a known
+  // remote's list pins each worker to its own cores.
+  const nWorkers = Math.max(1, Number(args.workers ?? 1));
+  const workerSets = Array.from({ length: nWorkers }, (_, i) => (args.workerTasksets ? String(args.workerTasksets).split("/")[i] : null) ?? args.taskset);
+  // The bench's own Chromes keep the 1-minute load near one per worker: the gate is for load
+  // from anything else.
+  const maxLoad = Number(args.maxLoad ?? 1.0 + 1.5 * nWorkers);
 
   // The matrix: runs.json's "$bench" block (or the defaults), within each framework's own runs.
   const config = readConfig()[name] || {};
@@ -150,50 +161,55 @@ async function benchScenario(name, which, args) {
       const shift = Math.floor((session - 1) / 2);
       const order = variants.map((_, i) => variants[(i + shift) % variants.length]);
       if (session % 2 === 0) order.reverse();
-      const chrome = await launch({ args: CHROME_FLAGS, chrome: chromeBin, taskset: args.taskset, profilePrefix: "rr-bench-chrome-" });
-      chromeVersion ||= await chrome.version();
-      try {
-        for (const size of sizes) {
-          for (const seed of seeds) {
-            for (const variant of order) {
-              const app = apps.find((p) => p.variant === variant && p.size === size && p.seed === seed);
-              if (!app) continue;
-              const spec = scenario.mod.generate(app.options);
-              const ctx = { spec, ref: scenario.mod, actions: benchActions(spec, scenario.mod) };
-              for (let attempt = 0; ; attempt++) {
-                const loadBefore = quick ? os.loadavg()[0] : await waitForLoad(maxLoad);
-                const tb = performance.now();
-                const tag = { variant, size, seed, session };
-                let r;
-                try {
-                  const su = await startupLoads(chrome, `${base}/${app.key}/`, m.loads);
-                  const ev = await eventReps(chrome, `${base}/${app.key}/`, ctx, { ...m, waitMs });
-                  r = { su, ev };
-                } catch (err) {
-                  failures.push({ ...tag, error: err.message });
-                  console.log(`FAIL ${name}/${variant} n=${size} s=${seed} session ${session}: ${err.message}`);
-                  break;
-                }
-                const loadAfter = os.loadavg()[0];
-                const seconds = Math.round(performance.now() - tb) / 1000;
-                const redo = !quick && Math.max(loadBefore, loadAfter) > maxLoad && attempt < REDOS;
-                batches.push({ ...tag, attempt, loadBefore, loadAfter, seconds, kept: !redo, at: new Date().toISOString() });
-                if (redo) { console.log(`redo ${variant} n=${size} s=${seed}: load ${loadAfter.toFixed(2)} > ${maxLoad}`); continue; }
-                for (const x of r.su) startup.push({ ...tag, ...x });
-                for (const x of r.ev.samples) samples.push({ ...tag, ...x });
-                for (const x of r.ev.failures) failures.push({ ...tag, ...x });
-                const loc = r.ev.samples.filter((x) => x.scope === "local").map((x) => x.scriptUs);
-                console.log(`${name}/${variant} n=${size} s=${seed} session ${session}: ${r.ev.samples.length} reps, local script median ${median(loc).toFixed(0)} µs, ` +
-                  `startup ${median(r.su.map((x) => x.totalMs)).toFixed(1)} ms, load ${loadBefore.toFixed(2)}→${loadAfter.toFixed(2)} (${seconds.toFixed(1)}s)`);
-                write();
+      // The session's apps in order (size, seed, then framework), shared by the workers: each takes
+      // the next app when it is free, so neighbours in the order run at about the same time.
+      const queue = [];
+      for (const size of sizes) for (const seed of seeds) for (const variant of order) {
+        const app = apps.find((p) => p.variant === variant && p.size === size && p.seed === seed);
+        if (app) queue.push(app);
+      }
+      const worker = async (w) => {
+        const chrome = await launch({ args: CHROME_FLAGS, chrome: chromeBin, taskset: workerSets[w], profilePrefix: "rr-bench-chrome-" });
+        chromeVersion ||= await chrome.version();
+        try {
+          for (let app; (app = queue.shift()); ) {
+            const { variant, size, seed } = app;
+            const spec = scenario.mod.generate(app.options);
+            const ctx = { spec, ref: scenario.mod, actions: benchActions(spec, scenario.mod) };
+            for (let attempt = 0; ; attempt++) {
+              const loadBefore = quick ? os.loadavg()[0] : await waitForLoad(maxLoad);
+              const tb = performance.now();
+              const tag = { variant, size, seed, session, worker: w };
+              let r;
+              try {
+                const su = await startupLoads(chrome, `${base}/${app.key}/`, m.loads);
+                const ev = await eventReps(chrome, `${base}/${app.key}/`, ctx, { ...m, waitMs, minWaitMs: Math.min(MIN_WAIT_MS, waitMs) });
+                r = { su, ev };
+              } catch (err) {
+                failures.push({ ...tag, error: err.message });
+                console.log(`FAIL ${name}/${variant} n=${size} s=${seed} session ${session}: ${err.message}`);
                 break;
               }
+              const loadAfter = os.loadavg()[0];
+              const seconds = Math.round(performance.now() - tb) / 1000;
+              const redo = !quick && Math.max(loadBefore, loadAfter) > maxLoad && attempt < REDOS;
+              batches.push({ ...tag, attempt, loadBefore, loadAfter, seconds, kept: !redo, at: new Date().toISOString() });
+              if (redo) { console.log(`redo ${variant} n=${size} s=${seed}: load ${loadAfter.toFixed(2)} > ${maxLoad}`); continue; }
+              for (const x of r.su) startup.push({ ...tag, ...x });
+              for (const x of r.ev.samples) samples.push({ ...tag, ...x });
+              for (const x of r.ev.failures) failures.push({ ...tag, ...x });
+              const loc = r.ev.samples.filter((x) => x.scope === "local").map((x) => x.scriptUs);
+              console.log(`${name}/${variant} n=${size} s=${seed} session ${session} worker ${w}: ${r.ev.samples.length} reps, local script median ${median(loc).toFixed(0)} µs, ` +
+                `startup ${median(r.su.map((x) => x.totalMs)).toFixed(1)} ms, load ${loadBefore.toFixed(2)}→${loadAfter.toFixed(2)} (${seconds.toFixed(1)}s)`);
+              write();
+              break;
             }
           }
+        } finally {
+          await chrome.close().catch((err) => console.log(`(closing Chrome: ${err.message})`));
         }
-      } finally {
-        await chrome.close().catch((err) => console.log(`(closing Chrome: ${err.message})`));
-      }
+      };
+      await Promise.all(workerSets.map((_, w) => worker(w)));
     }
   } finally {
     server.close();
@@ -209,7 +225,7 @@ async function benchScenario(name, which, args) {
   }
   const run = {
     scenario: name, kind: "cpu", date: today(), started: new Date(Date.now() - (performance.now() - t0)).toISOString(), finished: new Date().toISOString(),
-    sizes, seeds, sessions, quick, aa: !!args.aa,
+    sizes, seeds, sessions, quick, aa: !!args.aa, workers: workerSets,
     scenarioOptions: (({ size, seed, ...rest }) => rest)(scenario.mod.normalizeOptions({ ...scenarioOptions, size: 1, seed: 1 })),
     method: { ...m, waitMs, maxLoad, throttling: 1, chromeFlags: CHROME_FLAGS, rule: "js-framework-benchmark timeline.ts (via beni bench/ui/lib/trace.mjs), per rep between user-timing marks; see harness/bench/README.md" },
     variants: variantsInfo, skipped, batches,
@@ -440,6 +456,7 @@ async function remoteBench(args, rest) {
     passed.push(a);
   }
   if (!args.taskset && defaults.taskset) passed.push("--taskset", defaults.taskset);
+  if (!args.workers && defaults.workers) passed.push("--workers", String(defaults.workers.length), "--worker-tasksets", defaults.workers.join("/"));
   if (!args.chrome && defaults.chrome) passed.push("--chrome", defaults.chrome);
   const q = (s) => `'${String(s).replace(/'/g, `'\\''`)}'`;
   const ssh = (script) => {
