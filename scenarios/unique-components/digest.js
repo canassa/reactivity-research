@@ -252,8 +252,8 @@ function widgetCode(w, init) {
   const body = [
     ...(own.length ? [`  let ${own.map((f) => `$${f.name} = ${initial(f, init[f.name])}`).join(", ")};`] : []),
     ...read.map((f) => `  ${F(f.name)} = ${initial(f, init[f.name])};`),
-    ...(shared.length ? [`  const s = { ${shared.map((f) => `${f.name}: ${initial(f, init[f.name])}`).join(", ")} };`] : []),
-    `  widget(\`${tpl(html)}\`, [\n${handlers}\n  ], ${set}${shared.length ? ", s" : ""});`,
+    ...(shared.length ? [`  const s = (O.${cur} = { ${shared.map((f) => `${f.name}: ${initial(f, init[f.name])}`).join(", ")} });`] : []),
+    `  widget(\`${tpl(html)}\`, ${set},\n${handlers}\n  );`,
     ...binds.map((b) => "  " + b)];
   for (const f of w.fields) {
     if (f.tick) body.push(`  T.push(() => ${F(f.tickWhen)} && (${F(f.name)} = Math.min(${f.max}, ${F(f.name)} + ${f.tick}), run(W.${w.id})));`);

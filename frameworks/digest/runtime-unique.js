@@ -89,18 +89,17 @@ export const add = (l, text) => l.push({ id: Math.max(0, ...l.map((i) => i.id)) 
 // A list from its items' texts, or [text, done] pairs; the ids are 1, 2, …
 export const L = (a) => a.map((x, i) => (typeof x == "string" ? { id: i + 1, text: x } : { id: i + 1, text: x[0], done: !!x[1] }));
 
-// Create the widget's section from `html` (its heading and content), with `h`, the handlers of
-// its controls in document order, `set`, the setter of its whole state, and `o`, the record of
-// its fields that escape it, and make it the one being created: the bindings that follow refer
-// to its elements by position (0 is the heading).
-export const widget = (html, h, set, o) => {
+// Create the widget's section from `html` (its heading and content), with `set`, the setter of
+// its whole state, and `h`, the handlers of its controls in document order, and make it the one
+// being created: the bindings that follow refer to its elements by position (0 is the heading).
+// A widget with a feed list puts the record `notify` pushes into in O itself.
+export const widget = (html, set, ...h) => {
   const x = el("section", html);
   x.dataset.key = id;
   x.dataset.role = "widget";
   on(x, h, (W[id] = B = []));
   D.append(x);
   S[id] = set;
-  O[id] = o;
   E = x.querySelectorAll("*");
   P = 0;
 };
