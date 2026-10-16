@@ -10,7 +10,7 @@
 //   function it calls once): no name and no call per widget, and every block reuses the same
 //   local names. Nothing is shared between widgets except generic helpers: the runtime's DOM,
 //   instance and keyed-list helpers, and `widgets/frame.js` (the widget frame and registry,
-//   list rows, conditional placement, next item id, subscriptions).
+//   readers, list rows, conditional placement, next item id, subscriptions, property writes).
 // - The block declares one `patch` arrow first (the binding list, one write per binding,
 //   derived texts compiled to template literals and operators, each skipped when its value did
 //   not change; it runs after mount), then its instance, then builds the widget's DOM once from

@@ -97,7 +97,11 @@ inserted before the first node not yet placed. That moves nothing for adds, remo
 filtering, and all but one node of a reversed run, like the Solid 2 `reconcileArrays` it
 replaced (vendored until October 2026, about 480 B brotli); its worst case is a rotation,
 which moves every node but one. The PR's array edit journal, which comes from beni's owned
-lists, is left out: the first pass already skips unchanged rows.
+lists, is left out: the first pass already skips unchanged rows. A list owns every child of its
+parent, so the nodes in place are the parent's `childNodes`: it keeps no copy of the last order.
+
+A dashboard kind listens for `click` on buttons and checkboxes and for `input` on text and
+number inputs and selects, as the unique widgets' `wire` does (two event types, not three).
 
 **Summaries** read other widgets' state. A summary subscribes to the instances it reads,
 by their index in the registry (`widgets[2].watch(patch)` for w3). When one of their models changes, for any reason,
@@ -150,7 +154,10 @@ with its section in one `insertAdjacentHTML` (the app's dashboard comes from mar
 unique apps ship no `element()`) and returns its elements in document order, which the
 block addresses as `e[3]` (indexes compress better than names, measured). Only generic
 helpers are shared: this runtime and a small `widgets/frame.js` (the widget frame and its
-registry, list rows, conditional content, next item id, subscriptions).
+registry, readers, list rows, conditional content, next item id, subscriptions, and a
+`setProp(node, value, key = "value")` whose key defaults to a form control's value, the most
+common property binding; the runtime's `setProp(node, key, value)` keeps its order, as the same
+change measured larger in the dashboard).
 
 - **Events, as Elm's `onClick msg` and `onInput Tag`:** a compiler chooses its constructor
   tags, so the controls of the widget's template take tags 0, 1, 2, … in document order, then
@@ -170,8 +177,11 @@ registry, list rows, conditional content, next item id, subscriptions).
   row's binding list over `r[1]`, `r[2]`.
 - **The frame registers every instance in page order** (an array, `w1` first, checked by
   the emitter): a block keeps nothing for later, and a cross-widget reader reads the earlier
-  widget's model from the registry in its `patch` (`const m3 = widgets[2].m`) and watches it
-  right after its `patch` (`widgets[2].watch(patch)`).
+  widget's model from the registry in its `patch` (`const m3 = widgets[2].m`). Its instance
+  is made by the frame's `reader([2], model, update, patch)`, which has the patch watch its
+  sources and then calls `instance`, so a reader's patch is an inline arrow like every other
+  block's (no name, no `watch` call per source, and the same minified names in every block).
+  `reader` is tree-shaken from an app without readers.
 - A time-driven int is a subscription, like Elm's `subscriptions`: while its gate is on, the
   widget's `tick` is in a shared `running` set, and the app's `tick` event calls only those.
   Otherwise `tick` would cost one call per widget and fail the locality check. An app routes
