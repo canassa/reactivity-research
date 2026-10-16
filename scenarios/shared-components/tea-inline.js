@@ -133,7 +133,7 @@ const FACTORIES = {
   const s = model[c.id];
   const root = section(parent, c, "field");
   const input = el("input", root, { type: "text", "data-role": "input", placeholder: c.placeholder });
-  const error = when(root, () => el("p", null, { "data-role": "error" }, c.message));
+  const error = when(el("p", root, { "data-role": "error" }, c.message));
 
   const onText = [() => prop(input, "value", s.text), () => error(c.invalid(s.text))];
 
@@ -236,7 +236,7 @@ const FACTORIES = {
   const s = model[c.id];
   const root = section(parent, c, "panel");
   const button = el("button", root, { "data-role": "toggle" });
-  const body = when(root, () => el("p", null, { "data-role": "body" }, c.body));
+  const body = when(el("p", root, { "data-role": "body" }, c.body));
 
   const onOpen = [
     () => {
@@ -264,20 +264,19 @@ const FACTORIES = {
   const root = section(parent, c, "choice");
   const select = el("select", root, { "data-role": "select" });
   for (const option of c.options) el("option", select, { value: option.value }, option.label);
-  const extra = when(root, () => {
-    const input = el("input", null, { type: "text", "data-role": "extra", placeholder: c.extraPlaceholder });
-    // The arm of update: editExtra(text).
-    on(input, "input", () => {
-      s.extra = input.value;
-      schedule(onExtra);
-    });
-    return input;
+  const input = el("input", root, { type: "text", "data-role": "extra", placeholder: c.extraPlaceholder });
+  const extra = when(input);
+  // The arm of update: editExtra(text).
+  on(input, "input", () => {
+    s.extra = input.value;
+    schedule(onExtra);
   });
 
   // The extra input reads \`option\` (whether it is shown) and \`extra\`.
   const onExtra = () => {
-    const input = extra(c.extraFor.includes(s.option));
-    if (input) prop(input, "value", s.extra);
+    const shown = c.extraFor.includes(s.option);
+    extra(shown);
+    if (shown) prop(input, "value", s.extra);
   };
   const onOption = [() => prop(select, "value", s.option), onExtra];
 
@@ -384,7 +383,7 @@ const FACTORIES = {
     on(el("button", node, { "data-role": "dismiss" }, c.dismissText), "click", () => dismiss(entry.id));
     return { node, set: (entry) => text(label, entry.text) };
   });
-  const empty = when(root, () => el("p", null, { "data-role": "empty" }, c.emptyText));
+  const empty = when(el("p", root, { "data-role": "empty" }, c.emptyText));
 
   const onEntries = [() => empty(s.entries.length === 0), readers[c.id]];
 

@@ -71,19 +71,12 @@ export function on(node, type, handler) {
   node.addEventListener(type, handler);
 }
 
-// A conditional block at this position in `parent`: `show(cond)` creates it with `make()` or
-// removes it, and returns the node while it is shown.
-export function when(parent, make) {
-  const anchor = parent.appendChild(new Text());
-  let node = null;
-  return (cond) => {
-    if (cond && !node) parent.insertBefore((node = make()), anchor);
-    else if (!cond && node) {
-      node.remove();
-      node = null;
-    }
-    return node;
-  };
+// A conditional block: `node`, built once in place, swaps with an empty text node to hide it.
+// `show(cond)` puts whichever should be in the page in the place of the other (a no-op when it
+// already is: `replaceWith` does nothing on a node out of the page).
+export function when(node) {
+  const anchor = new Text();
+  return (cond) => (cond ? anchor : node).replaceWith(cond ? node : anchor);
 }
 
 // ---------------------------------------------------------------------------------------------

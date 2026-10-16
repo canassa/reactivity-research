@@ -33,14 +33,17 @@ export const params = {};
 
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
 const str = JSON.stringify;
+// HTML escaping for the static markup: text, and attribute values (unquoted when safe).
+const escText = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+const attrValue = (v) => (/^[\w.:-]+$/.test(v) ? v : `"${v.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}"`);
 
-const WIDGET_FILE = `import { el, schedule } from "../runtime.js";
+const WIDGET_FILE = `import { schedule } from "../runtime.js";
 
-// The section every widget renders into: its key and its heading.
-export function section(parent, id, label) {
-  const root = el("section", parent, { "data-key": id, "data-role": "widget" });
-  el("h2", root, null, label);
-  return root;
+// A widget's DOM, from its markup (the section with its key and heading, and everything it
+// shows): appended to \`parent\`, and returned as its elements in document order.
+export function section(parent, html) {
+  parent.insertAdjacentHTML("beforeend", html);
+  return [parent.lastChild, ...parent.lastChild.querySelectorAll("*")];
 }
 
 // serverSet and snapshot: replace the widget's state (a copy: the message is not ours to edit)
@@ -53,10 +56,6 @@ export const loader = (s, all) => (next) => {
 // A new list item's id: one more than the largest.
 export const nextId = (items) => items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
 
-// The options of a select.
-export function options(select, values) {
-  for (const value of values) el("option", select, { value }, value);
-}
 `;
 
 // ---------------------------------------------------------------------------------------------
@@ -250,14 +249,30 @@ function widgetFile(w, reads) {
     return name;
   }
 
-  function node(n, parent) {
+  // The widget's static markup, as one HTML string, and the elements the code refers to: the
+  // n-th element of the markup (in document order) is \`refs[n]\`.
+  let html = "";
+  let count = 0;
+  const refs = [];
+  const open = (tag, a = {}, name) => {
+    if (name) refs[count] = name;
+    count++;
+    html += `<${tag}${Object.entries(a).map(([k, v]) => ` ${k}=${attrValue(String(v))}`).join("")}>`;
+  };
+  const close = (tag) => (html += `</${tag}>`);
+  const element = (tag, a, content, name) => {
+    open(tag, a, name);
+    if (tag !== "input") html += escText(content ?? "") + `</${tag}>`;
+  };
+
+  function node(n) {
     switch (n.el) {
       case "text": {
-        const t = id("t");
         const p = partsCode(n.parts, { own: new Set(), cross: new Set() });
-        if (p.static !== undefined) build.push(`el("${n.tag}", ${parent}, null, ${str(p.static)});`);
+        if (p.static !== undefined) element(n.tag, {}, p.static);
         else {
-          build.push(`const ${t} = el("${n.tag}", ${parent});`);
+          const t = id("t");
+          element(n.tag, {}, "", t);
           bind((deps) => `() => text(${t}, ${partsCode(n.parts, deps).code})`);
         }
         return;
@@ -265,8 +280,7 @@ function widgetFile(w, reads) {
       case "button": {
         const b = id("b");
         const p = partsCode(n.text, { own: new Set(), cross: new Set() });
-        const a = attrs({ "data-role": str(n.msg) });
-        build.push(`const ${b} = el("button", ${parent}, ${a}${p.static !== undefined ? `, ${str(p.static)}` : ""});`);
+        element("button", { "data-role": n.msg }, p.static ?? "", b);
         if (p.static === undefined) bind((deps) => `() => text(${b}, ${partsCode(n.text, deps).code})`);
         if (n.disabled) bind((deps) => `() => prop(${b}, "disabled", ${exprCode(n.disabled, deps)})`);
         handler(b, message(n.msg));
@@ -276,30 +290,33 @@ function widgetFile(w, reads) {
         const m = message(n.msg);
         const f = field(m.field);
         const num = f.type === "int";
-        let at = n.label ? id("l") : parent;
-        if (n.label) build.push(`const ${at} = el("label", ${parent}, null, ${str(n.label)});`);
+        if (n.label) {
+          open("label");
+          html += escText(n.label);
+        }
         const i = id("i");
-        const o = { type: str(num ? "number" : "text"), "data-role": str(n.msg) };
-        if (n.placeholder) o.placeholder = str(n.placeholder);
-        build.push(`const ${i} = el("input", ${at}, ${attrs(o)});`);
+        const o = { type: num ? "number" : "text", "data-role": n.msg };
+        if (n.placeholder) o.placeholder = n.placeholder;
+        element("input", o, null, i);
+        if (n.label) close("label");
         bind((deps) => `() => prop(${i}, "value", ${num ? `String(${exprCode(["f", f.name], deps)})` : exprCode(["f", f.name], deps)})`);
         handler(i, m);
         if (n.invalid) {
           const e = id("e");
           const v = id("v");
-          build.push(`const ${e} = el("p", null, ${attrs({ "data-role": str(n.msg + "Error") })}, ${str(n.invalid.message)});`);
-          build.push(`const ${v} = when(${parent}, () => ${e});`);
+          element("p", { "data-role": n.msg + "Error" }, n.invalid.message, e);
+          build.push(`const ${v} = when(${e});`);
           bind((deps) => `() => ${v}(${exprCode(n.invalid.when, deps)})`);
         }
         return;
       }
       case "check": {
         const m = message(n.msg);
-        const l = id("l");
         const c = id("c");
-        build.push(`const ${l} = el("label", ${parent});`);
-        build.push(`const ${c} = el("input", ${l}, ${attrs({ type: str("checkbox"), "data-role": str(n.msg) })});`);
-        build.push(`${l}.append(${str(n.label)});`);
+        open("label");
+        element("input", { type: "checkbox", "data-role": n.msg }, null, c);
+        html += escText(n.label);
+        close("label");
         bind((deps) => `() => prop(${c}, "checked", ${exprCode(["f", m.field], deps)})`);
         handler(c, m);
         return;
@@ -307,20 +324,25 @@ function widgetFile(w, reads) {
       case "select": {
         const m = message(n.msg);
         const f = field(m.field);
-        const at = n.label ? id("l") : parent;
-        if (n.label) build.push(`const ${at} = el("label", ${parent}, null, ${str(n.label)});`);
-        const s2 = id("o");
-        build.push(`const ${s2} = el("select", ${at}, ${attrs({ "data-role": str(n.msg) })});`);
-        build.push(`options(${s2}, ${optionsOf(f)});`);
-        bind((deps) => `() => prop(${s2}, "value", ${exprCode(["f", f.name], deps)})`);
-        handler(s2, m);
+        if (n.label) {
+          open("label");
+          html += escText(n.label);
+        }
+        const o = id("o");
+        open("select", { "data-role": n.msg }, o);
+        for (const value of f.options) element("option", { value }, value);
+        close("select");
+        if (n.label) close("label");
+        bind((deps) => `() => prop(${o}, "value", ${exprCode(["f", f.name], deps)})`);
+        handler(o, m);
         return;
       }
       case "list": {
         const f = field(n.field);
         const l = id("ls");
+        const u = id("n");
         lists[n.field] = l;
-        const tail = [];
+        element(n.tag, {}, "", u);
         const row = [`const node = el("li", null, ${attrs({ "data-key": "item.id", "data-role": str(n.field + "Item") })});`];
         const set = [];
         if (n.check) {
@@ -334,8 +356,7 @@ function widgetFile(w, reads) {
           row.push(`on(el("button", node, ${attrs({ "data-role": str(n.remove) })}, ${str(n.removeText)}), "click", () => ${itemAction(n.remove)}(item.id));`);
         }
         row.push(`return { node, set(item) { ${set.join(" ")} } };`);
-        void tail;
-        build.push(`const ${l} = list(el("${n.tag}", ${parent}), () => s.${f.name}, (item) => item.id, (item) => {`,
+        build.push(`const ${l} = list(${u}, () => s.${f.name}, (item) => item.id, (item) => {`,
           ...row.map((r) => "  " + r), "});");
         bindings.push({ code: l, own: [f.name], cross: [], name: l });
         return;
@@ -343,23 +364,27 @@ function widgetFile(w, reads) {
       case "when": {
         const g = id("g");
         const v = id("v");
-        build.push(`const ${g} = el("${n.tag}", null);`);
-        for (const c of n.children) node(c, g);
-        build.push(`const ${v} = when(${parent}, () => ${g});`);
+        open(n.tag, {}, g);
+        for (const c of n.children) node(c);
+        close(n.tag);
+        build.push(`const ${v} = when(${g});`);
         bind((deps) => `() => ${v}(${exprCode(n.cond, deps)})`);
         return;
       }
       case "group": {
-        const g = id("g");
-        build.push(`const ${g} = el("${n.tag}", ${parent});`);
-        for (const c of n.children) node(c, g);
+        open(n.tag);
+        for (const c of n.children) node(c);
+        close(n.tag);
         return;
       }
     }
     throw new Error(`unknown view node ${n.el}`);
   }
 
-  for (const n of w.view) node(n, "root");
+  open("section", { "data-key": w.id, "data-role": "widget" });
+  element("h2", {}, w.label);
+  for (const n of w.view) node(n);
+  close("section");
 
   // The bindings: those reading one field of this widget and nothing else are written inline in
   // that field's group; the others are named and listed in each group they belong to.
@@ -409,7 +434,8 @@ function widgetFile(w, reads) {
     "const s = model." + w.id + ";",
     ...readIds.map((x) => `const ${x} = model.${x};`),
     ...consts,
-    `const root = section(parent, ${str(w.id)}, ${str(w.label)});`,
+    "// The DOM, built once from its markup; the elements the code refers to, in document order.",
+    `const [${Array.from(refs, (r) => r || "").join(", ")}] = section(parent, ${str(html)});`,
     ...build,
     "",
     ...(namedLines.length ? ["// Bindings reading several fields, or other widgets."] : []),
@@ -429,8 +455,8 @@ function widgetFile(w, reads) {
   ];
   const text = body.map((l) => (l ? "  " + l : l)).join("\n");
 
-  const rt = ["el", "text", "prop", "on", "when", "list", "schedule"].filter((n) => new RegExp(`\\b${n}\\(`).test(text) || n === "el");
-  const wi = ["section", "loader", "nextId", "options"].filter((n) => new RegExp(`\\b${n}\\(`).test(text));
+  const rt = ["el", "text", "prop", "on", "when", "list", "schedule"].filter((n) => new RegExp(`\\b${n}\\(`).test(text));
+  const wi = ["section", "loader", "nextId"].filter((n) => new RegExp(`\\b${n}\\(`).test(text));
   return `import { ${rt.join(", ")} } from "../runtime.js";
 import { ${wi.join(", ")} } from "./widget.js";
 
