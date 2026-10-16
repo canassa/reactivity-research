@@ -360,7 +360,7 @@ function widgetFile(w, reads) {
           row.push(`on(el("button", node, ${attrs({ "data-role": str(n.remove) })}, ${str(n.removeText)}), "click", () => ${itemAction(n.remove)}(item.id));`);
         }
         row.push(`return { node, set(item) { ${set.join(" ")} } };`);
-        build.push(`const ${l} = list(${u}, () => s.${f.name}, (item) => item.id, (item) => {`,
+        build.push(`const ${l} = list(${u}, () => s.${f.name}, (item) => {`,
           ...row.map((r) => "  " + r), "});");
         bindings.push({ code: l, own: [f.name], cross: [], name: l });
         return;

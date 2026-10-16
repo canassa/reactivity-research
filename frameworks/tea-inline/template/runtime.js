@@ -1,6 +1,6 @@
 // The tea-inline runtime: what every compiled app shares, whatever it contains.
 //
-// - DOM helpers: elements built once, then bindings write text, properties and attributes
+// - DOM helpers: elements built once, then bindings write text and properties
 //   only when the value differs.
 // - Batching: actions schedule bindings; one microtask flush runs each scheduled binding once.
 // - Conditional blocks (`when`) and keyed lists (`list`), the only structural changes.
@@ -54,13 +54,9 @@ export function text(node, value) {
   if (node.textContent !== value) node.textContent = value;
 }
 
-// A live property: value, checked, disabled.
+// A live property: value, checked, disabled, or a reflected ARIA state (ariaPressed, …).
 export function prop(node, key, value) {
   if (node[key] !== value) node[key] = value;
-}
-
-export function attr(node, key, value) {
-  if (node.getAttribute(key) !== value) node.setAttribute(key, value);
 }
 
 export function on(node, type, handler) {
@@ -78,16 +74,17 @@ export function when(node) {
 // ---------------------------------------------------------------------------------------------
 // Keyed lists
 
-// A keyed list owning every child of `parent`. `items()` reads the array from the model;
-// `row(item)` builds a row once and returns `{ node, set(item) }`.
+// A keyed list (by \`item.id\`) owning every child of \`parent\`. \`items()\` reads the array from
+// the model; \`row(item)\` builds a row once and returns \`{ node, set(item) }\`.
 //
 // The list is itself a binding. Actions that edit the array in place record what they did
-// (`add`, `drop`, `patch`), and the flush applies just those rows. When the array itself was
+// (\`add\`, \`drop\`, \`patch\`), and the flush applies just those rows. When the array itself was
 // replaced (a server push, a snapshot, a derived list), the flush falls back to a full keyed
-// reconcile: rows are reused by key, the rows of keys that left are removed, and the rest are
-// put in order from the last one up, moving only a row not already followed by the right one
-// (so a list that only lost or gained rows moves none, and a reversed run moves all but one).
-export function list(parent, items, key, row) {
+// reconcile: rows are reused by id, the rows of ids that left are removed, and one forward pass
+// puts the rest in order: a row already in place stays, any other is moved before the first row
+// not yet placed (so a list that only lost or gained rows moves none, and a reversed run moves
+// all but one).
+export function list(parent, items, row) {
   let rows = new Map();
   let last;
   let edits = [];
@@ -95,7 +92,7 @@ export function list(parent, items, key, row) {
   const make = (item) => {
     const r = row(item);
     r.set(item);
-    rows.set(key(item), r);
+    rows.set(item.id, r);
     return r.node;
   };
 
@@ -108,22 +105,17 @@ export function list(parent, items, key, row) {
       rows = new Map();
       const nodes = [];
       for (const item of xs) {
-        const k = key(item);
-        const r = old.get(k);
+        const r = old.get(item.id);
         if (r) {
-          old.delete(k);
+          old.delete(item.id);
           r.set(item);
-          rows.set(k, r);
+          rows.set(item.id, r);
           nodes.push(r.node);
         } else nodes.push(make(item));
       }
       for (const r of old.values()) r.node.remove();
-      let next = null;
-      for (let i = nodes.length; i--; ) {
-        const node = nodes[i];
-        if (node.parentNode !== parent || node.nextSibling !== next) parent.insertBefore(node, next);
-        next = node;
-      }
+      let at = parent.firstChild;
+      for (const node of nodes) node === at ? (at = at.nextSibling) : parent.insertBefore(node, at);
     }
     edits = [];
     last = xs;
@@ -138,6 +130,6 @@ export function list(parent, items, key, row) {
     rows.get(k).node.remove();
     rows.delete(k);
   });
-  binding.patch = (item) => edit(() => rows.get(key(item)).set(item));
+  binding.patch = (item) => edit(() => rows.get(item.id).set(item));
   return binding;
 }

@@ -155,7 +155,7 @@ const FACTORIES = {
   const root = section(parent, id, heading, "todo");
   const draft = el("input", root, { type: "text", "data-role": "draft", placeholder: placeholder });
   const addButton = el("button", root, { "data-role": "add" }, addText);
-  const items = list(el("ul", root), () => s.items, (item) => item.id, (item) => {
+  const items = list(el("ul", root), () => s.items, (item) => {
     const node = el("li", null, { "data-key": item.id });
     const box = el("input", node, { type: "checkbox", "data-role": "toggle" });
     const label = el("span", node);
@@ -206,7 +206,7 @@ const FACTORIES = {
   },
 
   tabs: {
-    uses: ["el", "text", "attr", "on", "schedule"],
+    uses: ["el", "text", "prop", "on", "schedule"],
     code: `export function tabs(parent, model, readers, id, heading, tabs) {
   const s = model[id];
   const root = section(parent, id, heading, "tabs");
@@ -219,7 +219,7 @@ const FACTORIES = {
       s.active = i;
       schedule(onActive);
     });
-    return () => attr(button, "aria-selected", String(s.active === i));
+    return () => prop(button, "ariaSelected", String(s.active === i));
   });
   const content = el("p", root, { role: "tabpanel", "data-role": "tab-content" });
   onActive.push(() => text(content, tabs[s.active].content));
@@ -229,7 +229,7 @@ const FACTORIES = {
   },
 
   panel: {
-    uses: ["el", "text", "attr", "on", "when", "schedule"],
+    uses: ["el", "text", "prop", "on", "when", "schedule"],
     code: `export function panel(parent, model, readers, id, heading, showText, hideText, bodyText) {
   const s = model[id];
   const root = section(parent, id, heading, "panel");
@@ -238,7 +238,7 @@ const FACTORIES = {
 
   const onOpen = [
     () => {
-      attr(button, "aria-expanded", String(s.open));
+      prop(button, "ariaExpanded", String(s.open));
       text(button, s.open ? hideText : showText);
     },
     () => body(s.open),
@@ -320,7 +320,7 @@ const FACTORIES = {
     return pool.filter((item) => item.text.toLowerCase().includes(q));
   };
   // A derived list: a new array on every change, so the list reconciles it by key.
-  const items = list(el("ul", root), shown, (item) => item.id, (item) => ({
+  const items = list(el("ul", root), shown, (item) => ({
     node: el("li", null, { "data-key": item.id }, item.text),
     set() {},
   }));
@@ -339,7 +339,7 @@ const FACTORIES = {
   },
 
   rating: {
-    uses: ["el", "text", "attr", "on", "schedule"],
+    uses: ["el", "text", "prop", "on", "schedule"],
     code: `export function rating(parent, model, readers, id, heading, stars, labels) {
   const s = model[id];
   const root = section(parent, id, heading, "rating");
@@ -354,7 +354,7 @@ const FACTORIES = {
       schedule(onStars);
     });
     return () => {
-      attr(button, "aria-pressed", String(n <= s.stars));
+      prop(button, "ariaPressed", String(n <= s.stars));
       text(button, n <= s.stars ? "★" : "☆");
     };
   });
@@ -370,7 +370,7 @@ const FACTORIES = {
     code: `export function feed(parent, model, readers, id, heading, emptyText, dismissText) {
   const s = model[id];
   const root = section(parent, id, heading, "feed");
-  const entries = list(el("ul", root), () => s.entries, (entry) => entry.id, (entry) => {
+  const entries = list(el("ul", root), () => s.entries, (entry) => {
     const node = el("li", null, { "data-key": entry.id });
     const label = el("span", node);
     on(el("button", node, { "data-role": "dismiss" }, dismissText), "click", () => dismiss(entry.id));
