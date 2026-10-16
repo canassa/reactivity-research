@@ -46,9 +46,8 @@ function sequential(xs, id) {
 // and initial state, as source).
 const KINDS = {
   counter: {
-    args: "l, st, mn, mx, v0",
+    args: "l, st, mn, mx, value, v0 = value",
     body: `
-  let value = v0;
   widget("counter", l, \`<output data-role=value></output><button data-role=dec>-\${st}</button><button data-role=inc>+\${st}</button><button data-role=reset>Reset</button>\`, (v) => ({ value } = v),
     () => value = Math.max(mn, value - st), // dec
     () => value = Math.min(mx, value + st), // inc
