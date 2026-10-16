@@ -296,6 +296,14 @@ function appFile(spec) {
     if (r.fields.has("qty")) byQty.push(i.calc);
     if (r.fields.has("active")) byActive.push(i.calc);
   }
+  // The displays that read one cell. The cell's text (its value formatted) is made once when two or
+  // more of them show it: a common subexpression.
+  const inlines = (i) => {
+    if (i.input || i.c.type === "list" || i.c.type === "top" || i.c.type === "group") return i.inl;
+    const f = operand(fmt(i.c, "x"));
+    if (f === "x" || i.inl.join("\n").split(f).length < 3) return i.inl;
+    return [`const t = ${fmt(i.c, "x")};`, ...i.inl.map((l) => l.split(f).join("t"))];
+  };
   const queueOf = (names) => (names.length ? [`queue(${names.join(", ")});`] : []);
   const paintOf = (names) => (names.length ? [`paint(${names.join(", ")});`] : []);
 
@@ -340,7 +348,7 @@ function appFile(spec) {
       const eq = c.type === "list" || c.type === "group" ? `same(x, ${c.name})` : `x === ${c.name}`;
       l.push(`  if (${eq}) return;`, `  ${c.name} = x;`);
     }
-    l.push(...i.inl.map((t) => "  " + t), ...queueOf(i.fq).map((t) => "  " + t), ...paintOf(i.mq).map((t) => "  " + t));
+    l.push(...inlines(i).map((t) => "  " + t), ...queueOf(i.fq).map((t) => "  " + t), ...paintOf(i.mq).map((t) => "  " + t));
     l.push("});");
     // Lists first: the node refers to them.
     out(...l);
@@ -353,7 +361,7 @@ function appFile(spec) {
   out("", "// The inputs: one action each, by name (the controls call them; so do external events).", "const P = {");
   for (const i of inputs) {
     out(`  ${i.c.name}(x) {`, `    if (x === ${i.c.name}) return;`, `    ${i.c.name} = x;`,
-      ...i.inl.map((t) => "    " + t), ...queueOf(i.fq).map((t) => "    " + t), ...paintOf(i.mq).map((t) => "    " + t), "  },");
+      ...inlines(i).map((t) => "    " + t), ...queueOf(i.fq).map((t) => "    " + t), ...paintOf(i.mq).map((t) => "    " + t), "  },");
   }
   out("};", "const putInputs = (values) => {", "  for (const k in values) P[k]?.(values[k]);", "};");
 
