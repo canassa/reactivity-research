@@ -96,9 +96,9 @@ import { section } from "./widget.js";
 // The kind: its reducer and its DOM factory.
 export const kind = [
   [
-    ([, , , step, , max], s) => [{ value: Math.min(max, s.value + step) }, 1],
-    ([, , , step, min], s) => [{ value: Math.max(min, s.value - step) }, 1],
-    ([, , , , , , start]) => [{ value: start }, 1],
+    ([, , , step, , max], s) => [1, { value: Math.min(max, s.value + step) }],
+    ([, , , step, min], s) => [1, { value: Math.max(min, s.value - step) }],
+    ([, , , , , , start]) => [1, { value: start }],
   ],
   (parent, [, , label, step, min, max], id) => {
     const [, , value, dec, inc, reset] = section(parent, id, label,
@@ -124,7 +124,7 @@ import { section } from "./widget.js";
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  [(c, s, msg) => [{ on: s.on.map((on, i) => (i === msg.id ? !on : on)) }, 1]],
+  [(c, s, msg) => [1, { on: s.on.map((on, i) => (i === msg.id ? !on : on)) }]],
   (parent, [, , label, items], id) => {
     const t = section(parent, id, label, "<section data-role=widget-toggles><h2></h2><ul></ul><p data-role=count>");
     const boxes = items.map((name, i) => {
@@ -149,7 +149,7 @@ import { section } from "./widget.js";
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  [(c, s, msg) => [{ text: msg.value }, 1]],
+  [(c, s, msg) => [1, { text: msg.value }]],
   (parent, [, , label, placeholder, valid, message], id) => {
     const [, , input, p] = section(parent, id, label, "<section data-role=widget-field><h2></h2><input type=text data-role=input><p data-role=error>");
     input.placeholder = placeholder;
@@ -172,15 +172,15 @@ import { section } from "./widget.js";
 // The kind: its reducer and its DOM factory.
 export const kind = [
   [
-    (c, s, msg) => [{ ...s, draft: msg.value }, 2],
+    (c, s, msg) => [2, { ...s, draft: msg.value }],
     (c, s) => {
       const text = s.draft.trim();
       if (text === "") return;
       const id = s.items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
-      return [{ items: [...s.items, { id, text, done: false }], draft: "" }, 3];
+      return [3, { items: [...s.items, { id, text, done: false }], draft: "" }];
     },
-    (c, s, msg) => [{ ...s, items: s.items.map((item) => (item.id === msg.id ? { ...item, done: !item.done } : item)) }, 1],
-    (c, s, msg) => [{ ...s, items: s.items.filter((item) => item.id !== msg.id) }, 1],
+    (c, s, msg) => [1, { ...s, items: s.items.map((item) => (item.id === msg.id ? { ...item, done: !item.done } : item)) }],
+    (c, s, msg) => [1, { ...s, items: s.items.filter((item) => item.id !== msg.id) }],
   ],
   (parent, [, , label, placeholder, addText, removeText], id) => {
     const [, , draft, add, ul, left] = section(parent, id, label,
@@ -217,7 +217,7 @@ import { section } from "./widget.js";
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  [(c, s, msg) => [{ active: msg.id }, 1]],
+  [(c, s, msg) => [1, { active: msg.id }]],
   (parent, [, , label, tabs], id) => {
     const t = section(parent, id, label, "<section data-role=widget-tabs><h2></h2><div role=tablist></div><p data-role=tab-content role=tabpanel>");
     const buttons = tabs.map(([title], i) => {
@@ -242,7 +242,7 @@ import { section } from "./widget.js";
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  [(c, s) => [{ open: !s.open }, 1]],
+  [(c, s) => [1, { open: !s.open }]],
   (parent, [, , label, showText, hideText, body], id) => {
     const [, , toggle, p] = section(parent, id, label, "<section data-role=widget-panel><h2></h2><button data-role=toggle></button><p data-role=body>");
     p.textContent = body;
@@ -265,8 +265,8 @@ import { section } from "./widget.js";
 // The kind: its reducer and its DOM factory.
 export const kind = [
   [
-    (c, s, msg) => [{ ...s, option: msg.value }, 1],
-    (c, s, msg) => [{ ...s, extra: msg.value }, 2],
+    (c, s, msg) => [1, { ...s, option: msg.value }],
+    (c, s, msg) => [2, { ...s, extra: msg.value }],
   ],
   (parent, [, , label, options, extraFor, extraPlaceholder], id) => {
     const [, , select, input] = section(parent, id, label, "<section data-role=widget-choice><h2></h2><select data-role=select></select><input type=text data-role=extra>");
@@ -298,7 +298,7 @@ import { section } from "./widget.js";
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  [(c, s, msg) => [{ value: msg.value }, 1]],
+  [(c, s, msg) => [1, { value: msg.value }]],
   (parent, [, , label, format], id) => {
     const [, , input, formatted] = section(parent, id, label, "<section data-role=widget-amount><h2></h2><input type=number data-role=input><output data-role=formatted>");
     // Only a valid number becomes a message; anything else stays in the input as typed.
@@ -327,7 +327,7 @@ export function matches(items, query) {
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  [(c, s, msg) => [{ query: msg.value }, 1]],
+  [(c, s, msg) => [1, { query: msg.value }]],
   (parent, [, , label, items, placeholder], id) => {
     const [, , input, ul, count] = section(parent, id, label, "<section data-role=widget-filter><h2></h2><input type=text data-role=query><ul></ul><p data-role=matches>");
     input.placeholder = placeholder;
@@ -353,7 +353,7 @@ import { section } from "./widget.js";
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
-  [(c, s, msg) => [{ stars: msg.id }, 1]],
+  [(c, s, msg) => [1, { stars: msg.id }]],
   (parent, [, , label, stars, labels], id) => {
     const t = section(parent, id, label, "<section data-role=widget-rating><h2></h2><div></div><p data-role=rating-label>");
     const buttons = [];
@@ -382,8 +382,8 @@ import { section } from "./widget.js";
 // The kind: its reducer and its DOM factory.
 export const kind = [
   {
-    0: (c, s, msg) => [{ entries: s.entries.filter((entry) => entry.id !== msg.id) }, 1],
-    notify: (c, s, msg) => [{ entries: [...s.entries, msg.entry] }, 1],
+    0: (c, s, msg) => [1, { entries: s.entries.filter((entry) => entry.id !== msg.id) }],
+    notify: (c, s, msg) => [1, { entries: [...s.entries, msg.entry] }],
   },
   (parent, [, , label, emptyText, dismissText], id) => {
     const [, , ul, p] = section(parent, id, label, "<section data-role=widget-feed><h2></h2><ul></ul><p data-role=empty>");
@@ -418,10 +418,10 @@ function formatTime(seconds) {
 // The kind: its reducer and its DOM factory.
 export const kind = [
   {
-    0: (c, s) => [{ ...s, running: true }, 2],
-    1: (c, s) => [{ ...s, running: false }, 2],
-    2: () => [{ seconds: 0, running: false }, 3],
-    tick: (c, s) => s.running && [{ ...s, seconds: s.seconds + 1 }, 1],
+    0: (c, s) => [2, { ...s, running: true }],
+    1: (c, s) => [2, { ...s, running: false }],
+    2: () => [3, { seconds: 0, running: false }],
+    tick: (c, s) => s.running && [1, { ...s, seconds: s.seconds + 1 }],
   },
   (parent, [, , label, startText, stopText, resetText], id) => {
     const [, , time, start, stop, reset] = section(parent, id, label,
@@ -596,7 +596,7 @@ export function init() {
 }
 
 // A widget's new slice, with the bits that changed (-1, every bit, for a slice replaced whole).
-function set(model, id, s, bits) {
+function set(model, id, bits, s) {
   dirty[id] |= bits;
   return { ...model, widgets: { ...model.widgets, [id]: s } };
 }
@@ -613,7 +613,7 @@ function route(model, id, msg) {
 export function update(model, msg) {
   switch (msg.type) {
     case "serverSet":
-      return set(model, msg.widget, msg.state, -1);
+      return set(model, msg.widget, -1, msg.state);
     case "snapshot":
       for (const id in msg.state.widgets) dirty[id] = -1;
       return msg.state;
