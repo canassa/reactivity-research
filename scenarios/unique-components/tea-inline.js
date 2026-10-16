@@ -224,7 +224,7 @@ function widgetFile(w, reads) {
       switch (m.kind) {
         case "click": return wrap("click", [...opLines(m), ...done]);
         case "check": return wrap("click", [`s.${f.name} = !s.${f.name};`, ...done]);
-        case "select": return wrap("change", [`s.${f.name} = ${node}.value;`, ...done]);
+        case "select": return wrap("input", [`s.${f.name} = ${node}.value;`, ...done]);
         case "input":
           if (f.type === "int") {
             return wrap("input", [`const value = ${node}.valueAsNumber;`,

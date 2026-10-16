@@ -273,7 +273,7 @@ const FACTORIES = {
   on(select, () => {
     s.option = select.value;
     schedule(onOption);
-  }, "change");
+  }, "input");
 
   return loader(s, onOption);
 }`,
