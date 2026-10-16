@@ -3,10 +3,12 @@
 // This emitter plays the compiler: it writes what an ideal TEA compiler would emit.
 // Style (recorded in every generated app's rr.json):
 // - One module per widget kind (src/widgets/<kind>.js), configured per widget by its row
-//   (kind, initial state, label, the kind's parameters by position): its reducer
-//   `(row, s, msg) => s`, whose arms mark dirty bits for the fields they write, and its DOM
-//   factory `(parent, row, id) => patch` (exported as the pair `kind`), which builds the DOM once from a static template and
-//   returns a static `patch(s, dirty)` that runs only the bindings whose bits are set.
+//   (kind, initial state, label, the kind's parameters by position): its reducer, a table of
+//   arms by message tag, each `(row, s, msg) => [bits, newSlice]` (nothing when the slice is
+//   unchanged) with the compile-time bits of the fields it writes, and its DOM factory
+//   `(parent, row, id) => patch` (exported as the pair `kind`), which builds the DOM once from
+//   a static template and returns a static `patch(s, dirty)` that runs only the bindings whose
+//   bits are set. The app keys each section and writes its label.
 // - One app module (src/app.js): the widget rows (the initial model comes from them), the app reducer
 //   (routes user messages and external events to the widgets' reducers and files their bits
 //   per widget), and the top-level view, whose patch calls each dirty widget's patch and
@@ -633,7 +635,7 @@ export function emit(spec) {
     style: {
       components: "one module per widget kind (reducer + DOM factory), configured per widget by a plain object",
       state: "one immutable TEA model; the app reducer routes messages to the widgets' reducers",
-      updates: "reducer arms mark compile-time dirty bits; a static patch per kind runs only the bindings whose bits are set, batched in a microtask",
+      updates: "reducers are tables of arms by message tag; each arm returns the compile-time dirty bits of the fields it writes with the new slice; a static patch per kind runs only the bindings whose bits are set, batched in a microtask",
       externalEvents: "through the same reducer (send); serverSet and snapshot mark every bit of the widgets they replace",
       lists: "keyed by id: changed rows patched, gone rows removed, misplaced nodes moved in one walk",
       conditionals: "built once with the template, swapped for an empty comment while hidden",

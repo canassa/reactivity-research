@@ -4,9 +4,10 @@
 // where every widget is its own component. Style (recorded in every generated app's rr.json):
 // - One module per widget (src/widgets/<id>.js), written from that widget's description alone:
 //   its own bits (one per field, plus one per field of another widget it reads), its reducer
-//   `update(s, msg)` with one arm per message (the ops written out as code, each arm marking the
-//   bits of the fields it writes), its initial state, and its DOM factory `view(parent, id)`,
-//   which builds the DOM once from one static template (nodes found by position) and returns a
+//   (a table of arms by message tag, the ops written out as code, each arm returning the
+//   compile-time bits and the values of the fields it writes, `[bits, fields]`), its initial
+//   state, and its DOM factory `view(parent, id)`, which builds the DOM once from one static
+//   template (bound elements marked, found by position among them) and returns a
 //   static `patch(s, d, w)` that runs only the bindings whose bits are set. The module adds
 //   the triple [view, reducer, initial state] under its id to the registry in widget.js when
 //   the app imports it (in page order), so no binding is named per widget. Bits and message
@@ -585,9 +586,9 @@ export function emit(spec) {
   return {
     files,
     style: {
-      components: "one module per widget (bits, reducer, initial state, DOM factory), each written from that widget's description; nothing interpreted at runtime",
+      components: "one module per widget (bits, reducer, initial state, DOM factory with a static template whose bound elements are marked), each written from that widget's description; nothing interpreted at runtime",
       state: "one immutable TEA model; the app reducer routes messages to the widgets' reducers",
-      updates: "reducer arms mark compile-time dirty bits per field written; a static patch per widget runs only the bindings whose bits are set, batched in a microtask",
+      updates: "reducers are tables of arms by message tag; each arm returns the compile-time dirty bits and values of the fields it writes, merged into the slice by the app; a static patch per widget runs only the bindings whose bits are set, batched in a microtask",
       externalEvents: "through the same reducer (send); serverSet and snapshot mark every bit of the widgets they replace; tick goes to the time-driven widgets",
       crossWidgetReads: "a reader has one bit per field it reads; the app patch sets it when the source's bit is dirty (one line per read)",
       lists: "keyed by id: changed rows patched, gone rows removed, misplaced nodes moved in one walk",
