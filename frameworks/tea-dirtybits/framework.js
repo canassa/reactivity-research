@@ -24,7 +24,6 @@ export function templateFiles({ name, title }) {
     "vite.config.js": read("vite.config.js"),
     "src/adapter.js": read("adapter.js"),
     "src/runtime.js": read("runtime.js"),
-    "src/reconcile.js": read("reconcile.js"),
   };
 }
 
@@ -32,7 +31,7 @@ export function templateFiles({ name, title }) {
 // framework's library code.
 export function classify(source) {
   if (source.includes("/node_modules/") || source.startsWith("\0") || source.includes("vite/")) return "runtime";
-  if (/(^|\/)src\/(runtime|reconcile)\.js$/.test(source)) return "runtime";
+  if (/(^|\/)src\/runtime\.js$/.test(source)) return "runtime";
   if (/(^|\/)src\/adapter\.js$/.test(source)) return "adapter";
   return "app";
 }
@@ -63,7 +62,6 @@ export function versions() {
   const v = (p) => lock.packages[`node_modules/${p}`]?.version ?? null;
   return {
     "tea-dirtybits runtime": "prototype (frameworks/tea-dirtybits/template)",
-    "reconcileArrays": "@solidjs/web 2.0.0-rc.9 (vendored, unmodified)",
     vite: v("vite"),
     "rolldown (bundler and Oxc minifier)": v("rolldown"),
   };

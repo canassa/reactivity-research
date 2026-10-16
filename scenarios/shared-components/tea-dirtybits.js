@@ -11,7 +11,7 @@
 //   per widget), and the top-level view, whose patch calls each dirty widget's patch and
 //   recomputes a summary only when a bit it reads is set.
 // - Events build a message and send it; patches are batched into one microtask.
-// - Keyed lists patch changed rows and reconcile the order with Solid 2's reconcileArrays.
+// - Keyed lists patch changed rows, remove gone ones and move misplaced nodes in one walk.
 
 import { templateFiles } from "../../frameworks/tea-dirtybits/framework.js";
 import { literal, tplText, camelCase } from "../../frameworks/shared/jsx.js";
@@ -754,7 +754,7 @@ export function emit(spec) {
       state: "one immutable TEA model; the app reducer routes messages to the widgets' reducers",
       updates: "reducer arms mark compile-time dirty bits; a static patch per kind runs only the bindings whose bits are set, batched in a microtask",
       externalEvents: "through the same reducer (send); serverSet and snapshot mark every bit of the widgets they replace",
-      lists: "keyed by id: changed rows patched, order reconciled with Solid 2's reconcileArrays",
+      lists: "keyed by id: changed rows patched, gone rows removed, misplaced nodes moved in one walk",
       conditionals: "built once with the template, swapped for an empty comment while hidden",
       derived: "summaries recomputed when a dirty bit they read is set (static dependencies)",
       events: "addEventListener on each element, sending a message (numeric tags) built when wired, or carrying the control's value",

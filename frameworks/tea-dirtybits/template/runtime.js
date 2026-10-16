@@ -2,9 +2,7 @@
 // - the TEA loop: messages go through one reducer, which marks dirty bits for what it writes;
 //   one microtask later the view's static patch runs only the bindings whose bits are set;
 // - helpers the compiled DOM factories call: static templates, events that send a message,
-//   guarded text and property writes, conditional content and keyed lists (with Solid 2's
-//   reconcileArrays as fallback).
-import { reconcileArrays } from "./reconcile.js";
+//   guarded text and property writes, conditional content and keyed lists.
 
 // ---------------------------------------------------------------------------------------------
 // Dirty bits. A component's reducer arm calls mark(FIELD) for each field it writes; the app's
@@ -128,25 +126,24 @@ export function branch(node, patch) {
 }
 
 // A keyed list (by item.id) filling `parent`. `row(item)` builds a detached row once and returns
-// [node, patch(item)]. New rows and rows whose item changed are patched; when the order of nodes
-// changed (adds, removes, reorders) the full keyed reconcile runs.
+// [node, patch(item)]. New rows and rows whose item changed are patched; rows whose id is gone
+// are removed, and one walk puts every remaining node in order, moving only the misplaced ones.
 export function list(parent, row) {
   let rows = new Map();
-  let nodes = [];
   return (items) => {
     const next = new Map();
-    const order = items.map((item) => {
+    for (const item of items) {
       const r = rows.get(item.id) || row(item);
       if (r.item !== item) r[1](item);
       r.item = item;
       next.set(item.id, r);
-      return r[0];
-    });
-    if (order.length !== nodes.length || order.some((n, i) => n !== nodes[i])) {
-      if (nodes.length) reconcileArrays(parent, nodes, order, null);
-      else parent.append(...order);
+    }
+    for (const [id, r] of rows) if (!next.has(id)) r[0].remove();
+    let at = parent.firstChild;
+    for (const [node] of next.values()) {
+      if (node === at) at = at.nextSibling;
+      else parent.insertBefore(node, at);
     }
     rows = next;
-    nodes = order;
   };
 }

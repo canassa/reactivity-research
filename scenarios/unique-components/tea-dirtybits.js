@@ -15,7 +15,7 @@
 //   widgets only), and the top-level view, whose patch first turns a dirty source bit into the
 //   reader's bit (one line per cross-widget read), then runs each dirty widget's patch.
 // - Events build a message and send it; patches are batched into one microtask.
-// - Keyed lists patch changed rows and reconcile the order with Solid 2's reconcileArrays.
+// - Keyed lists patch changed rows, remove gone ones and move misplaced nodes in one walk.
 
 import { templateFiles } from "../../frameworks/tea-dirtybits/framework.js";
 import { literal, tplText } from "../../frameworks/shared/jsx.js";
@@ -533,7 +533,7 @@ export function emit(spec) {
       updates: "reducer arms mark compile-time dirty bits per field written; a static patch per widget runs only the bindings whose bits are set, batched in a microtask",
       externalEvents: "through the same reducer (send); serverSet and snapshot mark every bit of the widgets they replace; tick goes to the time-driven widgets",
       crossWidgetReads: "a reader has one bit per field it reads; the app patch sets it when the source's bit is dirty (one line per read)",
-      lists: "keyed by id: changed rows patched, order reconciled with Solid 2's reconcileArrays",
+      lists: "keyed by id: changed rows patched, gone rows removed, misplaced nodes moved in one walk",
       conditionals: "branches kept in place by an empty comment, with their own nested patch, built when shown, removed when hidden",
       events: "addEventListener on each element; the handler builds a message and sends it",
       build: "Vite with no framework plugin, production defaults, hidden source maps",
