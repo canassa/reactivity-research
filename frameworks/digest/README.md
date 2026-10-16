@@ -22,8 +22,7 @@ factory per widget kind** that the app uses. The factory holds the kind's templa
 and its handlers. Here is the counter, as `scenarios/shared-components/digest.js` emits it:
 
 ```js
-const counter = (l, st, mn, mx, v0) => {
-  let value = v0;                                  // the state: plain variables of the factory
+const counter = (l, st, mn, mx, value, v0 = value) => {   // the state: plain variables of the factory
   widget("counter", l, `<output data-role=value></output><button data-role=dec>-${st}</button>…`,
     (v) => ({ value } = v),                        // the setter external replacements use
     () => value = Math.max(mn, value - st), // dec: the update arms, one per control,
@@ -93,8 +92,9 @@ factory creates lands in its own widget's list. A click on a counter runs the co
 bindings, whatever the size of the page. `run` is a plain `for…of` over the list, so a binding
 costs one call.
 
-Handlers that read form controls read the element (`on[i] = t.checked`, `str = t.value`),
-so they are idempotent. That matters because a checkbox fires both `click` and `input`.
+Handlers that read form controls read the element (`on[i] = t.checked`, `str = t.value`; on
+unique-components the runtime puts it in `X` before the call, so the handler takes no
+parameter: `$motto = X.value`), so they are idempotent. That matters because a checkbox fires both `click` and `input`.
 
 **The last written value is cached, not compared with the DOM.** An input the user is typing
 into is never written back with the same text, so it keeps focus and caret. The amount rule
@@ -144,17 +144,18 @@ src = src.map((k) => (k = "w" + (id.slice(1) - k), W[k].push(...w), E[k]));   //
 ### External events
 
 `receive` is app code, and it changes state in place. The adapter only forwards `dispatch` to
-it. Each branch replaces state through the widget's setter (`S[k]`) and digests only the
-widgets the event names (`run(W[k])` runs widget `k`'s list), and every clock registers its
-tick function in `T`, so a tick never visits the rest of the page. A feed keeps its entries on
-a record its factory returns (`E[k]`), which `notify` pushes into:
+it. A replacement goes through the widget's setter (`S[k]`) and digests only the widgets the
+event names (`run(W[k])` runs widget `k`'s list); a `serverSet` is a snapshot of one widget, so
+the two share one branch. Every clock registers its tick function in `T`, so a tick never visits
+the rest of the page. A feed keeps its entries on a record its factory returns (`E[k]`), which
+`notify` pushes into:
 
 ```js
 const receive = (m) => {
-  if (m.type == "serverSet") S[m.widget](structuredClone(m.state)), run(W[m.widget]);
-  else if (m.type == "snapshot") { const w = structuredClone(m.state.widgets); for (const k in w) S[k](w[k]), run(W[k]); }
-  else if (m.type == "tick") for (const t of T) t();                                 // only with a clock
-  else if (m.type == "notify") E[m.widget].entries.push(m.entry), run(W[m.widget]);  // only with a feed
+  if (m.type == "tick") for (const t of T) t();                                  // only with a clock
+  else if (m.type == "notify") E[m.widget].e.push(m.entry), run(W[m.widget]);    // only with a feed
+  // serverSet and snapshot; a tick or notify the app has no branch for has no state
+  else for (const k in (m = structuredClone(m.type == "serverSet" ? { [m.widget]: m.state } : m.state?.widgets))) S[k](m[k]), run(W[k]);
 };
 
 // in the clock factory
@@ -362,6 +363,50 @@ higher; 11,806 → 11,798 in total (shared-components), 19,962 → 19,962 (uniqu
   parameter defaults (`($sheets = 11) =>`, with a plain setter) were as long as the setter
   defaults and gained nothing (+612 B at N=256 against them).
 
+### Names the minifier can't vary, bit masks (sixth pass)
+
+A sixth pass took away names the minifier picked differently in every widget, and packed flags
+into numbers, not the strategy:
+- **Setters and handlers take no parameter** (unique). A setter destructured its own parameter,
+  and an input, select or checkbox handler read the event's target from its own: the minifier
+  named that parameter after whatever letters the widget's own variables had taken, so the same
+  code started differently in every widget. Now `run(W[k], state)` puts the incoming state in
+  the runtime's `S` before it calls the setter (`() => ({ miles: w6$miles = 11, … } = S)`;
+  mount empties `S` for the initial call), and the delegated listener puts the target in `X`
+  (`() => $motto = X.value`). Same calls, same order: the setter is still called once per
+  replaced widget, the handler once per event.
+- **A serverSet is a snapshot of one widget** (both): `receive` handles both in one loop over
+  `{ [m.widget]: m.state }` or `m.state.widgets`, and `run(W[k], state)` applies the setter
+  itself (unique). A tick or notify the app has no branch for has no `state` and replaces
+  nothing.
+- **Done and on flags as one bit mask** (both): a checklist's initial items are its texts after
+  one number (`C(13, "Book the passport", …)`, bit i: item i), a todo's done flags and a toggles
+  widget's switches are one number in the row, not a 0/1 each.
+- **Small spellings:** `nx(value, ...options)` instead of an options array (unique), the counter's
+  initial value and the todo's draft as parameter defaults instead of a `let` (shared), and
+  `widget()` numbers the widget and writes its key itself, so the runtime keeps no `id` (unique).
+
+Brotli totals, adapter excluded, `runs.json` sizes (1 to 256) and seeds (1 to 3), medians:
+
+| | N=1 | N=16 | N=64 | N=256 | fit, all sizes | fit, N ≥ 16 |
+|---|---|---|---|---|---|---|
+| shared-components, before | 1,033 B | 3,108 B | 4,348 B | 7,578 B | 2,053 + 23.69 B/widget | 3,011 + 18.29 B/widget |
+| shared-components, after | **1,009 B** | **3,074 B** | **4,309 B** | **7,514 B** | **2,028 + 23.51** | **2,987 + 18.10** |
+| unique-components, before | 1,377 B | 4,970 B | 12,736 B | 37,617 B | 2,359 + 142.2 B/widget | 3,646 + 135.0 B/widget |
+| unique-components, after | **1,356 B** | **4,923 B** | **12,604 B** | **37,255 B** | **2,331 + 140.9** | **3,596 + 133.8** |
+
+Every size's median is lower on both scenarios (sizes 1 to 256; sums over all 27 builds: shared
+−951 B, unique −2,691 B). Calls (`./rr work`, seed 1, sizes 16 to 256), record by record: none
+higher, none lower; 11,798 in total (shared-components), 19,962 (unique-components).
+
+- **A name the minifier picks per widget costs bytes even when it is one letter.** The setter's
+  parameter was `r` in one widget and `i` or `a` in the next, so brotli could not copy the
+  setter's opening and closing from the previous widget. One constant name, even a longer one,
+  is cheaper: −1,060 B summed for the setters, −709 B for the handlers, mostly at large N.
+- **A bit mask beats a 0/1 per item only when there are many items.** The checklist mask saves
+  about 130 B at N=256 but costs up to 15 B between N=8 and N=32, where the decoder is paid
+  for few lists. It is kept because every size still ends below the start.
+
 ## Locality
 
 `./rr check` holds prototypes to a locality rule: the calls one local action costs may grow at
@@ -497,6 +542,34 @@ Fifth pass (`runs.json` sizes and seeds, each against the step before):
 | One `structuredClone` for a whole snapshot (unique) | ±2 B | dropped: noise |
 | The item role suffixed by the runtime (`role + "Item"`) (unique) | +37 B at N=256, −14 B at N=16 | dropped: noise, as in the third pass |
 
+Sixth pass (`runs.json` sizes and seeds, each against the step before, or offline on the
+minified bundles where marked):
+
+| Idea | Effect | Verdict |
+|---|---|---|
+| serverSet and snapshot in one branch (both) | shared −12 to −26 B at every size; unique sum −299 B | kept |
+| Setters read the incoming state from `S` instead of a parameter (unique) | −11 to −143 B at every size | kept |
+| `run(W[k], state)` applies the setter, setters keep their parameter (unique) | sum −57 B, ±10 B by size | replaced by the parameterless setter, where the gain is |
+| The same `run(W[k], state)` on shared-components, the setter on the binding list | sum +44 B, then +119 B on top of the single branch | dropped |
+| Handlers read their control from `X` instead of a parameter (unique) | −52 B at N=256, sum −709 B, +8 B at N=2 | kept |
+| The same, the control in `S` (one variable for both) | sum −730 B | not adopted: the same bytes, and one name for two meanings |
+| The same on shared-components | sum +55 B | dropped: its handlers are written once per kind, so their parameter never varies |
+| Checklist done flags as one bit mask (unique) | −132 B at N=256, up to +15 B between N=8 and N=32 | kept (every size still below the start) |
+| Todo done flags (shared) as a mask, then toggles' switches | sum −127 B, then −134 B | kept |
+| Choice extras as a mask (shared) | sum −14 B, +7 B at N=8 | dropped: noise |
+| `nx(value, ...options)` (unique), retried | sum −148 B, −61 B at N=256, +16 B at N=8 | kept this time: every size still below the start |
+| The counter's initial value, then the todo's draft, as parameter defaults (shared) | sum −80 B, then −143 B | kept |
+| The same for feed's record, filter's items, rating's stars, toggles' and todo's expanded masks, unique's feed record | ±30 B each, or worse | dropped: noise, or worse |
+| The widget numbered inside `widget()`, no `id` (unique) | −8 to −19 B below N=16, sum −94 B | kept |
+| The section appended with `appendChild`'s result, or built with `insertAdjacentHTML` (unique) | sum +84 B, or +644 B | dropped |
+| `el()` with `Object.assign` (unique) | sum +258 B | dropped |
+| `show` storing "hidden" to drop the `!!` (unique) | sum +66 B | dropped |
+| Summary formula from whether a prefix is given (shared) | sum +25 B | dropped |
+| `x = Math.min(x + k, max)` as `(x += k) > max && (x = max)` (unique) | +150 to +225 B at N=256 (offline) | dropped: `Math.min(` is one cheap copy |
+| `data-role` before `type` on inputs (unique) | sum +507 B (offline) | dropped |
+| Unquoted option values (unique), retried | sum −54 B, +23 B at N=64 | dropped: mixed |
+| The item's text binding written by the list runtime (unique) | −484 B summed at best (offline) | not built: the binding would no longer be the widget's own code |
+
 
 ## Honest limits
 
@@ -518,7 +591,14 @@ Fifth pass (`runs.json` sizes and seeds, each against the step before):
   unique-components the setter's defaults are the initial state, so a field missing from a
   `serverSet` would take its initial value (not `undefined`), and a field named like an
   `Object.prototype` property would read that property when the setter initialises the state
-  with `{}` (the emitter refuses such a name).
+  with `{}` (the emitter refuses such a name). Both scenarios treat a `serverSet` as a snapshot
+  of one widget, and ignore a message with no `state` that has no branch of its own.
+- **unique-components passes values through two runtime variables:** a setter reads the state
+  being applied from `S`, and a handler reads its control from `X`. Both are set right before
+  the call and read synchronously inside it, so nothing else can change them in between.
+- **Initial flags are bit masks** (a checklist's or todo's done items, a toggles widget's
+  switches), so a list holds at most 30 items at the start (the emitter checks it); items added
+  later are not limited.
 - **shared-components splices a widget's label into its heading's HTML** and summaries read the
   same string as text, so a label must need no escaping (the emitter checks it; a label with
   `&` or `<` would need a second, escaped copy in its row).
@@ -550,17 +630,18 @@ It uses `runtime-unique.js` instead of `runtime.js`: the same strategy (binding 
 write on change, a local digest, handlers and bindings by position), but it knows nothing about
 widget kinds. `widget(set, ...h, html)` builds the section from the template (the last
 argument), hands `h` to its controls in document order, keeps the setter on the widget's
-binding list (`W[k].s`) and calls it once with no fields, so its defaults set the initial state
-(a feed widget puts its record in `O` itself), and makes its elements the ones bindings refer
-to, each by its distance from the previous binding's element (`text(3, …)`). A widget's own
-fields are the parameters of its function:
+binding list (`W[k].s`) and calls it once while `S` is empty, so its defaults set the initial
+state (a feed widget puts its record in `O` itself), and makes its elements the ones bindings
+refer to, each by its distance from the previous binding's element (`text(3, …)`). A widget's
+own fields are the parameters of its function; its setter reads the state being applied from
+`S`, and its handlers read their control from `X`:
 
 ```js
 const w6 = ($motto) => {
-  widget((v) => ({ miles: w6$miles = 11, motto: $motto = "Harbor" } = v),
-    (t) => Number.isInteger((t = t.valueAsNumber)) && t >= 0 && t <= 52 && (w6$miles = t), // enterMiles
+  widget(() => ({ miles: w6$miles = 11, motto: $motto = "Harbor" } = S),
+    (t) => Number.isInteger((t = X.valueAsNumber)) && t >= 0 && t <= 52 && (w6$miles = t), // enterMiles
     () => (w6$miles = 11, $motto = "Harbor"), // restoreAll
-    (t) => $motto = t.value, // writeMotto
+    () => $motto = X.value, // writeMotto
     `<h2>Trail panel 77xz</h2><div><input type=number data-role=enterMiles><output></output></div>…`,
   );
   bind(2, () => w6$miles);
