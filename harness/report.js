@@ -32,10 +32,15 @@ export async function reportCommand(rest) {
       if (emitterName.startsWith("$")) continue;
       const emitter = await loadEmitter(scenario.name, emitterName);
       const options = Object.fromEntries(Object.entries(entry.options || {}).map(([k, v]) => [k, Array.isArray(v) ? v.join(",") : v]));
-      for (const k of Object.keys(options)) if (!(k in (emitter.mod.params || {}))) throw new Error(`runs.json: ${scenarioName}/${emitterName}: unknown option ${k}`);
-      for (const emitterOptions of combinations(emitter.mod.params, options)) {
-        if (!entry.sizes || !entry.seeds) throw new Error(`runs.json: ${scenarioName}/${emitterName} needs sizes and seeds`);
-        plan.push({ emitter, emitterOptions, sizes: entry.sizes, seeds: entry.seeds });
+      // An option is the emitter's or the scenario's (e.g. derived-graph's fanout); a list of
+      // values of either measures each as its own variant.
+      const scenarioParams = Object.fromEntries(Object.entries(scenario.mod.params || {}).filter(([k]) => k in options && !(k in (emitter.mod.params || {}))));
+      for (const k of Object.keys(options)) if (!(k in (emitter.mod.params || {})) && !(k in scenarioParams)) throw new Error(`runs.json: ${scenarioName}/${emitterName}: unknown option ${k}`);
+      for (const variantScenarioOptions of combinations(scenarioParams, options)) {
+        for (const emitterOptions of combinations(emitter.mod.params, options)) {
+          if (!entry.sizes || !entry.seeds) throw new Error(`runs.json: ${scenarioName}/${emitterName} needs sizes and seeds`);
+          plan.push({ emitter, emitterOptions, scenarioOptions: variantScenarioOptions, sizes: entry.sizes, seeds: entry.seeds });
+        }
       }
     }
     // A scenario with no framework entries yet (only its "$bench" block) has nothing to measure.

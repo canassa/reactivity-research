@@ -221,7 +221,9 @@ function latestRun(scenarioName) {
   return dirs.length ? path.join(RESULTS, dirs[dirs.length - 1]) : null;
 }
 
-// Measure a set of runs of one scenario: [{ emitter, emitterOptions, sizes, seeds }].
+// Measure a set of runs of one scenario: [{ emitter, emitterOptions, scenarioOptions?, sizes, seeds }].
+// A run's own scenarioOptions (a scenario parameter measured as a variant, e.g. --fanout high)
+// override the shared ones and, where not at their default, name the variant (`solid-fanout=high`).
 // Records whose inputs hash matches a committed result are reused unless `force`.
 // Writes a results directory unless `onlyIfChanged` and the latest one already holds exactly
 // these records. Returns the directory written (or null) and the fits.
@@ -229,15 +231,18 @@ export async function measureScenario(scenario, scenarioOptions, plan, { force =
   const previous = force ? new Map() : previousRecords(scenario.name);
   const slots = [];
   const frameworks = {};
-  for (const { emitter, emitterOptions: opts, sizes, seeds } of plan) {
-    const variant = variantName(emitter, opts);
+  for (const { emitter, emitterOptions: opts, scenarioOptions: own = {}, sizes, seeds } of plan) {
+    const suffix = Object.entries(own)
+      .filter(([k, v]) => String(v) !== String(scenario.mod.params[k].default))
+      .map(([k, v]) => `-${k.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase())}=${v}`).join("");
+    const variant = variantName(emitter, opts) + suffix;
     const code = codeHash(scenario, emitter);
     frameworks[emitter.mod.framework] = { label: emitter.framework.label, track: emitter.framework.track, versions: emitter.framework.versions() };
     for (const size of sizes) {
       for (const seed of seeds) {
-        const options = scenario.mod.normalizeOptions({ ...scenarioOptions, size, seed });
+        const options = scenario.mod.normalizeOptions({ ...scenarioOptions, ...own, size, seed });
         const inputs = inputsHash(code, options, opts);
-        slots.push({ emitter, opts, variant, code, sizes, seeds, size, seed, options, inputs, hit: previous.get(inputs) });
+        slots.push({ emitter, opts, own, variant, code, sizes, seeds, size, seed, options, inputs, hit: previous.get(inputs) });
       }
     }
   }
@@ -268,7 +273,7 @@ export async function measureScenario(scenario, scenarioOptions, plan, { force =
     variants[s.variant] ||= {
       emitter: s.emitter.name, framework: s.emitter.mod.framework, label: s.emitter.framework.label,
       track: s.emitter.framework.track, emitterOptions: s.opts, style: s.hit ? s.hit.variant?.style : s.result.style,
-      sizes: s.sizes, seeds: s.seeds, code: s.code.slice(0, 16),
+      sizes: s.sizes, seeds: s.seeds, code: s.code.slice(0, 16), ...(Object.keys(s.own).length ? { scenarioOptions: s.own } : {}),
     };
   }
   const fits = fitAll(records, scenario.mod.steadyFrom);
