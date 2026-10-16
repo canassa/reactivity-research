@@ -379,7 +379,7 @@ function widgetFile(spec, w) {
 
 
   const fn = [];
-  fn.push(`export function ${w.id}(parent) {`);
+  fn.push(`export const ${w.id} = (parent) => {`);
   // The binding list (it runs after mount, once `self` and `e` are set).
   fn.push(`  const patch = () => {`);
   if (cx.own) fn.push(`    const m = self.m;`);
@@ -400,7 +400,7 @@ function widgetFile(spec, w) {
   fn.push(``);
   if (feed) fn.push(`  self.notify = ${notifyIndex}; // the tag of Notify, sent by the app`);
 
-  fn.push(`}`);
+  fn.push(`};`);
   const body = fn.join("\n");
 
   const code = body;
