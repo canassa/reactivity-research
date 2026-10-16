@@ -148,6 +148,18 @@
   },
   "routed-app": {
     "$bench": { "$comment": "./rr bench: one app per framework at N=64, the size the dashboards bench at; p1 to p5 carry the actions (harness/bench/routed-app.js), the other pages exist only to be left unmounted.", "sizes": [64], "seeds": [1] },
+    "vanilla": {
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3]
+    },
+    "solid": {
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3]
+    },
+    "elm": {
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3]
+    },
     "tea-dirtybits": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3]
