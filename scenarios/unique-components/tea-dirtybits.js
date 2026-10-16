@@ -7,7 +7,7 @@
 //   (a table of arms by message tag, the ops written out as code, each arm returning the
 //   compile-time bits and the values of the fields it writes, `[bits, fields]`), its initial
 //   state, and its DOM factory `view(parent, id)`, which builds the DOM once from one static
-//   template (bound elements marked, found by position among them) and returns a
+//   template (bound elements found by their data-role or a marker, by position) and returns a
 //   static `patch(s, d, w)` that runs only the bindings whose bits are set. The module adds
 //   the triple [view, reducer, initial state] under its id to the registry in widget.js when
 //   the app imports it (in page order), so no binding is named per widget. Bits and message
@@ -272,9 +272,10 @@ function widgetModule(w) {
   };
   const W = "id";
 
-  // Bound elements carry a marker in the template and are numbered in document order, as
-  // `template` returns them: `t[0]` is the section, `t[1]` the first bound element.
-  // `node()` numbers a bound element (its markup then carries MK); `node(false)` notes one
+  // Bound elements are numbered in document order, as `template` returns them: `t[0]` is the
+  // section, `t[1]` the first bound element. An element with a `data-role` (the section, every
+  // control, error and list row) is always bound and needs nothing more; any other bound
+  // element carries the marker MK. `node()` numbers a bound element; `node(false)` notes one
   // the code never touches, which gets no marker and no number.
   let count = 1;
   const node = (used = true) => (used ? `t[${count++}]` : null);
@@ -304,10 +305,10 @@ function widgetModule(w) {
           const b = node();
           const deps = new Set();
           const t = textOf(n.text, deps);
-          if (t.stat !== undefined) h += `<button data-role=${n.msg}${MK}>${esc(t.stat)}</button>`;
+          if (t.stat !== undefined) h += `<button data-role=${n.msg}>${esc(t.stat)}</button>`;
           else {
             use("setText");
-            h += `<button data-role=${n.msg}${MK}></button>`;
+            h += `<button data-role=${n.msg}></button>`;
             bind(sc, deps, `setText(${b}, ${t.src});`);
           }
           if (n.disabled) {
@@ -328,13 +329,13 @@ function widgetModule(w) {
           const i = node();
           if (f.type === "int") {
             use("onInt", "setNumber");
-            h += `<input type=number data-role=${n.msg}${MK}>`;
+            h += `<input type=number data-role=${n.msg}>`;
             // Only an integer within range becomes a message; anything else stays as typed.
             E(`onInt(${i}, ${W}, ${tag(n.msg)}, ${f.min}, ${f.max});`);
             bind(sc, new Set([own(f.name)]), `setNumber(${i}, s.${f.name});`);
           } else {
             use("onInput", "setValue");
-            h += `<input type=text data-role=${n.msg}${n.placeholder ? ` placeholder="${esc(n.placeholder)}"` : ""}${MK}>`;
+            h += `<input type=text data-role=${n.msg}${n.placeholder ? ` placeholder="${esc(n.placeholder)}"` : ""}>`;
             E(`onInput(${i}, ${W}, ${tag(n.msg)});`);
             bind(sc, new Set([own(f.name)]), `setValue(${i}, s.${f.name});`);
           }
@@ -342,7 +343,7 @@ function widgetModule(w) {
           if (n.invalid) {
             use("branch");
             const e = name();
-            h += `<p data-role=${n.msg}Error${MK}>${esc(n.invalid.message)}</p>`;
+            h += `<p data-role=${n.msg}Error>${esc(n.invalid.message)}</p>`;
             L(`const ${e} = branch(${node()});`);
             const deps = new Set();
             bind(sc, deps, `${e}(${ex(n.invalid.when, deps)});`);
@@ -354,7 +355,7 @@ function widgetModule(w) {
           const m = msgOf(n.msg);
           node(false);
           const i = node();
-          h += `<label><input type=checkbox data-role=${n.msg}${MK}>${esc(n.label)}</label>`;
+          h += `<label><input type=checkbox data-role=${n.msg}>${esc(n.label)}</label>`;
           E(`onCheck(${i}, ${W}, ${tag(n.msg)});`);
           bind(sc, new Set([own(m.field)]), `setChecked(${i}, s.${m.field});`);
           break;
@@ -367,7 +368,7 @@ function widgetModule(w) {
             h += `<label>${esc(n.label)}`;
           }
           const e = node();
-          h += `<select data-role=${n.msg}${MK}>`;
+          h += `<select data-role=${n.msg}>`;
           for (const o of fieldOf(m.field).options) {
             node(false);
             h += `<option value="${esc(o)}">${esc(o)}</option>`;
@@ -382,14 +383,14 @@ function widgetModule(w) {
           use("template", "setText", "list");
           const l = name();
           h += `<${n.tag}${MK}></${n.tag}>`;
-          let row = `<li data-role=${n.field}Item${MK}>`;
+          let row = `<li data-role=${n.field}Item>`;
           let k = 1;
           const box = n.check ? `r[${k++}]` : null;
-          if (n.check) row += `<input type=checkbox data-role=${n.check}${MK}>`;
+          if (n.check) row += `<input type=checkbox data-role=${n.check}>`;
           const label = `r[${k++}]`;
           row += `<span${MK}></span>`;
           const remove = n.remove ? `r[${k++}]` : null;
-          if (n.remove) row += `<button data-role=${n.remove}${MK}>${esc(n.removeText)}</button>`;
+          if (n.remove) row += `<button data-role=${n.remove}>${esc(n.removeText)}</button>`;
           row += `</li>`;
           L(`const ${l} = list(${node()}, (item) => {`);
           L(`  const r = template(${J(trimTemplate(row))});`);
@@ -443,7 +444,7 @@ function widgetModule(w) {
   const root = scope();
   const body = [];
   const wires = [];
-  const markup = `<section data-role=widget${MK}><h2>${esc(w.label)}</h2>${build(w.view, root, body, "  ")}</section>`;
+  const markup = `<section data-role=widget><h2>${esc(w.label)}</h2>${build(w.view, root, body, "  ")}</section>`;
   // A widget's patch runs only with some of its bits set: own fields and fields it reads.
   let patch = patchBody(root, "    ", (1 << (w.fields.length + reads.size)) - 1);
   // Patches take the whole model (`w`) only when the widget reads another widget.
@@ -554,7 +555,7 @@ ${[...(ticks.length ? ["      const ws = model.widgets;"] : []), ...ticks, "    
 // The returned patch first turns dirty bits that other widgets read into the readers' bits, then
 // runs each dirty widget's patch.
 export function view(root, model) {
-  const dash = template("<div data-role=dashboard b>", root)[0];
+  const dash = template("<div data-role=dashboard>", root)[0];
   const w = model.widgets;
   const patches = {};
   for (const id in WIDGETS) {
@@ -586,7 +587,7 @@ export function emit(spec) {
   return {
     files,
     style: {
-      components: "one module per widget (bits, reducer, initial state, DOM factory with a static template whose bound elements are marked), each written from that widget's description; nothing interpreted at runtime",
+      components: "one module per widget (bits, reducer, initial state, DOM factory with a static template whose bound elements are found by data-role or a marker), each written from that widget's description; nothing interpreted at runtime",
       state: "one immutable TEA model; the app reducer routes messages to the widgets' reducers",
       updates: "reducers are tables of arms by message tag; each arm returns the compile-time dirty bits and values of the fields it writes, merged into the slice by the app; a static patch per widget runs only the bindings whose bits are set, batched in a microtask",
       externalEvents: "through the same reducer (send); serverSet and snapshot mark every bit of the widgets they replace; tick goes to the time-driven widgets",
