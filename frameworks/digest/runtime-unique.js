@@ -12,7 +12,7 @@
 
 let B; // the bindings being collected: the widget's, or one list item's while it is created
 let E; // the elements of the template being created (a widget's, or one list item's), by position
-let D; // the dashboard element
+let D; // the dashboard element (it also keeps the widgets' templates, in page order: `D.h`)
 let P; // the position of the element the last binding was made on (bindings come in document order)
 let I; // the number of the widget being created, in page order (its id is `w` and I)
 
@@ -46,18 +46,22 @@ const on = (n, h, b, i = 0) => {
 // Write `n[k] = f()` whenever f() changes (`k` is an input's value unless given). A binding names
 // its element `n` by its distance `d` from the previous binding's element: a template's bindings
 // are made in document order.
-export const bind = (d, f, k = "value", last, n = E[(P += d)]) => B.push(() => last !== (last = f()) && (n[k] = last));
-export const text = (d, f) => bind(d, f, "textContent");
+export const bind = (d, f, k = "value", n = E[(P += d)], last) => B.push(() => last !== (last = f()) && (n[k] = last));
+// A text binding writes a text node of its own at the end of the element, after the static
+// text the template gives it (`<p>Total: </p>` shows `Total: ` and then f()), as Solid's
+// compiler does.
+export const text = (d, f) => bind(0, f, "data", E[(P += d)].appendChild(new Text()));
 
 // Keep element `n` (`d` as for bind) in its place only while f() holds; a hidden node leaves an
 // empty text node.
 export const show = (d, f, last, n = E[(P += d)], c = new Text()) =>
-  B.push(() => last !== (last = !!f()) && (last ? c.replaceWith(n) : n.replaceWith(c)));
+  B.push(() => last !== (last = f()) && (last ? c.replaceWith(n) : n.replaceWith(c)));
 
 // A keyed list in element `p` (`d` as for bind): `items()` gives the current items (each with
 // an `id`). An item is an `<li data-key data-role=role>` made from `html`; `make(r)` registers
 // its bindings, which read `r.i`, the item's current value, and returns the handlers of the
-// item's controls.
+// item's controls. `r` is the item's binding list itself, which also keeps its node (`r.n`)
+// and its item (`r.i`).
 export const list = (d, items, role, html, make, p = E[(P += d)], map = new Map(), w = B) =>
   B.push(() => {
     const old = map;
@@ -68,7 +72,7 @@ export const list = (d, items, role, html, make, p = E[(P += d)], map = new Map(
       else {
         // Items are created during a digest, after every widget has registered its bindings,
         // so B and E are free to collect the item's.
-        r = { b: (B = []), n: el("li", html) };
+        (r = B = []).n = el("li", html);
         r.n.dataset.key = i.id;
         r.n.dataset.role = role;
         E = r.n.children;
@@ -82,27 +86,30 @@ export const list = (d, items, role, html, make, p = E[(P += d)], map = new Map(
     let c = p.firstChild;
     for (const r of map.values()) {
       r.n === c ? (c = c.nextSibling) : p.insertBefore(r.n, c);
-      run(r.b);
+      run(r);
     }
   });
 
 // Small helpers for handlers.
 // The option after v (the first after the last), the options as arguments.
 export const nx = (v, ...a) => a[(a.indexOf(v) + 1) % a.length];
+// Remove item i from list l, in place (one call, where a filter calls back once per item).
+export const rm = (l, i) => l.splice(l.indexOf(i), 1);
 // A new item gets the next id and is not done (a list without checkboxes never reads `done`).
 export const add = (l, text) => l.push({ id: Math.max(0, ...l.map((i) => i.id)) + 1, text, done: false });
 // A list from its items' texts, as arguments; the ids are 1, 2, …
 export const L = (...a) => a.map((text, i) => ({ id: i + 1, text }));
-// A checkable list from a bit mask of the done items (bit i: item i), then its items' texts.
+// A checkable list from a bit mask of the done items (bit i: item i), then its items' texts. (A
+// checkable list with no done item is an `L` list: an absent `done` reads as not done.)
 export const C = (m, ...a) => a.map((text, i) => ({ id: i + 1, text, done: !!(m & (1 << i)) }));
 
-// Create the widget's section, with `set`, the setter of its whole state, then the handlers of its
-// controls in document order, then its template (its heading and content, the last argument),
-// and make it the one being created: the bindings that follow refer to its elements by position
+// Create the widget's section from its template (its heading and content: the next one in the
+// table the dashboard element keeps, `D.h`), with `set`, the setter of its whole state, then the
+// handlers of its controls in document order, and make it the one being created: the bindings that follow refer to its elements by position
 // (0 is the heading). The setter's defaults are the initial state: it is called once while S
 // is empty. A widget with a feed list puts the record `notify` pushes into in O itself.
 export const widget = (set, ...h) => {
-  const x = el("section", h.pop());
+  const x = el("section", D.h[I]);
   x.dataset.role = "widget";
   on(x, h, (W[(x.dataset.key = "w" + ++I)] = B = []));
   D.append(x);
@@ -122,9 +129,9 @@ export const dep = (...d) => {
 // widget the event came from is digested.
 const onEvent = (e) => (X = e.target).h && (X.h(), run(X.b));
 
-// The program: `defs` is one widget function per widget, in page order (ids w1, w2, …);
-// `receive(msg)` applies an external event and digests the widgets it touched (with `run`).
-export const app = (defs, receive) => ({
+// The program: `html` is the widgets' templates and `defs` one widget function per widget, both
+// in page order (ids w1, w2, …); `receive(msg)` applies an external event and digests the widgets it touched (with `run`).
+export const app = (html, defs, receive) => ({
   mount(root) {
     O = {};
     S = {};
@@ -133,6 +140,7 @@ export const app = (defs, receive) => ({
     I = 0;
     D = el("div", "");
     D.dataset.role = "dashboard";
+    D.h = html;
     for (const f of defs) f();
     for (const k in W) run(W[k]);
     D.addEventListener("click", onEvent);

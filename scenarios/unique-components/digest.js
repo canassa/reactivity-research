@@ -2,10 +2,11 @@
 //
 // What a compiler for this approach would produce when every widget is its own component:
 // - One function per widget, written out in full from that widget's description: its state (its
-//   setter's defaults), its template (static HTML, escaped at build time), its handlers (what each
-//   message does, as that widget's own statements), its bindings (one closure per dynamic DOM
-//   property, the derived expressions compiled to JavaScript) and, for a time-driven field, its
-//   tick function.
+//   setter's defaults), its handlers (what each message does, as that widget's own statements),
+//   its bindings (one closure per dynamic DOM property, the derived expressions compiled to
+//   JavaScript) and, for a time-driven field, its tick function. Its template (static HTML, escaped at build time, without the end tags it
+//   closes with) is hoisted, as Solid hoists its templates: the app passes the table of every
+//   widget's template, in page order, and `widget()` takes the next one.
 // - Nothing about a widget is kept as data for a generic routine: no op tables, no view trees,
 //   no descriptors. Deleting a widget's function deletes its behaviour. The only data in a
 //   widget are its initial values and its texts (the template).
@@ -45,7 +46,8 @@ const tpl = (s) => s.replace(/[\\`]|\$\{/g, (m) => "\\" + m);
 //   it directly;
 // - a feed list, which `notify` pushes into by name, is on the widget's record (`O.w1.name`, or
 //   `s.name` in its own widget).
-let FEED, READ, cur;
+// TPL: the widgets' templates, in page order (hoisted out of the widget functions).
+let FEED, READ, cur, TPL;
 const V = (id, name) => (FEED[id].has(name) ? (id === cur ? `s.${name}` : `O.${id}.${name}`)
   : READ[id].has(name) ? `${id}$${name}` : `$${name}`);
 const F = (name) => V(cur, name);
@@ -80,6 +82,9 @@ function expr(e, reads) {
 // string it computes.
 function parts(ps, reads) {
   if (ps.every((p) => typeof p === "string")) return { html: esc(ps.join("")) };
+  // A static prefix, then one expression: the prefix stays in the template, and the expression
+  // goes in a text node after it (as Solid's compiler does).
+  if (ps.length === 2 && typeof ps[0] === "string" && typeof ps[1] !== "string") return { html: esc(ps[0]), code: expr(ps[1], reads) };
   const code = ps.length === 1 ? expr(ps[0], reads)
     : "`" + ps.map((p) => (typeof p === "string" ? tpl(p) : "${" + expr(p, reads) + "}")).join("") + "`";
   return { html: "", code };
@@ -128,21 +133,26 @@ function handler(m, fields) {
     case "select": return `() => ${L} = X.value`;
     // An item control's handler is created with its item and reads `r.i`, the item's current
     // value (the very object in the list).
-    case "item": return m.op === "remove" ? `() => ${L} = ${L}.filter((i) => i != r.i)` : `() => r.i.done = X.checked`;
+    case "item": return m.op === "remove" ? `() => rm(${L}, r.i)` : `() => r.i.done = X.checked`;
   }
   throw new Error(`digest: unknown message kind ${m.kind}`);
 }
 
 // A field's initial value: as it is; a list's items as their texts when their ids are 1, 2, …,
-// after a bit mask of which are done for a checkable list (bit i: item i).
+// after a bit mask of which are done for a checkable list with done items (bit i: item i); with
+// none done, a plain list (an absent `done` reads as not done).
 function initial(f, v) {
   if (f.type !== "list") return lit(v);
   if (v.every((it, i) => it.id === i + 1) && v.length < 31) {
     const texts = v.map((it) => lit(it.text));
-    return f.checkable ? `C(${[v.reduce((m, it, i) => m | (it.done ? 1 << i : 0), 0), ...texts].join(", ")})` : `L(${texts.join(", ")})`;
+    return f.checkable && v.some((it) => it.done) ? `C(${[v.reduce((m, it, i) => m | (it.done ? 1 << i : 0), 0), ...texts].join(", ")})` : `L(${texts.join(", ")})`;
   }
   return lit(v);
 }
+
+// A template without the end tags it closes with: the end of the HTML closes every element
+// still open, so they change nothing (Solid's compiler leaves them out too).
+const open = (html) => html.replace(/(<\/\w+>)+$/, "");
 
 // One widget's function.
 function widgetCode(w, init) {
@@ -230,7 +240,7 @@ function widgetCode(w, init) {
           hs.push(handler(msgs[v.remove], fields));
         }
         if (hs.length) inner.push(`[${hs.join(", ")}]`);
-        binds.push(`list(${ref(i)}, () => ${F(v.field)}, "${v.field}Item", \`${tpl(item)}\`, (r) => (${inner.join(", ")}));`);
+        binds.push(`list(${ref(i)}, () => ${F(v.field)}, "${v.field}Item", \`${tpl(open(item))}\`, (r) => (${inner.join(", ")}));`);
         return `<${v.tag}></${v.tag}>`;
       }
       case "when": {
@@ -246,7 +256,7 @@ function widgetCode(w, init) {
     throw new Error(`digest: unknown view node ${v.el}`);
   };
 
-  const html = `<h2>${esc(w.label)}</h2>` + w.view.map(view).join("");
+  const html = open(`<h2>${esc(w.label)}</h2>` + w.view.map(view).join(""));
   const own = w.fields.filter((f) => !FEED[cur].has(f.name) && !READ[cur].has(f.name));
   const shared = w.fields.filter((f) => FEED[cur].has(f.name));
   const handlers = ctl.map((h) => `    ${h}`).join("\n");
@@ -258,9 +268,10 @@ function widgetCode(w, init) {
   for (const f of w.fields) if (f.name in {}) throw new Error(`digest: field name ${f.name} shadows an Object.prototype property`);
   const set = `() => ({ ${w.fields.map((f) => `${f.name}: ${F(f.name)} = ${initial(f, init[f.name])}`).join(", ")} } = S)`;
 
+  TPL.push(html);
   const body = [
     ...(shared.length ? [`  const s = (O.${cur} = {});`] : []),
-    `  widget(${set},\n${handlers}\n    \`${tpl(html)}\`,\n  );`,
+    `  widget(${set},\n${handlers}\n  );`,
     ...binds.map((b) => "  " + b)];
   for (const f of w.fields) {
     if (f.tick) body.push(`  T.push(() => ${F(f.tickWhen)} && (${F(f.name)} = Math.min(${f.max}, ${F(f.name)} + ${f.tick}), run(W.${w.id})));`);
@@ -288,6 +299,7 @@ function appFile(spec) {
     for (const y of Object.values(x)) walk(y);
   };
   for (const w of spec.widgets) walk(w.view);
+  TPL = [];
   const code = spec.widgets.map((w) => widgetCode(w, spec.initialState.widgets[w.id]));
   const shared = spec.widgets.flatMap((w) => [...READ[w.id]].filter((f) => !FEED[w.id].has(f)).map((f) => `${w.id}$${f}`));
 
@@ -303,7 +315,7 @@ function appFile(spec) {
   for (let i = 1; i < branches.length; i++) branches[i] = "else " + branches[i];
 
   const body = code.join("\n\n") + "\n\n" + branches.join("\n");
-  const names = ["widget", "bind", "text", "show", "list", "dep", "run", "nx", "add", "L", "C", "O", "W", "T", "S", "X"]
+  const names = ["widget", "bind", "text", "show", "list", "dep", "run", "nx", "add", "rm", "L", "C", "O", "W", "T", "S", "X"]
     .filter((x) => new RegExp(`(^|[^\\w.])${x}\\b`, "m").test(body));
   const ids = spec.widgets.map((w) => w.id).join(", ");
 
@@ -322,7 +334,10 @@ const receive = (m) => {
   ${branches.join("\n  ")}
 };
 
-export default app([${ids}], receive);
+// The widgets' templates, in page order, then the widgets.
+export default app([
+${TPL.map((t) => `  \`${tpl(t)}\``).join(",\n")},
+], [${ids}], receive);
 `;
 }
 
@@ -336,7 +351,7 @@ export function emit(spec) {
       approach: "compiled dirty checking, per widget: an event re-runs the bindings of the widget it touched (and of the widgets reading it), writing a DOM property only when its value changed",
       components: "one function per widget, written out in full from that widget's description (state, template, handlers, setter, bindings, tick); no shared per-kind factories, no data rows, no interpreter",
       state: "plain mutable variables: locals of the widget's function, module variables for the fields other widgets read, a record for feed lists; external replacements are deep-copied and assigned through the widget's setter",
-      templates: "one static HTML string per widget (texts escaped at build time); nodes are found by their position in the template (a distance from the previous binding's), once",
+      templates: "one static HTML string per widget (texts escaped at build time, no end tags at its end, a text's static prefix in it), hoisted into a table in page order; nodes are found by their position in the template (a distance from the previous binding's), once",
       handlers: "one arrow function per control, given to the controls in document order, compiled from the message's ops; small generic helpers (next option, add an item); an int add checks only the bound it can pass",
       lists: "keyed by id, reconciled in place by the runtime; item template and item bindings are the widget's own code",
       conditionals: "a binding that swaps one node with an empty text node",
