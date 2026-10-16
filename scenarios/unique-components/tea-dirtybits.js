@@ -497,8 +497,8 @@ function set(model, id, s, bits) {
 function route(model, id, msg) {
   const s = model.widgets[id];
   const next = WIDGETS[id][1](s, msg);
-  const bits = take();
-  return next === s ? model : set(model, id, next, bits);
+  // An arm that returns the slice unchanged marks nothing, so only a new slice takes the bits.
+  return next === s ? model : set(model, id, next, take());
 }
 
 // The app reducer: user messages and most external events go to one widget's reducer.
