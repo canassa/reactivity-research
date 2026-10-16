@@ -95,7 +95,7 @@ for (const type of ["click", "input", "change", "keydown"]) {
 // Comparing the page with the reference render
 
 // One line per element, with sorted attributes and the live properties that matter
-// (input value or checked, select value); whitespace and comments ignored.
+// (input value or checked, select value); whitespace, comments and an empty class ignored.
 // `exempt`: an input whose displayed value is not compared (written as :value=*).
 function canonLive(node, depth = 0, out = [], exempt = null) {
   const pad = "  ".repeat(depth);
@@ -103,6 +103,8 @@ function canonLive(node, depth = 0, out = [], exempt = null) {
   for (const a of node.attributes) {
     if (a.name === "value" && (node.tagName === "INPUT" || node.tagName === "SELECT")) continue;
     if (a.name === "checked" || a.name === "selected") continue;
+    // An empty class attribute is no class (frameworks leave class="" after removing the last one).
+    if (a.name === "class" && a.value.trim() === "") continue;
     attrs.push(`${a.name}="${a.value}"`);
   }
   if (node.tagName === "INPUT") attrs.push(node.type === "checkbox" ? `:checked=${node.checked}` : node === exempt ? ":value=*" : `:value="${node.value}"`);
