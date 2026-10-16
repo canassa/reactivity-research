@@ -4,27 +4,29 @@
 // - One tag per widget (`src/tags/widget-w1.marko`, …, auto-discovered), each used once by the
 //   root, written from the widget's description alone: its handlers, bindings and derived
 //   expressions are that tag's own code. Nothing is interpreted at runtime.
-// - State lives in the root template: one `<let>` per field of every widget, bound down with `:=`
-//   to the controllable `<let/x:=input.x>` in the widget's tag (the cheat sheet's pattern for
-//   state a parent may own). Why not state in each widget tag, with the root routing external
-//   events to it? That is what the tags API suggests for a self-contained widget, but every
-//   widget's whole state is set from outside (`serverSet`, `snapshot`), time-driven ints advance
-//   by `tick`, and readers read other widgets' fields. Marko 6 has no handle on a child's state
-//   (no refs, no context), and the one way to reach a tag from its parent, the tag variable the
-//   child `<return>`s, called from the root's `<return>`ed function, does not compile correctly
-//   in 6.4.6 (the root's function is emitted at module level with an undefined `$scope`, and a
-//   `<const>` collecting the tag variables holds the hoisting getters rather than the values).
-//   So state the outside sets or a sibling reads belongs to the common parent, which here is all
-//   of it. `--layout object` keeps one `<let>` per widget instead of one per field: 3.5% smaller
-//   slope (377 against 391 B per widget), but one `<let>` per field is the idiom. A reader receives the fields it reads as attributes (`<widget-w8 w6Miles=w6Miles/>`).
-// - External events: the root `<return>`s a function that assigns the `<let>`s; `tick` is written
-//   out per time-driven int. Lists are copied out of messages, so no dispatched object is adopted.
+// - State (`--state`, default "local"): each widget tag owns its fields as `<let>`s, the way
+//   Marko's tags are meant to be written (a self-contained widget), and `<return>`s an API: the
+//   fields other widgets read, `set` (serverSet and snapshot), and `tick` or `notify` where the
+//   widget has a time-driven int or a feed. The root names each widget with a tag variable
+//   (`<widget-w8/w8 w6Miles=w6.miles/>`), passes a reader the fields it reads as attributes, and
+//   routes the external events through the APIs. That is what an expert would write: the outside
+//   world and the readers need a handle on the state, and Marko's handle is the returned tag
+//   variable (it has no context and no refs). The alternative, "root", lifts every field into the
+//   root as a `<let>` bound down with `:=` to a controllable `<let/x:=input.x>` in the tag, as
+//   the cheat sheet does for state a parent owns. Measured (seeds 1-3, all sizes): local 5.8 KB +
+//   341 B per widget, root 5.9 KB + 399 B per widget. `--layout object` (root state only, one
+//   `<let>` per widget) is 3.5% smaller than one `<let>` per field.
+//   A function at the template root that reads the tag variables does not compile in 6.4.6, so
+//   the router sits in the dashboard element after the widgets (frameworks/marko/README.md).
+// - External events: the root `<return>`s the router; `tick` is written out per time-driven int
+//   in that widget's own `tick()`. Lists are copied out of messages, so no dispatched object is
+//   adopted.
 // - Lists with `<for … by="id">`; immutable updates (`concat`, `filter`, `map`, `slice`) that find
 //   an item by id, so a stale id is a no-op. Conditional sections and validation errors with
 //   `<if>`; derived values are plain expressions in the markup.
 // - Events as handlers in markup (`onClick`); text inputs, selects and checkboxes are controlled
-//   with `:=`; a number input keeps an invalid edit in a local `<let>` and commits only integers
-//   within the field's range.
+//   with `:=`; a number input keeps an invalid edit in a local `<let>` that remembers the value it
+//   was made over, and commits only integers within the field's range.
 
 import { templateFiles } from "../../frameworks/marko/framework.js";
 import { widgetFiles } from "../../frameworks/marko/widgets.js";
@@ -32,25 +34,35 @@ import { widgetFiles } from "../../frameworks/marko/widgets.js";
 export const framework = "marko";
 
 export const params = {
+  state: {
+    default: "local",
+    choices: ["local", "root"],
+    help: "where widget state lives: in each tag, which <return>s its API for the root (local), or in the root template, bound down with := (root)",
+  },
   layout: {
     default: "fields",
     choices: ["fields", "object"],
-    help: "the shape of a widget's state in the root: one <let> per field, each bound down with := (fields), or one <let> holding the widget's object, bound once (object)",
+    help: "root state only: one <let> per field, each bound down with := (fields), or one <let> holding the widget's object, bound once (object)",
   },
 };
 
 export function emit(spec, options = {}) {
-  const layout = options.layout ?? "fields";
+  const state = options.state ?? "local";
+  const layout = state === "local" ? "fields" : (options.layout ?? "fields");
   const files = {
     ...templateFiles({ name: "unique-components", title: "Dashboard" }),
-    ...widgetFiles(spec, { tagName: (w) => `widget-${w.id}`, pageRole: "dashboard", layout }),
+    ...widgetFiles(spec, { tagName: (w) => `widget-${w.id}`, pageRole: "dashboard", layout, state }),
   };
   return {
     files,
     style: {
       components: "one tag per widget (src/tags/widget-<id>.marko), each used once, written from the widget's description; no shared kinds",
-      state: "every widget's fields as <let>s in the root template, bound down with := to controllable <let>s in the tags; readers receive the fields they read as attributes",
-      externalEvents: "app.marko <return>s a function that assigns the root's <let>s; tick written out per time-driven int; lists copied out of messages",
+      state: state === "local"
+        ? "each widget tag owns its fields as <let>s and <return>s an API (the fields others read, set, tick, notify); the root names the tags with tag variables and passes readers the fields they read"
+        : `every widget's state as <let>s in the root template (${layout === "object" ? "one object per widget" : "one per field"}), bound down with := to controllable <let>s in the tags; readers receive the fields they read as attributes`,
+      externalEvents: state === "local"
+        ? "app.marko <return>s a router (a <const> in the dashboard element, after the widgets) that calls the tags' set, tick and notify; lists copied out of messages"
+        : "app.marko <return>s a function that assigns the root's <let>s; tick written out per time-driven int; lists copied out of messages",
       lists: "<for by=\"id\">; immutable updates that find items by id",
       conditionals: "<if> for sections and validation errors",
       derived: "plain expressions in the markup",

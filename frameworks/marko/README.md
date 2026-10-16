@@ -240,11 +240,11 @@ An emitter returns `{ files, style }` like any other (see `scenarios/shared-comp
   The style is recorded in the emitter's header and in every app's `rr.json`.
 
 - **unique-components** and **big-component** (`scenarios/*/marko.js`, both through
-  `widgets.js`): each widget is its own tag and **all state is in the root template**. A layout
-  with state in each tag and the root calling the returned API (`<widget/w1>`, `w1.set(…)` in the
-  root's `<return>`ed function) does not compile correctly in 6.4.6: the function is emitted at
-  module level with an undefined `$scope`, and a `<const>` collecting the tag variables holds the
-  hoisting getters, not the values. The big-component form is written in the root template
-  itself by default (`--form inline`); a separate tag only adds a `:=` binding per field (+25%
-  at N=256). `--layout object` (one `<let>` per widget) is 3.5% smaller on unique-components and
-  8% larger on big-component, so one `<let>` per field is the default.
+  `widgets.js`): each widget is its own tag. Their `state` parameter (both measured):
+  - `local` (default): each tag owns its `<let>`s and `<return>`s an API (the fields others read,
+    `set`, `tick`, `notify`); the root routes the external events through the tag variables, in a
+    router declared after the tags (the hoisting trap above). unique-components: 5.8 KB + 341 B per
+    widget; big-component: 5.1 KB + 101 B per field.
+  - `root`: every field is a `<let>` in the root bound down with `:=`. unique-components: 5.9 KB +
+    399 B per widget; big-component: a form tag costs 127 B per field, the form written in the root
+    (`--form inline`) 101 B. `--layout object` (one `<let>` per widget): slope 3.5% smaller on unique-components, 8% larger on big-component.

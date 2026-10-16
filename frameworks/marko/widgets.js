@@ -4,15 +4,15 @@
 //
 // Shared by the two scenarios' Marko emitters (a scenario's README fixes the vocabulary).
 //
-// State lives in the root template, and the external events assign it there. The root binds it
-// down with `:=` to a controllable `<let/x:=input.x>` in the widget's tag (the cheat sheet's
-// pattern for state a parent may own). Marko has no imperative handle on a child (no context, no
-// ref to a tag's state), so state the outside world sets, and state a sibling reads, is lifted
-// to the common parent. A layout with the state in each widget and the root calling the tags'
-// returned API was tried and does not compile correctly in Marko 6.4.6 (the root's `<return>`
-// function is emitted at module level with an undefined `$scope`).
+// `state` is where the state lives:
+// - "local": every tag owns its fields as `<let>`s and `<return>`s an API (the fields other
+//   widgets read, `set`, `tick`, `notify`); the root names the tags with tag variables and routes
+//   the external events through the APIs (see `localRoot` for the 6.4.6 compiler trap).
+// - "root": the root template owns every field and binds it down with `:=` to a controllable
+//   `<let/x:=input.x>` in the tag (the cheat sheet's pattern for state a parent owns); the external
+//   events assign the root's `<let>`s.
 //
-// `layout` is the shape of one widget's state:
+// `layout` (root state only) is the shape of one widget's state:
 // - "fields": one `<let>` per field, one `:=` binding per field;
 // - "object": one `<let>` per widget holding `{ field, … }`, one `:=` binding per widget, and
 //   handlers that replace the object (`state = { ...state, hours: 8 }`).
@@ -196,7 +196,7 @@ function view(w, n, ind, needs) {
           `  ${setLine(f.name, "n")}`,
           `  ${f.name}Pending = null;`,
           `} else {`,
-          `  ${f.name}Pending = text;`,
+          `  ${f.name}Pending = { over: ${own(f.name)}, text };`,
           `}`,
         ], pad);
         attrs = `type="number" data-role="${n.msg}" value=${f.name}Draft${change}`;
@@ -256,20 +256,23 @@ function view(w, n, ind, needs) {
 // ---------------------------------------------------------------------------------------------
 // One widget's tag
 
+// A list copied out of a message, so no dispatched object ends up in the state.
+const copy = (f, source) => (f.type === "list" ? `${source}.map((item) => ({ ...item }))` : source);
+
 const timed = (w) => w.fields.filter((f) => f.tick);
 const feeds = (w) => w.fields.filter((f) => f.feed);
 
 // The pieces of one widget's template: module-level statements, state declarations (with the
 // initial values when the state is declared in the same template, bound from the root otherwise)
 // and the section.
-function widgetParts(w, ind, initial) {
+function widgetParts(w, ind, { initial, inRoot = false }) {
   for (const f of w.fields) if (RESERVED.has(f.name)) throw new Error(`${w.id}: field name ${f.name} is reserved`);
-  cfg.sv = initial ? w.id : "state";
+  cfg.sv = inRoot ? w.id : "state";
   const needs = { pending: new Set() };
   const body = w.view.flatMap((n) => view(w, n, ind + 1, needs));
   const pad = "  ".repeat(ind);
   const statics = [];
-  if (needs.nextId) statics.push(`import { nextId } from "${initial ? "." : ".."}/list.js";`);
+  if (needs.nextId) statics.push(`import { nextId } from "${inRoot ? "." : ".."}/list.js";`);
   // The enum options a cycle message steps through.
   for (const f of w.fields) {
     if (f.type === "enum" && w.messages.some((m) => m.kind === "click" && m.ops.some((op) => op[0] === "cycle" && op[1] === f.name))) {
@@ -277,33 +280,60 @@ function widgetParts(w, ind, initial) {
     }
   }
   let lets;
-  if (cfg.object) lets = [initial ? `<let/${w.id}=${literal(initial)}>` : `<let/state:=input.state>`];
+  if (cfg.object) lets = [inRoot ? `<let/${w.id}=${literal(initial)}>` : `<let/state:=input.state>`];
   else lets = w.fields.map((f) => (initial ? `<let/${f.name}=${literal(initial[f.name])}>` : `<let/${f.name}:=input.${f.name}>`));
   for (const name of needs.pending) {
-    lets.push(`<let/${name}Pending=null>`, `<const/${name}Draft=${name}Pending ?? ${own(name)}>`);
+    lets.push(`<let/${name}Pending=null>`, `<const/${name}Draft=(${name}Pending?.over === ${own(name)} ? ${name}Pending.text : ${own(name)})>`);
   }
   const section = [`${pad}<section data-key="${w.id}" data-role="widget">`, `${pad}  <h2>${text(w.label)}</h2>`, ...body, `${pad}</section>`];
   return { statics, lets, section };
 }
 
-export function widgetTag(w) {
-  const { statics, lets, section } = widgetParts(w, 0);
+// The members of a widget's API for the external events, over its fields (the object that a
+// local-state tag `<return>`s, or that the root builds for a widget written in it): the fields
+// other widgets read, `set`, and `tick` and `notify` where the widget has them.
+function apiMembers(w, exposed) {
+  const members = [...exposed];
+  members.push(`set(next) {\n${w.fields.map((f) => `    ${f.name} = ${copy(f, `next.${f.name}`)};`).join("\n")}\n  }`);
+  if (timed(w).length) {
+    members.push(`tick() {\n${timed(w).map((f) => `    if (${f.tickWhen}) ${f.name} = Math.min(${f.max}, ${f.name} + ${f.tick});`).join("\n")}\n  }`);
+  }
+  const fd = feeds(w);
+  if (fd.length === 1) {
+    members.push(`notify(field, item) {\n    if (field === "${fd[0].name}") ${fd[0].name} = ${fd[0].name}.concat({ ...item });\n  }`);
+  } else if (fd.length > 1) {
+    members.push(`notify(field, item) {\n    switch (field) {\n${fd.map((f) => `      case "${f.name}":\n        ${f.name} = ${f.name}.concat({ ...item });\n        break;`).join("\n")}\n    }\n  }`);
+  }
+  return members;
+}
+
+// The fields of each widget that other widgets read: widget id to field names.
+function readFields(spec) {
+  const out = {};
+  for (const w of spec.widgets) for (const r of readsOf(w)) (out[r.widget] ??= new Set()).add(r.field);
+  return out;
+}
+
+// A tag. With `initial` (local state) it owns its fields and `<return>`s its API; without, its
+// fields are bound from the root.
+export function widgetTag(w, { initial, exposed = [] } = {}) {
+  const { statics, lets, section } = widgetParts(w, 0, { initial });
+  const api = initial ? `\n<return={\n  ${apiMembers(w, exposed).join(",\n  ")},\n}>\n` : "";
   return `${statics.length ? statics.join("\n") + "\n\n" : ""}${lets.join("\n")}
 
 ${section.join("\n")}
-`;
+${api}`;
 }
 
 // ---------------------------------------------------------------------------------------------
 // The root template
 
-// A list copied out of a message, so no dispatched object ends up in the state.
-const copy = (f, source) => (f.type === "list" ? `${source}.map((item) => ({ ...item }))` : source);
 
 // `tagName(w)` names a widget's tag; `pageRole` is the page root's data-role. `inline` is the id
 // of a widget written in the root template itself (no tag, its state declared where it is used).
-export function rootTemplate(spec, { tagName, pageRole, inline = null }) {
+export function rootTemplate(spec, { tagName, pageRole, inline = null, local = false }) {
   const widgets = spec.widgets;
+  const exposedFields = readFields(spec);
   const obj = cfg.object;
   // The root's <let> for a widget's field (fields layout) or for the widget (object layout).
   const name = (w, f) => {
@@ -314,15 +344,20 @@ export function rootTemplate(spec, { tagName, pageRole, inline = null }) {
   const lets = widgets.flatMap((w) => {
     if (w.id === inline) return [];
     const init = spec.initialState.widgets[w.id];
+    if (local) return [];
     return obj ? [`<let/${w.id}=${literal(init)}>`] : w.fields.map((f) => `<let/${w.id}${pascal(f.name)}=${literal(init[f.name])}>`);
   });
   let inlined = null;
   if (inline) {
-    inlined = widgetParts(widgets.find((x) => x.id === inline), 1, spec.initialState.widgets[inline]);
+    inlined = widgetParts(widgets.find((x) => x.id === inline), 1, { initial: spec.initialState.widgets[inline], inRoot: true });
     lets.unshift(...inlined.statics, ...inlined.lets);
   }
   const elements = widgets.map((w) => {
     if (w.id === inline) return inlined.section.join("\n");
+    if (local) {
+      const read = readsOf(w).map((r) => ` ${readAttr(r)}=${r.widget === inline ? r.field : `${r.widget}.${r.field}`}`).join("");
+      return `  <${tagName(w)}/${w.id}${read}/>`;
+    }
     const bound = obj ? ` state:=${w.id}` : w.fields.map((f) => ` ${f.name}:=${name(w, f)}`).join("");
     const read = readsOf(w).map((r) => ` ${readAttr(r)}=${name({ id: r.widget }, r.field)}`).join("");
     return `  <${tagName(w)}${bound}${read}/>`;
@@ -353,6 +388,8 @@ export function rootTemplate(spec, { tagName, pageRole, inline = null }) {
   }
   cases.push(`    case "snapshot":\n      for (const [id, state] of Object.entries(msg.state.widgets)) setWidget(id, state);\n      break;`);
 
+  if (local) return localRoot(spec, { widgets, lets, elements, inline, inlined, pageRole, exposedFields });
+
   return `${lets.join("\n")}
 
 <div data-role="${pageRole}">
@@ -373,14 +410,51 @@ ${cases.join("\n")}
 `;
 }
 
-export function widgetFiles(spec, { tagName, pageRole, inline = null, layout = "fields" }) {
+// Local state: the root names each tag with a tag variable and routes the external events through
+// the widgets' APIs. The router sits in the dashboard element after the widgets: a function at the
+// template root would read their tag variables through hoisted getters, which Marko 6.4.6
+// compiles without the scope they need (see README.md). A widget written in the root gets the
+// same API as an object over the root's own `<let>`s.
+function localRoot(spec, { widgets, lets, elements, inline, inlined, pageRole, exposedFields }) {
+  const timedWidgets = widgets.filter((w) => timed(w).length);
+  const feedWidgets = widgets.filter((w) => feeds(w).length);
+  const cases = [`      case "serverSet":\n        widgets[msg.widget]?.set(msg.state);\n        break;`];
+  if (timedWidgets.length) cases.push(`      case "tick":\n${timedWidgets.map((w) => `        widgets.${w.id}.tick();\n`).join("")}        break;`);
+  if (feedWidgets.length) cases.push(`      case "notify":\n        widgets[msg.widget]?.notify?.(msg.field, msg.item);\n        break;`);
+  cases.push(`      case "snapshot":\n        for (const [id, state] of Object.entries(msg.state.widgets)) widgets[id]?.set(state);\n        break;`);
+  const inlineApi = inline
+    ? `  <const/${inline}={\n    ${apiMembers(widgets.find((x) => x.id === inline), []).join(",\n    ").replace(/\n  (?=\S|\s)/g, "\n    ")},\n  }>\n`
+    : "";
+  void exposedFields;
+  return `${lets.join("\n")}
+
+<div data-role="${pageRole}">
+${elements.join("\n")}
+${inlineApi}  <const/widgets={ ${widgets.map((w) => w.id).join(", ")} }>
+  // External events, through the widgets' APIs.
+  <const/receive=(msg) => {
+    switch (msg.type) {
+${cases.join("\n")}
+    }
+  }>
+</div>
+
+// The root's tag variable, which the adapter calls with each message.
+<return=receive>
+`;
+}
+
+export function widgetFiles(spec, { tagName, pageRole, inline = null, layout = "fields", state = "root" }) {
+  const local = state === "local";
+  if (local && layout === "object") throw new Error("local state has no object layout");
   cfg.object = layout === "object";
-  const root = rootTemplate(spec, { tagName, pageRole, inline });
+  const root = rootTemplate(spec, { tagName, pageRole, inline, local });
+  const exposed = readFields(spec);
   const files = { "src/app.marko": root };
   let usesNextId = root.includes("nextId");
   for (const w of spec.widgets) {
     if (w.id === inline) continue;
-    const source = widgetTag(w);
+    const source = widgetTag(w, local ? { initial: spec.initialState.widgets[w.id], exposed: [...(exposed[w.id] ?? [])] } : {});
     files[`src/tags/${tagName(w)}.marko`] = source;
     usesNextId ||= source.includes("nextId");
   }

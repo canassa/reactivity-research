@@ -8,21 +8,33 @@
 - `./rr check` passes at sizes 1, 4, 16, 64 and seeds 1-3 for both (0 mismatches, 0 focus losses,
   0 keyed replacements, clean dispose). Builds are byte-identical. The two-events-in-one-task step
   had not landed on main.
-- `./rr work` is flat for local actions (max ratio 1.10 on unique-components, 1.77 on
-  big-component, from 16 to 256).
+- `./rr work` (16 to 256): local actions stay flat (max ratio 1.35 on unique-components, 1.77 on
+  big-component, one input whose count steps from 48 to 85).
+
+## Where state lives (measured, seeds 1-3, all sizes)
+
+| | baseline | slope |
+|---|---|---|
+| unique-components, local (default) | 5.8 KB | 341 B/widget |
+| unique-components, root, `:=` per field | 5.9 KB | 399 B/widget |
+| unique-components, root, object per widget | 5.9 KB | 377 B/widget (before the number-input fix) |
+| big-component, local, form tag (default) | 5.1 KB | 101.3 B/field |
+| big-component, local, form in the root | 5.1 KB | 101.4 B/field |
+| big-component, root, form in the root | 4.9 KB | 101.2 B/field |
+| big-component, root, form tag | 5.0 KB | 126.9 B/field |
+
+Local is the idiom and the smaller one on unique-components (-14% slope). On big-component the
+form costs the same wherever it is written, as long as its state is its own; a form tag with its
+fields bound from the root pays a `:=` binding per field (N=256: 37.0 KB against 29.7 KB).
+Solid's unique-components slope is 228 B/widget: Marko compiles each widget to a signal graph
+(`_let`, `_or`, `_const` per field and binding, `_resumed` registrations) and `:=` adds more.
 
 ## Learned
 
-- **State in each tag does not work in Marko 6.4.6.** The root cannot reach a child's state except
-  through the tag variable, and a root `<return>` function that reads tag variables compiles to a
-  module-level function with an undefined `$scope`; collecting them in a `<const>` gives the
-  hoisting getters. External `serverSet`/`snapshot`/`tick` set every widget's state, so state
-  lives in the root, bound down with `:=`.
-- The big-component form is best written in the root template: a separate tag adds a binding per
-  field (N=256: 37.0 KB against 29.7 KB; slope 126.9 against 98.6 B per field).
-- `--layout object` (one `<let>` per widget): unique-components 377 against 391 B per widget,
-  big-component 106.6 against 98.6 B per field. Not the bottleneck.
-- Marko's per-widget cost on unique-components is 391 B (Solid 228): each widget compiles to a
-  small signal graph (`_let_change`, `_or`, `_const` per field and binding, plus `$input_*`
-  setters, `_resumed` registrations), whatever the layout.
-- Baselines: unique-components 5.9 KB, big-component 4.9 KB; runtime about 4.0 KB flat from N=8.
+- My first attempt at local state failed on the 6.4.6 hoisting trap (a root function reading tag
+  variables gets an undefined `$scope`; a `<const>` before the tags holds getters) and I fell back
+  to root state. The shared-components session found the fix (declare the router after the tags,
+  inside the element) while I was working; with it local state works, and wins.
+- The number input must remember the value its pending edit was made over, or a value from
+  outside never shows (same finding as shared-components).
+- The Marko runtime is about 3.9-4.4 KB (brotli) from N=16, flat as the apps grow.
