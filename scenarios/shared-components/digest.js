@@ -87,9 +87,10 @@ const KINDS = {
   },
 
   todo: {
-    args: "l, ph, add, rm, items",
+    args: "l, ph, add, rm, items, m",
     body: `
-  items = items.map(([text, done], i) => ({ id: i + 1, text, done }));
+  // The initial items are texts, and m a bit mask of the done ones (bit i: item i).
+  items = items.map((text, i) => ({ id: i + 1, text, done: (m >> i) & 1 }));
   let draft = "";
   widget("todo", l, \`<input type=text data-role=draft placeholder="\${ph}"><button data-role=add>\${add}</button><ul></ul><p data-role=left></p>\`, (v) => ({ items, draft } = v),
     (t) => draft = t.value, // draft
@@ -110,7 +111,8 @@ const KINDS = {
     metric: `{ m: left, p: (n) => n + " left in " + l }`,
     row: (w, s) => {
       sequential(s.items, (i) => i + 1);
-      return [html(w.placeholder), html(w.addText), html(w.removeText), arr(s.items, (it) => `[${lit(it.text)},${bit(it.done)}]`)];
+      if (s.items.length > 30) throw new Error("digest: a todo's done mask holds 30 items");
+      return [html(w.placeholder), html(w.addText), html(w.removeText), arr(s.items, (it) => lit(it.text)), s.items.reduce((m, it, i) => m | (it.done ? 1 << i : 0), 0)];
     },
   },
 
