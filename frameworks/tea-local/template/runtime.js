@@ -21,17 +21,15 @@ function flush() {
   pending.clear();
 }
 
-// Resolves after the pending flush (it was queued first), so the DOM is current.
-export const settled = () => new Promise((resolve) => queueMicrotask(resolve));
-
 // ---------------------------------------------------------------------------------------------
 // DOM: built once (by createElement calls or from a static template); every later write is
 // skipped when nothing changed.
 
+// `content` is an optional text (appended unless empty).
 export function element(parent, tag, attrs, content) {
   const node = document.createElement(tag);
   for (const key in attrs) node.setAttribute(key, attrs[key]);
-  if (content != null) node.append(content);
+  if (content) node.append(content);
   parent?.append(node);
   return node;
 }
@@ -47,12 +45,15 @@ export function on(node, type, handler) {
   node.addEventListener(type, handler);
 }
 
+// The controls a view wires to messages.
+const controls = "button,input,select";
+
 // The events of a view (Elm's `onClick msg` and `onInput Tag`): `msgs` holds one entry per control
 // under `root`, in document order. A button or checkbox sends its constant message when clicked;
 // a text input, select or number input sends `[tag, value]` on input, a number input its value
 // as a number (the reducer takes it only if it is an integer in range).
 export function wire(root, self, msgs) {
-  for (const node of root.querySelectorAll("button,input,select")) {
+  for (const node of root.querySelectorAll(controls)) {
     const msg = msgs.shift();
     node.addEventListener(msg.at ? "click" : "input", () =>
       self.send(msg.at ? msg : [msg, node.type === "number" ? node.valueAsNumber : node.value]),
