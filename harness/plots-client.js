@@ -98,19 +98,24 @@
       for (let i = 0; i <= 64; i++) { const x = 2 ** (lx(from) + (i / 64) * (lx(to) - lx(from))); pts.push(`${X(x).toFixed(1)},${Y(c.fn(x)).toFixed(1)}`); }
       svg.append(sv("polyline", { points: pts.join(" "), fill: "none", stroke: c.color, "stroke-width": c.width ?? 1.5, "stroke-opacity": c.opacity ?? 1, "stroke-dasharray": c.dash || "" }));
     }
-    for (const s of series) {
-      for (const p of s.points) if (p.hi > p.lo) svg.append(sv("line", { x1: X(p.x), x2: X(p.x), y1: Y(p.lo), y2: Y(p.hi), stroke: s.color, "stroke-width": 6, "stroke-opacity": 0.25, "stroke-linecap": "round" }));
-      if (!pointsOnly) svg.append(sv("polyline", { points: s.points.map((p) => `${X(p.x)},${Y(p.y)}`).join(" "), fill: "none", stroke: s.color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }));
-      for (const p of s.points) svg.append(sv("circle", { cx: X(p.x), cy: Y(p.y), r: 4, fill: s.color, stroke: "var(--card)", "stroke-width": 2 }));
+    series.forEach((s, si) => {
+      const g = sv("g", { class: "series", "data-s": si });
+      svg.append(g);
+      g.addEventListener("pointerenter", () => highlight(svg.parentNode, si));
+      g.addEventListener("pointerleave", () => highlight(svg.parentNode, null));
+      for (const p of s.points) if (p.hi > p.lo) g.append(sv("line", { x1: X(p.x), x2: X(p.x), y1: Y(p.lo), y2: Y(p.hi), stroke: s.color, "stroke-width": 6, "stroke-opacity": 0.25, "stroke-linecap": "round" }));
+      if (!pointsOnly) g.append(sv("polyline", { points: s.points.map((p) => `${X(p.x)},${Y(p.y)}`).join(" "), fill: "none", stroke: s.color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }));
+      for (const p of s.points) g.append(sv("circle", { cx: X(p.x), cy: Y(p.y), r: 4, fill: s.color, stroke: "var(--card)", "stroke-width": 2 }));
       if (s.endLabel) {
         const p = s.points[s.points.length - 1];
-        svg.append(sv("text", { x: X(p.x) - 6, y: Y(p.y) - 9, "text-anchor": "end", text: fmt(p.y) }));
+        g.append(sv("text", { class: "end", x: X(p.x) - 6, y: Y(p.y) - 9, "text-anchor": "end", text: fmt(p.y) }));
       }
-    }
+    });
     // Crosshair: snap to the nearest N and list every series there.
     const cross = sv("line", { class: "crosshair", y1: T, y2: H - B, visibility: "hidden" });
     const hit = sv("rect", { x: L, y: T, width: W - L - R, height: H - T - B, fill: "transparent" });
-    svg.append(cross, hit);
+    svg.insertBefore(hit, svg.querySelector("g.series"));
+    svg.append(cross);
     hit.addEventListener("pointermove", (e) => {
       const r = svg.getBoundingClientRect();
       const px = ((e.clientX - r.left) / r.width) * W;
@@ -165,6 +170,21 @@
     return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
   }
 
+  // Emphasize one series (by index) in the chart(s) inside `root`; null restores all.
+  function highlight(root, si) {
+    if (!root) return;
+    root.classList.toggle("hl", si != null);
+    for (const g of root.querySelectorAll("[data-s]")) g.classList.toggle("on", si != null && g.dataset.s === String(si));
+  }
+  // A legend whose labels highlight their series in `root` on hover or focus.
+  const hoverLegend = (items, root) => el("div", { class: "legend" }, items.map(([name, color], si) => {
+    const item = el("span", { tabindex: "0", "data-s": si, class: "hover" }, el("i", { style: `border-color:${color}` }), name);
+    for (const [on, off] of [["pointerenter", "pointerleave"], ["focus", "blur"]]) {
+      item.addEventListener(on, () => highlight(root, si));
+      item.addEventListener(off, () => highlight(root, null));
+    }
+    return item;
+  }));
   const legend = (items, box = false) => el("div", { class: "legend" }, items.map(([name, color, style]) => el("span", {}, el("i", { class: box ? "box" : "", style: box ? `background:${color}` : `border-color:${color};${style || ""}` }), name)));
   const table = (head, rows) => el("div", { class: "scroll" }, el("table", {}, el("thead", {}, el("tr", {}, head.map((h) => el("th", { text: h })))), el("tbody", {}, rows.map((r) => el("tr", {}, r.map((c) => el("td", { text: String(c) })))))));
   const details = (label, content) => el("details", {}, el("summary", { text: label }), content);
@@ -190,17 +210,13 @@
     const color = (i) => SLOTS[i % SLOTS.length];
     const unit = mode === "br" ? "B brotli" : "B raw";
 
-    // 1. Size against N, per variant: total, JS, HTML.
-    const yMax = Math.max(...vs.flatMap((v) => v.records.map(M.total)));
-    const multiples = el("div", { class: "grid2" }, vs.map((v) => {
-      const series = [["total", M.total, SLOTS[0]], ["JavaScript", M.js, SLOTS[1]], ["HTML", M.html, SLOTS[2]]]
-        .map(([name, get, c], i) => ({ name, color: c, points: bySize(v.records, get), endLabel: i === 0 }));
-      return el("div", { class: "card" }, el("h3", { text: v.name }), el("div", { class: "note", text: `${v.label}${v.track === "prototype" ? " · prototype" : ""}` }),
-        lineChart({ series, yMax, unit }));
-    }));
+    // 1. Size against N: every framework's total on one graph.
+    const totals = vs.map((v, i) => ({ name: v.name + (v.track === "prototype" ? " (prototype)" : ""), color: color(i), points: bySize(v.records, M.total), endLabel: true }));
+    const sizeChart = el("div", { class: "chart" });
+    sizeChart.append(lineChart({ series: totals, unit, width: 1060, height: 380 }));
     out.push(card(`Size against N (${mode === "br" ? "compressed" : "raw"})`,
-      "Median of the seeds per size, with the spread of the seeds as a pale bar. JavaScript excludes the contract adapter; total = HTML + JavaScript, each compressed on its own.",
-      [legend([["total", SLOTS[0]], ["JavaScript", SLOTS[1]], ["HTML", SLOTS[2]]]), multiples,
+      "Total = HTML + JavaScript (the adapter excluded), each compressed on its own. Median of the seeds per size, with their spread as a pale bar. Hover a label to pick out its curve; the HTML/JavaScript split is in the table and under Where the bytes go.",
+      [hoverLegend(totals.map((s) => [s.name, s.color]), sizeChart), sizeChart,
         details("Table", table(["variant", "N", "seeds", "total (median)", "JS (median)", "HTML (median)", "total min–max"],
           vs.flatMap((v) => bySize(v.records, M.total).map((p) => {
             const js = bySize(v.records, M.js).find((q) => q.x === p.x), html = bySize(v.records, M.html).find((q) => q.x === p.x);

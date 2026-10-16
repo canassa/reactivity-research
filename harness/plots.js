@@ -93,6 +93,15 @@ svg .crosshair { stroke: var(--muted); stroke-width: 1; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 6px 0 2px; color: var(--text-2); font-size: 12px; }
 .legend i { display: inline-block; width: 14px; height: 0; border-top: 2px solid; vertical-align: middle; margin-right: 5px; }
 .legend i.box { height: 10px; border: 0; border-radius: 2px; }
+.legend .hover { cursor: default; padding: 2px 4px; border-radius: 4px; }
+.legend .hover:hover, .legend .hover:focus { background: var(--grid); outline: none; }
+.chart.hl g.series { opacity: .12; transition: opacity .12s; }
+.chart.hl g.series.on { opacity: 1; }
+.chart g.series polyline { stroke-width: 2; }
+.chart.hl g.series.on polyline { stroke-width: 3; }
+/* End labels collide when curves converge: show them only for the highlighted curve. */
+.chart g.series .end { display: none; }
+.chart.hl g.series.on .end { display: inline; fill: var(--text); font-weight: 600; }
 .source { color: var(--muted); font-size: 11.5px; margin-top: 6px; }
 table { border-collapse: collapse; font-size: 12.5px; font-variant-numeric: tabular-nums; }
 th, td { text-align: right; padding: 3px 9px; border-bottom: 1px solid var(--grid); }
