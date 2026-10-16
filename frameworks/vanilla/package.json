@@ -1,0 +1,9 @@
+{
+  "name": "rr-framework-vanilla",
+  "private": true,
+  "type": "module",
+  "description": "Pinned toolchain for vanilla: Vite alone, as bundler and minifier; no library",
+  "dependencies": {
+    "vite": "8.3.4"
+  }
+}
