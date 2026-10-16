@@ -5,11 +5,12 @@
 // - One module per widget (src/widgets/<id>.js), written from that widget's description alone:
 //   its own bits (one per field, plus one per field of another widget it reads), its reducer
 //   `update(s, msg)` with one arm per message (the ops written out as code, each arm marking the
-//   bits of the fields it writes), its initial state, and its DOM factory `view(...)`, which
-//   builds the DOM once with explicit element calls and returns a static `patch(s, d, w)` that
-//   runs only the bindings whose bits are set. No tables of ops or view trees: nothing is
-//   interpreted at runtime.
-// - Conditional sections are `branch`es with their own nested patch, built when shown.
+//   bits of the fields it writes), its initial state, and its DOM factory `view(parent, id)`,
+//   which builds the DOM once from one static template (nodes found by position) and returns a
+//   static `patch(s, d, w)` that runs only the bindings whose bits are set. Bits and message
+//   tags are numbers. No tables of ops or view trees: nothing is interpreted at runtime.
+// - Conditional sections are `branch`es with their own nested patch, built once with the
+//   template and swapped for an empty comment while hidden.
 // - One app module (src/app.js): the widgets in page order, the app reducer (routes a message to
 //   its widget's reducer and files the marked bits per widget; `tick` goes to the time-driven
 //   widgets only), and the top-level view, whose patch first turns a dirty source bit into the
@@ -534,7 +535,7 @@ export function emit(spec) {
       externalEvents: "through the same reducer (send); serverSet and snapshot mark every bit of the widgets they replace; tick goes to the time-driven widgets",
       crossWidgetReads: "a reader has one bit per field it reads; the app patch sets it when the source's bit is dirty (one line per read)",
       lists: "keyed by id: changed rows patched, gone rows removed, misplaced nodes moved in one walk",
-      conditionals: "branches kept in place by an empty comment, with their own nested patch, built when shown, removed when hidden",
+      conditionals: "branches built once with the template, swapped for an empty comment while hidden, with their own nested patch",
       events: "addEventListener on each element; the handler builds a message and sends it",
       build: "Vite with no framework plugin, production defaults, hidden source maps",
     },

@@ -22,58 +22,73 @@ view(s) = section [ output [ text s.value ]
                   , button [ onClick Inc, disabled (s.value >= max) ] [ text "+" ] ]
 ```
 
-What this strategy emits, once per widget kind and configured per widget (`c`):
+What this strategy emits, once per widget kind and configured per widget by its row
+(`[kind, initial state, label, step, min, max, start]`, destructured by position):
 
 ```js
-export const VALUE = 1;                       // one bit per model field
+// Dirty bits: value 1. Message tags: inc 0, dec 1, reset 2.
 
-export function update(c, s, msg) {
+function update([, , , step, min, max, start], s, msg) {
   switch (msg.type) {
-    case "inc": mark(VALUE); return { value: Math.min(c.max, s.value + c.step) };
-    case "dec": mark(VALUE); return { value: Math.max(c.min, s.value - c.step) };
+    case 0: mark(1); return { value: Math.min(max, s.value + step) };   // inc
+    case 1: mark(1); return { value: Math.max(min, s.value - step) };   // dec
+    // … reset …
   }
   return s;
 }
 
-export function view(parent, c, s, send) {    // runs once: builds the DOM
-  const root = section(parent, c, "counter");
-  const value = text(element(root, "output", "value"), "");
-  const dec = element(root, "button", "dec");
-  on(dec, "click", () => send({ widget: c.id, type: "dec" }));   // event → message
-  // … inc …
-  const patch = (s, dirty) => {               // the static dispatch
-    if (dirty & VALUE) {
+function view(parent, [, , label, step, min, max], id) {   // runs once: builds the DOM
+  const [, , value, dec, inc, reset] = section(parent, id, label, "counter",
+    "<output data-role=value></output><button data-role=dec></button>…");   // static template
+  dec.textContent = "-" + step;
+  onClick(dec, id, 1);                        // event → message { widget: id, type: 1 }
+  // … inc, reset …
+  return (s, d) => {                          // the static patch
+    if (d & 1) {
       setText(value, s.value);
-      prop(dec, "disabled", s.value <= c.min);
-      prop(inc, "disabled", s.value >= c.max);
+      prop(dec, "disabled", s.value <= min);
+      prop(inc, "disabled", s.value >= max);
     }
-  };
-  patch(s, -1);                               // first render: every bit
-  return patch;
+  };                                          // the app runs it once with every bit (-1)
 }
 ```
 
+- **Bits and message tags are numbers** the compiler writes in place (with their names in a
+  comment), the way Elm `--optimize` tags constructors. External events (`tick`, `notify`,
+  `serverSet`, `snapshot`) keep their names.
+- **The DOM is one static HTML string per component**, parsed once by `html()` (through a
+  `<template>` element); the code finds each node by its position in document order. Texts that
+  come from a widget's config are written by `textContent`, once.
+- **Events build their message once**, when they are wired (`onClick(el, id, tag, itemId)`,
+  `onCheck`), or carry the control's value (`onInput`, and `onInt` for a number input, which
+  sends only an integer within its bounds), like Elm's `onClick Msg` and `onInput Msg`.
+
 A click runs, in order:
 
-1. the handler builds `{ widget: "w1", type: "inc" }` and calls `send`;
+1. the handler sends its message, `{ widget: "w1", type: 0 }`, built when it was wired;
 2. the app reducer routes it to the counter's `update`, files the marked bits under `w1` and
    returns the new model (immutable, with structural sharing);
 3. one microtask later, the app's patch calls `w1`'s patch with its bits: only the bindings
-   under `VALUE` run, and each one writes the DOM only when the value differs.
+   under bit 1 run, and each one writes the DOM only when the value differs.
 
 All widgets of one kind share one module (`src/widgets/<kind>.js`). A widget adds only its
-config (label, limits, items, rules, formats) and its slice of the initial model.
+row: its initial slice, its label and its parameters (limits, items, rules, formats).
 
 ## Lists, derived values, external events
 
-- **Keyed lists** (todo, filter, feed): rows are built once per id. On a patch, rows whose item
-  changed are patched in place; if the order of nodes changed (add, remove, reorder) the full
-  keyed reconcile runs, with Solid 2's `reconcileArrays` (vendored unmodified, MIT).
+- **Keyed lists** (todo, filter, feed): rows are built once per id from their own template. On
+  a patch, new rows and rows whose item changed are patched; rows whose id is gone are removed,
+  and one walk over the rest moves only the nodes out of place. (Solid 2's `reconcileArrays` did
+  this until it was replaced: these lists only append, remove and filter, and it cost about
+  500 B brotli of baseline.)
+- **Conditional content** (validation errors, panel bodies, `when` sections) is part of the
+  template and built once; `branch` swaps it for an empty comment while hidden and, when it
+  shows again, runs its nested patch with every bit.
 - **Derived values:** a summary reads other widgets. The compiler knows which fields it reads,
   so the app's patch recomputes it only when one of those bits is set:
 
   ```js
-  if (dirty.w1 & counter.VALUE || dirty.w7 & clock.SECONDS) patches.w8(w);
+  if (dirty.w1 & 1 || dirty.w7 & 1) patches.w8(w);   // counter.value, clock.seconds
   ```
 
 - **External events** go through the same `send` and reducer. `tick` and `notify` are reducer
@@ -85,20 +100,18 @@ The adapter (`template/adapter.js`, excluded from size) maps `mount`, `dispatch`
 
 ## Expected trade-off
 
-- **Baseline:** small. The runtime (`template/runtime.js`, `reconcile.js`) is DOM helpers, the
-  bit bookkeeping and the keyed list, about 1.3 KB brotli with every kind present, and less in
-  apps without lists.
-- **Slope:** per widget only a config object and an initial state, as with a component
-  framework. Per kind, the code is explicit: the DOM is built by `createElement` calls and every
-  binding is written out, where a template-cloning compiler would ship HTML strings. A new kind
-  of widget is likely to cost more than in Solid; a new instance about the same.
+- **Baseline:** small. The runtime (`template/runtime.js`) is the loop, the bit bookkeeping,
+  the template parser, event wiring, guarded writes, `branch` and the keyed list: about 800 B
+  brotli with every kind present (Vite's modulepreload polyfill, about 270 B, included).
+- **Slope:** per widget only its row (initial state, label, parameters), as with a component
+  framework. Per kind, a template string plus every binding written out.
 - **Limits:** bits are per field, so a write to one list item marks the whole list (the keyed
   diff then finds the row). More than 31 fields in one component would need a second word.
 
 ## Files
 
 - `framework.js`: the build (plain Vite, no framework plugin, hidden source maps) and byte
-  attribution: `src/runtime.js` and `src/reconcile.js` count as runtime, `src/adapter.js` as
+  attribution: `src/runtime.js` counts as runtime, `src/adapter.js` as
   adapter, the rest as app.
 - `template/`: the HTML shell, the Vite config, the adapter and the runtime, copied into every
   app.
@@ -112,14 +125,30 @@ uses the same strategy with no shared kinds: every widget is its own module
 written out as code), initial state, DOM factory and static patch, all written from that widget's
 description. Nothing is interpreted at runtime. What it adds:
 
-- **`branch` in the runtime:** conditional content (`when` sections, validation errors) among
-  siblings, kept in place by an empty comment, with its own nested patch. Unlike `when`, it need
-  not be the last child. Unused exports are tree-shaken, so the dashboard output is unchanged.
+- **Its own template per widget.** The section's `data-key` and the handlers take the widget
+  id from the view's `id` parameter: repeating the id literal on every line broke brotli's
+  matches between lines that were otherwise alike (about 13 B per widget).
 - **Cross-widget reads:** a reader has one extra bit per field it reads; the app patch has one
   line per read that turns the source's dirty bit into the reader's (`snapshot` and `serverSet`
   mark every bit, so readers follow).
 - **`tick`:** the app reducer checks each time-driven widget's gate inline and routes only to the
   running ones, so a tick costs one reducer call per running widget (the locality check fails
   with a per-widget loop of calls).
-- **Cost:** the slope is per component type, about 280 B brotli per widget (N >= 16: 271 B),
-  against 28 to 37 B per widget for the dashboard, where a widget is only a config.
+- **Cost:** the slope is per component type, about 210 B brotli per widget (N >= 16: 200 B),
+  against 25 to 32 B per widget for the dashboard, where a widget is only a row.
+
+## Size pass (2026-10-16)
+
+Total brotli, medians of seeds 1 to 3 (`./rr measure`, sizes from `runs.json`), before and
+after. No `./rr work` count rose (summed calls 8,240 to 6,954 and 11,763 to 8,740):
+
+| | N=1 | N=16 | N=256 | fit, all N | fit, N >= 16 |
+|---|---|---|---|---|---|
+| shared-components | 1,352 → 1,277 | 4,880 → 3,837 | 11,703 → 10,072 | 3,147 + 36.6 → 2,525 + 31.9 | 4,681 + 27.9 → 3,681 + 25.4 |
+| unique-components | 1,923 → 1,702 | 8,689 → 6,543 | 73,975 → 55,109 | 3,590 + 282.3 → 2,836 + 209.6 | 5,567 + 271.2 → 4,474 + 200.4 |
+
+What did not help, measured: destructuring each template's nodes into named locals instead of
+`t[i]` (unique N=256 +1.9 KB: varying names compress worse than the repeated `t[`); one factory
+for `onClick` and `onCheck` (+12 B at N=1: the duplicate compresses to almost nothing). Not
+tried, because each would add a call per event: a shared `cycle` helper for enum ops, a
+per-widget `send` wrapper. Vite's modulepreload polyfill stays, as in every Vite setup here.

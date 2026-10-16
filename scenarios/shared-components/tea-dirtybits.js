@@ -2,11 +2,12 @@
 //
 // This emitter plays the compiler: it writes what an ideal TEA compiler would emit.
 // Style (recorded in every generated app's rr.json):
-// - One module per widget kind (src/widgets/<kind>.js), configured per widget by a plain
-//   config object: its reducer `update(c, s, msg)`, whose arms mark dirty bits for the fields
-//   they write, and its DOM factory `view(parent, c, s, send)`, which builds the DOM once and
+// - One module per widget kind (src/widgets/<kind>.js), configured per widget by its row
+//   (kind, initial state, label, the kind's parameters by position): its reducer
+//   `update(row, s, msg)`, whose arms mark dirty bits for the fields they write, and its DOM
+//   factory `view(parent, row, id)`, which builds the DOM once from a static template and
 //   returns a static `patch(s, dirty)` that runs only the bindings whose bits are set.
-// - One app module (src/app.js): the per-widget configs, the initial model, the app reducer
+// - One app module (src/app.js): the widget rows (the initial model comes from them), the app reducer
 //   (routes user messages and external events to the widgets' reducers and files their bits
 //   per widget), and the top-level view, whose patch calls each dirty widget's patch and
 //   recomputes a summary only when a bit it reads is set.
