@@ -72,15 +72,17 @@ function widgetModule(w) {
   const use = (...names) => names.forEach((n) => helpers.add(n));
   const bitList = (bits) => bits.reduce((a, b) => a | b, 0);
   // Messages are numbered, as Elm --optimize tags constructors, in the order the view first
-  // sends them (then any the view never sends).
+  // sends them: its own handlers first, in the order it wires them, then its list rows' (then
+  // any the view never sends).
   const order = [];
-  const sends = (nodes) => {
+  const sends = (nodes, keys) => {
     for (const n of nodes) {
-      for (const k of ["msg", "check", "remove"]) if (n[k] && !order.includes(n[k])) order.push(n[k]);
-      if (n.children) sends(n.children);
+      for (const k of keys) if (n[k] && !order.includes(n[k])) order.push(n[k]);
+      if (n.children) sends(n.children, keys);
     }
   };
-  sends(w.view);
+  sends(w.view, ["msg"]);
+  sends(w.view, ["check", "remove"]);
   for (const m of w.messages) if (!order.includes(m.name)) order.push(m.name);
   const messages = order.map((name) => w.messages.find((m) => m.name === name));
   const tag = (name) => order.indexOf(name);
