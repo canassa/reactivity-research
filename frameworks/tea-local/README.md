@@ -117,3 +117,20 @@ sits on a node inside it, and the app has no timers or global listeners.
   would grow with big components. A summary re-runs on every change to any source.
 - **It depends on the compiler sharing factories per kind.** Without that sharing, the PR
   measured a 10× gap to vanilla.
+
+## unique-components
+
+`scenarios/unique-components/tea-local.js` runs the same strategy when every widget is its own
+component type. Nothing is shared per kind, so each widget gets its own module: its initial
+model, a reducer with one `case` per message (written out from the message's kind and ops, never
+interpreted), and a factory with its own createElement calls, event wiring and `patch` (derived
+texts become template literals). Only generic helpers are shared: this runtime and a small
+`widgets/frame.js` (the widget frame, placing conditional content before its next attached
+sibling, next item id).
+
+- A cross-widget read is a factory parameter: the reader watches the earlier widget's instance.
+- A time-driven int is a subscription, like Elm's `subscriptions`: while its gate is on, the
+  widget's `patch` puts its `tick` in a shared `running` set, and the app's `tick` event calls
+  only those. Otherwise `tick` would cost one call per widget and fail the locality check.
+- `notify` is a method of the widgets that have a feed; `serverSet` and `snapshot` use `set`.
+- The slope is the per-component code: model, reducer, DOM creation and bindings.
