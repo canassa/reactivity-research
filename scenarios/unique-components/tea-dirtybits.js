@@ -68,7 +68,7 @@ function widgetModule(w) {
   for (const f of w.fields) if (!fieldOrder.includes(f.name)) fieldOrder.push(f.name);
   const own = (name) => 1 << fieldOrder.indexOf(name);
   const reads = new Map(); // "widget.field" -> [bit, widget id, field]
-  const helpers = new Set(["mark"]);
+  const helpers = new Set();
   const use = (...names) => names.forEach((n) => helpers.add(n));
   const bitList = (bits) => bits.reduce((a, b) => a | b, 0);
   // Messages are numbered, as Elm --optimize tags constructors, in the order the view first
@@ -126,6 +126,7 @@ function widgetModule(w) {
   function arm(m) {
     const W = (f) => own(f);
     const guard = [];
+    let when = "";
     const values = new Map();
     const set = (f, src) => {
       if (values.has(f)) throw new Error(`${w.id}.${m.name} writes ${f} twice`);
@@ -164,7 +165,8 @@ function widgetModule(w) {
             case "push": {
               if (!alone) throw new Error("push with other ops");
               use("nextId");
-              guard.push(`const text = s.${op[2]}.trim();`, `if (text === "") return s;`);
+              guard.push(`const text = s.${op[2]}.trim();`);
+              when = `text !== ""`;
               set(f, `[...${S}, { id: nextId(${S}), text${field.checkable ? ", done: false" : ""} }]`);
               set(op[2], '""');
               break;
@@ -175,7 +177,7 @@ function widgetModule(w) {
               break;
             case "pop": case "shift": case "clear": case "clearDone":
               if (!alone) throw new Error(`${kind} with other ops`);
-              guard.push(kind === "clearDone" ? `if (!${S}.some((item) => item.done)) return s;` : `if (${S}.length === 0) return s;`);
+              when = kind === "clearDone" ? `${S}.some((item) => item.done)` : `${S}.length > 0`;
               set(f, { pop: `${S}.slice(0, -1)`, shift: `${S}.slice(1)`, clear: "[]", clearDone: `${S}.filter((item) => !item.done)` }[kind]);
               break;
             default: throw new Error(`unknown op ${kind}`);
@@ -185,7 +187,7 @@ function widgetModule(w) {
       }
       default: throw new Error(`unknown message kind ${m.kind}`);
     }
-    return { guard, values, bits: bitList([...values.keys()].map(W)) };
+    return { guard, when, values, bits: bitList([...values.keys()].map(W)) };
   }
 
   function write(values, full) {
@@ -194,37 +196,42 @@ function widgetModule(w) {
     return `{ ${[...spread, ...entries].join(", ")} }`;
   }
 
+  // Each arm returns the new slice with the bits of the fields it wrote, `[s, bits]`, or nothing
+  // when the slice is unchanged.
   const arms = [];
   for (const m of messages) {
     const a = arm(m);
     const full = a.values.size === w.fields.length;
-    arms.push(`    case ${tag(m.name)}: { // ${m.name}\n${[...a.guard, `mark(${a.bits});`, `return ${write(a.values, full)};`].map((l) => "      " + l).join("\n")}\n    }`);
+    arms.push({ head: `case ${tag(m.name)}: { // ${m.name}`, lines: [...a.guard, `return ${a.when ? a.when + " && " : ""}[${write(a.values, full)}, ${a.bits}];`] });
   }
   // External events: a feed receives notifications; time-driven fields advance while gated.
   const feed = w.fields.find((f) => f.feed);
   if (feed) {
-    arms.push(`    case "notify":\n      mark(${own(feed.name)});\n      return { ...s, ${feed.name}: [...s.${feed.name}, msg.item] };`);
+    arms.push({ head: `case "notify": {`, lines: [`return [{ ...s, ${feed.name}: [...s.${feed.name}, msg.item] }, ${own(feed.name)}];`] });
   }
   const ticks = w.fields.filter((f) => f.tick);
   if (ticks.length === 1) {
     const f = ticks[0];
-    arms.push(`    case "tick": {
-      if (!s.${f.tickWhen}) return s;
-      const ${f.name} = Math.min(${f.max}, s.${f.name} + ${f.tick});
-      if (${f.name} === s.${f.name}) return s;
-      mark(${own(f.name)});
-      return { ...s, ${f.name} };
-    }`);
+    arms.push({ head: `case "tick": {`, lines: [
+      `if (!s.${f.tickWhen}) return;`,
+      `const ${f.name} = Math.min(${f.max}, s.${f.name} + ${f.tick});`,
+      `if (${f.name} !== s.${f.name}) return [{ ...s, ${f.name} }, ${own(f.name)}];`,
+    ] });
   } else if (ticks.length > 1) {
-    const body = ticks.map((f) => `      if (s.${f.tickWhen}) {
-        const v = Math.min(${f.max}, s.${f.name} + ${f.tick});
-        if (v !== s.${f.name}) {
-          mark(${own(f.name)});
-          next = { ...next, ${f.name}: v };
-        }
-      }`);
-    arms.push(`    case "tick": {\n      let next = s;\n${body.join("\n")}\n      return next;\n    }`);
+    const body = ticks.map((f) => `if (s.${f.tickWhen}) {
+  const v = Math.min(${f.max}, s.${f.name} + ${f.tick});
+  if (v !== s.${f.name}) {
+    next = { ...next, ${f.name}: v };
+    bits |= ${own(f.name)};
   }
+}`);
+    arms.push({ head: `case "tick": {`, lines: [`let next = s;`, `let bits = 0;`, ...body, `if (bits) return [next, bits];`] });
+  }
+  // A widget with a single message needs no test of its tag (as Elm compiles a case on a type
+  // with one constructor): the reducer is that arm.
+  const reducer = arms.length === 1
+    ? `(s, msg) => {\n${arms[0].lines.map((l) => "    " + l).join("\n")}\n  }`
+    : `(s, msg) => {\n    switch (msg.type) {\n${arms.map((a) => `      ${a.head}\n${a.lines.join("\n").split("\n").map((l) => "        " + l).join("\n")}\n      }`).join("\n")}\n    }\n  }`;
 
   // -------------------------------------------------------------------------------------------
   // The view: one static template (escaped at build time), nodes found by their position in it,
@@ -241,11 +248,14 @@ function widgetModule(w) {
   };
   // The static patch of a scope: one test per group of bindings, in the order of their masks
   // (bindings are independent, so any order is correct; this one reads alike across widgets).
-  const patchBody = (sc, ind) => {
+  // `cover` holds every bit that can be set when the scope's patch runs (it never runs with
+  // none): a group whose mask covers them all needs no test.
+  const patchBody = (sc, ind, cover) => {
     const out = [];
     const groups = [...sc.groups.values()].map((g) => [bitList(g.deps), g]).sort((x, y) => x[0] - y[0]);
     for (const [mask, g] of groups) {
-      if (g.stmts.length === 1) out.push(`${ind}if (d & ${mask}) ${g.stmts[0]}`);
+      if ((mask & cover) === cover) out.push(...g.stmts.map((s) => `${ind}${s}`));
+      else if (g.stmts.length === 1) out.push(`${ind}if (d & ${mask}) ${g.stmts[0]}`);
       else out.push(`${ind}if (d & ${mask}) {`, ...g.stmts.map((s) => `${ind}  ${s}`), `${ind}}`);
     }
     return out;
@@ -399,14 +409,15 @@ function widgetModule(w) {
           const e = node();
           const inner = scope();
           h += `<${n.tag}>${build(n.children, inner, out, ind)}</${n.tag}>`;
-          const patch = patchBody(inner, ind + "  ");
+          const deps = new Set(inner.deps);
+          const cond = ex(n.cond, deps);
+          // Its patch runs when the bits of the binding below are set (or with every bit).
+          const patch = patchBody(inner, ind + "  ", bitList([...deps]));
           if (patch.length) {
             L(`const ${c} = branch(${e}, (s, d, w) => {`);
             out.push(...patch);
             L(`});`);
           } else L(`const ${c} = branch(${e});`);
-          const deps = new Set(inner.deps);
-          const cond = ex(n.cond, deps);
           bind(sc, deps, patch.length ? `${c}(${cond}, s, d, w);` : `${c}(${cond});`);
           break;
         }
@@ -422,7 +433,8 @@ function widgetModule(w) {
   node(); // the section
   node(); // its heading
   const markup = `<section data-role=widget><h2>${esc(w.label)}</h2>${build(w.view, root, body, "  ")}</section>`;
-  let patch = patchBody(root, "    ");
+  // A widget's patch runs only with some of its bits set: own fields and fields it reads.
+  let patch = patchBody(root, "    ", (1 << (w.fields.length + reads.size)) - 1);
   // Patches take the whole model (`w`) only when the widget reads another widget.
   const args = reads.size ? "s, d, w" : "s, d";
   if (!reads.size) {
@@ -457,12 +469,7 @@ ${indent(patch)}
     };
   },
 
-  (s, msg) => {
-    switch (msg.type) {
-${indent(arms)}
-    }
-    return s;
-  },
+  ${reducer},
 
   ${literal(Object.fromEntries(w.fields.map((f) => [f.name, f.initial])), "  ")},
 ];
@@ -490,7 +497,7 @@ function appFile(spec, mods) {
       edges.push(`    if (dirty.${src} & ${mods[src].bit(field)}) dirty.${w.id} |= ${bit}; // ${key} -> ${w.id}`);
     }
   }
-  return `import { take, touch, html } from "./runtime.js";
+  return `import { touch, html } from "./runtime.js";
 import { WIDGETS } from "./widgets/widget.js";
 // Every widget in page order: each module adds its own [view, reducer, initial state].
 ${imports.join("\n")}
@@ -512,10 +519,9 @@ function set(model, id, s, bits) {
 
 // Run one widget's reducer and file the bits its arm marked under that widget.
 function route(model, id, msg) {
-  const s = model.widgets[id];
-  const next = WIDGETS[id][1](s, msg);
-  // An arm that returns the slice unchanged marks nothing, so only a new slice takes the bits.
-  return next === s ? model : set(model, id, next, take());
+  const next = WIDGETS[id][1](model.widgets[id], msg);
+  // An arm returns its new slice with the bits it marked, or nothing when the slice is unchanged.
+  return next ? set(model, id, ...next) : model;
 }
 
 // The app reducer: user messages and most external events go to one widget's reducer.

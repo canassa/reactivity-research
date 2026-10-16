@@ -5,21 +5,11 @@
 //   guarded text and property writes, conditional content and keyed lists.
 
 // ---------------------------------------------------------------------------------------------
-// Dirty bits. A component's reducer arm calls mark(FIELD) for each field it writes; the app's
-// reducer takes those bits and files them under the component instance (touch).
+// Dirty bits. A component's reducer arm returns its new state with the bits of the fields it
+// writes, `[state, bits]` (or nothing when the state is unchanged); the app's reducer files
+// those bits under the component instance (touch).
 
-let bits = 0;
 let dirty = {};
-
-export function mark(b) {
-  bits |= b;
-}
-
-export function take() {
-  const b = bits;
-  bits = 0;
-  return b;
-}
 
 export function touch(id, b) {
   dirty[id] |= b;
