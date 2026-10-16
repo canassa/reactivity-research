@@ -82,7 +82,6 @@ export const list = (d, items, role, html, make, p = E[(P += d)], map = new Map(
   });
 
 // Small helpers for handlers.
-export const cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 export const nx = (a, v) => a[(a.indexOf(v) + 1) % a.length];
 export const add = (l, text, done) => l.push({ id: Math.max(0, ...l.map((i) => i.id)) + 1, text, done });
 // A list from its items' texts, or [text, done] pairs; the ids are 1, 2, …

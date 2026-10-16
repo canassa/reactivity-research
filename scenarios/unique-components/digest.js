@@ -86,7 +86,9 @@ function op(o, fields) {
   const f = fields[name];
   const L = F(name);
   switch (kind) {
-    case "add": return { e: `${L} = cl(${L} + ${o[2]}, ${f.min}, ${f.max})` };
+    // An int field always lies within its range (every op, input and external state keeps it
+    // there), so adding k > 0 can only pass the top and k < 0 the bottom: one bound is checked.
+    case "add": return { e: o[2] > 0 ? `${L} = Math.min(${L} + ${o[2]}, ${f.max})` : `${L} = Math.max(${L} - ${-o[2]}, ${f.min})` };
     case "set": return { e: `${L} = ${lit(o[2])}` };
     case "toggle": return { e: `${L} = !${L}` };
     case "reset": return { e: `${L} = ${lit(f.initial)}` };
@@ -291,7 +293,7 @@ function appFile(spec) {
   if (fields.some((f) => f.feed)) branches.push(`else if (m.type == "notify") O[m.widget][m.field].push({ ...m.item }), run(W[m.widget]);`);
 
   const body = code.join("\n\n") + "\n\n" + branches.join("\n");
-  const names = ["widget", "bind", "text", "show", "list", "dep", "run", "cl", "nx", "add", "L", "S", "O", "W", "T"]
+  const names = ["widget", "bind", "text", "show", "list", "dep", "run", "nx", "add", "L", "S", "O", "W", "T"]
     .filter((x) => new RegExp(`(^|[^\\w.])${x}\\b`, "m").test(body));
   const ids = spec.widgets.map((w) => w.id).join(", ");
 
