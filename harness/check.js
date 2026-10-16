@@ -39,6 +39,7 @@ const RUN = `(async () => {
     if (r.focus === false) bad.push("focus or caret lost");
     if (r.rootEmpty === false) bad.push("root not empty after dispose");
     if (r.rootEmpty && (r.listeners || r.timers)) bad.push(r.listeners + " listeners and " + r.timers + " timers left after dispose");
+    for (const p of r.problems || []) bad.push(p);
     if (bad.length) fails.push({ step: rrPanel.tally.pos, label: r.label, bad });
   }
   return { tally: rrPanel.tally, fails, end: rrPanel.last };

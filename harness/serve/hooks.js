@@ -1,14 +1,13 @@
 // Loaded before the app (classic script, first in <head>) on the serve page only. It counts
 // the event listeners and timers the page creates, so the panel can show what is left after
-// dispose(). The panel itself uses the original functions, so it is not counted.
+// dispose(), and runs intervals on a virtual clock (below). The panel itself uses the original
+// functions, so it is not counted.
 (() => {
   const orig = {
     add: EventTarget.prototype.addEventListener,
     remove: EventTarget.prototype.removeEventListener,
     setTimeout: window.setTimeout.bind(window),
     clearTimeout: window.clearTimeout.bind(window),
-    setInterval: window.setInterval.bind(window),
-    clearInterval: window.clearInterval.bind(window),
     requestAnimationFrame: window.requestAnimationFrame.bind(window),
     cancelAnimationFrame: window.cancelAnimationFrame.bind(window),
   };
@@ -39,12 +38,19 @@
     return id;
   };
   window.clearTimeout = (id) => { timers.delete("t" + id); orig.clearTimeout(id); };
+  // Intervals run on a virtual clock: they are recorded but never fire on their own, only when
+  // the panel calls fireIntervals() (a script's "clock" step), so the reference can follow time
+  // exactly. (No scenario before routed-app used intervals: their apps must not use timers.)
+  // Virtual ids start far above the browser's, so a stray clearTimeout cannot hit a real timer.
+  const intervals = new Map();
+  let nextInterval = 1e9;
   window.setInterval = (fn, ms, ...args) => {
-    const id = orig.setInterval(fn, ms, ...args);
+    const id = ++nextInterval;
+    intervals.set(id, () => typeof fn === "function" && fn(...args));
     timers.set("i" + id, "interval");
     return id;
   };
-  window.clearInterval = (id) => { timers.delete("i" + id); orig.clearInterval(id); };
+  window.clearInterval = (id) => { timers.delete("i" + id); intervals.delete(id); };
   window.requestAnimationFrame = (fn) => {
     const id = orig.requestAnimationFrame((t) => { timers.delete("r" + id); fn(t); });
     timers.set("r" + id, "animation frame");
@@ -60,6 +66,13 @@
     },
     liveTimers() {
       return [...timers.values()];
+    },
+    // One tick of the virtual clock: every running interval fires once (one that an earlier
+    // callback cleared does not). Returns how many fired.
+    fireIntervals() {
+      let n = 0;
+      for (const [id, fire] of [...intervals]) if (intervals.has(id)) { n++; fire(); }
+      return n;
     },
   };
 })();

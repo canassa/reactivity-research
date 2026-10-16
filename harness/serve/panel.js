@@ -83,7 +83,7 @@ panel.append(
 function labelOf(id) {
   const w = spec.widgets?.find((x) => x.id === id);
   if (w) return `${id} · ${w.kind} · ${w.label}`;
-  const t = spec.tables?.find((x) => x.id === id);
+  const t = spec.tables?.find((x) => x.id === id) || spec.pages?.find((x) => x.id === id);
   return t ? `${id} · ${t.title}` : id;
 }
 
@@ -257,6 +257,12 @@ async function perform(label, act, msg, opts = {}) {
   }
   result.listeners = hooks.liveListeners().length;
   result.timers = hooks.liveTimers().length;
+  // A scenario with timers says how many intervals may run in a state (routed-app: one per
+  // mounted time-driven field), so one left behind by an unmounted page is caught.
+  if (mounted && ref.maxIntervals) {
+    const running = hooks.liveTimers().filter((t) => t === "interval").length, allowed = ref.maxIntervals(spec, state);
+    if (running > allowed) (result.problems ||= []).push(`${running} intervals running, at most ${allowed} expected (a timer of an unmounted page or tab?)`);
+  }
   tally.steps++;
   report(result);
   showReference();
@@ -318,6 +324,8 @@ async function runStep(step) {
     }
     case "dispatch":
       return perform(step.label, () => dispatch(step.msg), step.msg);
+    case "clock": // one tick of the virtual clock (hooks.js): every running interval fires once
+      return perform(step.label, () => hooks.fireIntervals(), step.msg);
   }
   throw new Error(`unknown step ${step.do}`);
 }
@@ -351,7 +359,8 @@ async function reset() {
 async function sendEvent(ev, target) {
   if (!mounted) throw new Error("not mounted: press Reset");
   const msg = ev.make(state, target, `panel-${++salt}`);
-  await perform(`${ev.name}${target ? " " + target : ""}`, () => dispatch(msg), msg);
+  // `clock`: the event is a tick of the virtual clock, not a dispatch.
+  await perform(`${ev.name}${target ? " " + target : ""}`, () => (ev.clock ? hooks.fireIntervals() : dispatch(msg)), msg);
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -373,10 +382,11 @@ function report(r) {
   if ("focus" in r) rows.push(["focus and caret kept", mark(r.focus)]);
   if ("rootEmpty" in r) rows.push(["root empty after dispose", mark(r.rootEmpty)]);
   if ("listeners" in r) rows.push(["live listeners / timers", `${r.listeners} / ${r.timers}`]);
+  for (const p of r.problems || []) rows.push(["problem", "✗ " + p]);
   checks.replaceChildren(...rows.flatMap(([k, v]) => [el("dt", {}, k), el("dd", { class: /✗/.test(v) ? "rr-bad" : "" }, v)]));
   diffBox.hidden = r.match !== false;
   diffBox.textContent = r.match === false ? r.diff : "";
-  const bad = r.error || r.match === false || r.targetKept === false || r.keyedReplaced?.length || r.focus === false || r.rootEmpty === false || (r.rootEmpty && (r.listeners || r.timers));
+  const bad = r.error || r.match === false || r.targetKept === false || r.keyedReplaced?.length || r.focus === false || r.rootEmpty === false || (r.rootEmpty && (r.listeners || r.timers)) || r.problems?.length;
   log.prepend(el("li", { class: bad ? "rr-bad" : "" }, `${r.label} ${r.error ? "✗ " + r.error : r.match === false ? "✗ differs" : r.match ? "✓" : ""}`));
   while (log.children.length > 60) log.lastChild.remove();
   setButtons();
