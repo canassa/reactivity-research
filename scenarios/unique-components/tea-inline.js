@@ -4,9 +4,10 @@
 // The emitter plays the compiler of a TEA app, as in shared-components, but here there are no
 // kinds to share: every widget is its own component (src/widgets/<id>.js), written out from
 // its description as that widget's own code.
-// - A widget builds its DOM once from one static HTML string (conditional sections included,
-//   swapped out by `when` while hidden) and picks the elements its code uses by document
-//   order; keyed list rows are built with `el(...)` by a row builder written for that list.
+// - A widget's DOM is built once from one static HTML string (conditional sections included,
+//   swapped out by `when` while hidden); its code refers to the elements by their place in
+//   document order (`E[n]`); keyed list rows are built with `el(...)` by a row builder written
+//   for that list.
 // - Every dynamic expression (a text, a disabled state, a condition, a validation rule) is
 //   compiled to JavaScript and becomes a binding. The emitter works out at compile time which
 //   fields each binding reads, and groups the bindings per field (`onVisits = [...]`).
@@ -18,7 +19,7 @@
 //   `load`, `tick` to the widgets that have a time-driven field and `notify` to the feed.
 //
 // Style choices (also in `style` below): one module per widget, static markup parsed once,
-// in-place model edits, per-field binding groups, one microtask flush, keyed list rows patched
+// in-place model edits, per-field binding groups, one microtask flush, keyed list rows edited
 // in place by the action that knows which row it touched (other list edits replace the array
 // and reconcile by id), and the runtime of tea-inline. The only generic code is the runtime and
 // three small helpers in widgets/widget.js (section, loader, nextId); no widget behaviour is
@@ -554,11 +555,11 @@ export function emit(spec) {
     files,
     style: {
       track: "prototype: no framework implements this strategy",
-      components: "one module per widget, each written out from its own description; DOM built once from one static HTML string, elements picked by document order; conditional sections swapped out by when while hidden; list rows built with createElement",
+      components: "one module per widget, each written out from its own description; DOM built once from one static HTML string, elements referred to by their place in document order (E[n]); conditional sections swapped out by when while hidden; list rows built with createElement",
       messages: "erased for DOM events: each update arm is inlined into the action its control calls, which writes the widget's fields in place",
       updates: "each action schedules the per-field binding groups of the fields it writes (known at compile time); one microtask flush",
       derived: "cross-widget reads register their bindings at mount in R.<widget>.<field>, only for fields some widget reads; the writing action schedules them",
-      lists: "keyed: add, remove and toggle patch their rows; other edits replace the array and reconcile by id in one forward pass",
+      lists: "keyed: add and remove schedule their row's edit, toggle its row's binding; other edits replace the array and reconcile by id in one forward pass",
       externalEvents: "receive(msg): serverSet and snapshot replace a widget's state (a copy) and run all its bindings and its readers; tick and notify call the widgets' external arms",
       build: "Vite with no framework plugin, production defaults, hidden source maps",
     },
