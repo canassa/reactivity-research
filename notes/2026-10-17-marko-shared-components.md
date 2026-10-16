@@ -39,3 +39,29 @@ next emitters are in `frameworks/marko/README.md`.
   the investigation flagged it as worth measuring. Not done here.
 - **Work** (`./rr work`, N 16 to 256): every local action is flat (median ratio 1.00, worst 1.35
   for a tick); only the snapshot grows (16x, global by nature).
+
+## Review fixes
+
+- **Widget-local variant** (`--state local`, variant `marko-state=local`): each tag owns its
+  `<let>`s and `<return>`s its state with `set` (and `tick`/`notify`); the root builds the
+  summaries from the tag variables and routes external events through them. Fit over N >= 16:
+  **8,434 B + 55.2 B/widget** (R2 0.997), against root-lifted state's 8,195 B + 66.0 (the
+  numbers above are "Marko, root-lifted state"). Medians (brotli): N=1 3,471 / N=16 8,985 /
+  N=64 12,208 / N=256 22,407, against root 3,294 / 8,907 / 12,644 / 24,908. Work: every local
+  action flat (worst a tick, 1.61x from N=16 to 256).
+- **A Marko 6.4.6 compiler bug** met on the way: tag variables declared inside the dashboard
+  `<div>` and read from the root are hoisted getters; read inside a function at the root they
+  compile with a free `$scope` (`ReferenceError` on call), and read in a `<const>` before the
+  tags they are not values yet. Declaring the readers inside the `<div>`, after the widgets,
+  works; the root ends with `<return=receive>`.
+- **Build target:** Marko's official Vite example (`marko-js/examples` `vite-express`) sets no
+  target, so Vite's default stays. With `target: "esnext"` every bundle (54 builds) is
+  byte-identical.
+- **Stale amount edit:** after clearing the input, a later serverSet or snapshot never showed
+  (`pending ?? value`). The edit now remembers the value it was made over. A scratch test (clear,
+  serverSet, clear, snapshot) shows the new value in both variants.
+- **Adapter:** removes only document listeners carrying Marko's `"1" + type` mark; a second
+  `mount()` throws. **Build:** `NODE_ENV=production` in the child. **classify:** no bare `vite/`
+  match. The polyfill was already tooling; Marko's runtime without it is 1,948 B (N=1) and
+  4,019 B (N=16) brotli, seed 1.
+- Checks pass for both variants at N = 1, 4, 16, 64, seeds 1-3; builds byte-identical.
