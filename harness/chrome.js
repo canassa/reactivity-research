@@ -21,11 +21,25 @@ export function findChrome(explicit) {
   throw new Error(`no Chrome or Chromium found (tried ${CANDIDATES.join(", ")}); set CHROME=/path/to/chrome`);
 }
 
+// Profiles of ours left behind by a run that was killed or crashed (close() removes them
+// otherwise). /tmp is a small RAM disk shared with everything else, and each one is 20–150 MB.
+// No launch lives an hour, so a profile last touched more than an hour ago is a leftover.
+function sweepProfiles(prefix) {
+  const cutoff = Date.now() - 60 * 60 * 1000;
+  let names = [];
+  try { names = fs.readdirSync(os.tmpdir()).filter((n) => n.startsWith(prefix)); } catch { return; }
+  for (const n of names) {
+    const dir = path.join(os.tmpdir(), n);
+    try { if (fs.statSync(dir).mtimeMs < cutoff) fs.rmSync(dir, { recursive: true, force: true }); } catch {}
+  }
+}
+
 // `args`: extra Chrome command-line flags, e.g. ["--js-flags=--no-turbofan"]. `chrome`: the
 // binary (default: findChrome()). `taskset`: a CPU list (e.g. "1-5,7-11") to pin Chrome to.
 // `profilePrefix`: the name of its temporary profile directory, before a random suffix.
 export async function launch({ args = [], chrome, taskset, profilePrefix = "rr-chrome-" } = {}) {
   const bin = findChrome(chrome);
+  sweepProfiles(profilePrefix);
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), profilePrefix));
   const argv = [
     "--headless=new", "--remote-debugging-port=0", `--user-data-dir=${profile}`,
