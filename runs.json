@@ -34,6 +34,10 @@
       "$comment": "No 256: beni's ownership checker (its 64-path width cap) refuses the N=256 app on browser-direct, every seed; see frameworks/beni-direct/README.md.",
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128],
       "seeds": [1, 2, 3]
+    },
+    "marko": {
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3]
     }
   },
   "unique-components": {
