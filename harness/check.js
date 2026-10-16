@@ -6,6 +6,15 @@
 // compares the page with the reference render and checks keyed-node identity and focus/caret;
 // after dispose, that the root is empty and no listeners or timers are left.
 //
+// Then the panel's same-task pass (rrPanel.sameTask; its comment in serve/panel.js has the
+// details) replays the script landing two actions in one task, before the app's batched update
+// can run, at a few sampled points: a click twice, a step and the next one, a click on a control
+// the previous action removed with its item, page, panel or dialog; and after a step typing an
+// invalid value, a snapshot of the same state, which must repaint the input. The reference applies the
+// same messages in the same order, and an action on a control that is gone is a no-op. The pass
+// ends with a dispose at the script's busiest point (most intervals and listeners), which must
+// leave nothing, and a remount. --no-same-task skips it.
+//
 // Prototype-track frameworks also get a locality check: the JavaScript calls each local action
 // costs (./rr work's measure) at the quick-check size and at 16× it may grow at most
 // LOCALITY_MAX_RATIO times. An approach must not buy bytes with work that grows with the whole
@@ -24,13 +33,11 @@ import { defaultJobs } from "./pool.js";
 
 export const LOCALITY_MAX_RATIO = 8;
 
-// Runs in the page: every step of the script, collecting what failed.
-const RUN = `(async () => {
+// Runs in the page: every step of the script, then (if `sameTask`) the same-task pass,
+// collecting what failed.
+const run = (sameTask) => `(async () => {
   const fails = [];
-  await rrPanel.reset();
-  while (rrPanel.tally.pos < rrPanel.tally.total) {
-    await rrPanel.stepOnce();
-    const r = rrPanel.last;
+  const badOf = (r) => {
     const bad = [];
     if (r.error) bad.push("error: " + r.error);
     if (r.match === false) bad.push("page differs from reference\\n" + r.diff);
@@ -40,19 +47,40 @@ const RUN = `(async () => {
     if (r.rootEmpty === false) bad.push("root not empty after dispose");
     if (r.rootEmpty && (r.listeners || r.timers)) bad.push(r.listeners + " listeners and " + r.timers + " timers left after dispose");
     for (const p of r.problems || []) bad.push(p);
-    if (bad.length) fails.push({ step: rrPanel.tally.pos, label: r.label, bad });
+    return bad;
+  };
+  await rrPanel.reset();
+  while (rrPanel.tally.pos < rrPanel.tally.total) {
+    await rrPanel.stepOnce();
+    const bad = badOf(rrPanel.last);
+    if (bad.length) fails.push({ step: rrPanel.tally.pos, label: rrPanel.last.label, bad });
   }
-  return { tally: rrPanel.tally, fails, end: rrPanel.last };
+  const tally = rrPanel.tally, end = rrPanel.last;
+  let same = null;
+  if (${sameTask}) {
+    const { samples, replayed, disposedAt, rewriteSkipped, results } = await rrPanel.sameTask();
+    same = { samples, replayed, disposedAt, rewriteSkipped, failing: 0 };
+    for (const x of results) {
+      const bad = badOf(x.report);
+      if (!bad.length) continue;
+      same.failing++;
+      fails.push({ step: "same-task pass, step " + x.step, label: x.report.label, bad });
+    }
+  }
+  return { tally, fails, end, same };
 })()`;
 
 // Run the whole interaction script on one served page (with the panel). Also used by ./rr bench
 // as its correctness gate.
-export async function scriptCheck(chrome, url, { timeout = 15000 } = {}) {
+export async function scriptCheck(chrome, url, { timeout = 60000, sameTask = true } = {}) {
   const t = performance.now();
   const page = await chrome.open(url);
   try {
     await page.waitFor("window.rrPanel && window.rrPanel.ready === true", timeout);
-    const r = await page.evaluate(RUN);
+    // A page that crashed, or a settled() that never resolves, fails instead of hanging.
+    let timer;
+    const limit = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("the script run did not finish within 10 minutes")), 600000); });
+    const r = await Promise.race([page.evaluate(run(sameTask)), limit]).finally(() => clearTimeout(timer));
     return { r, errors: page.errors, ok: r.fails.length === 0 && page.errors.length === 0, seconds: (performance.now() - t) / 1000 };
   } finally {
     await page.close();
@@ -64,7 +92,8 @@ export function checkReport(scenarioName, v, spec, { r, errors, ok, seconds }) {
   const t = r.tally;
   const lines = [`${ok ? "ok  " : "FAIL"} ${scenarioName}/${v} n=${spec.options.size} s=${spec.options.seed}: ${t.total} steps, ${t.compared} compared with the reference, ` +
     `${t.mismatches} mismatches, ${t.focusLost} focus losses, ${t.keyedReplaced} keyed replacements; ` +
-    `after dispose ${r.end.listeners} listeners, ${r.end.timers} timers (${seconds.toFixed(1)}s)`];
+    `after dispose ${r.end.listeners} listeners, ${r.end.timers} timers` +
+    (r.same ? `; same-task pass: ${r.same.samples} samples${r.same.rewriteSkipped ? " (no whole-state snapshot to rewrite inputs with)" : ""} and a dispose after step ${r.same.disposedAt} (${r.same.replayed} steps replayed), ${r.same.failing} failing` : "") + ` (${seconds.toFixed(1)}s)`];
   for (const f of r.fails.slice(0, 5)) lines.push(`     step ${f.step} (${f.label}): ${f.bad.join("; ").replace(/\n/g, "\n       ")}`);
   if (r.fails.length > 5) lines.push(`     … ${r.fails.length - 5} more failing steps`);
   for (const e of errors.slice(0, 5)) lines.push(`     page error: ${e}`);
@@ -73,7 +102,7 @@ export function checkReport(scenarioName, v, spec, { r, errors, ok, seconds }) {
 
 export async function checkCommand(rest) {
   const t0 = performance.now();
-  const { args, scenario, emitters, scenarioOptions, emitterOptions } = await selection(rest, ["noLocality"]);
+  const { args, scenario, emitters, scenarioOptions, emitterOptions } = await selection(rest, ["noLocality", "noSameTask"]);
   // The scenario's quick-check size and options (e.g. fewer rows of data), unless the flags say
   // otherwise; the locality check below builds with the same options.
   const options = { size: scenario.mod.quickCheckSize ?? 16, seed: 1, ...(scenario.mod.quickCheckOptions || {}), ...scenarioOptions };
@@ -84,7 +113,9 @@ export async function checkCommand(rest) {
   const chrome = await launch();
   let failed = false;
   try {
-    const results = await Promise.all(variants.map((v) => scriptCheck(chrome, `${base}/${v}/`)));
+    // A page that fails to run (it timed out or crashed) is reported as one failing step.
+    const broken = (err) => ({ r: { tally: { total: 0, compared: 0, mismatches: 0, focusLost: 0, keyedReplaced: 0 }, fails: [{ step: "-", label: "run", bad: [err.message] }], end: { listeners: 0, timers: 0 }, same: null }, errors: [], ok: false, seconds: 0 });
+    const results = await Promise.all(variants.map((v) => scriptCheck(chrome, `${base}/${v}/`, { sameTask: !args.noSameTask }).catch(broken)));
     variants.forEach((v, i) => {
       const { ok, text } = checkReport(scenario.name, v, spec, results[i]);
       failed ||= !ok;
