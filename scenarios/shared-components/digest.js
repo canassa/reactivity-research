@@ -94,13 +94,8 @@ const KINDS = {
   let draft = "";
   widget("todo", l, \`<input type=text data-role=draft placeholder="\${ph}"><button data-role=add>\${add}</button><ul></ul><p data-role=left></p>\`, [
     (t) => draft = t.value, // draft
-    () => { // add
-      const text = draft.trim();
-      if (text) {
-        items.push({ id: Math.max(0, ...items.map((i) => i.id)) + 1, text, done: false });
-        draft = "";
-      }
-    },
+    // add: the trimmed draft goes in the parameter, which a click handler has no use for
+    (text) => (text = draft.trim()) && (items.push({ id: Math.max(0, ...items.map((i) => i.id)) + 1, text, done: false }), draft = ""),
   ], (v) => ({ items, draft } = v));
   bind(1, "value", () => draft);
   list(3, () => items, \`<input type=checkbox data-role=toggle><span></span><button data-role=remove>\${rm}</button>\`, (r) => (
@@ -163,7 +158,7 @@ const KINDS = {
     args: "l, d, pre, suf, value",
     body: `
   widget("amount", l, "<input type=number data-role=input><output data-role=formatted></output>", [
-    (t) => { t.value && (value = +t.value); }, // input
+    (t) => t.value && (value = +t.value), // input
   ], (v) => ({ value } = v));
   bind(1, "value", () => value);
   text(2, () => pre + value.toFixed(d) + suf);`,
@@ -185,7 +180,7 @@ const KINDS = {
   bind(1, "value", () => query);
   const shown = () => items.filter((i) => i.text.toLowerCase().includes(query.toLowerCase()));
   // The items are constants: their text is written once.
-  list(2, shown, "", (r) => { r.n.textContent = r.i.text; });
+  list(2, shown, "", (r) => r.n.textContent = r.i.text);
   text(3, () => shown().length + " matches");`,
     metric: `{ m: () => shown().length, p: (n) => n + " found in " + l }`,
     row: (w, s) => {
@@ -238,7 +233,7 @@ const KINDS = {
   const w = widget("clock", l, \`<output data-role=time></output><button data-role=start>\${a}</button><button data-role=stop>\${b}</button><button data-role=reset>\${c}</button>\`, [
     () => running = true, // start
     () => running = false, // stop
-    () => { seconds = 0; running = false; }, // reset
+    () => (seconds = 0, running = false), // reset
   ], (v) => ({ seconds, running } = v));
   text(1, () => Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0"));
   bind(2, "disabled", () => running);
@@ -255,8 +250,7 @@ const KINDS = {
   const num = (x) => Math.round(x * 100) / 100;
   text(1, () => {
     const v = src.map((e) => e.m());
-    const total = num(v.reduce((a, b) => a + b));
-    return f == 2 ? src.map((e, i) => e.p(num(v[i]))).join("; ") : pre + ": " + (f ? v.map(num).join(" + ") + " = " : "") + total;
+    return f == 2 ? src.map((e, i) => e.p(num(v[i]))).join("; ") : pre + ": " + (f ? v.map(num).join(" + ") + " = " : "") + num(v.reduce((a, b) => a + b));
   });
   // The sources, as distances back from this widget. A source's digest runs this line too.
   src = src.map((k) => (k = "w" + (id.slice(1) - k), W[k].push(...w), E[k]));`,
