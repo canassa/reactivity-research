@@ -281,3 +281,57 @@ script at sizes 4, 16 and 64), and fails locality:
   and on a form that is one component it makes work linear in the form. Nothing smaller than the
   whole form exists in it unless the compiler draws one. Passing needs the component boundaries
   the unit grain draws.
+
+## big-table
+
+`scenarios/big-table/tea-local.js` runs the strategy on N data tables, each with 1,000 to 11,000
+rows. It is the first scenario where a component owns a list that grows with the data, not with
+the app.
+
+- **One instance per table.** The table is a TEA component: its model
+  `{ rows, selected, nextId, rng }` lives in the instance's closure, an event sends a real
+  message to it, its reducer (a jump table with one arm per operation and per row control,
+  written out from the table's description) runs, then its binding list re-runs. Constructors
+  0-2 are the external events (`serverRows`, `serverUpdate`, `serverDelete`), then the toolbar,
+  then the row controls at `base + column`. A snapshot sets every instance's model.
+- **The binding list has three bindings, each skipping when nothing changed:** the rows (the
+  keyed list, written only if `m.rows` is not the array already on screen), each row's cells (a
+  patch per row *object* that changed), and the selection marker (moved between two rows found
+  by key, so O(1)). A select changes only `selected`, so it touches no row.
+- **Rows are not instances (decided, with the reasons).** The strategy at the row grain would
+  give every row a closure, a model and a watcher list: 10,000 of them for js-framework-benchmark's
+  "create 10,000 rows", which is the case it is calibrated on. It would also scatter the data
+  the table's own operations (sort, swap, `updateEvery`, `removeChecked`, `serverRows`, a
+  snapshot) need whole, so each would gather and scatter across instances. The only messages that
+  would gain are the row's own edits (toggle, bump): select and remove change the table's
+  `selected` and membership, so in TEA they are the parent's messages anyway. A row is therefore
+  a plain object in the model and a `<tr>` on the page, as the todo and feed rows of the
+  dashboards. No chunking of rows into groups was tried.
+- **Events:** toolbar buttons are wired by position (`wire`); the rows' controls by one
+  delegated `click` listener on the table body (`rowEvents`), which sends `base + the control's
+  cell index` with the row's key. One listener per table, not one per row.
+- **Runtime addition:** `template/table.js` (opt-in, counted as runtime): `keyed` (rows are
+  nodes, `get(id)`), `mark`, `rowEvents`. The number and date formatters, the PRNG step and the
+  reducer steps of the external events are generic app helpers (`tables/frame.js`).
+- **Loops, not callbacks, for scans.** `./rr work` counts function calls, so the O(rows) scans in
+  reducers (find a row, drop ids, apply server changes) are plain loops. Calls therefore
+  understate scan work; `blocks` counts some of it, but not the plain walk of the keyed list.
+
+### Results
+
+- `./rr check big-table tea-local` passes at sizes 1, 4, 16 and 64 with seeds 1-3, locality
+  included: 1.0x from N=16 to 256 (median 17 calls, 17 at both ends). Builds are byte-identical.
+- Calls per local action are flat in N (select 10, swap 11, remove 14, toggle 17, bump 25,
+  `serverUpdate` 53); only the snapshot grows (27,367 to 36,071, global).
+- **Rows axis** (N=16, `--rows 1000` against `10000`, calls): select 10 to 10, remove 14 to 14,
+  `serverDelete` 12 to 12, `serverUpdate` 53 to 53, toggle 17 to 17, bump 25 to 25, swap 11 to 11.
+  `updateEvery` is proportional: 311 to 3011 (t1), 1511 to 15011 (t3), 515 to 5015 (t4). Create,
+  append, sort and `serverRows` are proportional (about 7 calls per row in table 1, 19 in table 3).
+  These flat call counts hide scans that are loops: remove, toggle, bump, `serverUpdate` and
+  `serverDelete` slice or filter the rows array and walk the keyed list, O(rows) with no calls
+  (blocks for remove: 2,021 to 20,021). Select and swap have no scan: select binds nothing to
+  the rows, swap's rows walk only reorders.
+- **Bytes** (brotli, mean of 3 seeds): N=1 2230, 16 6592, 64 14488, 256 41256. Fit 4182 B +
+  147.6 B per table over N >= 4 (3562 + 151.2 over all sizes). Runtime 887 B (874 at N=1), HTML
+  about 145 B; the rest is app code. The per-table cost is its pools, row builder, row template,
+  patch and reducer arms.
