@@ -12,6 +12,7 @@ commands:
   measure    build every size and seed and write sizes into results/
   serve      build, serve with the dispatch panel, expose through cloudflared
   check      quick aid: run the interaction script on one small build in headless Chrome
+  work       count the JavaScript calls one event costs against N: local or global work
   plots      build the plots page from results/ and serve it
   report     measure every run in runs.json (only what changed), then serve the plots
 
@@ -19,6 +20,7 @@ selection options:
   --size N --seed S                    (generate, build, serve; generate and build take lists: --size 1,2,4)
   --jobs N                             (generate, build, measure, report) parallel builds, default min(32, cores)
   --sizes 1,2,4 --seeds 1,2            (measure; default: the scenario's own lists)
+  --sizes 16,64 --seeds 1,2 --runs R   (work; default 16,32,64,128,256 and seed 1; R fresh pages per count, default 2)
   --force                              (measure, report) remeasure even if nothing changed
   plus the scenario's options and each emitter's own options (./rr help <scenario>)
 
@@ -44,6 +46,8 @@ export async function main(argv) {
         return await (await import("./check.js")).checkCommand(rest);
       case "report":
         return await (await import("./report.js")).reportCommand(rest);
+      case "work":
+        return await (await import("./work.js")).workCommand(rest);
       case "plots":
         return await (await import("./plots.js")).plotsCommand(rest);
       case "help":
