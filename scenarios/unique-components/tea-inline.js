@@ -142,24 +142,14 @@ function widgetFile(w, reads) {
   const build = []; // construction lines
   const bindings = []; // { code, own, cross, name }
   const actions = []; // thunks writing the handlers, once the binding groups are known
-  const consts = []; // option lists
   const lists = {}; // list field -> its variable
   const crossIds = new Set();
-  const optionNames = {};
 
   const bind = (mk, name) => {
     const deps = { own: new Set(), cross: new Set() };
     const code = mk(deps);
     deps.cross.forEach((c) => crossIds.add(c.split(".")[0]));
     bindings.push({ code, own: [...deps.own], cross: [...deps.cross], name });
-  };
-
-  const optionsOf = (f) => {
-    if (!optionNames[f.name]) {
-      optionNames[f.name] = "o" + cap(f.name);
-      consts.push(`const ${optionNames[f.name]} = ${literal(f.options)};`);
-    }
-    return optionNames[f.name];
   };
 
   const attrs = (o) => `{ ${Object.entries(o).map(([k, v]) => `${/^\w+$/.test(k) ? k : str(k)}: ${v}`).join(", ")} }`;
@@ -189,8 +179,9 @@ function widgetFile(w, reads) {
         case "toggle": lines.push(`${v} = !${v};`); break;
         case "reset": lines.push(`${v} = ${literal(f.initial)};`); break;
         case "cycle": {
-          const o = optionsOf(f);
-          lines.push(`${v} = ${o}[(${o}.indexOf(${v}) + 1) % ${o}.length];`);
+          // The option after the current one, wrapping around: the compiler knows the options.
+          const o = f.options;
+          lines.push(`${v} = ${o.map((x, i) => `${v} === ${str(o.at(i - 1))} ? ${str(x)} : `).slice(0, -1).join("")}${str(o.at(-1))};`);
           break;
         }
         case "push": case "pushText": {
@@ -440,7 +431,6 @@ function widgetFile(w, reads) {
   const body = [
     "const s = model[widget];",
     ...readIds.map((x) => `const ${x} = model[${pos(x)}];`),
-    ...consts,
     "// The DOM, built once from its markup; the elements the code refers to, in document order.",
     `const [${Array.from(refs, (r) => r || "").join(", ")}] = section(parent, widget, ${str(html)});`,
     ...build,
