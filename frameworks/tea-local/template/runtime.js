@@ -21,8 +21,9 @@ function flush() {
   pending.clear();
 }
 
-// Resolves after the pending flush (it was queued first), so the DOM is current.
-export const settled = () => new Promise((resolve) => queueMicrotask(resolve));
+// Resolves after the pending flush (it was queued first), so the DOM is current: the promise's
+// resolve function is the microtask.
+export const settled = () => new Promise(queueMicrotask);
 
 // ---------------------------------------------------------------------------------------------
 // DOM: built once (by createElement calls or from a static template); every later write is
@@ -135,12 +136,10 @@ export function list(parent, build, patch) {
       if (!r) {
         r = build(item);
         r[0].dataset.key = item.id;
-        patch(r, item);
-      } else {
-        rows.delete(item.id);
-        if (r.item !== item) patch(r, item);
       }
-      r.item = item;
+      // A new row has no item yet, so it is patched too.
+      if (r.item !== item) patch(r, (r.item = item));
+      rows.delete(item.id);
       next.set(item.id, r);
       moved ||= r[0] !== nodes[order.length];
       order.push(r[0]);
