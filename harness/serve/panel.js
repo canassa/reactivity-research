@@ -7,14 +7,16 @@
 // It knows no scenario: it uses the scenario's spec module (update, render, panelEvents) and the
 // interaction script from the spec.
 
-const SPEC_MODULE = "/__rr/spec.js";
+// The page may be served under a path prefix (./rr hub); the server injects it as window.__rrBase.
+const BASE = window.__rrBase || "/";
+const SPEC_MODULE = `${BASE}__rr/spec.js`;
 const hooks = window.__rrHooks;
 const on = (el, type, fn, opts) => hooks.orig.add.call(el, type, fn, opts);
 const wait = (ms) => new Promise((r) => hooks.orig.setTimeout(r, ms));
 
 const ref = await import(SPEC_MODULE);
-const spec = await (await fetch("/__rr/spec.json")).json();
-const variant = document.currentScript?.dataset.variant || location.pathname.split("/").filter(Boolean)[0];
+const spec = await (await fetch(`${BASE}__rr/spec.json`)).json();
+const variant = location.pathname.slice(BASE.length).split("/").filter(Boolean)[0];
 const app = window.rr;
 const root = document.getElementById("root");
 

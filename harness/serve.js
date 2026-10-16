@@ -14,12 +14,12 @@ import { serveUntilInterrupted } from "./tunnel.js";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 
-const TYPES = {
+export const TYPES = {
   ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8",
   ".json": "application/json; charset=utf-8", ".map": "application/json; charset=utf-8", ".svg": "image/svg+xml",
 };
 
-function send(res, status, body, type = "text/plain; charset=utf-8") {
+export function send(res, status, body, type = "text/plain; charset=utf-8") {
   res.writeHead(status, { "content-type": type, "cache-control": "no-store" });
   res.end(body);
 }
@@ -29,15 +29,16 @@ function sendFile(res, file) {
   send(res, 200, fs.readFileSync(file), TYPES[path.extname(file)] || "application/octet-stream");
 }
 
-// The built page with the hooks first in <head> and the panel at the end of <body>.
-function injectPanel(html) {
+// The built page with the hooks first in <head> and the panel at the end of <body>. `base` is
+// the path prefix the apps are served under ("/" for ./rr serve).
+function injectPanel(html, base) {
   return html
-    .replace(/<head>/i, `<head>\n    <script src="/__rr/hooks.js"></script>`)
-    .replace(/<\/body>/i, `  <link rel="stylesheet" href="/__rr/panel.css" />\n    <script type="module" src="/__rr/panel.js"></script>\n  </body>`);
+    .replace(/<head>/i, `<head>\n    <script>window.__rrBase = ${JSON.stringify(base)};</script>\n    <script src="${base}__rr/hooks.js"></script>`)
+    .replace(/<\/body>/i, `  <link rel="stylesheet" href="${base}__rr/panel.css" />\n    <script type="module" src="${base}__rr/panel.js"></script>\n  </body>`);
 }
 
-function comparePage(scenario, options, variants) {
-  const frames = variants.map((v) => `<figure><figcaption><a href="/${v}/">${v}</a></figcaption><iframe src="/${v}/"></iframe></figure>`).join("\n");
+function comparePage(scenario, options, variants, base) {
+  const frames = variants.map((v) => `<figure><figcaption><a href="${base}${v}/">${v}</a></figcaption><iframe src="${base}${v}/"></iframe></figure>`).join("\n");
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${scenario} side by side</title>
@@ -66,8 +67,9 @@ export async function prepareServe(scenario, emitters, scenarioOptions, emitterO
   return { spec, variants: [...apps.keys()], handler: serveHandler(scenario, spec, apps) };
 }
 
-// The request handler for built apps (variant name → dist directory) of one spec.
-export function serveHandler(scenario, spec, apps) {
+// The request handler for built apps (variant name → dist directory) of one spec. It sees paths
+// relative to `base`, the prefix the apps are served under ("/" unless mounted, as by ./rr hub).
+export function serveHandler(scenario, spec, apps, base = "/") {
   const specJson = JSON.stringify(spec);
   const variants = [...apps.keys()];
 
@@ -76,10 +78,10 @@ export function serveHandler(scenario, spec, apps) {
     const parts = decodeURIComponent(url.pathname).split("/").filter(Boolean);
     if (parts.length === 0) {
       if (variants.length === 1) {
-        res.writeHead(302, { location: `/${variants[0]}/` });
+        res.writeHead(302, { location: `${base}${variants[0]}/` });
         return res.end();
       }
-      return send(res, 200, comparePage(scenario.name, spec.options, variants), TYPES[".html"]);
+      return send(res, 200, comparePage(scenario.name, spec.options, variants, base), TYPES[".html"]);
     }
     if (parts[0] === "__rr") {
       const name = parts.slice(1).join("/");
@@ -91,13 +93,13 @@ export function serveHandler(scenario, spec, apps) {
     const dist = apps.get(parts[0]);
     if (!dist) return send(res, 404, "not found");
     if (parts.length === 1 && !url.pathname.endsWith("/")) {
-      res.writeHead(302, { location: `/${parts[0]}/` });
+      res.writeHead(302, { location: `${base}${parts[0]}/` });
       return res.end();
     }
     const rel = parts.slice(1).join("/") || "index.html";
     const file = path.join(dist, rel);
     if (!file.startsWith(dist + path.sep)) return send(res, 403, "forbidden");
-    if (rel === "index.html") return send(res, 200, injectPanel(fs.readFileSync(file, "utf8")), TYPES[".html"]);
+    if (rel === "index.html") return send(res, 200, injectPanel(fs.readFileSync(file, "utf8"), base), TYPES[".html"]);
     return sendFile(res, file);
   };
 }

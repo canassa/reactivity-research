@@ -12,6 +12,7 @@ commands:
   measure    build every size and seed and write sizes into results/
   serve      build, serve with the dispatch panel, expose through cloudflared
   check      quick aid: run the interaction script on one small build in headless Chrome
+  hub        one long-lived address for the plots and every app (reloads on code changes)
   work       count the JavaScript calls one event costs against N: local or global work
   plots      build the plots page from results/ and serve it
   report     measure every run in runs.json (only what changed), then serve the plots
@@ -42,6 +43,8 @@ export async function main(argv) {
         return await (await import("./measure.js")).measureCommand(rest);
       case "serve":
         return await (await import("./serve.js")).serveCommand(rest);
+      case "hub":
+        return await (await import("./hub.js")).hubCommand(rest);
       case "check":
         return await (await import("./check.js")).checkCommand(rest);
       case "report":
