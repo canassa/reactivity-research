@@ -98,8 +98,8 @@ function op(o, fields) {
     case "toggle": return { e: `${L} = !${L}` };
     case "reset": return { e: `${L} = ${lit(f.initial)}` };
     case "cycle": return { e: `${L} = nx(${lit(f.options)}, ${L})` };
-    // The trimmed draft goes in `t`, the handler's parameter: a click handler has no use for the
-    // element it is given.
+    // The trimmed draft goes in `t`, the handler's parameter, which it is called without (it
+    // reads its control, when it needs it, from `X`).
     case "push": return { e: `(t = ${F(o[2])}.trim()) && (add(${L}, t), ${F(o[2])} = "")`, t: 1 };
     case "pushText": return { e: `add(${L}, ${lit(o[2])})` };
     case "pop": return { e: `${L}.pop()` };
@@ -110,7 +110,8 @@ function op(o, fields) {
   throw new Error(`digest: unknown op ${kind}`);
 }
 
-// A message's handler, as an arrow function of (element, key of the nearest data-key).
+// A message's handler, as an arrow function. It reads its control from `X`, which the runtime sets
+// to the event's target before it calls the handler.
 function handler(m, fields) {
   const L = F(m.field);
   switch (m.kind) {
@@ -121,13 +122,13 @@ function handler(m, fields) {
     case "input": {
       // A number input sends only an integer within the field's range (the README's rule).
       const f = fields[m.field];
-      return f.type === "int" ? `(t) => Number.isInteger((t = t.valueAsNumber)) && t >= ${f.min} && t <= ${f.max} && (${L} = t)` : `(t) => ${L} = t.value`;
+      return f.type === "int" ? `(t) => Number.isInteger((t = X.valueAsNumber)) && t >= ${f.min} && t <= ${f.max} && (${L} = t)` : `() => ${L} = X.value`;
     }
-    case "check": return `(t) => ${L} = t.checked`;
-    case "select": return `(t) => ${L} = t.value`;
+    case "check": return `() => ${L} = X.checked`;
+    case "select": return `() => ${L} = X.value`;
     // An item control's handler is created with its item and reads `r.i`, the item's current
     // value (the very object in the list).
-    case "item": return m.op === "remove" ? `() => ${L} = ${L}.filter((i) => i != r.i)` : `(t) => r.i.done = t.checked`;
+    case "item": return m.op === "remove" ? `() => ${L} = ${L}.filter((i) => i != r.i)` : `() => r.i.done = X.checked`;
   }
   throw new Error(`digest: unknown message kind ${m.kind}`);
 }
@@ -301,7 +302,7 @@ function appFile(spec) {
   for (let i = 1; i < branches.length; i++) branches[i] = "else " + branches[i];
 
   const body = code.join("\n\n") + "\n\n" + branches.join("\n");
-  const names = ["widget", "bind", "text", "show", "list", "dep", "run", "nx", "add", "L", "C", "O", "W", "T", "S"]
+  const names = ["widget", "bind", "text", "show", "list", "dep", "run", "nx", "add", "L", "C", "O", "W", "T", "S", "X"]
     .filter((x) => new RegExp(`(^|[^\\w.])${x}\\b`, "m").test(body));
   const ids = spec.widgets.map((w) => w.id).join(", ");
 

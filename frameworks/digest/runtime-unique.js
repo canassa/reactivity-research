@@ -19,9 +19,9 @@ let I;
 
 // By widget id: the record of its fields that other code reads (O) and its bindings (W; the list
 // also carries the setter that replaces the widget's whole state, `W[k].s`). T: the time-driven
-// fields' tick functions. S: the state a setter assigns (setters read it instead of taking an
-// argument, so no setter needs a parameter of its own).
-export let O, W, T, S;
+// fields' tick functions. S: the state a setter assigns, and X: the control a handler reads (they
+// read them instead of taking an argument, so none needs a parameter of its own).
+export let O, W, T, S, X;
 
 // Digest a binding list: `run(W[k])` digests widget k after its state changed, its bindings
 // and its readers'. `run(W[k], v)` first replaces the widget's whole state with `v`, through its
@@ -119,9 +119,9 @@ export const dep = (...d) => {
 };
 
 // One delegated handler for clicks and input, on the dashboard element. Handlers read the
-// element they are given, so a checkbox's click and input events (both fire) agree. Only the
+// control from X, so a checkbox's click and input events (both fire) agree. Only the
 // widget the event came from is digested.
-const onEvent = ({ target: t }) => t.h && (t.h(t), run(t.b));
+const onEvent = (e) => (X = e.target).h && (X.h(), run(X.b));
 
 // The program: `defs` is one widget function per widget, in page order (ids w1, w2, …);
 // `receive(msg)` applies an external event and digests the widgets it touched (with `run`).
