@@ -383,11 +383,11 @@ function widgetFile(spec, w) {
   // The binding list (it runs after mount, once `self` and `e` are set).
   fn.push(`  const patch = () => {`);
   if (cx.own) fn.push(`    const m = self.m;`);
-  for (const s of sources) fn.push(`    const m${s.slice(1)} = ${s}.m;`);
+  for (const s of sources) fn.push(`    const m${s.slice(1)} = widgets[${s.slice(1) - 1}].m;`);
   fn.push(...cx.patch.map((l) => "    " + l));
   fn.push(`  };`);
   // The earlier widgets it reads, now watched by its patch.
-  for (const s of sources) fn.push(`  const ${s} = widgets[${s.slice(1) - 1}];`, `  ${s}.watch(patch);`);
+  for (const s of sources) fn.push(`  widgets[${s.slice(1) - 1}].watch(patch);`);
   // The model, and the reducer: one function per message, indexed by its tag.
   fn.push(`  // type Msg = ${msgNames.join(" | ")}`);
   fn.push(`  const self = instance(${lit(spec.initialState.widgets[w.id])}, [`, ...cases.map((c) => `    ${c.replace(/\n/g, "\n    ")},`), `  ], patch);`);
@@ -398,7 +398,7 @@ function widgetFile(spec, w) {
   // render), so a tick right after the gate opens is not missed.
   if (timed.length) fn.push(`  subscribe(self, ${tickIndex}, (m) => ${gate});`);
   fn.push(``);
-  if (feed) fn.push(`  self.notify = (item) => self.send(${notifyIndex}, item);`);
+  if (feed) fn.push(`  self.notify = ${notifyIndex}; // the tag of Notify, sent by the app`);
 
   fn.push(`}`);
   const body = fn.join("\n");
@@ -491,7 +491,7 @@ export function emit(spec) {
 ${spec.widgets.map((w) => `import { ${w.id} } from "./widgets/${w.id}.js";`).join("\n")}
 
 export function App(root) {
-  root.insertAdjacentHTML("beforeend", "<div data-role=dashboard></div>");
+  root.insertAdjacentHTML("beforeend", "<div data-role=dashboard>");
   const main = root.lastChild;
 ${calls.join("\n")}
 
@@ -505,9 +505,11 @@ ${calls.join("\n")}
 ${timed ? `        case "tick":
           for (const tick of running) tick();
           break;
-` : ""}${feeds ? `        case "notify":
-          widgets[msg.widget.slice(1) - 1].notify(msg.item);
+` : ""}${feeds ? `        case "notify": {
+          const feed = widgets[msg.widget.slice(1) - 1];
+          feed.send(feed.notify, msg.item);
           break;
+        }
 ` : ""}        case "snapshot":
           for (const id in msg.state.widgets) widgets[id.slice(1) - 1].set(msg.state.widgets[id]);
           break;
