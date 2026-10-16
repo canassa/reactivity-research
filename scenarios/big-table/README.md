@@ -244,6 +244,10 @@ only: ties stay by id ascending.
 | `toggle` | negate the row's flag | | every flag column |
 | `bump` | add the delta to one number column of the row | | 40% of tables with a number column |
 
+A control of a row that is already gone does nothing: a second click on a remove link in the
+same task, or a click that lands after a server event removed the row but before the page
+caught up (both exercised by `./rr check`'s same-task pass).
+
 The **selection marker** is per table: `class="danger"` (table 1), `class="selected"`,
 `class="active"` or `aria-selected="true"`. An unselected row has no marker attribute.
 

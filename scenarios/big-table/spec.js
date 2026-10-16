@@ -661,7 +661,9 @@ function applyOp(t, ts, op) {
 
 function applyControl(t, ts, ctl, id) {
   const at = ts.rows.findIndex((r) => r.id === id);
-  if (at < 0) throw new Error(`table ${t.id} has no row ${id}`);
+  // A control of a row that is already gone (a second click, or a click after a server event
+  // removed the row, before the page caught up) does nothing.
+  if (at < 0) return ts;
   switch (ctl.kind) {
     case "select": return ts.selected === id ? ts : { ...ts, selected: id };
     case "remove": return without(ts, (r) => r.id !== id);
