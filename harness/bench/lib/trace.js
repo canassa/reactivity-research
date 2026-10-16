@@ -118,13 +118,18 @@ export function analyseLoad(events) {
   if (!nav) throw new Error("no navigationStart before rr-mounted");
   const containing = main.filter((e) => e.ph === "X" && JS_NAMES.has(e.name) && e.ts <= mounted.ts && e.ts + (+e.dur || 0) >= mounted.ts);
   const mountedEnd = Math.max(mounted.ts, ...containing.map((e) => +e.ts + (+e.dur || 0)));
-  const commit = main.find((e) => e.ph === "X" && e.name === "Commit" && e.ts > mountedEnd);
-  if (!commit) throw new Error("no commit after rr-mounted");
+  // The first paint after rr.settled() resolved. An app whose settled() waits a task (beni) has
+  // already painted by then and nothing changes after, so Chrome paints no more: its startup
+  // ends at the last paint before the mark instead (flagged as `paintedBeforeSettled`).
+  let commit = main.find((e) => e.ph === "X" && e.name === "Commit" && e.ts > mountedEnd);
+  const paintedBeforeSettled = !commit;
+  if (!commit) commit = main.filter((e) => e.ph === "X" && e.name === "Commit" && e.ts > nav.ts && e.ts <= mounted.ts).at(-1);
+  if (!commit) throw new Error("no commit after the navigation and around rr-mounted");
   const t0 = +nav.ts, tEnd = +commit.ts + (+commit.dur || 0);
   const pick = (pred) => union(main.filter((e) => e.ph === "X" && e.ts >= t0 && e.ts <= tEnd && pred(e)).map((e) => [+e.ts, +e.ts + (+e.dur || 0)]));
   const script = pick((e) => JS_NAMES.has(e.name) || COMPILE_NAMES.has(e.name));
   const compile = pick((e) => COMPILE_NAMES.has(e.name));
-  return { scriptUs: round(script), compileUs: round(compile), totalMs: round((tEnd - t0) / 1000, 4) };
+  return { scriptUs: round(script), compileUs: round(compile), totalMs: round((tEnd - t0) / 1000, 4), ...(paintedBeforeSettled ? { paintedBeforeSettled } : {}) };
 }
 
 const round = (x, d = 1) => Math.round(x * 10 ** d) / 10 ** d;
