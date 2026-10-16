@@ -267,14 +267,13 @@ function widgetModule(w) {
           }
           if (n.disabled) {
             const d = new Set();
-            use("prop");
-            bind(sc, d, `prop(${b}, "disabled", ${ex(n.disabled, d)});`);
+            use("setDisabled");
+            bind(sc, d, `setDisabled(${b}, ${ex(n.disabled, d)});`);
           }
           E(`onClick(${b}, ${W}, ${tag(n.msg)});`);
           break;
         }
         case "input": {
-          use("prop");
           const m = msgOf(n.msg);
           const f = fieldOf(m.field);
           if (n.label) {
@@ -283,16 +282,16 @@ function widgetModule(w) {
           }
           const i = node();
           if (f.type === "int") {
-            use("onInt");
+            use("onInt", "setNumber");
             h += `<input type=number data-role=${n.msg}>`;
             // Only an integer within range becomes a message; anything else stays as typed.
             E(`onInt(${i}, ${W}, ${tag(n.msg)}, ${f.min}, ${f.max});`);
-            bind(sc, new Set([own(f.name)]), `prop(${i}, "valueAsNumber", s.${f.name});`);
+            bind(sc, new Set([own(f.name)]), `setNumber(${i}, s.${f.name});`);
           } else {
-            use("onInput");
+            use("onInput", "setValue");
             h += `<input type=text data-role=${n.msg}${n.placeholder ? ` placeholder="${esc(n.placeholder)}"` : ""}>`;
             E(`onInput(${i}, ${W}, ${tag(n.msg)});`);
-            bind(sc, new Set([own(f.name)]), `prop(${i}, "value", s.${f.name});`);
+            bind(sc, new Set([own(f.name)]), `setValue(${i}, s.${f.name});`);
           }
           if (n.label) h += `</label>`;
           if (n.invalid) {
@@ -306,17 +305,17 @@ function widgetModule(w) {
           break;
         }
         case "check": {
-          use("onCheck", "prop");
+          use("onCheck", "setChecked");
           const m = msgOf(n.msg);
           node();
           const i = node();
           h += `<label><input type=checkbox data-role=${n.msg}>${esc(n.label)}</label>`;
           E(`onCheck(${i}, ${W}, ${tag(n.msg)});`);
-          bind(sc, new Set([own(m.field)]), `prop(${i}, "checked", s.${m.field});`);
+          bind(sc, new Set([own(m.field)]), `setChecked(${i}, s.${m.field});`);
           break;
         }
         case "select": {
-          use("onInput", "prop");
+          use("onInput", "setValue");
           const m = msgOf(n.msg);
           if (n.label) {
             node();
@@ -331,7 +330,7 @@ function widgetModule(w) {
           h += `</select>`;
           if (n.label) h += `</label>`;
           E(`onInput(${e}, ${W}, ${tag(n.msg)});`);
-          bind(sc, new Set([own(m.field)]), `prop(${e}, "value", s.${m.field});`);
+          bind(sc, new Set([own(m.field)]), `setValue(${e}, s.${m.field});`);
           break;
         }
         case "list": {
@@ -351,7 +350,7 @@ function widgetModule(w) {
           L(`  const r = html(${J(trimTemplate(row))});`);
           L(`  r[0].dataset.key = item.id;`);
           if (n.check) {
-            use("onCheck", "prop");
+            use("onCheck", "setChecked");
             L(`  onCheck(${box}, ${W}, ${tag(n.check)}, item.id);`);
           }
           if (n.remove) {
@@ -360,7 +359,7 @@ function widgetModule(w) {
           }
           if (n.check) {
             L(`  return [r[0], (item) => {`);
-            L(`    prop(${box}, "checked", item.done);`);
+            L(`    setChecked(${box}, item.done);`);
             L(`    setText(${label}, item.text);`);
             L(`  }];`);
           } else L(`  return [r[0], (item) => setText(${label}, item.text)];`);

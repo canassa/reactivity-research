@@ -107,6 +107,16 @@ export function prop(n, key, value) {
   if (n[key] !== value) n[key] = value;
 }
 
+// The same for the common properties, each named once: `setValue(n, v)` is
+// `prop(n, "value", v)`.
+const setter = (key) => (n, value) => {
+  if (n[key] !== value) n[key] = value;
+};
+export const setValue = setter("value");
+export const setNumber = setter("valueAsNumber");
+export const setChecked = setter("checked");
+export const setDisabled = setter("disabled");
+
 // Conditional content, built once with the rest of its component. The returned
 // `show(on, s, d, w)` swaps it for an empty comment when it hides, puts it back (patched with
 // every bit) when it shows, and while it stays runs its own static `patch(s, d, w)`.
