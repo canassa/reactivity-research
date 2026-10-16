@@ -47,7 +47,7 @@ const WIDGET_FILE = `import { schedule } from "../runtime.js";
 // document order.
 export function section(parent, i, html) {
   parent.insertAdjacentHTML("beforeend", \`<section data-key=w\${i} data-role=widget>\${html}</section>\`);
-  return [parent.lastChild, ...parent.lastChild.querySelectorAll("*")];
+  return parent.lastChild.querySelectorAll("*");
 }
 
 // Schedule every binding of a widget for its first render, and return its \`load\` for serverSet
@@ -63,6 +63,10 @@ export const loader = (s, all) => (
 
 // A new list item's id: one more than the largest.
 export const nextId = (items) => items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
+
+// The widgets by number, from 1: each widget's module adds its function when the app imports it,
+// in page order.
+export const W = [,];
 
 `;
 
@@ -380,8 +384,7 @@ function widgetFile(w, reads) {
     throw new Error(`unknown view node ${n.el}`);
   }
 
-  // The section itself (element 0) is written by `section`: the markup is what goes inside.
-  count = 1;
+  // The section itself is written by `section`: the markup is what goes inside, from element 0.
   element("h2", {}, w.label);
   for (const n of w.view) node(n);
 
@@ -458,11 +461,12 @@ function widgetFile(w, reads) {
   const rt = ["el", "text", "prop", "on", "when", "list", "schedule"].filter((n) => new RegExp(`\\b${n}\\(`).test(text));
   const wi = ["section", "loader", "nextId"].filter((n) => new RegExp(`\\b${n}\\(`).test(text));
   return `import { ${rt.join(", ")} } from "../runtime.js";
-import { ${wi.join(", ")} } from "./widget.js";
+import { ${["W", ...wi].join(", ")} } from "./widget.js";
 
-export function ${w.id}(parent, model, R, widget) {
+// Widget ${w.id}.
+W.push((parent, model, R, widget) => {
 ${text}
-}
+});
 `;
 }
 
@@ -491,17 +495,14 @@ ${ticking.map((w) => `        views[${pos(w.id)}].tick();`).join("\n")}
   const readers = {};
   for (const [wid, fs] of Object.entries(reads)) readers[pos(wid)] = Object.fromEntries([...fs].map((f) => [f, []]));
   const imports = [`import { flush, cancel } from "./runtime.js";`,
-    ...spec.widgets.map((w) => `import { ${w.id} } from "./widgets/${w.id}.js";`)];
+    `import { W } from "./widgets/widget.js";`,
+    ...spec.widgets.map((w) => `import "./widgets/${w.id}.js";`)];
 
   return `${imports.join("\n")}
 
-// The initial model (TEA's \`init\`: its widgets by number, from 1), fresh for every mount.
-function init() {
-  return [, ${literal(spec.widgets.map((w) => spec.initialState.widgets[w.id]), "  ").slice(1)};
-}
-
 export function start(root) {
-  const model = init();
+  // The initial model (TEA's \`init\`: its widgets by number, from 1), fresh for every mount.
+  const model = [, ${literal(spec.widgets.map((w) => spec.initialState.widgets[w.id]), "  ").slice(1)};
   // The dashboard, from its markup like every widget.
   root.insertAdjacentHTML("beforeend", "<div data-role=dashboard></div>");
   const board = root.lastChild;
@@ -511,7 +512,7 @@ export function start(root) {
   // Every widget in page order, given its number (widget \`wN\` is number N, its position from 1:
   // its slice of the model is \`model[N]\`, its handle \`views[N]\`; \`map\` skips the hole at 0). A
   // handle has \`load\` for serverSet and snapshot, and the widget's external arms.
-  const views = [, ${spec.widgets.map((w) => w.id).join(", ")}].map((widget, i) => widget(board, model, R, i));
+  const views = W.map((widget, i) => widget(board, model, R, i));
   flush();
 
   // The arms of update still reached by a message: external events.

@@ -121,10 +121,10 @@ the options. A widget's whole markup, conditional sections included, is one stat
 that `section` parses once; the code takes the elements it uses by document order
 (`const [, , i1, , g1] = section(parent, widget, "...")`). Widgets are numbered in page order
 (`wN` is number N): the initial model is an array by number, each widget gets its number as a
-parameter (its section's key, its slice `model[N]`, its readers `R[N]`), and the app mounts
-them with one `map` over the list of widget functions, so no widget's id is spelled out. The
-only generic code beyond the runtime is three helpers in `widgets/widget.js` (`section`,
-`loader`, `nextId`).
+parameter (its section's key, its slice `model[N]`, its readers `R[N]`). Each widget module adds
+its function to the array `W` when the app imports it, in page order, and the app mounts them
+with one `W.map`, so no widget is named or numbered in the bundle. The only generic code beyond
+the runtime is three helpers in `widgets/widget.js` (`section`, `loader`, `nextId`) and `W`.
 
 What did not help here: building list rows from a parsed template (more bytes than
 `el(...)` calls), a single binding as a bare function instead of a one-item group, and moving
