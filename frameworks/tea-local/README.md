@@ -378,3 +378,97 @@ and modals mount and unmount. It adds `template/routed.js` (opt-in, counted as r
   the "All pages" menu grows (35 to 275, global by nature).
 - **Bytes** (brotli, 3 seeds): N=1 about 2.2 kB, 16 about 9.4 kB, 64 about 26.7 kB, 256 about
   77.8 kB. Fit 4364 B + 295.9 B per page (R2 0.991). Runtime 923 B, HTML about 142 B.
+
+## derived-graph
+
+`scenarios/derived-graph/tea-local.js` runs the strategy on a planning sheet: N formulas over
+inputs, displays that read them, and one table of items (2,000 by default) that aggregates are
+computed over. A formula may read any earlier value, so the graph is a DAG with hubs (a value read
+by up to 48 sites), not a form of independent fields. New runtime is in `template/graph.js`
+(opt-in, counted as runtime); the items table reuses `table.js`.
+
+### The structure
+
+Nothing is cut by position or by count. The units are the sheet's own:
+
+- **A cell is an instance.** Each input is one (model: its value; an event on its control sends it
+  a real message, and its binding list writes the control), each formula is one (model: its last
+  value) and the items section is one (`{ items, markup, nextId, rng }`). About 1.5 N + 1
+  instances.
+- **A formula is a reader.** It watches the cells its expression reads (`readsOf`, which the
+  compiler sees in the expression). When one of them changes it is sent its one message, whose arm
+  recomputes the value from the sources' current models (`$a.m * 310 + Math.floor($b.m / 2)`).
+  The model is a cache the compiler keeps so that a value read by many bindings is computed once.
+- **A unit's displays are the binding list of its formula's instance.** It re-runs whole when its
+  formula changes, or when a cell that only its displays read changes (then the formula is not
+  recomputed: the displays subscribe the instance's `patch`, the formula its `refresh`). Every
+  write is skipped when the text or property is unchanged.
+- **The flush runs jobs by rank** (`graph.js`). A cell's rank is its creation order, a
+  topological order of the DAG, and a job scheduled during the flush always ranks after the one
+  running. So a formula is recomputed once, after everything it reads has settled: no stale read,
+  no repeated recompute in a diamond. `schedule` keeps a sorted list and queues one microtask.
+- **The unchanged-value case.** `set(next)` returns when `next === self.m`, so a formula whose
+  value did not change does not run its binding list and tells nobody. A list, top-k or group cell
+  is an array and `keep(m, v)` returns the old array when the new one holds the same items. The
+  readers do not run: the cut-off input costs 14 calls when its bool keeps its value and 50 when
+  it flips (the bool's four displays and `toggleCell`).
+- **Quiet arms.** Two messages of the items instance, a note and the markup, change nothing a
+  formula reads. The compiler knows that (no expression reads `note`, only the rows read the
+  markup), so those arms are declared `quiet`: the instance patches its rows and does not tell its
+  readers. This is static knowledge of what a message touches, not dependency tracking at run
+  time, but it is the one place the strategy leans on analysis. Without it every keystroke in a
+  note recomputes every formula over the items: 44,246 calls at N=16 and 448,814 at N=256
+  (against 31 and 31), 10.1x, a locality failure; the markup 52,224 and 427,003 (8.2x).
+- **Formulas are code.** Each expression is compiled into its arm with the precedence of each
+  operator (parentheses only where needed). Generic helpers take the formula's function (`sum`,
+  `avg`, `maxOf`, `top`, `groupSum`), in the ordinary array-method form.
+- **Cross-unit reads are variables** (`$dutyOwed.m`), declared at the top of the page function, as
+  a compiler would reference an earlier cell. The inputs are also in an `inputs` object, by name,
+  so `serverInputs` and a snapshot reach only the cells they name.
+- **Rows are not instances** (the big-table reasoning): plain objects and `<tr>` nodes, the
+  minimal-move keyed table, one delegated listener per event type on the body. The top-k lists use
+  the runtime's keyed `list`; one whose key reads a scalar cell is rewritten on each patch (its
+  rows are made fresh), so a changed scalar reaches rows whose item did not change.
+- **External events.** `serverInputs` sets the named inputs, `serverItems` is a message of the
+  items instance, a snapshot sets every input and the items instance; the formulas follow.
+
+### Results
+
+- `./rr check derived-graph tea-local` passes at sizes 1, 4, 16 and 64 with seeds 1-3, and at size
+  16 with `--fanout low` and `high`, locality included: 1.0x from N=16 to 256 (64 to 1024), median
+  65 calls (52-68 across seeds, 54 at `low`, 85 at `high`). Builds are byte-identical. The other
+  scenarios' tea-local checks still pass.
+- **Work over N** (`./rr work`, seed 1, calls, N=16 and 256, 2,000 items). The local actions are
+  flat: chain input 82 and 82, cut-off unchanged 14, flipped 50, flipped back 899, filter select
+  2,839, toggle 30, threshold 14,178, markup 8,009, note 31, `serverInputs` of the closed inputs
+  20,626. The global ones grow, as the contract expects: hub input 2,270 to 78,920 (34.8x), a
+  quantity 49,266 to 526,664 (10.7x), toggle active 49,058 to 523,886, add one 52,886 to 463,575,
+  remove one 53,227 to 533,578, `serverItems` 55,241 to 536,136, snapshot 83,549 to 498,613 (6x).
+  An item edit re-sums every aggregate that reads the items: each of the 65 formulas over the items
+  at N=256 re-runs once (not once per reader), but each is O(rows). That is the coarse
+  per-instance subscription (no per-field tracking); an incremental aggregate would not pay it.
+- **Work over rows** (N=64, 1,000 against 10,000 items). Flat: chain input 82 and 82, cut-off 14
+  and 14 (flip 50 and 50), toggle 30, note 31. Proportional: filter select 1,447 to 14,101, flip
+  back 469 to 4,079, threshold 6,495 to 83,410, markup 4,009 to 40,009 (one cell per row),
+  `serverInputs` 9,692 to 121,625, hub input 12,043 to 112,436 (some of the hub's readers are
+  filters over the items, which re-run), a quantity 54,704 to 577,961, add 55,792 to 576,162,
+  snapshot 63,910 to 649,599.
+- **Bytes** (brotli, mean of seeds 1-3; the table was measured into `/tmp/rr-dg5-measure-*`, not
+  committed):
+
+  | fanout | 1 | 4 | 16 | 64 | 256 | baseline + slope (N >= 16) |
+  |---|---|---|---|---|---|---|
+  | low | 2749 | 3082 | 4450 | 8055 | 20840 | 3541 B + 67.9 B |
+  | mid | 2763 | 3160 | 4738 | 9369 | 26759 | 3406 B + 91.5 B |
+  | high | 2802 | 3278 | 5187 | 11441 | 35914 | 3204 B + 127.9 B |
+
+  The runtime is 1.21-1.28 kB brotli (`runtime.js`, `graph.js` and the keyed table together)
+  and the HTML about 145 B. Only the displays differ between the fanouts, so the difference in
+  slope (67.9, 91.5, 127.9 B per unit) is the price of read edges: a unit has 1, 4 or 10 more
+  display reads, each one a template-literal fragment and, for a cell the unit does not own, one
+  entry in the `shown` list.
+- **Not built, and why.** A formula computed inside the binding list (no cached value) would
+  run the O(rows) aggregates whenever any display source changed, and each of its readers would
+  compute it again. The split into `refresh` and `patch` subscriptions is what keeps a display-only
+  dependency from recomputing a formula, and the cached model is what lets a value read by 48 sites
+  be computed once. The one dead end measured is the items instance without `quiet` arms (above).
