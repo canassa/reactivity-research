@@ -1,0 +1,17 @@
+{
+  "name": "%NAME%",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "marko": "%marko%"
+  },
+  "devDependencies": {
+    "@marko/vite": "%@marko/vite%",
+    "vite": "%vite%"
+  }
+}

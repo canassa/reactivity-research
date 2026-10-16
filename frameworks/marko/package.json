@@ -1,0 +1,11 @@
+{
+  "name": "rr-framework-marko",
+  "private": true,
+  "type": "module",
+  "description": "Pinned Marko 6 toolchain shared by every Marko emitter",
+  "dependencies": {
+    "@marko/vite": "6.1.13",
+    "marko": "6.4.6",
+    "vite": "8.3.4"
+  }
+}
