@@ -6,24 +6,19 @@
 // and the same batching. Keyed lists place their rows with one forward pass (see `list`).
 
 // ---------------------------------------------------------------------------------------------
-// Batching: patches run once each, in one microtask after the messages that scheduled them.
-
-let queued = false;
-let pending = new Set();
+// Batching: patches run once each, in one microtask after the messages that scheduled them. The
+// flush is queued with the first patch scheduled after the last flush. Patches only write the
+// DOM (they never send), so nothing is scheduled while a flush runs.
+const pending = new Set();
 
 export function schedule(patch) {
+  if (!pending.size) queueMicrotask(flush);
   pending.add(patch);
-  if (!queued) {
-    queued = true;
-    queueMicrotask(flush);
-  }
 }
 
 function flush() {
-  queued = false;
-  const work = pending;
-  pending = new Set();
-  for (const patch of work) patch();
+  for (const patch of pending) patch();
+  pending.clear();
 }
 
 // Resolves after the pending flush (it was queued first), so the DOM is current.
@@ -37,8 +32,15 @@ export function element(parent, tag, attrs, content) {
   const node = document.createElement(tag);
   for (const key in attrs) node.setAttribute(key, attrs[key]);
   if (content != null) node.append(content);
-  if (parent) parent.append(node);
+  parent?.append(node);
   return node;
+}
+
+// A static template, parsed once: returns a function that clones its (single) root element.
+export function template(html) {
+  const t = document.createElement("template");
+  t.innerHTML = html;
+  return () => t.content.firstChild.cloneNode(true);
 }
 
 export function on(node, type, handler) {
@@ -62,13 +64,6 @@ export function onInt(node, self, tag, min, max) {
     const n = node.valueAsNumber;
     if (Number.isInteger(n) && n >= min && n <= max) self.send([tag, n]);
   });
-}
-
-// A static template, parsed once: returns a function that clones its (single) root element.
-export function template(html) {
-  const t = document.createElement("template");
-  t.innerHTML = html;
-  return () => t.content.firstChild.cloneNode(true);
 }
 
 // A dynamic text is the only child of `node`: a text node (a placeholder in the template).
