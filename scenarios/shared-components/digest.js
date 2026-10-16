@@ -64,6 +64,8 @@ const KINDS = {
   toggles: {
     args: "l, names, on",
     body: `
+  // The initial state is a bit mask of the switches that are on (bit i: switch i).
+  on = names.map((n, i) => (on >> i) & 1);
   widget("toggles", l, \`<ul>\${names.map((n, i) => \`<li><label><input type=checkbox data-role=toggle data-key=\${i}>\${n}</label></li>\`).join("")}</ul><p data-role=count></p>\`, (v) => ({ on } = v),
     ...names.map((n, i) => (t) => on[i] = t.checked)); // toggle
   // Each item is li, label, input: the i-th checkbox is element 4 + 3i.
@@ -71,7 +73,10 @@ const KINDS = {
   const count = () => on.filter(Boolean).length;
   text(2 + 3 * names.length, () => count() + " of " + names.length + " on");`,
     metric: `{ m: count, p: (n) => n + " on in " + l }`,
-    row: (w, s) => [arr(w.items, html), arr(s.on, bit)],
+    row: (w, s) => {
+      if (s.on.length > 30) throw new Error("digest: a toggles' mask holds 30 switches");
+      return [arr(w.items, html), s.on.reduce((m, on, i) => m | (on ? 1 << i : 0), 0)];
+    },
   },
 
   field: {
