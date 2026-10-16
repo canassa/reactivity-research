@@ -163,7 +163,7 @@ function widgetCode(w, init) {
         const i = n++, p = parts(v.text, reads);
         if (p.code) binds.push(`text(${ref(i)}, () => ${p.code});`);
         on(v.msg);
-        if (v.disabled) binds.push(`bind(${ref(i)}, "disabled", () => ${expr(v.disabled, reads)});`);
+        if (v.disabled) binds.push(`bind(${ref(i)}, () => ${expr(v.disabled, reads)}, "disabled");`);
         return `<button data-role=${v.msg}>${p.html}</button>`;
       }
       case "input": {
@@ -171,7 +171,7 @@ function widgetCode(w, init) {
         if (v.label) n++;
         const i = n++;
         on(v.msg);
-        binds.push(`bind(${ref(i)}, "value", () => ${F(f.name)});`);
+        binds.push(`bind(${ref(i)}, () => ${F(f.name)});`);
         let html = f.type === "int" ? `<input type=number data-role=${v.msg}>`
           : `<input type=text data-role=${v.msg}${v.placeholder ? ` placeholder="${esc(v.placeholder)}"` : ""}>`;
         if (v.label) html = `<label>${esc(v.label)}${html}</label>`;
@@ -185,7 +185,7 @@ function widgetCode(w, init) {
         n++;
         const i = n++;
         on(v.msg);
-        binds.push(`bind(${ref(i)}, "checked", () => ${F(msgs[v.msg].field)});`);
+        binds.push(`bind(${ref(i)}, () => ${F(msgs[v.msg].field)}, "checked");`);
         return `<label><input type=checkbox data-role=${v.msg}>${esc(v.label)}</label>`;
       }
       case "select": {
@@ -194,7 +194,7 @@ function widgetCode(w, init) {
         const i = n++;
         n += f.options.length;
         on(v.msg);
-        binds.push(`bind(${ref(i)}, "value", () => ${F(f.name)});`);
+        binds.push(`bind(${ref(i)}, () => ${F(f.name)});`);
         const html = `<select data-role=${v.msg}>${f.options.map((o) => `<option value="${esc(o)}">${esc(o)}</option>`).join("")}</select>`;
         return v.label ? `<label>${esc(v.label)}${html}</label>` : html;
       }
@@ -206,7 +206,7 @@ function widgetCode(w, init) {
         const inner = [], hs = [];
         if (v.check) {
           item += `<input type=checkbox data-role=${v.check}>`;
-          inner.push(`bind(0, "checked", () => r.i.done)`);
+          inner.push(`bind(0, () => r.i.done, "checked")`);
           hs.push(handler(msgs[v.check], fields));
         }
         inner.push(`text(${v.check ? 1 : 0}, () => r.i.text)`);
