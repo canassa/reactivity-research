@@ -263,3 +263,28 @@ locals (+2 KB at N=256); patch statements sorted by helper; `value += ""` in `se
 per build); `Math.min(s.x + k, max)` operand order; the rating's buttons from `Array.from`;
 choice options by `forEach`; `parent?.append`. Close to the rules, not done: event delegation
 by `data-role` (it would leave a widget's handlers as attributes for a generic routine).
+
+## big-component
+
+The emitter for `big-component` (`scenarios/big-component/tea-dirtybits.js`) has the same
+strategy with one widget of about N fields, which does not fit the one integer of bits the other
+two scenarios use (bitwise operators are 32-bit). What it adds:
+
+- **Dirty words.** A widget's fields are numbered in the order its view first reads them; field
+  `g` is bit `g % 31` of word `g / 31`. The widget's dirty set is a sparse array of words
+  (`dirty.w1[k]`), and an arm marks its fields at compile time as `[word, bits, word, bits…]`
+  (the app ORs them in). Adjacent units sit in the same word, and a binding reads at most the
+  previous 6 units, so nearly every binding reads one word.
+- **A patch per word.** The view returns an array of static patches, one per word, each with
+  the tests of its own bindings. The app runs `patches[id][k]` only for the words set, so an
+  event costs the bindings of one word (31 fields), not of the form. A group of bindings that
+  reads two words (a derived text across a word boundary, a section spanning one) is a
+  function that the patch of each word it reads calls behind a test of both words; running it
+  twice when both are dirty is harmless, as every write is guarded.
+- **Nested patches test the same words** (`d[k] & bits`); `src/words.js` (new in `template/`,
+  included only here, counted as runtime) holds `ALL`, the array of full words (what
+  `serverSet`, `snapshot` and a section shown again pass), and a `branch` that passes it.
+- **Cross-widget reads:** the companion reads three fields of the form; the app patch has one
+  line per read that turns the form's word bit into the companion's.
+- **Locality:** calls per local action are flat from N=16 to 256 (1.00 ratio, 12 to 23 calls);
+  only the whole-state actions (`snapshot`, `serverSet` of the form) grow, as they must.
