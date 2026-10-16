@@ -1,5 +1,5 @@
-// big-component in digest (prototype): compiled dirty checking, one component split into small
-// binding lists.
+// big-component in digest (prototype): compiled dirty checking, the whole form as one binding
+// list (fails locality on purpose: see below).
 //
 // What a compiler for this approach would produce for one big form:
 // - One function per widget (the form, its companion), written out in full from its description:
@@ -7,17 +7,14 @@
 //   handlers (what each message does, as statements), its bindings (one closure per dynamic DOM
 //   property, the derived expressions compiled to JavaScript) and, for a time-driven field, its
 //   tick function. Nothing is kept as data for a generic routine (no op tables, no view trees).
-// - Locality inside the component. A digest that re-ran the whole form's bindings would cost O(N)
-//   per event, so the form's bindings are split into lists, one per section (for what sits
-//   directly in a section, such as its total) and one per fieldset (the group's controls,
-//   displays, conditional sections and summary). A control digests its own list, plus the lists
-//   of the sections and fieldsets that read a field the control writes. The compiler knows both
-//   sides: which fields each list's bindings read, and which fields each control's handler
-//   writes, so it emits `dep(source, ...readers)`: the lists to digest after a control of
-//   `source`. The reads are cross-field but windowed (a field is read by a bounded number of
-//   bindings, all near it), so the lists an event digests stay a constant few, however big the
-//   form. A dependency is between lists: a reader list's own readers are not digested (a
-//   binding never writes state).
+// - One binding list per widget. The form is a flat list of fields with no boundary to split along
+//   (the scenario draws none, and a binding may read any earlier field), so the form's bindings
+//   are one list and an event re-runs all of them, each checking itself. That is digest's
+//   strategy, and it is O(N) per event: `./rr check` fails its locality. The earlier version
+//   split the form along the fieldsets the generator handed it (removed with them). A list per
+//   field unit, with each handler digesting the units' lists its fields feed, would be
+//   tea-inline's mechanism (a compile-time set of bindings per action), so it is not built: see
+//   frameworks/digest/README.md, "big-component".
 // - The companion is another widget with one list; its reads of the form's fields are
 //   dependencies of the form's lists on it, the same wiring.
 // - The runtime (frameworks/digest/runtime-big.js) is generic: a widget built from a template,
@@ -293,10 +290,8 @@ function widgetCode(w, init) {
       }
       case "group": {
         n++;
-        // A fieldset, and a section at the top of the form, have a list of their own.
-        const g = v.tag === "fieldset" || l === root ? newList() : l;
-        const html = `<${v.tag}>${v.children.map((c) => view(c, g)).join("")}</${v.tag}>`;
-        return html;
+        // A wrapper is not a boundary: the form is flat, so the whole widget is one list.
+        return `<${v.tag}>${v.children.map((c) => view(c, l)).join("")}</${v.tag}>`;
       }
     }
     throw new Error(`digest: unknown view node ${v.el}`);
@@ -417,9 +412,9 @@ export function emit(spec) {
       "src/app.js": appFile(spec),
     },
     style: {
-      approach: "compiled dirty checking over small binding lists: an event re-runs the bindings of the section or fieldset its control is in, and of the lists that read a field the control writes, writing a DOM property only when its value changed",
+      approach: "compiled dirty checking over one binding list per widget: an event re-runs all of the widget's bindings (and the lists reading what the control writes, for the companion), writing a DOM property only when its value changed; O(N) per event on the form, so it fails locality",
       components: "one function per widget (the form, its companion), written out in full from its description (state, template, handlers, setter, bindings, tick); no data rows, no interpreter",
-      lists: "one binding list per fieldset, one per section (for its direct bindings, e.g. the total) and one per widget root; the compiler derives from the bindings' reads and the handlers' writes which lists to digest after a control, wired as dep(source, ...readers); direct readers only, nothing copied between lists",
+      lists: "one binding list per widget (the flat form is one list); the compiler derives from the bindings' reads and the handlers' writes which lists to digest after a control, wired as dep(source, ...readers); direct readers only, nothing copied between lists",
       state: "plain mutable variables: locals of the widget's function, module variables for the fields the companion reads, a record for the feed list; external replacements are deep-copied and assigned through the widget's setter",
       templates: "one static HTML string per widget (texts escaped at build time); nodes are found by their position in the template (a distance from the previous binding's), once",
       handlers: "one arrow function per control, given to the controls in document order (a list number moves the controls after it to another list), compiled from the message's ops; small generic helpers (next option, add an item); an int add checks only the bound it can pass",

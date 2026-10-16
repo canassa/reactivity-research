@@ -778,35 +778,52 @@ Differences from `runtime.js`:
 
 ## big-component
 
+**digest fails this scenario's locality check. This is a dead end, kept as the honest result.**
+
 `scenarios/big-component/digest.js` writes the one big form, and its small companion, as one
 function each, as unique-components does (state, template, handlers, setter, bindings, tick; no
-data rows), with `runtime-big.js` as the runtime. What changes is the **granularity of the
-binding lists.** One list for the whole form would make every event re-run all ~N bindings (the
-"honest limit" above, now at full size). So the form has many lists:
+data rows), with `runtime-big.js` as the runtime. The form's bindings are **one list**: an event
+runs its handler, then re-runs every binding of the form, each writing a DOM property only if its
+value changed. The page is correct (`./rr check big-component digest` passes every step at sizes
+1, 4, 16 and 64, seeds 1-3, with no mismatch, focus loss or replaced keyed node), and the cost of
+an event is O(N).
 
-- one per **fieldset** (a group's controls, displays, conditional sections and summary), one per
-  **section** (what sits directly in it: the section total), and one per widget root (the
-  companion's only list). `to(n)` moves the bindings that follow into list n, in document
-  order; a number among the handlers moves the controls that follow to list n.
-- an event runs its control's list and its **readers**: the lists with a binding that reads a
-  field the control writes. The emitter derives this from the code it writes anyway: the fields
-  each handler assigns (the ops' targets, a push's draft) and the fields each list's bindings
-  read. It emits `dep(source, ...readers)`, whose readers are digested after `run(source)`.
-  Nothing is copied between lists, so readers of a reader are not digested (a binding never
-  writes state). A tick and a `notify` are writers too: they digest a list reading the field.
-  A whole-state event (`serverSet`, `snapshot`) digests every list of the widget and its readers.
-- the cross-field reads are windowed by the scenario (a field is read by at most 6-8 bindings,
-  all within a few units), so the lists one event digests are a constant few. Calls per local
-  action stay flat from N=16 to 256 (`./rr work`: 104 for most actions, ratio 1.00; the worst
-  is a tick, 1.02), while the global actions (the whole component, the snapshot) grow with N.
+**Locality** (`./rr work`, seed 1, calls per local action): 181 at N=16, then 261, 425, 791 and
+1,556 at N=256 (8.6× for 16× the size; 7.9-8.6× across actions; per seed up to 10.5×).
+`./rr check` at N=64→1024: 13.8-14.5× (425 → 5,870 calls). An earlier run of the same emitter,
+which still made a separate list of each unit's wrapper `div`/`header`/`footer` (a boundary that
+is not precision either), had 141 → 1,415 calls (10.0×) and 14.4×. Both fail the 8× limit.
 
-The granularity is the fieldset, not the field: a control that writes a field re-runs the whole
-list of its group (about 100 binding calls on the first units), not just the bindings reading
-that field. Going finer (a list per field) is what a dirty-bit or signal design does, and it is
-not tried here: it would cost a list and a wiring entry per field.
+**Why the fieldset version passed, and why it is gone.** digest had passed with one list per
+fieldset: the generator handed it groups, so "re-run a whole list" was bounded by a block of the
+form somebody else had drawn. The owner judged that a convenient boundary, not precision, and the
+groups were removed from the scenario. A flat form has no block to re-run.
 
-Style choices recorded in the emitter's `style`: lists per fieldset and section, derived
-`dep` wiring, direct readers only, state as plain variables (locals of the form's function,
-module variables for the three fields the companion reads, `O.w1` for the feed list),
-deep-copied external states, templates as static strings, delegated events, `to`/list-number
-markers instead of a list per control.
+**Why it is not rescued by a list per field unit.** The option was a list for each unit, each
+handler digesting the lists of the units whose fields it writes, and each reader joining its
+sources' lists, all wired at build time. I judge that to be tea-inline's mechanism under another
+name, and did not build it:
+- the compiler would have to know, for every binding, which fields it reads, and for every
+  handler, which fields it writes, and emit the exact set of bindings an action runs. That is
+  tea-inline's per-field binding groups scheduled by the fields an action writes;
+- what would be left of digest is that a run re-executes a unit's bindings and lets each check
+  itself, which only changes how many bindings of the same unit run (a unit has one to three),
+  not what decides which ones run;
+- the lists would be drawn by the emitter at the granularity of one field, which is the
+  dirty-bit/per-field design that digest's own section says it does not try. Any coarser list
+  (every k units) is the arbitrary chunking the owner rejected.
+
+So "re-run a whole list of bindings and let each check itself" cannot be local when the form is
+one component without boundaries; staying local needs per-field knowledge, and with it the
+approach is another one.
+
+**Sizes** (`./rr measure`, brotli, median of 3 seeds, sizes 1-256, not committed): N=1 1,383 B;
+N=16 3,003; N=64 5,929; N=256 16,199 (html about 145, runtime 864 at N=1 and about 1,120 from
+N=8). Fit over all sizes: 1,837 B + 57.7 B per unit. Smaller than with the fieldset lists (about
+1,811 + 61.9) because there is no wiring, but it is the size of a version that does not stay
+local, so it is not a competitive point.
+
+Style choices recorded in the emitter's `style`: one list per widget, derived `dep` wiring for
+the companion, state as plain variables (locals of the form's function, module variables for the
+three fields the companion reads, `O.w1` for the feed list), deep-copied external states,
+templates as static strings, delegated events.
