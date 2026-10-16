@@ -179,3 +179,34 @@ registry, list rows, conditional content, next item id, subscriptions).
 - A widget with a feed keeps its Notify tag (`self.notify = 5`), and the app sends that message
   to it; `serverSet` and `snapshot` use `set`.
 - The slope is the per-component code: model, reducer, template, event tags and bindings.
+
+## big-component
+
+`scenarios/big-component/tea-local.js` poses the strategy's weak point: one component whose model
+grows with N. As one instance, every message would re-run all of its ~N bindings (the "re-running
+a whole binding list" cost above, now O(N) per event), and the locality check would fail. The
+variant that passes stays inside the strategy and splits the form as an expert TEA developer
+would: **one instance per fieldset** (2-5 units), each owning a slice of the one model.
+
+- **State and reducers.** The form's record is split by first appearance in the view: a fieldset
+  owns the fields first touched in it, in its closure. Its reducer arms (one per message, written
+  out from the message's kind and ops) only touch its slice, so no reducer ever copies the whole
+  form. Message 0 of every fieldset is `Load`, which picks its own fields out of a whole-state
+  `serverSet` or `snapshot` (the global events, O(N) by nature; they are not held to locality).
+- **Cross-fieldset bindings.** A derived text, condition, disabled state or validation that reads
+  another fieldset's field reads that instance's slice (`groups[3].m`) in `patch` and watches it
+  (`follow`), as the summaries of the sibling scenarios do. A section total is a reader without a
+  model. The scenario's window (a unit reads only the previous 6 units) bounds how many
+  fieldsets read one, so an event costs a constant number of patches.
+- **Combined buttons across fieldsets** are a message to two instances: the button's fieldset runs
+  its arm for its own fields and sends the other fieldset a message of its own (`forward`; the
+  reducer stays pure).
+- **Result.** Calls per local action are flat from N=16 to N=256 (51 for the first action at every
+  size, ratio 1.00 for all of them), against O(N) for the single-instance form. The cost is bytes:
+  per-fieldset scaffolding (a `patch`, an `instance`, the `Load` arm that repeats the field names,
+  `follow` and `forward` lines) on top of the per-field code. The runtime file is unchanged; the
+  fieldset frame (`widgets/frame.js`) is emitted with the app, as unique-components' is.
+- **Dead end, not built:** the single-instance form (one `patch` for the whole form) is exactly
+  the strategy as written for the other scenarios. It was not generated, since its cost is
+  structural (every message runs all N bindings, 16x more at 16x the size); the split is the
+  honest way to keep locality.
