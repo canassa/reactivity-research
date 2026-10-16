@@ -26,7 +26,6 @@ export function templateFiles({ name, title }) {
     "vite.config.js": read("vite.config.js"),
     "src/adapter.js": read("adapter.js"),
     "src/runtime.js": read("runtime.js"),
-    "src/reconcile.js": read("reconcile.js"),
   };
 }
 
@@ -34,7 +33,7 @@ export function templateFiles({ name, title }) {
 // ships whatever it contains; everything the emitter writes is app code.
 export function classify(source) {
   if (source.includes("/node_modules/") || source.startsWith("\0") || source.includes("vite/")) return "runtime";
-  if (/(^|\/)src\/(runtime|reconcile)\.js$/.test(source)) return "runtime";
+  if (/(^|\/)src\/runtime\.js$/.test(source)) return "runtime";
   if (/(^|\/)src\/adapter\.js$/.test(source)) return "adapter";
   return "app";
 }
@@ -66,6 +65,5 @@ export function versions() {
   return {
     vite: v("vite"),
     "rolldown (bundler and Oxc minifier)": v("rolldown"),
-    "reconcileArrays (vendored, from @solidjs/web)": "2.0.0-rc.9",
   };
 }

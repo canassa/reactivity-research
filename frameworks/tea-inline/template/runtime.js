@@ -4,7 +4,6 @@
 //   only when the value differs.
 // - Batching: actions schedule bindings; one microtask flush runs each scheduled binding once.
 // - Conditional blocks (`when`) and keyed lists (`list`), the only structural changes.
-import { reconcileArrays } from "./reconcile.js";
 
 // ---------------------------------------------------------------------------------------------
 // Batching
@@ -88,7 +87,9 @@ export function when(node) {
 // The list is itself a binding. Actions that edit the array in place record what they did
 // (`add`, `drop`, `patch`), and the flush applies just those rows. When the array itself was
 // replaced (a server push, a snapshot, a derived list), the flush falls back to a full keyed
-// reconcile: rows are reused by key and moved with Solid's `reconcileArrays`.
+// reconcile: rows are reused by key, the rows of keys that left are removed, and the rest are
+// put in order from the last one up, moving only a row not already followed by the right one
+// (so a list that only lost or gained rows moves none, and a reversed run moves all but one).
 export function list(parent, items, key, row) {
   let rows = new Map();
   let last;
@@ -108,16 +109,24 @@ export function list(parent, items, key, row) {
     } else {
       const old = rows;
       rows = new Map();
-      const nodes = xs.map((item) => {
-        const r = old.get(key(item));
-        if (!r) return make(item);
-        r.set(item);
-        rows.set(key(item), r);
-        return r.node;
-      });
-      const current = [...parent.children];
-      if (current.length) reconcileArrays(parent, current, nodes);
-      else parent.append(...nodes);
+      const nodes = [];
+      for (const item of xs) {
+        const k = key(item);
+        const r = old.get(k);
+        if (r) {
+          old.delete(k);
+          r.set(item);
+          rows.set(k, r);
+          nodes.push(r.node);
+        } else nodes.push(make(item));
+      }
+      for (const r of old.values()) r.node.remove();
+      let next = null;
+      for (let i = nodes.length; i--; ) {
+        const node = nodes[i];
+        if (node.parentNode !== parent || node.nextSibling !== next) parent.insertBefore(node, next);
+        next = node;
+      }
     }
     edits = [];
     last = xs;
