@@ -26,19 +26,19 @@ What this strategy emits, once per widget kind and configured per widget by its 
 (`[kind, initial state, label, step, min, max, start]`, destructured by position):
 
 ```js
-// Dirty bits: value 1. Message tags: inc 0, dec 1, reset 2.
+// Dirty bits: value 1. Message tags: dec 0, inc 1, reset 2.
 
 export const kind = [               // the kind: [reducer, DOM factory]
   [                                  // the reducer: its arms by message tag, [bits, new slice]
-    ([, , , step, , max], s) => [1, { value: Math.min(max, s.value + step) }],   // inc
     ([, , , step, min], s) => [1, { value: Math.max(min, s.value - step) }],     // dec
+    ([, , , step, , max], s) => [1, { value: Math.min(max, s.value + step) }],   // inc
     // … reset …
   ],
   (parent, [, , , step, min, max], id) => {   // runs once: builds the DOM
     const [, , value, dec, inc, reset] = html(
       "<section data-role=widget-counter><h2></h2><output data-role=value></output>…", parent);
     dec.textContent = "-" + step;
-    onClick(dec, id, 1);                      // event → message { widget: id, type: 1 }
+    onClick(dec, id, 0);                      // event → message { widget: id, type: 0 }
     // … inc, reset …
     return (s) => {                           // the static patch: its one bit needs no test
       setText(value, s.value);
@@ -50,8 +50,8 @@ export const kind = [               // the kind: [reducer, DOM factory]
 ```
 
 - **Bits and message tags are numbers** the compiler writes in place (with their names in a
-  comment), the way Elm `--optimize` tags constructors. External events (`tick`, `notify`,
-  `serverSet`, `snapshot`) keep their names.
+  comment), the way Elm `--optimize` tags constructors, numbered in the order the view wires
+  them. External events (`tick`, `notify`, `serverSet`, `snapshot`) keep their names.
 - **A reducer is a table of its arms by message tag**, as a switch over dense tags compiles to
   a jump table (an array, or an object when external events are among the tags). Each arm
   returns the compile-time bits of the fields it writes with the new slice, `[bits, slice]`, or
@@ -61,7 +61,8 @@ export const kind = [               // the kind: [reducer, DOM factory]
 - **A patch test that every possible dirty mask passes is left out**: a patch only runs with
   some of its widget's bits set, so a component with one field patches without a test.
 - **The DOM is one static HTML string per component**, parsed once by `html()` (through a
-  `<template>` element); the code finds each node by its position in document order. Texts that
+  detached `<div>`, whose selected elements start with the template's root); every kind
+  destructures its nodes by their position in document order. Texts that
   come from a widget's config are written by `textContent`, once. The emitter writes the
   markup as a minifier would: closing tags at the very end of a template, and the end tags HTML
   makes optional (`</p>`, `</li>`, `</option>` where the next tag closes them), are left out.
@@ -137,10 +138,13 @@ uses the same strategy with no shared kinds: every widget is its own module
 written out as code), initial state, DOM factory and static patch, all written from that widget's
 description. Nothing is interpreted at runtime. What it adds:
 
-- **Marked templates.** Only the elements the code touches carry a `b` attribute in the
-  static markup; `template()` returns the root and then those elements in document order, and
-  removes the marker (as Lit removes its own markers), so references are dense (`t[1]`,
-  `t[2]`…) and read alike across widgets. List rows use the same function.
+- **Bound elements only.** `template()` returns the root and then the elements the code
+  touches, in document order, so references are dense (`t[1]`, `t[2]`…) and read alike across
+  widgets. It selects `[b],[data-role],:empty`: every element with a `data-role` (the section,
+  the controls, error lines, list rows) is bound, and so is every empty one (a text or a list
+  the code fills; the emitter numbers an empty element even when unused). Only conditional
+  blocks carry the `b` marker, which `template()` removes (as Lit removes its own). List rows
+  use the same function.
 
 - **Its own template per widget.** The handlers take the widget id from the view's `id`
   parameter, and the app's build loop keys each section: repeating the id literal on every line
@@ -231,3 +235,31 @@ results by ±10 to 40 B either way: at the dashboard's large sizes, where the ro
 the size of a small change is mostly brotli's (and the HTML's hashed script name's) noise.
 Marking template elements costs about 20 B at N <= 16 (the marker-removing loop) and saves
 about 470 B at N=256.
+
+## Size pass 4 (2026-10-16)
+
+Total brotli, medians of seeds 1 to 3 (all sizes of `runs.json`), before and after. Lower at
+every measured size in both scenarios. No `./rr work` record rose (sizes 16 to 256, seed 1;
+calls 6,257 and 8,074, blocks 7,229 and 9,131, all unchanged record by record):
+
+| | N=1 | N=16 | N=64 | N=256 | fit, all N | fit, N >= 16 |
+|---|---|---|---|---|---|---|
+| shared-components | 1,199 → 1,177 | 3,592 → 3,566 | 5,222 → 5,184 | 9,760 → 9,697 | 2,346 + 31.2 → 2,324 + 31.1 | 3,428 + 25.1 → 3,400 + 25.0 |
+| unique-components | 1,651 → 1,637 | 6,030 → 6,012 | 16,066 → 15,988 | 48,296 → 48,186 | 2,748 + 183.8 → 2,724 + 183.4 | 4,299 + 175.1 → 4,261 + 174.7 |
+
+What changed: unique templates select `[b],[data-role],:empty`, so only conditional blocks
+keep a marker (this also removes round 3's marker cost at small sizes); templates are parsed in
+a detached div and selected from it, so the root comes first and no spread is needed; a branch
+reads its state from its anchor; the dirty table is no longer reset when a program starts; the
+three dashboard kinds that indexed their nodes destructure them like the others; the counter's
+tags follow its wiring order.
+
+What did not help, measured over 12 seeds (single changes move brotli by ±30 B per build, so
+3 seeds cannot judge them): handing a unique view its template's elements from the app
+(+600 B at N=256: the patch can no longer reuse the view's parameter names); list rows built by
+the list from their markup; branch and list handles kept in the template array instead of
+locals (+2 KB at N=256); patch statements sorted by helper; `value += ""` in `setText`;
+`"" + x` for `String(x)` in the dashboard kinds; indexing every dashboard kind's nodes (+15 B
+per build); `Math.min(s.x + k, max)` operand order; the rating's buttons from `Array.from`;
+choice options by `forEach`; `parent?.append`. Close to the rules, not done: event delegation
+by `data-role` (it would leave a widget's handlers as attributes for a generic routine).
