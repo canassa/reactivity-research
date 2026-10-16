@@ -104,9 +104,10 @@ export const widget = (html, h, set, o) => {
   P = 0;
 };
 
-// This widget's bindings also run after the given widgets change.
-export const dep = (...ids) => {
-  for (const k of ids) W[k].push(...B);
+// This widget's bindings also run after the given widgets change. A widget reads earlier
+// widgets, named by their distance back from it.
+export const dep = (...d) => {
+  for (const k of d) W["w" + (id.slice(1) - k)].push(...B);
 };
 
 // One delegated handler for clicks and input, on the dashboard element. Handlers read the

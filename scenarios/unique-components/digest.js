@@ -249,7 +249,13 @@ function widgetCode(w, init) {
   for (const f of w.fields) {
     if (f.tick) body.push(`  T.push(() => ${F(f.tickWhen)} && (${F(f.name)} = Math.min(${f.max}, ${F(f.name)} + ${f.tick}), run(W.${w.id})));`);
   }
-  if (reads.size) body.push(`  dep(${[...reads].map(lit).join(", ")});`);
+  // The widgets it reads, as distances back (they come before it).
+  const back = (k) => {
+    const d = w.id.slice(1) - k.slice(1);
+    if (!(d > 0)) throw new Error(`digest: ${w.id} reads ${k}, which does not come before it`);
+    return d;
+  };
+  if (reads.size) body.push(`  dep(${[...reads].map(back).join(", ")});`);
   return `// ${w.id}\nconst ${w.id} = () => {\n${body.join("\n")}\n};`;
 }
 
