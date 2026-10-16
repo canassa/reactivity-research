@@ -1,7 +1,7 @@
 # Scenario: routed-app
 
 The contract of the `routed-app` scenario. It adds to the global contract in `CLAUDE.md` and never
-relaxes it. The generator and the reference are `spec.js`; no emitter exists yet.
+relaxes it. The generator and the reference are `spec.js`.
 
 ## What it models
 
@@ -60,8 +60,9 @@ allowed; behaviour encoded as data for a generic routine is not. The nav bar's a
 **Routing is in-app state, not the browser's URL.** The current route is a field of the state
 (`route`, a page id); links are `<button>`s; nothing reads or writes `location` or `history`. So
 every approach routes the same way, the reference stays the single truth, and the serve panel can
-drive and compare it. Recommended: a route field and a switch on it (`<Show>`/`<Switch>` in
-Solid, a `case` in Elm's view, a conditional in JSX), each page a component mounted by it.
+drive and compare it. Either form is fine: a route field and a switch on it (`<Show>`/`<Switch>` in
+Solid, a `case` in Elm's view, a conditional in JSX), or a lookup of the page component by route
+(`<Dynamic>` in Solid), each page a component mounted by it.
 An implementation may use its framework's idiomatic router only in a memory mode (no URL, no
 history) that renders exactly the same DOM and behaves identically; the emitter records the
 choice. Prototypes route with plain in-app state.
