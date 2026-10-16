@@ -486,7 +486,8 @@ function pageFile(spec, page) {
     modalFns = [
       [
         `function openModal() {`,
-        `  m = ${initial(page.modal, "  ")};`,
+        `  if (aside) aside.remove();`,
+        `  m =${initial(page.modal, "  ")};`,
         `  aside = document.createElement("aside");`,
         `  aside.dataset.key = "modal";`,
         `  aside.dataset.role = "dialog";`,
