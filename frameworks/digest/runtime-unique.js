@@ -23,8 +23,10 @@ let I;
 export let O, W, T;
 
 // Digest a binding list: `run(W[k])` digests widget k after its state changed, its bindings
-// and its readers'.
-export const run = (b) => {
+// and its readers'. `run(W[k], v)` first replaces the widget's whole state with `v`, through its
+// setter.
+export const run = (b, v) => {
+  v && b.s(v);
   for (const f of b) f();
 };
 

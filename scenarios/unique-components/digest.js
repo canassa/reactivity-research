@@ -289,12 +289,14 @@ function appFile(spec) {
 
   // External events: only the branches this app can receive.
   const fields = spec.widgets.flatMap((w) => w.fields);
-  const branches = [
-    `if (m.type == "serverSet") W[m.widget].s(structuredClone(m.state)), run(W[m.widget]);`,
-    `else if (m.type == "snapshot") for (const k in m.state.widgets) W[k].s(structuredClone(m.state.widgets[k])), run(W[k]);`,
-  ];
-  if (fields.some((f) => f.tick)) branches.push(`else if (m.type == "tick") for (const t of T) t();`);
-  if (fields.some((f) => f.feed)) branches.push(`else if (m.type == "notify") O[m.widget][m.field].push({ ...m.item }), run(W[m.widget]);`);
+  // `serverSet` and `snapshot` (the last branch) both replace whole widget states: a serverSet
+  // is a snapshot of one widget. A tick or notify this app has no branch for carries no state, so
+  // it replaces nothing.
+  const branches = [];
+  if (fields.some((f) => f.tick)) branches.push(`if (m.type == "tick") for (const t of T) t();`);
+  if (fields.some((f) => f.feed)) branches.push(`if (m.type == "notify") O[m.widget][m.field].push({ ...m.item }), run(W[m.widget]);`);
+  branches.push(`for (const k in (m = m.type == "serverSet" ? { [m.widget]: m.state } : m.state?.widgets)) run(W[k], structuredClone(m[k]));`);
+  for (let i = 1; i < branches.length; i++) branches[i] = "else " + branches[i];
 
   const body = code.join("\n\n") + "\n\n" + branches.join("\n");
   const names = ["widget", "bind", "text", "show", "list", "dep", "run", "nx", "add", "L", "C", "O", "W", "T"]
@@ -309,9 +311,9 @@ let ${shared.join(", ")};
 ` : ""}
 ${code.join("\n\n")}
 
-// External events: each replaces the state of the widgets it concerns (with their setters, W[k].s)
-// and digests only those (\`run(W[k])\`; a time-driven field's tick function digests its own
-// widget).
+// External events: each replaces the state of the widgets it concerns and digests only those
+// (\`run(W[k], state)\`, through the widget's setter; a time-driven field's tick function digests
+// its own widget).
 const receive = (m) => {
   ${branches.join("\n  ")}
 };
