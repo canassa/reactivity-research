@@ -103,3 +103,23 @@ The adapter (`template/adapter.js`, excluded from size) maps `mount`, `dispatch`
 - `template/`: the HTML shell, the Vite config, the adapter and the runtime, copied into every
   app.
 - `../../scenarios/shared-components/tea-dirtybits.js`: the emitter (the "compiler") for the dashboard.
+
+## unique-components
+
+The emitter for the `unique-components` scenario (`scenarios/unique-components/tea-dirtybits.js`)
+uses the same strategy with no shared kinds: every widget is its own module
+(`src/widgets/<id>.js`) with its own bits (one per field), reducer (one arm per message, the ops
+written out as code), initial state, DOM factory and static patch, all written from that widget's
+description. Nothing is interpreted at runtime. What it adds:
+
+- **`branch` in the runtime:** conditional content (`when` sections, validation errors) among
+  siblings, kept in place by an empty comment, with its own nested patch. Unlike `when`, it need
+  not be the last child. Unused exports are tree-shaken, so the dashboard output is unchanged.
+- **Cross-widget reads:** a reader has one extra bit per field it reads; the app patch has one
+  line per read that turns the source's dirty bit into the reader's (`snapshot` and `serverSet`
+  mark every bit, so readers follow).
+- **`tick`:** the app reducer checks each time-driven widget's gate inline and routes only to the
+  running ones, so a tick costs one reducer call per running widget (the locality check fails
+  with a per-widget loop of calls).
+- **Cost:** the slope is per component type, about 280 B brotli per widget (N >= 16: 271 B),
+  against 28 to 37 B per widget for the dashboard, where a widget is only a config.
