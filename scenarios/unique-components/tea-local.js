@@ -383,6 +383,12 @@ function widgetFile(spec, w) {
   fn.push(`  // type Msg = ${msgNames.join(" | ")}`);
   // The reducer, one function per message, indexed by its tag.
   fn.push(`  const update = [`, ...cases.map((c) => `    ${c.replace(/\n/g, "\n    ")},`), `  ];`);
+  // The binding list (it runs after mount, once `self` and `e` are set).
+  fn.push(`  const patch = () => {`);
+  if (cx.own) fn.push(`    const m = self.m;`);
+  for (const s of sources) fn.push(`    const m${s.slice(1)} = ${s}.m;`);
+  fn.push(...cx.patch.map((l) => "    " + l));
+  fn.push(`  };`);
   fn.push(`  const self = instance(${lit(spec.initialState.widgets[w.id])}, update, patch);`);
   cx.wire.forEach((t, i) => { if (t !== i) throw new Error(`${w.id}: control tags out of order`); });
   fn.push(`  const e = widget(parent, ${q(w.id)}, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))}, self);`);
@@ -391,12 +397,6 @@ function widgetFile(spec, w) {
   // render), so a tick right after the gate opens is not missed.
   if (timed.length) fn.push(`  subscribe(self, ${tickIndex}, (m) => ${gate});`);
   fn.push(``);
-  // A widget with a single message has nothing to switch on (an Elm `case` with one branch).
-  fn.push(`  function patch() {`);
-  if (cx.own) fn.push(`    const m = self.m;`);
-  for (const s of sources) fn.push(`    const m${s.slice(1)} = ${s}.m;`);
-  fn.push(...cx.patch.map((l) => "    " + l));
-  fn.push(`  }`);
   for (const s of sources) fn.push(`  ${s}.watch(patch);`);
   if (feed) fn.push(`  self.notify = (item) => self.send(${notifyIndex}, item);`);
 
