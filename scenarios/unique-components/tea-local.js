@@ -380,7 +380,9 @@ function widgetFile(spec, w) {
   // render), so a tick right after the gate opens is not missed.
   if (timed.length) fn.push(`  subscribe(self, ${tickIndex}, (m) => ${gate});`);
   fn.push(``);
-  fn.push(`  function update(m, tag, value) {`, `    switch (tag) {`, ...cases.map((c) => c.replace(/^/gm, "    ")), `    }`, `  }`, ``);
+  // A widget with a single message has nothing to switch on (an Elm `case` with one branch).
+  if (cases.length === 1) fn.push(`  function update(m, tag, value) {`, cases[0].replace(/^ {4}case 0: ?/, "  ").replace(/^/gm, "  "), `  }`, ``);
+  else fn.push(`  function update(m, tag, value) {`, `    switch (tag) {`, ...cases.map((c) => c.replace(/^/gm, "    ")), `    }`, `  }`, ``);
   fn.push(`  function patch() {`);
   if (cx.own) fn.push(`    const m = self.m;`);
   for (const s of sources) fn.push(`    const m${s.slice(1)} = ${s}.m;`);
