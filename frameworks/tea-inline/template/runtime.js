@@ -29,7 +29,7 @@ export function flush() {
 
 // Resolved once the DOM reflects everything scheduled so far.
 export function settled() {
-  return done || Promise.resolve();
+  return Promise.resolve(done);
 }
 
 // Drop pending work (on unmount).
