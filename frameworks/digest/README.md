@@ -654,3 +654,38 @@ Differences from `runtime.js`:
   sources as distances back), so a source's change digests the readers too, and nothing else;
 - external events deep-copy what they receive (`structuredClone`), because handlers mutate
   the widget's lists in place and must not alter the sender's data.
+
+## big-component
+
+`scenarios/big-component/digest.js` writes the one big form, and its small companion, as one
+function each, as unique-components does (state, template, handlers, setter, bindings, tick; no
+data rows), with `runtime-big.js` as the runtime. What changes is the **granularity of the
+binding lists.** One list for the whole form would make every event re-run all ~N bindings (the
+"honest limit" above, now at full size). So the form has many lists:
+
+- one per **fieldset** (a group's controls, displays, conditional sections and summary), one per
+  **section** (what sits directly in it: the section total), and one per widget root (the
+  companion's only list). `to(n)` moves the bindings that follow into list n, in document
+  order; a number among the handlers moves the controls that follow to list n.
+- an event runs its control's list and its **readers**: the lists with a binding that reads a
+  field the control writes. The emitter derives this from the code it writes anyway: the fields
+  each handler assigns (the ops' targets, a push's draft) and the fields each list's bindings
+  read. It emits `dep(source, ...readers)`, whose readers are digested after `run(source)`.
+  Nothing is copied between lists, so readers of a reader are not digested (a binding never
+  writes state). A tick and a `notify` are writers too: they digest a list reading the field.
+  A whole-state event (`serverSet`, `snapshot`) digests every list of the widget and its readers.
+- the cross-field reads are windowed by the scenario (a field is read by at most 6-8 bindings,
+  all within a few units), so the lists one event digests are a constant few. Calls per local
+  action stay flat from N=16 to 256 (`./rr work`: 104 for most actions, ratio 1.00; the worst
+  is a tick, 1.02), while the global actions (the whole component, the snapshot) grow with N.
+
+The granularity is the fieldset, not the field: a control that writes a field re-runs the whole
+list of its group (about 100 binding calls on the first units), not just the bindings reading
+that field. Going finer (a list per field) is what a dirty-bit or signal design does, and it is
+not tried here: it would cost a list and a wiring entry per field.
+
+Style choices recorded in the emitter's `style`: lists per fieldset and section, derived
+`dep` wiring, direct readers only, state as plain variables (locals of the form's function,
+module variables for the three fields the companion reads, `O.w1` for the feed list),
+deep-copied external states, templates as static strings, delegated events, `to`/list-number
+markers instead of a list per control.
