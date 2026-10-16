@@ -3,38 +3,43 @@
 // routing.
 //
 // The problem this scenario poses to tea-local: the strategy re-runs the whole binding list of
-// an instance after each of its messages. If the form were one instance, every message would
-// re-run all of its ~N bindings (O(N) per event, a failed locality check). So the form is
-// split the way an expert TEA developer splits a big form: **one component instance per
-// fieldset** (a group of 2-5 units), the unit of the layout the form already has.
+// an instance after each of its messages, and the form is one flat list of N field units with
+// dependencies reaching anywhere earlier. Two grains (the `grain` parameter):
+//
+// - `unit` (default): one component instance per field unit, the smallest block the app's own
+//   structure gives (a field with its controls and displays; a list brings its draft text, a
+//   time-driven int its gate). The spec draws no groups, but it does define a unit; nothing here
+//   is a fixed-size chunk. An event re-runs the binding list of that unit (a handful of
+//   bindings), plus the lists of the units that read its fields.
+// - `form`: the whole form as one instance. The strategy exactly as written, and a dead end for
+//   this scenario: every message re-runs all N units' bindings (see the README).
 //
 // Style (recorded in every generated app's rr.json):
-// - One model, split into slices. The form's state is one record; each fieldset instance owns the
-//   slice of the fields whose first appearance in the view is in that fieldset, in its closure.
-//   Its reducer (a table of arms, one per message, written out from the message's kind and ops)
-//   only ever touches its own slice. The companion is an instance of its own, as in
-//   unique-components.
-// - A fieldset block is what its factory would be, inlined (it is called once): its slice, its
+// - One model, split into slices. The form's state is one record; each instance owns the slice of
+//   its unit's fields in its closure. Its reducer (a table of arms, one per message, written out
+//   from the message's kind and ops) only ever touches its own slice. The companion is an
+//   instance of its own, as in unique-components.
+// - A unit block is what its factory would be, inlined (it is called once): its slice, its
 //   reducer, its static template and its binding list (`patch`, one write per binding, each
-//   skipped when unchanged), the DOM built once and wired by position. After a message only that
-//   fieldset's patch runs, plus the patches of the readers that watch it.
-// - Bindings that cross fieldsets read the other fieldset's current slice from the frame's
-//   registry (`groups[3].m`) in `patch`, and the reader watches it (`follow`), as a summary
-//   watches its sources in the sibling scenarios. A section total, which reads fields of
-//   several fieldsets, is a reader instance without a model of its own. Every field is read by
-//   a bounded number of bindings (the scenario's window), so the readers of one fieldset are
-//   too, and an event costs a constant number of patches however big the form is.
-// - A combined button (it writes its own field and an earlier one) that crosses fieldsets is a
-//   message to two instances, as a parent routing a child's message would be: the button's
-//   fieldset runs its arm for its own fields, and sends the other fieldset a message of its own
-//   (an extra constructor on that fieldset, `forward`). A reducer never does the sending.
-// - Every fieldset has `Load` as message 0: it takes the whole component's state, picks its own
+//   skipped when unchanged), the DOM built once and wired by position. A top-level view node
+//   belongs to the unit of the latest field it touches (a derived text over this field and an
+//   earlier one is built by this unit's instance). After a message only that unit's patch runs,
+//   plus the patches of the readers that watch it.
+// - Bindings that read another unit's field read that instance's current slice from the frame's
+//   registry (`units[3].m`) in `patch`, and the reader watches the instance (`follow`), as a
+//   summary watches its sources in the sibling scenarios. Every field is read by a bounded number
+//   of bindings (the scenario's cap), so an event costs a bounded number of patches.
+// - A combined button (it writes its own field and an earlier one) is a message to two instances,
+//   as a parent routing a child's message would be: the button's unit runs its arm for its own
+//   fields, and sends the other unit a message of its own (an extra constructor on that unit,
+//   `forward`). A reducer never does the sending.
+// - Every instance has `Load` as message 0: it takes the whole component's state, picks its own
 //   fields and replaces its slice. A `serverSet` or `snapshot` of the form sends it to each
-//   fieldset (the global events, O(N) by nature). Nothing else touches the slices as a whole, so
+//   instance (the global events, O(N) by nature). Nothing else touches the slices as a whole, so
 //   no reducer ever copies the whole form's state.
-// - External events: `tick` calls the fieldsets in the shared `running` set (a fieldset with a
-//   time-driven int subscribes while its gate is on); `notify` sends the feed's fieldset its
-//   Notify message.
+// - External events: `tick` calls the instances in the shared `running` set (a unit with a
+//   time-driven int subscribes while its gate is on); `notify` sends the feed's unit its Notify
+//   message.
 // - Keyed lists through the runtime's `list`. Conditional content (`when`, validation errors)
 //   is in the template; while hidden, an empty text node holds its place.
 // - A message is sent as its constructor's tag and its argument, if any: `send(tag, value)`, the
@@ -46,7 +51,13 @@ import { templateFiles } from "../../frameworks/tea-local/framework.js";
 
 export const framework = "tea-local";
 
-export const params = {};
+export const params = {
+  grain: {
+    default: "unit",
+    choices: ["unit", "form"],
+    help: "instances of the form: one per field unit (a field with its controls), or the whole form as one",
+  },
+};
 
 const q = JSON.stringify;
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
@@ -98,8 +109,8 @@ function textCode(parts, cx) {
 // wiring of its elements, and the patch lines (the binding list).
 //
 // The template's elements are addressed by their index in document order (`e[3]`): the
-// block gets them from `widget()` as `[section, ...section.querySelectorAll("*")]`, so
-// `e[0]` is the section and `e[1]` its heading. A dynamic text is the only child of its
+// block gets them from the frame as `[root, ...root.querySelectorAll("*")]`, so `e[0]` is
+// the template's root (a fragment for a unit) and `e[1]` its first element. A dynamic text is the only child of its
 // element; the template gives it a placeholder space, the text node `setText` writes.
 
 const esc = (s) => String(s).replace(/[&<]/g, (c) => (c === "&" ? "&amp;" : "&lt;"));
@@ -318,7 +329,7 @@ function branch(w, m, cx) {
 }
 
 
-// A field read: the instance's own model, or another fieldset's slice (`m3.field`), which the
+// A field read: the instance's own model, or another unit's slice (`m3.field`), which the
 // reader watches. The companion's own fields are `local`; its `["w", "w1", name]` reads are the
 // form's.
 function ref(cx, name, foreign) {
@@ -330,21 +341,43 @@ function ref(cx, name, foreign) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// The form's layout: sections of fieldsets, and which fieldset owns which field.
+// The form's instances. A field unit is a main field with its auxiliary fields (the draft of a
+// list fed from a draft, the gate of a time-driven int): the grain the app's own structure gives.
+// Each unit is one instance (`grain: unit`), or the whole form is one (`grain: form`).
 
-// [{ title, groups: [{ node, index }], total }] from the form's view.
-function layout(form) {
-  let index = 0;
-  return form.view.map((sec) => {
-    if (sec.el !== "group" || sec.tag !== "div" || sec.children[0].el !== "text") throw new Error("unexpected section");
-    const kids = sec.children.slice(1);
-    const total = kids.length && kids.at(-1).el === "text" ? kids.pop() : null;
-    const groups = kids.map((g) => {
-      if (g.el !== "group" || g.tag !== "fieldset") throw new Error("unexpected group");
-      return { node: g, index: index++ };
-    });
-    return { title: sec.children[0], groups, total };
-  });
+function unitsOf(form) {
+  const aux = new Map();
+  for (const m of form.messages) if (m.kind === "click") for (const op of m.ops) if (op[0] === "push") aux.set(op[2], op[1]);
+  for (const f of form.fields) if (f.tickWhen) aux.set(f.tickWhen, f.name);
+  const out = [];
+  const byMain = new Map();
+  for (const f of form.fields) {
+    const main = aux.get(f.name) ?? f.name;
+    if (!byMain.has(main)) {
+      byMain.set(main, []);
+      out.push(byMain.get(main));
+    }
+    byMain.get(main).push(f.name);
+  }
+  return out;
+}
+
+// [{ index, names, nodes }]: the instances in page order, each with its fields and the top-level
+// view nodes it builds. A node belongs to the instance of the latest field it touches (a derived
+// text, a combined button or a validation sits with the latest unit it involves); a node touching
+// nothing stays with the previous one. The nodes of an instance are contiguous.
+function layout(form, grain) {
+  const units = grain === "form" ? [form.fields.map((f) => f.name)] : unitsOf(form);
+  const groups = units.map((names, index) => ({ index, names, nodes: [] }));
+  const owner = new Map(groups.flatMap((g) => g.names.map((n) => [n, g.index])));
+  let at = 0;
+  for (const node of form.view) {
+    const seen = [];
+    touches(form, node, seen);
+    at = Math.max(at, ...seen.map((f) => owner.get(f)));
+    groups[at].nodes.push(node);
+  }
+  return groups;
 }
 
 // The fields an expression reads.
@@ -403,32 +436,25 @@ function messageOrder(nodes, sent) {
   return [...section, ...rows].map((name) => sent.find((m) => m.name === name));
 }
 
-// Plan every fieldset: its fields, its messages (the ones its controls send, in the order the
-// template's controls take tags, after the Load message 0), the messages other fieldsets send it
+// Plan every instance: its fields, its messages (the ones its controls send, in the order the
+// template's controls take tags, after the Load message 0), the messages other units send it
 // for their combined buttons, and its tags.
-function plan(spec, form, secs) {
-  const groups = secs.flatMap((s) => s.groups);
-  const owner = new Map();
-  for (const g of groups) {
-    const seen = [];
-    touches(form, g.node, seen);
-    for (const f of seen) if (!owner.has(f)) owner.set(f, g.index);
-  }
+function plan(spec, form, groups) {
+  const owner = new Map(groups.flatMap((g) => g.names.map((n) => [n, g.index])));
   for (const f of form.fields) {
-    if (!owner.has(f.name)) throw new Error(`field ${f.name} is not in the view`);
-    if (f.tickWhen && owner.get(f.tickWhen) !== owner.get(f.name)) throw new Error(`${f.name}: gate in another fieldset`);
+    if (f.tickWhen && owner.get(f.tickWhen) !== owner.get(f.name)) throw new Error(`${f.name}: gate in another unit`);
   }
   const init = spec.initialState.widgets[form.id];
   for (const g of groups) {
     g.fields = form.fields.filter((f) => owner.get(f.name) === g.index);
     g.init = Object.fromEntries(g.fields.map((f) => [f.name, init[f.name]]));
-    g.sent = []; // the messages whose control is in this fieldset
-    g.recv = []; // messages from other fieldsets' combined buttons
+    g.sent = []; // the messages whose control is in this unit
+    g.recv = []; // messages from other units' combined buttons
   }
-  // Which fieldset's control sends each message.
+  // Which unit's control sends each message.
   const home = new Map();
   for (const g of groups) {
-    for (const name of controlsOf(g.node.children)) {
+    for (const name of controlsOf(g.nodes)) {
       if (home.has(name)) throw new Error(`${name}: a message sent by two controls`);
       home.set(name, g.index);
     }
@@ -437,13 +463,13 @@ function plan(spec, form, secs) {
     if (!home.has(m.name)) throw new Error(`${m.name}: no control`);
     const g = groups[home.get(m.name)];
     if (m.kind !== "click") {
-      if (owner.get(m.field) !== g.index) throw new Error(`${m.name}: writes another fieldset's field`);
+      if (owner.get(m.field) !== g.index) throw new Error(`${m.name}: writes another unit's field`);
       g.sent.push(m);
       continue;
     }
     const by = new Map();
     for (const op of m.ops) {
-      if (op[0] === "push" && owner.get(op[1]) !== owner.get(op[2])) throw new Error(`${m.name}: push across fieldsets`);
+      if (op[0] === "push" && owner.get(op[1]) !== owner.get(op[2])) throw new Error(`${m.name}: push across units`);
       const o = owner.get(op[1]);
       by.set(o, [...(by.get(o) ?? []), op]);
     }
@@ -457,7 +483,7 @@ function plan(spec, form, secs) {
   }
   // Tags: Load 0, the controls' messages, then Tick, Notify, the received ones.
   for (const g of groups) {
-    g.messages = [{ name: "load", kind: "load" }, ...messageOrder(g.node.children, g.sent)];
+    g.messages = [{ name: "load", kind: "load" }, ...messageOrder(g.nodes, g.sent)];
     g.timed = g.fields.filter((f) => f.tick);
     g.feed = g.fields.find((f) => f.feed);
     g.tickTag = g.timed.length ? g.messages.length : null;
@@ -471,7 +497,7 @@ function plan(spec, form, secs) {
 // Blocks of the page function.
 
 const RUNTIME = ["setText", "setProp", "instance", "list", "wire"];
-const FRAME = ["add", "group", "groups", "follow", "forward", "running", "row", "place", "nextId", "subscribe"];
+const FRAME = ["add", "unit", "units", "follow", "forward", "running", "row", "place", "nextId", "subscribe"];
 
 const newCx = (extra) => ({
   create: [], patch: [], wire: [], html: "", index: 1, own: false, sources: new Set(), counts: {},
@@ -487,11 +513,11 @@ const msgType = (w, messages) => messages.map((m) => {
 
 const indent = (s, n = 2) => s.replace(/^(?=.)/gm, " ".repeat(n));
 
-// One fieldset: a block of the page function.
+// One instance: a block of the page function.
 function groupBlock(spec, form, p, g) {
   const w = { fields: form.fields, messages: g.messages };
   const cx = newCx({ group: g.index, groupOf: p.owner });
-  compileView(w, g.node.children, cx);
+  compileView(w, g.nodes, cx);
   const cases = g.messages.map((m) => {
     if (m.kind === "load") {
       const names = g.fields.map((f) => f.name).join(", ");
@@ -518,44 +544,27 @@ function groupBlock(spec, form, p, g) {
   for (const r of g.recv) types.push(cap(r.name));
 
   const sources = [...cx.sources].sort((a, b) => a - b);
-  const fn = [`{`, `  // group ${g.index}`];
+  const fn = [`{`, `  // unit ${g.index}`];
   fn.push(`  const patch = () => {`);
   if (cx.own) fn.push(`    const m = self.m;`);
-  for (const s of sources) fn.push(`    const m${s} = groups[${s}].m;`);
+  for (const s of sources) fn.push(`    const m${s} = units[${s}].m;`);
   fn.push(...cx.patch.map((l) => "    " + l));
   fn.push(`  };`);
   if (sources.length) fn.push(`  follow(patch, ${sources.join(", ")});`);
   fn.push(`  // type Msg = ${types.join(" | ")}`);
   fn.push(`  const self = instance(${lit(g.init)}, [`, ...cases.map((c) => `    ${c.replace(/\n/g, "\n    ")},`), `  ], patch);`);
-  cx.wire.forEach((t, i) => { if (t !== i + 1) throw new Error(`group ${g.index}: control tags out of order`); });
-  // A combined button that also writes another fieldset sends it a message of its own.
+  cx.wire.forEach((t, i) => { if (t !== i + 1) throw new Error(`unit ${g.index}: control tags out of order`); });
+  // A combined button that also writes another unit sends it a message of its own.
   for (const m of g.messages) {
     for (const f of m.forwards ?? []) {
       fn.push(`  forward(self, ${g.messages.indexOf(m)}, ${f.to}, ${p.groups[f.to].recvBase + f.recv});`);
     }
   }
-  fn.push(`  const e = group(s, ${q(trim("<fieldset>" + cx.html))}, self);`);
+  fn.push(`  const e = unit(form, ${q(trim(cx.html))}, self);`);
   fn.push(...cx.create);
   if (g.timed.length) fn.push(`  subscribe(self, ${g.tickTag}, (m) => ${gate});`);
   fn.push(`}`);
   return fn.join("\n");
-}
-
-// A section total: a reader of several fieldsets with no model of its own.
-function totalBlock(p, sec) {
-  const cx = newCx({ group: null, groupOf: p.owner });
-  const { code } = textCode(sec.total.parts, cx);
-  const sources = [...cx.sources].sort((a, b) => a - b);
-  return [
-    `{`,
-    `  const p = add(s, "<p> ");`,
-    `  const patch = () => {`,
-    ...sources.map((s) => `    const m${s} = groups[${s}].m;`),
-    `    setText(p, ${code});`,
-    `  };`,
-    `  follow(patch, ${sources.join(", ")});`,
-    `}`,
-  ].join("\n");
 }
 
 // The companion: an instance of its own, reading the form's fields through the frame's registry.
@@ -567,7 +576,7 @@ function companionBlock(spec, p, w) {
   const sources = [...cx.sources].sort((a, b) => a - b);
   const fn = [`{`, `  // ${w.id}: ${w.label} (${w.kind})`, `  const patch = () => {`];
   if (cx.own) fn.push(`    const m = self.m;`);
-  for (const s of sources) fn.push(`    const m${s} = groups[${s}].m;`);
+  for (const s of sources) fn.push(`    const m${s} = units[${s}].m;`);
   fn.push(...cx.patch.map((l) => "    " + l), `  };`);
   fn.push(`  follow(patch, ${sources.join(", ")});`);
   fn.push(`  // type Msg = ${msgType(w, w.messages).join(" | ")}`);
@@ -583,9 +592,9 @@ function companionBlock(spec, p, w) {
 
 const FRAME_FILE = `import { wire, schedule } from "../runtime.js";
 
-// The fieldset instances in page order (group 0 first), for the external events, the readers
-// that cross fieldsets and the messages between them.
-export const groups = [];
+// The form's instances in page order (the first unit first), for the external events, the
+// readers that cross instances and the messages between them.
+export const units = [];
 
 // Insert markup as the last child of \`parent\` (trailing end tags may be left out) and return it.
 export function add(parent, html) {
@@ -593,27 +602,32 @@ export function add(parent, html) {
   return parent.lastChild;
 }
 
-// A fieldset: its template inserted in its section, registered, its controls wired to the
-// messages 1, 2, 3, ... (message 0 is Load). Returns the template's elements in document order.
-export function group(parent, html, self) {
-  groups.push(self);
-  return wire(add(parent, html), self, 1);
+// A unit: its template (a run of sibling nodes of the form, parsed in a fragment) appended to the
+// form, registered, its controls wired to the messages 1, 2, 3, ... (message 0 is Load). Returns
+// the template's elements in document order.
+export function unit(parent, html, self) {
+  units.push(self);
+  const t = document.createElement("template");
+  t.innerHTML = html;
+  const e = wire(t.content, self, 1);
+  parent.append(t.content);
+  return e;
 }
 
-// A reader of the fieldsets \`sources\` (their indexes): its patch runs after the first render and
+// A reader of the units \`sources\` (their indexes): its patch runs after the first render and
 // whenever one of them changes.
 export function follow(patch, ...sources) {
   schedule(patch);
-  for (const source of sources) groups[source].watch(patch);
+  for (const source of sources) units[source].watch(patch);
 }
 
-// A combined button that also writes another fieldset: after its own message, the message
-// \`otherTag\` goes to fieldset \`other\`.
+// A combined button that also writes another unit: after its own message, the message
+// \`otherTag\` goes to unit \`other\`.
 export function forward(self, tag, other, otherTag) {
   const { send } = self;
   self.send = (t, value) => {
     send(t, value);
-    if (t === tag) groups[other].send(otherTag);
+    if (t === tag) units[other].send(otherTag);
   };
 }
 
@@ -635,10 +649,10 @@ export function row(html, self, first) {
 
 export const nextId = (items) => items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
 
-// The tick handlers of the fieldsets whose time-driven gate is on (their subscription).
+// The tick handlers of the units whose time-driven gate is on (their subscription).
 export const running = new Set();
 
-// A time-driven fieldset's subscription, as in Elm's \`subscriptions\`: after every change to its
+// A time-driven unit's subscription, as in Elm's \`subscriptions\`: after every change to its
 // model, its \`tick\` is in \`running\` exactly while \`gate(model)\` holds.
 export function subscribe(self, tag, gate) {
   const { send, set } = self;
@@ -654,27 +668,21 @@ export function subscribe(self, tag, gate) {
 }
 `;
 
-export function emit(spec) {
+export function emit(spec, options = {}) {
   const [form, companion] = spec.widgets;
   if (spec.widgets.length !== 2 || form.id !== "w1" || companion.id !== "w2") throw new Error("expected the form w1 and its companion w2");
-  const secs = layout(form);
-  const p = plan(spec, form, secs);
+  const grain = options.grain ?? "unit";
+  const p = plan(spec, form, layout(form, grain));
   const files = {
     ...templateFiles({ name: "big-component", title: "Big component" }),
     "src/widgets/frame.js": FRAME_FILE,
   };
-  const sections = secs.map((sec) => {
-    const inner = sec.groups.map((g) => groupBlock(spec, form, p, g));
-    if (sec.total) inner.push(totalBlock(p, sec));
-    const title = sec.title;
-    const html = `<div><${title.tag}>${esc(title.parts.join(""))}</${title.tag}>`;
-    return `{\n  const s = add(form, ${q(trim(html))});\n${indent(inner.join("\n"))}\n}`;
-  });
+  const blocks = p.groups.map((g) => groupBlock(spec, form, p, g)).join("\n");
   const timed = p.groups.some((g) => g.timed.length);
   const feedGroup = p.groups.find((g) => g.feed);
   const companionCode = companionBlock(spec, p, companion);
-  const code = sections.join("\n") + companionCode;
-  const used = (names) => names.filter((h) => h === "groups" || (h === "running" && timed) || new RegExp(`\\b${h}\\(`).test(code));
+  const code = blocks + companionCode;
+  const used = (names) => names.filter((h) => h === "units" || (h === "running" && timed) || new RegExp(`\\b${h}\\(`).test(code));
   files["src/app.js"] = `import { ${used(RUNTIME).join(", ")} } from "./runtime.js";
 import { ${used(FRAME).join(", ")} } from "./widgets/frame.js";
 
@@ -683,12 +691,11 @@ export function App(root) {
   return page(root.lastChild);
 }
 
-// The form's fieldsets, section by section in page order, then the companion and the routing of
-// external events.
+// The form's instances in page order, then the companion and the routing of external events.
 function page(main) {
   let companion;
   const form = add(main, ${q(trim("<section data-key=w1 data-role=widget><h2>" + esc(form.label) + "</h2>"))});
-${indent(sections.join("\n"))}
+${indent(blocks)}
 ${indent(companionCode)}
 
   return {
@@ -697,22 +704,22 @@ ${indent(companionCode)}
       switch (msg.type) {
         case "serverSet":
           if (msg.widget === "w2") companion.set(msg.state);
-          else for (const g of groups) g.send(0, msg.state);
+          else for (const g of units) g.send(0, msg.state);
           break;
 ${timed ? `        case "tick":
           for (const tick of running) tick();
           break;
 ` : ""}${feedGroup ? `        case "notify":
-          groups[${feedGroup.index}].send(${feedGroup.notifyTag}, msg.item);
+          units[${feedGroup.index}].send(${feedGroup.notifyTag}, msg.item);
           break;
 ` : ""}        case "snapshot":
-          for (const g of groups) g.send(0, msg.state.widgets.w1);
+          for (const g of units) g.send(0, msg.state.widgets.w1);
           companion.set(msg.state.widgets.w2);
           break;
       }
     },
     dispose() {
-${timed ? "      running.clear();\n" : ""}      groups.length = 0;
+${timed ? "      running.clear();\n" : ""}      units.length = 0;
       main.remove();
     },
   };
@@ -721,14 +728,14 @@ ${timed ? "      running.clear();\n" : ""}      groups.length = 0;
   return {
     files,
     style: {
-      components: "the form is split into one instance per fieldset (a group of 2-5 units), each in its own block of the page function (factory inlined, as it is called once): its slice of the one model, its own reducer (a table of arms by message tag, written out from its ops), template and bindings; the companion is an instance of its own; only generic helpers are shared",
-      state: "the form's one record is split into slices: each fieldset instance owns, in its closure, the fields whose first appearance in the view is in that fieldset; send(tag, value) runs its reducer arm and schedules that instance's binding list",
+      components: "grain " + grain + (grain === "unit" ? ": the form is split into one instance per field unit (a field with its controls, displays and the bindings it adds), each in its own block of the page function" : ": the whole form is one instance") + " (factory inlined, as it is called once): its slice of the one model, its own reducer (a table of arms by message tag, written out from its ops), template and bindings; the companion is an instance of its own; only generic helpers are shared",
+      state: "the form's one record is split into slices: each instance owns, in its closure, the fields of its unit; send(tag, value) runs its reducer arm and schedules that instance's binding list",
       updates: "one patch function per instance, every DOM write skipped when unchanged; derived texts compiled to template literals; batched in a microtask",
-      crossFieldset: "a binding that reads a field of another fieldset reads that instance's slice from the frame's registry in patch, and the reader watches the instance (follow); a section total (several fieldsets) is a reader without a model; the companion reads the form the same way",
-      combinedButtons: "a combined button that writes a field of another fieldset: its own arm for its fields, and a message of its own for the other fieldset, sent after it (forward)",
-      externalEvents: "serverSet/snapshot of the form send every fieldset its Load message (the fieldset picks its own fields), the companion's are set; notify sends the feed's fieldset its Notify message; tick calls the fieldsets of a shared running set, each subscribing while its gate is on",
+      crossUnit: "a binding that reads a field of another unit reads that instance's slice from the frame's registry in patch, and the reader watches the instance (follow); the companion reads the form the same way",
+      combinedButtons: "a combined button that writes a field of another unit: its own arm for its fields, and a message of its own for the other unit, sent after it (forward)",
+      externalEvents: "serverSet/snapshot of the form send every instance its Load message (it picks its own fields), the companion's are set; notify sends the feed's unit its Notify message; tick calls the instances of a shared running set, each subscribing while its gate is on",
       lists: "runtime keyed list by item.id: patch changed rows, one forward placement pass when order or membership changes",
-      dom: "one static template per fieldset (trailing end tags left out), inserted into its section's element by insertAdjacentHTML, elements addressed by document order; one template per list row, cloned per new item",
+      dom: "one static template per instance (a run of sibling nodes, trailing end tags left out), parsed in a fragment appended to the form, elements addressed by document order; one template per list row, cloned per new item",
       conditionals: "node in the template; while hidden, an empty text node holds its place",
       events: "tag 0 is Load; the template's controls take tags 1, 2, … in document order (then each row's controls), attached by position by the runtime's wire; messages are sent as send(tag, value); number inputs send valueAsNumber and the reducer takes integers within range only",
       build: "Vite production build, no framework plugin, hidden source maps",
