@@ -1,663 +1,63 @@
 {
  "events": [
   {
-   "variant": "beni-tea",
+   "variant": "beni-direct",
    "size": 64,
    "action": "button: add to an int",
    "half": "button: add to an int",
    "scope": "local",
    "script": {
-    "median": 147.5,
-    "p25": 101.8,
-    "p75": 185.5,
+    "median": 251.5,
+    "p25": 204,
+    "p75": 301.8,
     "n": 20,
     "ci": [
-     102.5,
-     175
+     217,
+     300
     ]
    },
    "total": {
-    "median": 9.362,
-    "p25": 5.853,
-    "p75": 13.457,
+    "median": 8.516,
+    "p25": 3.453,
+    "p75": 12.963,
     "n": 20,
     "ci": [
-     6.023,
-     12.935
+     4.05,
+     12.099
     ]
    },
    "seeds": {
-    "1": 147.5
+    "1": 251.5
    }
   },
   {
-   "variant": "beni-tea",
+   "variant": "beni-direct",
    "size": 64,
    "action": "input: type a character",
    "half": "input: type a character",
    "scope": "local",
    "script": {
-    "median": 115,
-    "p25": 109.3,
-    "p75": 125.3,
+    "median": 162.5,
+    "p25": 145.5,
+    "p75": 177,
     "n": 20,
     "ci": [
-     110,
-     123.5
+     147.5,
+     173.5
     ]
    },
    "total": {
-    "median": 1.797,
-    "p25": 1.458,
-    "p75": 8.54,
+    "median": 1.945,
+    "p25": 1.461,
+    "p75": 9.844,
     "n": 20,
     "ci": [
      1.498,
-     7.041
+     8.055
     ]
    },
    "seeds": {
-    "1": 115
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "input: type a character",
-   "half": "input: delete it",
-   "scope": "local",
-   "script": {
-    "median": 118.5,
-    "p25": 108.8,
-    "p75": 124,
-    "n": 20,
-    "ci": [
-     113.5,
-     123
-    ]
-   },
-   "total": {
-    "median": 3.11,
-    "p25": 1.583,
-    "p75": 11.117,
-    "n": 20,
-    "ci": [
-     1.616,
-     9.458
-    ]
-   },
-   "seeds": {
-    "1": 118.5
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "list: type, push, remove",
-   "half": "list: type in the draft",
-   "scope": "local",
-   "script": {
-    "median": 126,
-    "p25": 114,
-    "p75": 144.3,
-    "n": 20,
-    "ci": [
-     114.5,
-     136.5
-    ]
-   },
-   "total": {
-    "median": 9.203,
-    "p25": 3.824,
-    "p75": 12.522,
-    "n": 20,
-    "ci": [
-     4.988,
-     11.816
-    ]
-   },
-   "seeds": {
-    "1": 126
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "list: type, push, remove",
-   "half": "list: push the draft",
-   "scope": "local",
-   "script": {
-    "median": 188,
-    "p25": 171,
-    "p75": 257.8,
-    "n": 20,
-    "ci": [
-     176,
-     256.5
-    ]
-   },
-   "total": {
-    "median": 9.186,
-    "p25": 4.805,
-    "p75": 13.651,
-    "n": 20,
-    "ci": [
-     6.249,
-     13.395
-    ]
-   },
-   "seeds": {
-    "1": 188
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "list: type, push, remove",
-   "half": "list: remove the pushed item",
-   "scope": "local",
-   "script": {
-    "median": 225,
-    "p25": 190.8,
-    "p75": 242.8,
-    "n": 20,
-    "ci": [
-     195.5,
-     236.5
-    ]
-   },
-   "total": {
-    "median": 9.985,
-    "p25": 5.548,
-    "p75": 13.393,
-    "n": 20,
-    "ci": [
-     5.808,
-     13.071
-    ]
-   },
-   "seeds": {
-    "1": 225
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "bool: toggle (a conditional section reads it)",
-   "half": "bool: toggle (a conditional section reads it)",
-   "scope": "local",
-   "script": {
-    "median": 157,
-    "p25": 132,
-    "p75": 189.3,
-    "n": 20,
-    "ci": [
-     134.5,
-     181
-    ]
-   },
-   "total": {
-    "median": 10.383,
-    "p25": 5.853,
-    "p75": 13.516,
-    "n": 20,
-    "ci": [
-     6.391,
-     12.93
-    ]
-   },
-   "seeds": {
-    "1": 157
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "bool: toggle (a conditional section reads it)",
-   "half": "bool: toggle back",
-   "scope": "local",
-   "script": {
-    "median": 131.5,
-    "p25": 123.3,
-    "p75": 151.8,
-    "n": 20,
-    "ci": [
-     124,
-     144
-    ]
-   },
-   "total": {
-    "median": 7.932,
-    "p25": 4.288,
-    "p75": 12.468,
-    "n": 20,
-    "ci": [
-     4.6,
-     11.236
-    ]
-   },
-   "seeds": {
-    "1": 131.5
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "enum: select or cycle",
-   "half": "enum: cycle",
-   "scope": "local",
-   "script": {
-    "median": 115,
-    "p25": 94,
-    "p75": 134,
-    "n": 20,
-    "ci": [
-     98.5,
-     130.5
-    ]
-   },
-   "total": {
-    "median": 9.593,
-    "p25": 6.062,
-    "p75": 14.223,
-    "n": 20,
-    "ci": [
-     6.515,
-     13.984
-    ]
-   },
-   "seeds": {
-    "1": 115
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "number: type a digit (a derived value reads it)",
-   "half": "number: type a digit (a derived value reads it)",
-   "scope": "local",
-   "script": {
-    "median": 139.5,
-    "p25": 124.5,
-    "p75": 177.5,
-    "n": 20,
-    "ci": [
-     126.5,
-     175
-    ]
-   },
-   "total": {
-    "median": 9.286,
-    "p25": 5.47,
-    "p75": 13.96,
-    "n": 20,
-    "ci": [
-     6.401,
-     12.399
-    ]
-   },
-   "seeds": {
-    "1": 139.5
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "number: type a digit (a derived value reads it)",
-   "half": "number: delete it",
-   "scope": "local",
-   "script": {
-    "median": 137.5,
-    "p25": 126.8,
-    "p75": 152.8,
-    "n": 20,
-    "ci": [
-     127,
-     151
-    ]
-   },
-   "total": {
-    "median": 9.407,
-    "p25": 4.377,
-    "p75": 14.113,
-    "n": 20,
-    "ci": [
-     4.549,
-     13.697
-    ]
-   },
-   "seeds": {
-    "1": 137.5
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "dispatch: tick (one field running)",
-   "half": "dispatch: tick (one field running)",
-   "scope": "local",
-   "script": {
-    "median": 166,
-    "p25": 157.3,
-    "p75": 181.5,
-    "n": 20,
-    "ci": [
-     159,
-     178.5
-    ]
-   },
-   "total": {
-    "median": 1.23,
-    "p25": 1.089,
-    "p75": 10.017,
-    "n": 20,
-    "ci": [
-     1.116,
-     9.965
-    ]
-   },
-   "seeds": {
-    "1": 166
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "dispatch: serverSet the companion",
-   "half": "dispatch: serverSet the companion",
-   "scope": "local",
-   "script": {
-    "median": 183.5,
-    "p25": 160,
-    "p75": 189,
-    "n": 20,
-    "ci": [
-     165,
-     188.5
-    ]
-   },
-   "total": {
-    "median": 1.405,
-    "p25": 1.177,
-    "p75": 9.948,
-    "n": 20,
-    "ci": [
-     1.204,
-     9.744
-    ]
-   },
-   "seeds": {
-    "1": 183.5
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "dispatch: serverSet the companion",
-   "half": "dispatch: serverSet the companion (again)",
-   "scope": "local",
-   "script": {
-    "median": 170.5,
-    "p25": 158.5,
-    "p75": 191,
-    "n": 20,
-    "ci": [
-     160.5,
-     187.5
-    ]
-   },
-   "total": {
-    "median": 2.782,
-    "p25": 1.165,
-    "p75": 9.113,
-    "n": 20,
-    "ci": [
-     1.186,
-     8.372
-    ]
-   },
-   "seeds": {
-    "1": 170.5
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "notify, dismiss",
-   "half": "dispatch: notify the feed",
-   "scope": "local",
-   "script": {
-    "median": 264.5,
-    "p25": 238.8,
-    "p75": 297.5,
-    "n": 20,
-    "ci": [
-     242,
-     294
-    ]
-   },
-   "total": {
-    "median": 3.904,
-    "p25": 3.22,
-    "p75": 6.466,
-    "n": 20,
-    "ci": [
-     3.307,
-     6.045
-    ]
-   },
-   "seeds": {
-    "1": 264.5
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "notify, dismiss",
-   "half": "feed: dismiss the new entry",
-   "scope": "local",
-   "script": {
-    "median": 232.5,
-    "p25": 215.3,
-    "p75": 277.5,
-    "n": 20,
-    "ci": [
-     217.5,
-     266.5
-    ]
-   },
-   "total": {
-    "median": 9.635,
-    "p25": 5.453,
-    "p75": 12.715,
-    "n": 20,
-    "ci": [
-     6.626,
-     12.611
-    ]
-   },
-   "seeds": {
-    "1": 232.5
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "dispatch: serverSet the whole component",
-   "half": "dispatch: serverSet the whole component",
-   "scope": "global",
-   "script": {
-    "median": 676,
-    "p25": 650.3,
-    "p75": 743.3,
-    "n": 20,
-    "ci": [
-     659.5,
-     723
-    ]
-   },
-   "total": {
-    "median": 3.812,
-    "p25": 3.41,
-    "p75": 6.53,
-    "n": 20,
-    "ci": [
-     3.472,
-     4.447
-    ]
-   },
-   "seeds": {
-    "1": 676
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "dispatch: serverSet the whole component",
-   "half": "dispatch: serverSet the whole component (again)",
-   "scope": "global",
-   "script": {
-    "median": 671,
-    "p25": 618,
-    "p75": 736.3,
-    "n": 20,
-    "ci": [
-     625,
-     713
-    ]
-   },
-   "total": {
-    "median": 3.579,
-    "p25": 3.215,
-    "p75": 13.076,
-    "n": 20,
-    "ci": [
-     3.251,
-     12.11
-    ]
-   },
-   "seeds": {
-    "1": 671
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "dispatch: whole-state snapshot",
-   "half": "dispatch: whole-state snapshot",
-   "scope": "global",
-   "script": {
-    "median": 718.5,
-    "p25": 681.5,
-    "p75": 785,
-    "n": 20,
-    "ci": [
-     686.5,
-     781
-    ]
-   },
-   "total": {
-    "median": 3.923,
-    "p25": 3.725,
-    "p75": 6.514,
-    "n": 20,
-    "ci": [
-     3.789,
-     5.895
-    ]
-   },
-   "seeds": {
-    "1": 718.5
-   }
-  },
-  {
-   "variant": "beni-tea",
-   "size": 64,
-   "action": "dispatch: whole-state snapshot",
-   "half": "dispatch: whole-state snapshot (again)",
-   "scope": "global",
-   "script": {
-    "median": 748,
-    "p25": 713.5,
-    "p75": 795,
-    "n": 20,
-    "ci": [
-     715.5,
-     774
-    ]
-   },
-   "total": {
-    "median": 3.773,
-    "p25": 3.593,
-    "p75": 6.237,
-    "n": 20,
-    "ci": [
-     3.612,
-     5.887
-    ]
-   },
-   "seeds": {
-    "1": 748
-   }
-  },
-  {
-   "variant": "beni-direct",
-   "size": 64,
-   "action": "button: add to an int",
-   "half": "button: add to an int",
-   "scope": "local",
-   "script": {
-    "median": 230.5,
-    "p25": 206.5,
-    "p75": 286.5,
-    "n": 20,
-    "ci": [
-     211.5,
-     271
-    ]
-   },
-   "total": {
-    "median": 9.637,
-    "p25": 4.58,
-    "p75": 12.982,
-    "n": 20,
-    "ci": [
-     5.228,
-     12.755
-    ]
-   },
-   "seeds": {
-    "1": 230.5
-   }
-  },
-  {
-   "variant": "beni-direct",
-   "size": 64,
-   "action": "input: type a character",
-   "half": "input: type a character",
-   "scope": "local",
-   "script": {
-    "median": 163.5,
-    "p25": 146.5,
-    "p75": 198.8,
-    "n": 20,
-    "ci": [
-     148,
-     191
-    ]
-   },
-   "total": {
-    "median": 1.978,
-    "p25": 1.519,
-    "p75": 9.896,
-    "n": 20,
-    "ci": [
-     1.539,
-     9.26
-    ]
-   },
-   "seeds": {
-    "1": 163.5
+    "1": 162.5
    }
   },
   {
@@ -667,27 +67,27 @@
    "half": "input: delete it",
    "scope": "local",
    "script": {
-    "median": 192,
-    "p25": 169.3,
-    "p75": 208.3,
+    "median": 174.5,
+    "p25": 163.8,
+    "p75": 197.5,
     "n": 20,
     "ci": [
-     173,
-     205.5
+     166.5,
+     192.5
     ]
    },
    "total": {
-    "median": 1.846,
-    "p25": 1.746,
-    "p75": 7.458,
+    "median": 2.011,
+    "p25": 1.664,
+    "p75": 6.833,
     "n": 20,
     "ci": [
-     1.748,
-     5.616
+     1.712,
+     6.168
     ]
    },
    "seeds": {
-    "1": 192
+    "1": 174.5
    }
   },
   {
@@ -697,27 +97,27 @@
    "half": "list: type in the draft",
    "scope": "local",
    "script": {
-    "median": 194.5,
-    "p25": 173.8,
-    "p75": 223.8,
+    "median": 195,
+    "p25": 173,
+    "p75": 235.5,
     "n": 20,
     "ci": [
-     175.5,
-     219
+     175,
+     232.5
     ]
    },
    "total": {
-    "median": 8.714,
-    "p25": 5,
-    "p75": 13.168,
+    "median": 8.431,
+    "p25": 4.803,
+    "p75": 12.863,
     "n": 20,
     "ci": [
-     5.38,
-     12.548
+     5.257,
+     12.243
     ]
    },
    "seeds": {
-    "1": 194.5
+    "1": 195
    }
   },
   {
@@ -727,27 +127,27 @@
    "half": "list: push the draft",
    "scope": "local",
    "script": {
-    "median": 259,
-    "p25": 223.5,
-    "p75": 313.5,
+    "median": 330.5,
+    "p25": 239.3,
+    "p75": 369.5,
     "n": 20,
     "ci": [
-     231.5,
-     300.5
+     258.5,
+     360.5
     ]
    },
    "total": {
-    "median": 9.58,
-    "p25": 5.853,
-    "p75": 13.282,
+    "median": 9.52,
+    "p25": 6.427,
+    "p75": 14.043,
     "n": 20,
     "ci": [
-     6.398,
-     12.946
+     6.946,
+     13.263
     ]
    },
    "seeds": {
-    "1": 259
+    "1": 330.5
    }
   },
   {
@@ -757,27 +157,27 @@
    "half": "list: remove the pushed item",
    "scope": "local",
    "script": {
-    "median": 282,
-    "p25": 248.5,
-    "p75": 337.5,
+    "median": 310,
+    "p25": 277.5,
+    "p75": 334.5,
     "n": 20,
     "ci": [
-     250.5,
-     331.5
+     279,
+     333.5
     ]
    },
    "total": {
-    "median": 9.662,
-    "p25": 4.991,
-    "p75": 12.459,
+    "median": 10.172,
+    "p25": 5.816,
+    "p75": 13.936,
     "n": 20,
     "ci": [
-     5.813,
-     11.835
+     6.354,
+     13.497
     ]
    },
    "seeds": {
-    "1": 282
+    "1": 310
    }
   },
   {
@@ -788,22 +188,22 @@
    "scope": "local",
    "script": {
     "median": 214.5,
-    "p25": 182.3,
-    "p75": 260.3,
+    "p25": 179,
+    "p75": 259.8,
     "n": 20,
     "ci": [
-     183.5,
+     185.5,
      259
     ]
    },
    "total": {
-    "median": 10.82,
-    "p25": 6.248,
-    "p75": 13.906,
+    "median": 9.489,
+    "p25": 5.213,
+    "p75": 12.316,
     "n": 20,
     "ci": [
-     6.691,
-     13.339
+     5.298,
+     11.695
     ]
    },
    "seeds": {
@@ -817,27 +217,27 @@
    "half": "bool: toggle back",
    "scope": "local",
    "script": {
-    "median": 215.5,
-    "p25": 180.5,
-    "p75": 260.3,
+    "median": 226,
+    "p25": 187,
+    "p75": 269.8,
     "n": 20,
     "ci": [
-     187,
-     255
+     190.5,
+     256
     ]
    },
    "total": {
-    "median": 10.155,
-    "p25": 5.857,
-    "p75": 14.3,
+    "median": 11.223,
+    "p25": 6.217,
+    "p75": 14.755,
     "n": 20,
     "ci": [
-     6.135,
-     13.865
+     7.062,
+     13.977
     ]
    },
    "seeds": {
-    "1": 215.5
+    "1": 226
    }
   },
   {
@@ -847,27 +247,27 @@
    "half": "enum: cycle",
    "scope": "local",
    "script": {
-    "median": 167,
-    "p25": 152.8,
-    "p75": 185,
+    "median": 173.5,
+    "p25": 149.8,
+    "p75": 192.3,
     "n": 20,
     "ci": [
-     157.5,
-     183.5
+     153,
+     186.5
     ]
    },
    "total": {
-    "median": 9.681,
-    "p25": 4.601,
-    "p75": 13.286,
+    "median": 9.047,
+    "p25": 5.302,
+    "p75": 13.384,
     "n": 20,
     "ci": [
-     5.622,
-     13.009
+     5.864,
+     12.875
     ]
    },
    "seeds": {
-    "1": 167
+    "1": 173.5
    }
   },
   {
@@ -877,27 +277,27 @@
    "half": "number: type a digit (a derived value reads it)",
    "scope": "local",
    "script": {
-    "median": 212,
-    "p25": 173.8,
-    "p75": 247.3,
+    "median": 223.5,
+    "p25": 199.5,
+    "p75": 239,
     "n": 20,
     "ci": [
-     182.5,
-     241.5
+     206,
+     237
     ]
    },
    "total": {
-    "median": 9.416,
-    "p25": 4.624,
-    "p75": 12.497,
+    "median": 9.993,
+    "p25": 5.147,
+    "p75": 12.949,
     "n": 20,
     "ci": [
-     5.404,
-     12.212
+     5.757,
+     12.279
     ]
    },
    "seeds": {
-    "1": 212
+    "1": 223.5
    }
   },
   {
@@ -907,27 +307,27 @@
    "half": "number: delete it",
    "scope": "local",
    "script": {
-    "median": 199.5,
-    "p25": 167.8,
-    "p75": 231.8,
+    "median": 205,
+    "p25": 175.5,
+    "p75": 248.8,
     "n": 20,
     "ci": [
-     175,
-     228.5
+     176,
+     231
     ]
    },
    "total": {
-    "median": 7.64,
-    "p25": 4.115,
-    "p75": 11.768,
+    "median": 8.81,
+    "p25": 4.344,
+    "p75": 13.018,
     "n": 20,
     "ci": [
-     4.622,
-     11.519
+     4.649,
+     12.003
     ]
    },
    "seeds": {
-    "1": 199.5
+    "1": 205
    }
   },
   {
@@ -937,27 +337,27 @@
    "half": "dispatch: tick (one field running)",
    "scope": "local",
    "script": {
-    "median": 311,
-    "p25": 282.3,
-    "p75": 370.3,
+    "median": 274.5,
+    "p25": 247.8,
+    "p75": 369.8,
     "n": 20,
     "ci": [
-     283,
-     355
+     249,
+     348
     ]
    },
    "total": {
-    "median": 1.375,
-    "p25": 1.236,
-    "p75": 3.612,
+    "median": 1.904,
+    "p25": 1.191,
+    "p75": 8.639,
     "n": 20,
     "ci": [
-     1.251,
-     1.926
+     1.216,
+     8.402
     ]
    },
    "seeds": {
-    "1": 311
+    "1": 274.5
    }
   },
   {
@@ -967,27 +367,27 @@
    "half": "dispatch: serverSet the companion",
    "scope": "local",
    "script": {
-    "median": 326.5,
-    "p25": 303.3,
-    "p75": 363,
+    "median": 307.5,
+    "p25": 276.8,
+    "p75": 374,
     "n": 20,
     "ci": [
-     306.5,
-     360.5
+     281.5,
+     363
     ]
    },
    "total": {
-    "median": 1.487,
-    "p25": 1.301,
-    "p75": 4.647,
+    "median": 1.388,
+    "p25": 1.235,
+    "p75": 7.717,
     "n": 20,
     "ci": [
-     1.327,
-     4.104
+     1.247,
+     4.54
     ]
    },
    "seeds": {
-    "1": 326.5
+    "1": 307.5
    }
   },
   {
@@ -997,27 +397,27 @@
    "half": "dispatch: serverSet the companion (again)",
    "scope": "local",
    "script": {
-    "median": 327.5,
-    "p25": 287.5,
-    "p75": 359.5,
+    "median": 316,
+    "p25": 267.8,
+    "p75": 367.8,
     "n": 20,
     "ci": [
-     292,
-     356
+     274.5,
+     349.5
     ]
    },
    "total": {
-    "median": 4.933,
-    "p25": 1.299,
-    "p75": 11.576,
+    "median": 2.2,
+    "p25": 1.246,
+    "p75": 13.42,
     "n": 20,
     "ci": [
-     1.334,
-     10.896
+     1.259,
+     9.547
     ]
    },
    "seeds": {
-    "1": 327.5
+    "1": 316
    }
   },
   {
@@ -1027,27 +427,27 @@
    "half": "dispatch: notify the feed",
    "scope": "local",
    "script": {
-    "median": 362.5,
-    "p25": 315,
-    "p75": 405.3,
+    "median": 423,
+    "p25": 361.3,
+    "p75": 492.8,
     "n": 20,
     "ci": [
-     321,
-     388
+     373,
+     490.5
     ]
    },
    "total": {
-    "median": 2.398,
-    "p25": 2.211,
-    "p75": 3.203,
+    "median": 3.298,
+    "p25": 2.359,
+    "p75": 5.259,
     "n": 20,
     "ci": [
-     2.24,
-     2.96
+     2.403,
+     4.643
     ]
    },
    "seeds": {
-    "1": 362.5
+    "1": 423
    }
   },
   {
@@ -1057,27 +457,27 @@
    "half": "feed: dismiss the new entry",
    "scope": "local",
    "script": {
-    "median": 302.5,
-    "p25": 265.8,
-    "p75": 337.5,
+    "median": 306.5,
+    "p25": 290.5,
+    "p75": 373,
     "n": 20,
     "ci": [
-     270,
-     327.5
+     292,
+     371
     ]
    },
    "total": {
-    "median": 8.893,
-    "p25": 5.715,
-    "p75": 13.413,
+    "median": 9.613,
+    "p25": 4.94,
+    "p75": 13.724,
     "n": 20,
     "ci": [
-     6.518,
-     12.652
+     5.38,
+     13.179
     ]
    },
    "seeds": {
-    "1": 302.5
+    "1": 306.5
    }
   },
   {
@@ -1087,27 +487,27 @@
    "half": "dispatch: serverSet the whole component",
    "scope": "global",
    "script": {
-    "median": 904.5,
-    "p25": 827,
-    "p75": 934.8,
+    "median": 850,
+    "p25": 794.8,
+    "p75": 929.5,
     "n": 20,
     "ci": [
-     838,
-     930
+     810,
+     916
     ]
    },
    "total": {
-    "median": 3.92,
-    "p25": 3.654,
-    "p75": 8.548,
+    "median": 3.742,
+    "p25": 3.567,
+    "p75": 7.637,
     "n": 20,
     "ci": [
-     3.682,
-     6.57
+     3.585,
+     6.435
     ]
    },
    "seeds": {
-    "1": 904.5
+    "1": 850
    }
   },
   {
@@ -1117,27 +517,27 @@
    "half": "dispatch: serverSet the whole component (again)",
    "scope": "global",
    "script": {
-    "median": 836,
-    "p25": 780.5,
-    "p75": 904,
+    "median": 802.5,
+    "p25": 750.3,
+    "p75": 898,
     "n": 20,
     "ci": [
-     796.5,
-     882
+     758,
+     857.5
     ]
    },
    "total": {
-    "median": 4.426,
-    "p25": 3.406,
-    "p75": 13.517,
+    "median": 3.531,
+    "p25": 3.299,
+    "p75": 7.413,
     "n": 20,
     "ci": [
-     3.428,
-     10.439
+     3.349,
+     5.672
     ]
    },
    "seeds": {
-    "1": 836
+    "1": 802.5
    }
   },
   {
@@ -1147,27 +547,27 @@
    "half": "dispatch: whole-state snapshot",
    "scope": "global",
    "script": {
-    "median": 909,
-    "p25": 830.5,
-    "p75": 968.5,
+    "median": 823.5,
+    "p25": 749.8,
+    "p75": 935.8,
     "n": 20,
     "ci": [
-     838,
-     958
+     763,
+     930.5
     ]
    },
    "total": {
-    "median": 4.908,
-    "p25": 4.328,
-    "p75": 9.414,
+    "median": 4.085,
+    "p25": 3.666,
+    "p75": 4.501,
     "n": 20,
     "ci": [
-     4.47,
-     7.156
+     3.772,
+     4.317
     ]
    },
    "seeds": {
-    "1": 909
+    "1": 823.5
    }
   },
   {
@@ -1177,27 +577,1227 @@
    "half": "dispatch: whole-state snapshot (again)",
    "scope": "global",
    "script": {
-    "median": 904.5,
-    "p25": 864,
-    "p75": 967.3,
+    "median": 822.5,
+    "p25": 787,
+    "p75": 886.5,
     "n": 20,
     "ci": [
-     865,
-     961.5
+     793,
+     853.5
     ]
    },
    "total": {
-    "median": 4.51,
-    "p25": 3.996,
-    "p75": 13.825,
+    "median": 3.916,
+    "p25": 3.584,
+    "p75": 6.602,
     "n": 20,
     "ci": [
-     4.026,
-     13.59
+     3.592,
+     5.381
     ]
    },
    "seeds": {
-    "1": 904.5
+    "1": 822.5
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "button: add to an int",
+   "half": "button: add to an int",
+   "scope": "local",
+   "script": {
+    "median": 141,
+    "p25": 109.5,
+    "p75": 196.8,
+    "n": 20,
+    "ci": [
+     116,
+     190.5
+    ]
+   },
+   "total": {
+    "median": 8.055,
+    "p25": 5.044,
+    "p75": 12.152,
+    "n": 20,
+    "ci": [
+     5.213,
+     11.652
+    ]
+   },
+   "seeds": {
+    "1": 141
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: type a character",
+   "scope": "local",
+   "script": {
+    "median": 126.5,
+    "p25": 104.8,
+    "p75": 144,
+    "n": 20,
+    "ci": [
+     106.5,
+     137.5
+    ]
+   },
+   "total": {
+    "median": 1.713,
+    "p25": 1.455,
+    "p75": 6.848,
+    "n": 20,
+    "ci": [
+     1.462,
+     5.966
+    ]
+   },
+   "seeds": {
+    "1": 126.5
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: delete it",
+   "scope": "local",
+   "script": {
+    "median": 129,
+    "p25": 118.3,
+    "p75": 148.3,
+    "n": 20,
+    "ci": [
+     121,
+     139
+    ]
+   },
+   "total": {
+    "median": 4.087,
+    "p25": 1.62,
+    "p75": 12.315,
+    "n": 20,
+    "ci": [
+     1.636,
+     11.061
+    ]
+   },
+   "seeds": {
+    "1": 129
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: type in the draft",
+   "scope": "local",
+   "script": {
+    "median": 131.5,
+    "p25": 121.8,
+    "p75": 148,
+    "n": 20,
+    "ci": [
+     122,
+     146.5
+    ]
+   },
+   "total": {
+    "median": 7.356,
+    "p25": 3.846,
+    "p75": 13.476,
+    "n": 20,
+    "ci": [
+     4.192,
+     13.003
+    ]
+   },
+   "seeds": {
+    "1": 131.5
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: push the draft",
+   "scope": "local",
+   "script": {
+    "median": 230,
+    "p25": 204.8,
+    "p75": 282.3,
+    "n": 20,
+    "ci": [
+     211.5,
+     276.5
+    ]
+   },
+   "total": {
+    "median": 10.362,
+    "p25": 6.689,
+    "p75": 15.583,
+    "n": 20,
+    "ci": [
+     7.051,
+     15.352
+    ]
+   },
+   "seeds": {
+    "1": 230
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: remove the pushed item",
+   "scope": "local",
+   "script": {
+    "median": 231.5,
+    "p25": 193.5,
+    "p75": 247.8,
+    "n": 20,
+    "ci": [
+     196.5,
+     244.5
+    ]
+   },
+   "total": {
+    "median": 8.654,
+    "p25": 5.587,
+    "p75": 12.062,
+    "n": 20,
+    "ci": [
+     6.702,
+     10.826
+    ]
+   },
+   "seeds": {
+    "1": 231.5
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle (a conditional section reads it)",
+   "scope": "local",
+   "script": {
+    "median": 153,
+    "p25": 125.5,
+    "p75": 193,
+    "n": 20,
+    "ci": [
+     126.5,
+     189
+    ]
+   },
+   "total": {
+    "median": 9.558,
+    "p25": 5.224,
+    "p75": 13.625,
+    "n": 20,
+    "ci": [
+     5.59,
+     12.744
+    ]
+   },
+   "seeds": {
+    "1": 153
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle back",
+   "scope": "local",
+   "script": {
+    "median": 158,
+    "p25": 136.5,
+    "p75": 179.5,
+    "n": 20,
+    "ci": [
+     140,
+     172.5
+    ]
+   },
+   "total": {
+    "median": 10.164,
+    "p25": 5.464,
+    "p75": 13.564,
+    "n": 20,
+    "ci": [
+     5.961,
+     12.897
+    ]
+   },
+   "seeds": {
+    "1": 158
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "enum: select or cycle",
+   "half": "enum: cycle",
+   "scope": "local",
+   "script": {
+    "median": 131.5,
+    "p25": 97,
+    "p75": 145.8,
+    "n": 20,
+    "ci": [
+     99.5,
+     142.5
+    ]
+   },
+   "total": {
+    "median": 8.968,
+    "p25": 5.321,
+    "p75": 12.304,
+    "n": 20,
+    "ci": [
+     6.233,
+     11.683
+    ]
+   },
+   "seeds": {
+    "1": 131.5
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: type a digit (a derived value reads it)",
+   "scope": "local",
+   "script": {
+    "median": 148.5,
+    "p25": 132.5,
+    "p75": 170.3,
+    "n": 20,
+    "ci": [
+     139,
+     167.5
+    ]
+   },
+   "total": {
+    "median": 11.195,
+    "p25": 5.644,
+    "p75": 14.219,
+    "n": 20,
+    "ci": [
+     6.546,
+     14.063
+    ]
+   },
+   "seeds": {
+    "1": 148.5
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: delete it",
+   "scope": "local",
+   "script": {
+    "median": 129,
+    "p25": 115.5,
+    "p75": 150.5,
+    "n": 20,
+    "ci": [
+     118.5,
+     143.5
+    ]
+   },
+   "total": {
+    "median": 7.834,
+    "p25": 5.422,
+    "p75": 11.965,
+    "n": 20,
+    "ci": [
+     5.616,
+     11.448
+    ]
+   },
+   "seeds": {
+    "1": 129
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "dispatch: tick (one field running)",
+   "half": "dispatch: tick (one field running)",
+   "scope": "local",
+   "script": {
+    "median": 180,
+    "p25": 158.8,
+    "p75": 206.8,
+    "n": 20,
+    "ci": [
+     161.5,
+     198.5
+    ]
+   },
+   "total": {
+    "median": 1.278,
+    "p25": 1.189,
+    "p75": 7.346,
+    "n": 20,
+    "ci": [
+     1.201,
+     6.82
+    ]
+   },
+   "seeds": {
+    "1": 180
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion",
+   "scope": "local",
+   "script": {
+    "median": 160,
+    "p25": 148.5,
+    "p75": 179.5,
+    "n": 20,
+    "ci": [
+     150.5,
+     177
+    ]
+   },
+   "total": {
+    "median": 1.294,
+    "p25": 1.118,
+    "p75": 9.343,
+    "n": 20,
+    "ci": [
+     1.131,
+     8.498
+    ]
+   },
+   "seeds": {
+    "1": 160
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion (again)",
+   "scope": "local",
+   "script": {
+    "median": 173,
+    "p25": 155,
+    "p75": 180.8,
+    "n": 20,
+    "ci": [
+     157.5,
+     180
+    ]
+   },
+   "total": {
+    "median": 2.734,
+    "p25": 1.279,
+    "p75": 11.184,
+    "n": 20,
+    "ci": [
+     1.281,
+     9.617
+    ]
+   },
+   "seeds": {
+    "1": 173
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "dispatch: notify the feed",
+   "scope": "local",
+   "script": {
+    "median": 209.5,
+    "p25": 193,
+    "p75": 297.8,
+    "n": 20,
+    "ci": [
+     194.5,
+     276.5
+    ]
+   },
+   "total": {
+    "median": 2.453,
+    "p25": 2.108,
+    "p75": 3.615,
+    "n": 20,
+    "ci": [
+     2.137,
+     3.372
+    ]
+   },
+   "seeds": {
+    "1": 209.5
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "feed: dismiss the new entry",
+   "scope": "local",
+   "script": {
+    "median": 229,
+    "p25": 204.3,
+    "p75": 255.5,
+    "n": 20,
+    "ci": [
+     209.5,
+     250.5
+    ]
+   },
+   "total": {
+    "median": 8.804,
+    "p25": 4.367,
+    "p75": 12.699,
+    "n": 20,
+    "ci": [
+     5.334,
+     11.468
+    ]
+   },
+   "seeds": {
+    "1": 229
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component",
+   "scope": "global",
+   "script": {
+    "median": 704.5,
+    "p25": 627.8,
+    "p75": 767.8,
+    "n": 20,
+    "ci": [
+     645,
+     761
+    ]
+   },
+   "total": {
+    "median": 3.862,
+    "p25": 3.476,
+    "p75": 11.094,
+    "n": 20,
+    "ci": [
+     3.515,
+     8.149
+    ]
+   },
+   "seeds": {
+    "1": 704.5
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component (again)",
+   "scope": "global",
+   "script": {
+    "median": 709,
+    "p25": 671.8,
+    "p75": 734,
+    "n": 20,
+    "ci": [
+     681.5,
+     729.5
+    ]
+   },
+   "total": {
+    "median": 3.578,
+    "p25": 3.233,
+    "p75": 11.595,
+    "n": 20,
+    "ci": [
+     3.304,
+     7.618
+    ]
+   },
+   "seeds": {
+    "1": 709
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 689,
+    "p25": 663.3,
+    "p75": 777.3,
+    "n": 20,
+    "ci": [
+     667,
+     758.5
+    ]
+   },
+   "total": {
+    "median": 3.818,
+    "p25": 3.691,
+    "p75": 5.154,
+    "n": 20,
+    "ci": [
+     3.712,
+     4.5
+    ]
+   },
+   "seeds": {
+    "1": 689
+   }
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 718,
+    "p25": 701.3,
+    "p75": 743.5,
+    "n": 20,
+    "ci": [
+     706,
+     739.5
+    ]
+   },
+   "total": {
+    "median": 3.797,
+    "p25": 3.677,
+    "p75": 4.148,
+    "n": 20,
+    "ci": [
+     3.703,
+     4.05
+    ]
+   },
+   "seeds": {
+    "1": 718
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "button: add to an int",
+   "half": "button: add to an int",
+   "scope": "local",
+   "script": {
+    "median": 121,
+    "p25": 87,
+    "p75": 129.3,
+    "n": 20,
+    "ci": [
+     88,
+     129
+    ]
+   },
+   "total": {
+    "median": 8.751,
+    "p25": 3.959,
+    "p75": 11.785,
+    "n": 20,
+    "ci": [
+     4.7,
+     11.545
+    ]
+   },
+   "seeds": {
+    "1": 121
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: type a character",
+   "scope": "local",
+   "script": {
+    "median": 84,
+    "p25": 73.8,
+    "p75": 96.3,
+    "n": 20,
+    "ci": [
+     77.5,
+     93
+    ]
+   },
+   "total": {
+    "median": 1.745,
+    "p25": 1.393,
+    "p75": 14.582,
+    "n": 20,
+    "ci": [
+     1.416,
+     14.497
+    ]
+   },
+   "seeds": {
+    "1": 84
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: delete it",
+   "scope": "local",
+   "script": {
+    "median": 96,
+    "p25": 84.3,
+    "p75": 103.3,
+    "n": 20,
+    "ci": [
+     86.5,
+     102.5
+    ]
+   },
+   "total": {
+    "median": 1.668,
+    "p25": 1.52,
+    "p75": 6.833,
+    "n": 20,
+    "ci": [
+     1.541,
+     6.796
+    ]
+   },
+   "seeds": {
+    "1": 96
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: type in the draft",
+   "scope": "local",
+   "script": {
+    "median": 93.5,
+    "p25": 84,
+    "p75": 101.5,
+    "n": 20,
+    "ci": [
+     85,
+     98.5
+    ]
+   },
+   "total": {
+    "median": 9.466,
+    "p25": 5.55,
+    "p75": 14.813,
+    "n": 20,
+    "ci": [
+     6.39,
+     13.621
+    ]
+   },
+   "seeds": {
+    "1": 93.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: push the draft",
+   "scope": "local",
+   "script": {
+    "median": 224.5,
+    "p25": 175,
+    "p75": 264,
+    "n": 20,
+    "ci": [
+     176,
+     263
+    ]
+   },
+   "total": {
+    "median": 10.167,
+    "p25": 4.137,
+    "p75": 13.806,
+    "n": 20,
+    "ci": [
+     5.454,
+     12.82
+    ]
+   },
+   "seeds": {
+    "1": 224.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: remove the pushed item",
+   "scope": "local",
+   "script": {
+    "median": 177.5,
+    "p25": 155.3,
+    "p75": 202.5,
+    "n": 20,
+    "ci": [
+     157,
+     199
+    ]
+   },
+   "total": {
+    "median": 9.582,
+    "p25": 5.363,
+    "p75": 13.235,
+    "n": 20,
+    "ci": [
+     5.768,
+     12.961
+    ]
+   },
+   "seeds": {
+    "1": 177.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle (a conditional section reads it)",
+   "scope": "local",
+   "script": {
+    "median": 103,
+    "p25": 96.8,
+    "p75": 131.3,
+    "n": 20,
+    "ci": [
+     97.5,
+     129
+    ]
+   },
+   "total": {
+    "median": 10.074,
+    "p25": 5.334,
+    "p75": 12.44,
+    "n": 20,
+    "ci": [
+     5.424,
+     11.679
+    ]
+   },
+   "seeds": {
+    "1": 103
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle back",
+   "scope": "local",
+   "script": {
+    "median": 93,
+    "p25": 87.8,
+    "p75": 108.5,
+    "n": 20,
+    "ci": [
+     89,
+     105
+    ]
+   },
+   "total": {
+    "median": 10.347,
+    "p25": 5.419,
+    "p75": 14.785,
+    "n": 20,
+    "ci": [
+     5.758,
+     14.508
+    ]
+   },
+   "seeds": {
+    "1": 93
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "enum: select or cycle",
+   "half": "enum: cycle",
+   "scope": "local",
+   "script": {
+    "median": 79,
+    "p25": 73,
+    "p75": 98.5,
+    "n": 20,
+    "ci": [
+     73.5,
+     95.5
+    ]
+   },
+   "total": {
+    "median": 10.156,
+    "p25": 6.039,
+    "p75": 13.819,
+    "n": 20,
+    "ci": [
+     6.523,
+     13.374
+    ]
+   },
+   "seeds": {
+    "1": 79
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: type a digit (a derived value reads it)",
+   "scope": "local",
+   "script": {
+    "median": 108.5,
+    "p25": 99,
+    "p75": 126.8,
+    "n": 20,
+    "ci": [
+     101.5,
+     123.5
+    ]
+   },
+   "total": {
+    "median": 7.75,
+    "p25": 4.204,
+    "p75": 12.578,
+    "n": 20,
+    "ci": [
+     4.94,
+     11.71
+    ]
+   },
+   "seeds": {
+    "1": 108.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: delete it",
+   "scope": "local",
+   "script": {
+    "median": 115.5,
+    "p25": 100,
+    "p75": 127.8,
+    "n": 20,
+    "ci": [
+     101.5,
+     123.5
+    ]
+   },
+   "total": {
+    "median": 9.262,
+    "p25": 5.279,
+    "p75": 12.729,
+    "n": 20,
+    "ci": [
+     5.861,
+     12.325
+    ]
+   },
+   "seeds": {
+    "1": 115.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: tick (one field running)",
+   "half": "dispatch: tick (one field running)",
+   "scope": "local",
+   "script": {
+    "median": 141,
+    "p25": 126,
+    "p75": 152.5,
+    "n": 20,
+    "ci": [
+     128,
+     151
+    ]
+   },
+   "total": {
+    "median": 4.328,
+    "p25": 1.059,
+    "p75": 12.458,
+    "n": 20,
+    "ci": [
+     1.065,
+     12.074
+    ]
+   },
+   "seeds": {
+    "1": 141
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion",
+   "scope": "local",
+   "script": {
+    "median": 122.5,
+    "p25": 114.8,
+    "p75": 130.5,
+    "n": 20,
+    "ci": [
+     117,
+     129.5
+    ]
+   },
+   "total": {
+    "median": 1.213,
+    "p25": 0.999,
+    "p75": 9.411,
+    "n": 20,
+    "ci": [
+     1.002,
+     8.958
+    ]
+   },
+   "seeds": {
+    "1": 122.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion (again)",
+   "scope": "local",
+   "script": {
+    "median": 122,
+    "p25": 112,
+    "p75": 133,
+    "n": 20,
+    "ci": [
+     113.5,
+     130
+    ]
+   },
+   "total": {
+    "median": 1.823,
+    "p25": 1.014,
+    "p75": 10.112,
+    "n": 20,
+    "ci": [
+     1.049,
+     7.185
+    ]
+   },
+   "seeds": {
+    "1": 122
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "dispatch: notify the feed",
+   "scope": "local",
+   "script": {
+    "median": 210.5,
+    "p25": 198.3,
+    "p75": 235.5,
+    "n": 20,
+    "ci": [
+     199.5,
+     227.5
+    ]
+   },
+   "total": {
+    "median": 3.553,
+    "p25": 1.915,
+    "p75": 5.928,
+    "n": 20,
+    "ci": [
+     1.93,
+     4.964
+    ]
+   },
+   "seeds": {
+    "1": 210.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "feed: dismiss the new entry",
+   "scope": "local",
+   "script": {
+    "median": 184,
+    "p25": 156.3,
+    "p75": 195.8,
+    "n": 20,
+    "ci": [
+     158.5,
+     194.5
+    ]
+   },
+   "total": {
+    "median": 11.282,
+    "p25": 7.937,
+    "p75": 13.601,
+    "n": 20,
+    "ci": [
+     9.891,
+     13.18
+    ]
+   },
+   "seeds": {
+    "1": 184
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component",
+   "scope": "global",
+   "script": {
+    "median": 677,
+    "p25": 629.3,
+    "p75": 705.3,
+    "n": 20,
+    "ci": [
+     643,
+     702
+    ]
+   },
+   "total": {
+    "median": 3.335,
+    "p25": 3.089,
+    "p75": 14.688,
+    "n": 20,
+    "ci": [
+     3.109,
+     12.292
+    ]
+   },
+   "seeds": {
+    "1": 677
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component (again)",
+   "scope": "global",
+   "script": {
+    "median": 627,
+    "p25": 609.8,
+    "p75": 660.3,
+    "n": 20,
+    "ci": [
+     612,
+     653
+    ]
+   },
+   "total": {
+    "median": 3.151,
+    "p25": 3.031,
+    "p75": 5.624,
+    "n": 20,
+    "ci": [
+     3.061,
+     5.153
+    ]
+   },
+   "seeds": {
+    "1": 627
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 543.5,
+    "p25": 483.5,
+    "p75": 595,
+    "n": 20,
+    "ci": [
+     488,
+     589.5
+    ]
+   },
+   "total": {
+    "median": 5.219,
+    "p25": 3.287,
+    "p75": 14.945,
+    "n": 20,
+    "ci": [
+     3.29,
+     11.823
+    ]
+   },
+   "seeds": {
+    "1": 543.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 678,
+    "p25": 633.8,
+    "p75": 730.3,
+    "n": 20,
+    "ci": [
+     635,
+     717.5
+    ]
+   },
+   "total": {
+    "median": 4.431,
+    "p25": 3.379,
+    "p75": 7.233,
+    "n": 20,
+    "ci": [
+     3.441,
+     6.672
+    ]
+   },
+   "seeds": {
+    "1": 678
    }
   },
   {
@@ -1207,27 +1807,27 @@
    "half": "button: add to an int",
    "scope": "local",
    "script": {
-    "median": 137,
-    "p25": 123.8,
-    "p75": 149.3,
+    "median": 121.5,
+    "p25": 103.5,
+    "p75": 153.5,
     "n": 20,
     "ci": [
-     127.5,
-     147
+     105,
+     146
     ]
    },
    "total": {
-    "median": 7.584,
-    "p25": 3.027,
-    "p75": 10.302,
+    "median": 9.266,
+    "p25": 5.945,
+    "p75": 13.589,
     "n": 20,
     "ci": [
-     4.333,
-     9.465
+     6.369,
+     13.421
     ]
    },
    "seeds": {
-    "1": 137
+    "1": 121.5
    }
   },
   {
@@ -1237,27 +1837,27 @@
    "half": "input: type a character",
    "scope": "local",
    "script": {
-    "median": 84.5,
-    "p25": 82,
-    "p75": 97.3,
+    "median": 91.5,
+    "p25": 82.8,
+    "p75": 103,
     "n": 20,
     "ci": [
-     82,
-     91.5
+     84,
+     102.5
     ]
    },
    "total": {
-    "median": 1.506,
-    "p25": 1.402,
-    "p75": 7.886,
+    "median": 1.531,
+    "p25": 1.363,
+    "p75": 7.4,
     "n": 20,
     "ci": [
-     1.412,
-     7.449
+     1.367,
+     6.195
     ]
    },
    "seeds": {
-    "1": 84.5
+    "1": 91.5
    }
   },
   {
@@ -1267,27 +1867,27 @@
    "half": "input: delete it",
    "scope": "local",
    "script": {
-    "median": 95.5,
-    "p25": 78.8,
-    "p75": 123.8,
+    "median": 97.5,
+    "p25": 91,
+    "p75": 104,
     "n": 20,
     "ci": [
-     79,
-     111
+     94,
+     103
     ]
    },
    "total": {
-    "median": 1.715,
-    "p25": 1.606,
-    "p75": 8.198,
+    "median": 1.621,
+    "p25": 1.515,
+    "p75": 6.901,
     "n": 20,
     "ci": [
-     1.628,
-     6.897
+     1.531,
+     5.213
     ]
    },
    "seeds": {
-    "1": 95.5
+    "1": 97.5
    }
   },
   {
@@ -1297,27 +1897,27 @@
    "half": "list: type in the draft",
    "scope": "local",
    "script": {
-    "median": 93.5,
-    "p25": 84,
-    "p75": 111.3,
+    "median": 96.5,
+    "p25": 89.8,
+    "p75": 103.5,
     "n": 20,
     "ci": [
-     86,
-     109.5
+     91,
+     102
     ]
    },
    "total": {
-    "median": 8.758,
-    "p25": 5.502,
-    "p75": 13.315,
+    "median": 10.349,
+    "p25": 4.704,
+    "p75": 14.552,
     "n": 20,
     "ci": [
-     6.396,
-     12.433
+     6.264,
+     13.754
     ]
    },
    "seeds": {
-    "1": 93.5
+    "1": 96.5
    }
   },
   {
@@ -1327,27 +1927,27 @@
    "half": "list: push the draft",
    "scope": "local",
    "script": {
-    "median": 292,
-    "p25": 230.8,
-    "p75": 356.3,
+    "median": 329.5,
+    "p25": 222.3,
+    "p75": 357.5,
     "n": 20,
     "ci": [
-     235,
-     354
+     228.5,
+     351.5
     ]
    },
    "total": {
-    "median": 11.125,
-    "p25": 4.156,
-    "p75": 13.46,
+    "median": 8.638,
+    "p25": 5.25,
+    "p75": 13.834,
     "n": 20,
     "ci": [
-     5.474,
-     13.324
+     6.123,
+     13.251
     ]
    },
    "seeds": {
-    "1": 292
+    "1": 329.5
    }
   },
   {
@@ -1357,27 +1957,27 @@
    "half": "list: remove the pushed item",
    "scope": "local",
    "script": {
-    "median": 358,
-    "p25": 254,
-    "p75": 430.8,
+    "median": 343,
+    "p25": 290.5,
+    "p75": 451.3,
     "n": 20,
     "ci": [
-     256.5,
-     423.5
+     295.5,
+     442.5
     ]
    },
    "total": {
-    "median": 8.933,
-    "p25": 3.684,
-    "p75": 13.778,
+    "median": 10.968,
+    "p25": 6.555,
+    "p75": 13.882,
     "n": 20,
     "ci": [
-     4.497,
-     12.151
+     7.013,
+     13.355
     ]
    },
    "seeds": {
-    "1": 358
+    "1": 343
    }
   },
   {
@@ -1387,27 +1987,27 @@
    "half": "bool: toggle (a conditional section reads it)",
    "scope": "local",
    "script": {
-    "median": 139,
-    "p25": 124.5,
-    "p75": 164.8,
+    "median": 141,
+    "p25": 124,
+    "p75": 170,
     "n": 20,
     "ci": [
-     128.5,
-     161
+     126.5,
+     164.5
     ]
    },
    "total": {
-    "median": 10.007,
-    "p25": 5.508,
-    "p75": 14.688,
+    "median": 8.355,
+    "p25": 4.457,
+    "p75": 13.394,
     "n": 20,
     "ci": [
-     6.517,
-     14.086
+     5.138,
+     12.355
     ]
    },
    "seeds": {
-    "1": 139
+    "1": 141
    }
   },
   {
@@ -1417,143 +2017,23 @@
    "half": "bool: toggle back",
    "scope": "local",
    "script": {
-    "median": 122,
-    "p25": 117,
-    "p75": 143.5,
-    "n": 20,
-    "ci": [
-     118,
-     141
-    ]
-   },
-   "total": {
-    "median": 9.995,
-    "p25": 6.382,
-    "p75": 13.815,
-    "n": 20,
-    "ci": [
-     6.795,
-     13.222
-    ]
-   },
-   "seeds": {
-    "1": 122
-   }
-  },
-  {
-   "variant": "solid",
-   "size": 64,
-   "action": "enum: select or cycle",
-   "half": "enum: cycle",
-   "scope": "local",
-   "script": {
-    "median": 91,
-    "p25": 90.8,
-    "p75": 98.5,
-    "n": 20,
-    "ci": [
-     91,
-     98
-    ]
-   },
-   "total": {
-    "median": 8.7,
-    "p25": 4.039,
-    "p75": 12.109,
-    "n": 20,
-    "ci": [
-     4.978,
-     11.329
-    ]
-   },
-   "seeds": {
-    "1": 91
-   }
-  },
-  {
-   "variant": "solid",
-   "size": 64,
-   "action": "number: type a digit (a derived value reads it)",
-   "half": "number: type a digit (a derived value reads it)",
-   "scope": "local",
-   "script": {
-    "median": 116,
-    "p25": 106,
-    "p75": 126.5,
-    "n": 20,
-    "ci": [
-     108.5,
-     124.5
-    ]
-   },
-   "total": {
-    "median": 9.279,
-    "p25": 4.922,
-    "p75": 13.098,
-    "n": 20,
-    "ci": [
-     6.514,
-     12.724
-    ]
-   },
-   "seeds": {
-    "1": 116
-   }
-  },
-  {
-   "variant": "solid",
-   "size": 64,
-   "action": "number: type a digit (a derived value reads it)",
-   "half": "number: delete it",
-   "scope": "local",
-   "script": {
-    "median": 117,
-    "p25": 101.8,
-    "p75": 126.5,
-    "n": 20,
-    "ci": [
-     104,
-     123
-    ]
-   },
-   "total": {
-    "median": 8.125,
-    "p25": 3.953,
-    "p75": 12.816,
-    "n": 20,
-    "ci": [
-     4.64,
-     11.861
-    ]
-   },
-   "seeds": {
-    "1": 117
-   }
-  },
-  {
-   "variant": "solid",
-   "size": 64,
-   "action": "dispatch: tick (one field running)",
-   "half": "dispatch: tick (one field running)",
-   "scope": "local",
-   "script": {
     "median": 139.5,
-    "p25": 128.8,
-    "p75": 154.5,
+    "p25": 131.5,
+    "p75": 150,
     "n": 20,
     "ci": [
-     130.5,
-     152.5
+     132.5,
+     149
     ]
    },
    "total": {
-    "median": 1.356,
-    "p25": 1.066,
-    "p75": 10.003,
+    "median": 10.71,
+    "p25": 5.634,
+    "p75": 13.468,
     "n": 20,
     "ci": [
-     1.074,
-     8.145
+     6.036,
+     12.988
     ]
    },
    "seeds": {
@@ -1563,841 +2043,361 @@
   {
    "variant": "solid",
    "size": 64,
-   "action": "dispatch: serverSet the companion",
-   "half": "dispatch: serverSet the companion",
-   "scope": "local",
-   "script": {
-    "median": 149.5,
-    "p25": 136.5,
-    "p75": 165.8,
-    "n": 20,
-    "ci": [
-     139,
-     163
-    ]
-   },
-   "total": {
-    "median": 2.432,
-    "p25": 1.152,
-    "p75": 13.959,
-    "n": 20,
-    "ci": [
-     1.167,
-     13.47
-    ]
-   },
-   "seeds": {
-    "1": 149.5
-   }
-  },
-  {
-   "variant": "solid",
-   "size": 64,
-   "action": "dispatch: serverSet the companion",
-   "half": "dispatch: serverSet the companion (again)",
-   "scope": "local",
-   "script": {
-    "median": 159.5,
-    "p25": 141,
-    "p75": 164,
-    "n": 20,
-    "ci": [
-     142,
-     163
-    ]
-   },
-   "total": {
-    "median": 2.772,
-    "p25": 1.141,
-    "p75": 8.641,
-    "n": 20,
-    "ci": [
-     1.156,
-     7.635
-    ]
-   },
-   "seeds": {
-    "1": 159.5
-   }
-  },
-  {
-   "variant": "solid",
-   "size": 64,
-   "action": "notify, dismiss",
-   "half": "dispatch: notify the feed",
-   "scope": "local",
-   "script": {
-    "median": 212,
-    "p25": 200,
-    "p75": 230,
-    "n": 20,
-    "ci": [
-     202,
-     225.5
-    ]
-   },
-   "total": {
-    "median": 2.157,
-    "p25": 2.048,
-    "p75": 5.093,
-    "n": 20,
-    "ci": [
-     2.064,
-     4.077
-    ]
-   },
-   "seeds": {
-    "1": 212
-   }
-  },
-  {
-   "variant": "solid",
-   "size": 64,
-   "action": "notify, dismiss",
-   "half": "feed: dismiss the new entry",
-   "scope": "local",
-   "script": {
-    "median": 378.5,
-    "p25": 368.8,
-    "p75": 428,
-    "n": 20,
-    "ci": [
-     370.5,
-     419
-    ]
-   },
-   "total": {
-    "median": 7.622,
-    "p25": 3.286,
-    "p75": 11.533,
-    "n": 20,
-    "ci": [
-     3.711,
-     10.802
-    ]
-   },
-   "seeds": {
-    "1": 378.5
-   }
-  },
-  {
-   "variant": "solid",
-   "size": 64,
-   "action": "dispatch: serverSet the whole component",
-   "half": "dispatch: serverSet the whole component",
-   "scope": "global",
-   "script": {
-    "median": 893.5,
-    "p25": 846.5,
-    "p75": 1046.5,
-    "n": 20,
-    "ci": [
-     853.5,
-     1012
-    ]
-   },
-   "total": {
-    "median": 4.087,
-    "p25": 3.472,
-    "p75": 9.526,
-    "n": 20,
-    "ci": [
-     3.497,
-     8.582
-    ]
-   },
-   "seeds": {
-    "1": 893.5
-   }
-  },
-  {
-   "variant": "solid",
-   "size": 64,
-   "action": "dispatch: serverSet the whole component",
-   "half": "dispatch: serverSet the whole component (again)",
-   "scope": "global",
-   "script": {
-    "median": 856,
-    "p25": 819,
-    "p75": 929.5,
-    "n": 20,
-    "ci": [
-     829,
-     911.5
-    ]
-   },
-   "total": {
-    "median": 3.608,
-    "p25": 3.347,
-    "p75": 8.218,
-    "n": 20,
-    "ci": [
-     3.37,
-     6.45
-    ]
-   },
-   "seeds": {
-    "1": 856
-   }
-  },
-  {
-   "variant": "solid",
-   "size": 64,
-   "action": "dispatch: whole-state snapshot",
-   "half": "dispatch: whole-state snapshot",
-   "scope": "global",
-   "script": {
-    "median": 862.5,
-    "p25": 785,
-    "p75": 931.8,
-    "n": 20,
-    "ci": [
-     791,
-     923.5
-    ]
-   },
-   "total": {
-    "median": 4.249,
-    "p25": 3.822,
-    "p75": 11.099,
-    "n": 20,
-    "ci": [
-     3.903,
-     8.077
-    ]
-   },
-   "seeds": {
-    "1": 862.5
-   }
-  },
-  {
-   "variant": "solid",
-   "size": 64,
-   "action": "dispatch: whole-state snapshot",
-   "half": "dispatch: whole-state snapshot (again)",
-   "scope": "global",
-   "script": {
-    "median": 913.5,
-    "p25": 840.5,
-    "p75": 1028.3,
-    "n": 20,
-    "ci": [
-     855,
-     996
-    ]
-   },
-   "total": {
-    "median": 4.313,
-    "p25": 3.989,
-    "p75": 9.662,
-    "n": 20,
-    "ci": [
-     4.023,
-     9.246
-    ]
-   },
-   "seeds": {
-    "1": 913.5
-   }
-  },
-  {
-   "variant": "tea-dirtybits",
-   "size": 64,
-   "action": "button: add to an int",
-   "half": "button: add to an int",
-   "scope": "local",
-   "script": {
-    "median": 92.5,
-    "p25": 83.8,
-    "p75": 125.3,
-    "n": 20,
-    "ci": [
-     86,
-     114
-    ]
-   },
-   "total": {
-    "median": 8.339,
-    "p25": 4.306,
-    "p75": 12.272,
-    "n": 20,
-    "ci": [
-     5.006,
-     12.021
-    ]
-   },
-   "seeds": {
-    "1": 92.5
-   }
-  },
-  {
-   "variant": "tea-dirtybits",
-   "size": 64,
-   "action": "input: type a character",
-   "half": "input: type a character",
-   "scope": "local",
-   "script": {
-    "median": 68.5,
-    "p25": 60.8,
-    "p75": 77.5,
-    "n": 20,
-    "ci": [
-     61.5,
-     74.5
-    ]
-   },
-   "total": {
-    "median": 1.43,
-    "p25": 1.359,
-    "p75": 8.668,
-    "n": 20,
-    "ci": [
-     1.366,
-     7.075
-    ]
-   },
-   "seeds": {
-    "1": 68.5
-   }
-  },
-  {
-   "variant": "tea-dirtybits",
-   "size": 64,
-   "action": "input: type a character",
-   "half": "input: delete it",
-   "scope": "local",
-   "script": {
-    "median": 78,
-    "p25": 68.5,
-    "p75": 92.3,
-    "n": 20,
-    "ci": [
-     70,
-     91
-    ]
-   },
-   "total": {
-    "median": 1.746,
-    "p25": 1.539,
-    "p75": 6.17,
-    "n": 20,
-    "ci": [
-     1.579,
-     5.236
-    ]
-   },
-   "seeds": {
-    "1": 78
-   }
-  },
-  {
-   "variant": "tea-dirtybits",
-   "size": 64,
-   "action": "list: type, push, remove",
-   "half": "list: type in the draft",
-   "scope": "local",
-   "script": {
-    "median": 66.5,
-    "p25": 55,
-    "p75": 72.5,
-    "n": 20,
-    "ci": [
-     55,
-     71.5
-    ]
-   },
-   "total": {
-    "median": 10.899,
-    "p25": 6.095,
-    "p75": 14.638,
-    "n": 20,
-    "ci": [
-     6.645,
-     13.508
-    ]
-   },
-   "seeds": {
-    "1": 66.5
-   }
-  },
-  {
-   "variant": "tea-dirtybits",
-   "size": 64,
-   "action": "list: type, push, remove",
-   "half": "list: push the draft",
-   "scope": "local",
-   "script": {
-    "median": 177,
-    "p25": 167.5,
-    "p75": 217.5,
-    "n": 20,
-    "ci": [
-     169,
-     199
-    ]
-   },
-   "total": {
-    "median": 8.636,
-    "p25": 4.139,
-    "p75": 13.417,
-    "n": 20,
-    "ci": [
-     5.008,
-     12.27
-    ]
-   },
-   "seeds": {
-    "1": 177
-   }
-  },
-  {
-   "variant": "tea-dirtybits",
-   "size": 64,
-   "action": "list: type, push, remove",
-   "half": "list: remove the pushed item",
-   "scope": "local",
-   "script": {
-    "median": 156.5,
-    "p25": 148.8,
-    "p75": 174.5,
-    "n": 20,
-    "ci": [
-     149,
-     173.5
-    ]
-   },
-   "total": {
-    "median": 10.574,
-    "p25": 6.084,
-    "p75": 13.98,
-    "n": 20,
-    "ci": [
-     6.965,
-     13.841
-    ]
-   },
-   "seeds": {
-    "1": 156.5
-   }
-  },
-  {
-   "variant": "tea-dirtybits",
-   "size": 64,
-   "action": "bool: toggle (a conditional section reads it)",
-   "half": "bool: toggle (a conditional section reads it)",
-   "scope": "local",
-   "script": {
-    "median": 95.5,
-    "p25": 91.5,
-    "p75": 109,
-    "n": 20,
-    "ci": [
-     92,
-     105.5
-    ]
-   },
-   "total": {
-    "median": 9.171,
-    "p25": 5.806,
-    "p75": 14.258,
-    "n": 20,
-    "ci": [
-     6.443,
-     13.262
-    ]
-   },
-   "seeds": {
-    "1": 95.5
-   }
-  },
-  {
-   "variant": "tea-dirtybits",
-   "size": 64,
-   "action": "bool: toggle (a conditional section reads it)",
-   "half": "bool: toggle back",
-   "scope": "local",
-   "script": {
-    "median": 97.5,
-    "p25": 82.8,
-    "p75": 102,
-    "n": 20,
-    "ci": [
-     84,
-     100.5
-    ]
-   },
-   "total": {
-    "median": 10.845,
-    "p25": 6.268,
-    "p75": 14.418,
-    "n": 20,
-    "ci": [
-     7.205,
-     14.158
-    ]
-   },
-   "seeds": {
-    "1": 97.5
-   }
-  },
-  {
-   "variant": "tea-dirtybits",
-   "size": 64,
    "action": "enum: select or cycle",
    "half": "enum: cycle",
    "scope": "local",
    "script": {
-    "median": 69.5,
-    "p25": 67.8,
-    "p75": 75.3,
+    "median": 98,
+    "p25": 82.8,
+    "p75": 104.5,
     "n": 20,
     "ci": [
-     68,
-     74.5
+     83.5,
+     103.5
     ]
    },
    "total": {
-    "median": 6.916,
-    "p25": 4.78,
-    "p75": 11.168,
+    "median": 9.488,
+    "p25": 3.372,
+    "p75": 13.548,
     "n": 20,
     "ci": [
-     5.576,
-     11.039
+     4.566,
+     12.411
     ]
    },
    "seeds": {
-    "1": 69.5
+    "1": 98
    }
   },
   {
-   "variant": "tea-dirtybits",
+   "variant": "solid",
    "size": 64,
    "action": "number: type a digit (a derived value reads it)",
    "half": "number: type a digit (a derived value reads it)",
    "scope": "local",
    "script": {
-    "median": 93,
-    "p25": 86.8,
-    "p75": 98.5,
+    "median": 123,
+    "p25": 106.5,
+    "p75": 137.5,
     "n": 20,
     "ci": [
-     88,
-     97.5
+     110,
+     137
     ]
    },
    "total": {
-    "median": 9.388,
-    "p25": 4.995,
-    "p75": 13.779,
+    "median": 9.112,
+    "p25": 4.36,
+    "p75": 12.804,
     "n": 20,
     "ci": [
-     5.746,
-     13.083
+     4.681,
+     12.471
     ]
    },
    "seeds": {
-    "1": 93
+    "1": 123
    }
   },
   {
-   "variant": "tea-dirtybits",
+   "variant": "solid",
    "size": 64,
    "action": "number: type a digit (a derived value reads it)",
    "half": "number: delete it",
    "scope": "local",
    "script": {
-    "median": 94,
-    "p25": 86.3,
-    "p75": 102.3,
+    "median": 114.5,
+    "p25": 108.8,
+    "p75": 142.8,
     "n": 20,
     "ci": [
-     87,
-     102
+     109.5,
+     140
     ]
    },
    "total": {
-    "median": 7.374,
-    "p25": 3.258,
-    "p75": 11.938,
+    "median": 9.863,
+    "p25": 5.816,
+    "p75": 13.407,
     "n": 20,
     "ci": [
-     4.016,
-     11.345
+     6.107,
+     13.182
     ]
    },
    "seeds": {
-    "1": 94
+    "1": 114.5
    }
   },
   {
-   "variant": "tea-dirtybits",
+   "variant": "solid",
    "size": 64,
    "action": "dispatch: tick (one field running)",
    "half": "dispatch: tick (one field running)",
    "scope": "local",
    "script": {
-    "median": 120.5,
-    "p25": 113.5,
-    "p75": 131,
+    "median": 134.5,
+    "p25": 124.3,
+    "p75": 150.3,
     "n": 20,
     "ci": [
-     116.5,
-     128
+     125.5,
+     142
     ]
    },
    "total": {
-    "median": 2.726,
-    "p25": 1.118,
-    "p75": 9.339,
+    "median": 1.195,
+    "p25": 1.047,
+    "p75": 6.962,
     "n": 20,
     "ci": [
-     1.159,
-     8.871
+     1.062,
+     6.494
     ]
    },
    "seeds": {
-    "1": 120.5
+    "1": 134.5
    }
   },
   {
-   "variant": "tea-dirtybits",
+   "variant": "solid",
    "size": 64,
    "action": "dispatch: serverSet the companion",
    "half": "dispatch: serverSet the companion",
    "scope": "local",
    "script": {
-    "median": 117.5,
-    "p25": 106,
-    "p75": 129.8,
+    "median": 142.5,
+    "p25": 137.8,
+    "p75": 156.5,
     "n": 20,
     "ci": [
-     108,
-     127
+     139,
+     152.5
     ]
    },
    "total": {
-    "median": 1.088,
-    "p25": 1.053,
-    "p75": 1.334,
+    "median": 2.112,
+    "p25": 1.106,
+    "p75": 9.538,
     "n": 20,
     "ci": [
-     1.066,
-     1.171
+     1.125,
+     8.243
     ]
    },
    "seeds": {
-    "1": 117.5
+    "1": 142.5
    }
   },
   {
-   "variant": "tea-dirtybits",
+   "variant": "solid",
    "size": 64,
    "action": "dispatch: serverSet the companion",
    "half": "dispatch: serverSet the companion (again)",
    "scope": "local",
    "script": {
-    "median": 115.5,
-    "p25": 108,
-    "p75": 126.3,
+    "median": 155,
+    "p25": 146.5,
+    "p75": 167.3,
     "n": 20,
     "ci": [
-     108.5,
-     125.5
+     147,
+     167
     ]
    },
    "total": {
-    "median": 1.146,
-    "p25": 1.057,
-    "p75": 4.379,
+    "median": 3.622,
+    "p25": 1.132,
+    "p75": 11.756,
     "n": 20,
     "ci": [
-     1.065,
-     2.79
+     1.138,
+     10.901
     ]
    },
    "seeds": {
-    "1": 115.5
+    "1": 155
    }
   },
   {
-   "variant": "tea-dirtybits",
+   "variant": "solid",
    "size": 64,
    "action": "notify, dismiss",
    "half": "dispatch: notify the feed",
    "scope": "local",
    "script": {
-    "median": 200.5,
-    "p25": 191.3,
-    "p75": 225.3,
+    "median": 201,
+    "p25": 190.8,
+    "p75": 218.5,
     "n": 20,
     "ci": [
-     193.5,
-     223
+     193,
+     214.5
     ]
    },
    "total": {
-    "median": 6.692,
-    "p25": 5.691,
-    "p75": 7.162,
+    "median": 2.075,
+    "p25": 1.996,
+    "p75": 2.645,
     "n": 20,
     "ci": [
-     5.71,
-     7.024
+     2,
+     2.365
     ]
    },
    "seeds": {
-    "1": 200.5
+    "1": 201
    }
   },
   {
-   "variant": "tea-dirtybits",
+   "variant": "solid",
    "size": 64,
    "action": "notify, dismiss",
    "half": "feed: dismiss the new entry",
    "scope": "local",
    "script": {
-    "median": 152.5,
-    "p25": 144.3,
-    "p75": 175,
+    "median": 349.5,
+    "p25": 319.3,
+    "p75": 416.8,
     "n": 20,
     "ci": [
-     146.5,
-     165.5
+     325.5,
+     409.5
     ]
    },
    "total": {
-    "median": 14.328,
-    "p25": 13.341,
-    "p75": 14.719,
+    "median": 9.759,
+    "p25": 4.817,
+    "p75": 13.934,
     "n": 20,
     "ci": [
-     13.415,
-     14.628
+     5.994,
+     13.074
     ]
    },
    "seeds": {
-    "1": 152.5
+    "1": 349.5
    }
   },
   {
-   "variant": "tea-dirtybits",
+   "variant": "solid",
    "size": 64,
    "action": "dispatch: serverSet the whole component",
    "half": "dispatch: serverSet the whole component",
    "scope": "global",
    "script": {
-    "median": 677,
-    "p25": 660.3,
-    "p75": 740.3,
+    "median": 844,
+    "p25": 772.8,
+    "p75": 924.5,
     "n": 20,
     "ci": [
-     667.5,
-     735
+     795.5,
+     902
     ]
    },
    "total": {
-    "median": 3.371,
-    "p25": 3.127,
-    "p75": 8.671,
+    "median": 3.755,
+    "p25": 3.403,
+    "p75": 10.377,
     "n": 20,
     "ci": [
-     3.13,
-     6.6
+     3.43,
+     7.831
     ]
    },
    "seeds": {
-    "1": 677
+    "1": 844
    }
   },
   {
-   "variant": "tea-dirtybits",
+   "variant": "solid",
    "size": 64,
    "action": "dispatch: serverSet the whole component",
    "half": "dispatch: serverSet the whole component (again)",
    "scope": "global",
    "script": {
-    "median": 690.5,
-    "p25": 666.8,
-    "p75": 730.8,
+    "median": 826,
+    "p25": 777.5,
+    "p75": 940.8,
     "n": 20,
     "ci": [
-     674,
-     723.5
+     783,
+     928.5
     ]
    },
    "total": {
-    "median": 3.186,
-    "p25": 3.079,
-    "p75": 6.844,
+    "median": 3.766,
+    "p25": 3.356,
+    "p75": 9.828,
     "n": 20,
     "ci": [
-     3.093,
-     4.788
+     3.489,
+     7.698
     ]
    },
    "seeds": {
-    "1": 690.5
+    "1": 826
    }
   },
   {
-   "variant": "tea-dirtybits",
+   "variant": "solid",
    "size": 64,
    "action": "dispatch: whole-state snapshot",
    "half": "dispatch: whole-state snapshot",
    "scope": "global",
    "script": {
-    "median": 545.5,
-    "p25": 532.5,
-    "p75": 579,
+    "median": 919,
+    "p25": 807,
+    "p75": 991.3,
     "n": 20,
     "ci": [
-     534,
-     578
+     818.5,
+     985.5
     ]
    },
    "total": {
-    "median": 3.393,
-    "p25": 3.253,
-    "p75": 4.196,
+    "median": 3.949,
+    "p25": 3.802,
+    "p75": 4.162,
     "n": 20,
     "ci": [
-     3.278,
-     3.657
+     3.819,
+     4.155
     ]
    },
    "seeds": {
-    "1": 545.5
+    "1": 919
    }
   },
   {
-   "variant": "tea-dirtybits",
+   "variant": "solid",
    "size": 64,
    "action": "dispatch: whole-state snapshot",
    "half": "dispatch: whole-state snapshot (again)",
    "scope": "global",
    "script": {
-    "median": 729,
-    "p25": 714,
-    "p75": 766.3,
+    "median": 893,
+    "p25": 850.3,
+    "p75": 968,
     "n": 20,
     "ci": [
-     714.5,
-     765
+     856,
+     958
     ]
    },
    "total": {
-    "median": 3.532,
-    "p25": 3.394,
-    "p75": 12.215,
+    "median": 3.959,
+    "p25": 3.755,
+    "p75": 4.243,
     "n": 20,
     "ci": [
-     3.429,
-     11.705
+     3.785,
+     4.157
     ]
    },
    "seeds": {
-    "1": 729
+    "1": 893
    }
   },
   {
@@ -2407,27 +2407,27 @@
    "half": "button: add to an int",
    "scope": "local",
    "script": {
-    "median": 619.5,
-    "p25": 574.5,
-    "p75": 821.8,
+    "median": 695,
+    "p25": 610.5,
+    "p75": 851.5,
     "n": 20,
     "ci": [
-     579,
-     780
+     639.5,
+     820
     ]
    },
    "total": {
-    "median": 30.648,
-    "p25": 30.144,
-    "p75": 30.819,
+    "median": 30.777,
+    "p25": 30.322,
+    "p75": 31.141,
     "n": 20,
     "ci": [
-     30.23,
-     30.774
+     30.337,
+     31.094
     ]
    },
    "seeds": {
-    "1": 619.5
+    "1": 695
    }
   },
   {
@@ -2437,27 +2437,27 @@
    "half": "input: type a character",
    "scope": "local",
    "script": {
-    "median": 378.5,
-    "p25": 351.5,
-    "p75": 403,
+    "median": 380.5,
+    "p25": 325.8,
+    "p75": 478.8,
     "n": 20,
     "ci": [
-     352,
-     389.5
+     347,
+     459
     ]
    },
    "total": {
-    "median": 15.735,
-    "p25": 15.497,
-    "p75": 15.912,
+    "median": 15.54,
+    "p25": 15.224,
+    "p75": 15.981,
     "n": 20,
     "ci": [
-     15.544,
-     15.881
+     15.313,
+     15.931
     ]
    },
    "seeds": {
-    "1": 378.5
+    "1": 380.5
    }
   },
   {
@@ -2467,27 +2467,27 @@
    "half": "input: delete it",
    "scope": "local",
    "script": {
-    "median": 404.5,
-    "p25": 370.3,
-    "p75": 436.5,
+    "median": 390.5,
+    "p25": 343,
+    "p75": 440.8,
     "n": 20,
     "ci": [
-     381,
-     424.5
+     362,
+     435
     ]
    },
    "total": {
-    "median": 15.713,
-    "p25": 15.346,
-    "p75": 15.846,
+    "median": 15.836,
+    "p25": 15.509,
+    "p75": 16.151,
     "n": 20,
     "ci": [
-     15.372,
-     15.806
+     15.573,
+     16.118
     ]
    },
    "seeds": {
-    "1": 404.5
+    "1": 390.5
    }
   },
   {
@@ -2497,27 +2497,27 @@
    "half": "list: type in the draft",
    "scope": "local",
    "script": {
-    "median": 341,
-    "p25": 305,
-    "p75": 403,
+    "median": 319.5,
+    "p25": 281,
+    "p75": 388.8,
     "n": 20,
     "ci": [
-     306.5,
-     387.5
+     285.5,
+     373.5
     ]
    },
    "total": {
-    "median": 15.249,
-    "p25": 14.862,
-    "p75": 15.611,
+    "median": 15.396,
+    "p25": 15.19,
+    "p75": 15.59,
     "n": 20,
     "ci": [
-     14.932,
-     15.548
+     15.24,
+     15.581
     ]
    },
    "seeds": {
-    "1": 341
+    "1": 319.5
    }
   },
   {
@@ -2527,27 +2527,27 @@
    "half": "list: push the draft",
    "scope": "local",
    "script": {
-    "median": 589,
-    "p25": 536.5,
-    "p75": 700,
+    "median": 601.5,
+    "p25": 532.5,
+    "p75": 689.8,
     "n": 20,
     "ci": [
-     552,
-     698
+     555,
+     678
     ]
    },
    "total": {
-    "median": 30.606,
-    "p25": 30.458,
-    "p75": 30.704,
+    "median": 30.891,
+    "p25": 30.581,
+    "p75": 31.185,
     "n": 20,
     "ci": [
-     30.482,
-     30.692
+     30.641,
+     31.173
     ]
    },
    "seeds": {
-    "1": 589
+    "1": 601.5
    }
   },
   {
@@ -2558,22 +2558,22 @@
    "scope": "local",
    "script": {
     "median": 640,
-    "p25": 574,
-    "p75": 702.5,
+    "p25": 581.8,
+    "p75": 701.5,
     "n": 20,
     "ci": [
-     593,
-     688.5
+     584.5,
+     680
     ]
    },
    "total": {
-    "median": 30.905,
-    "p25": 30.682,
-    "p75": 31.09,
+    "median": 30.848,
+    "p25": 30.772,
+    "p75": 30.937,
     "n": 20,
     "ci": [
-     30.725,
-     31.045
+     30.786,
+     30.919
     ]
    },
    "seeds": {
@@ -2587,27 +2587,27 @@
    "half": "bool: toggle (a conditional section reads it)",
    "scope": "local",
    "script": {
-    "median": 586,
-    "p25": 529.3,
-    "p75": 675.3,
+    "median": 615.5,
+    "p25": 523.3,
+    "p75": 671.3,
     "n": 20,
     "ci": [
-     540,
-     673
+     527,
+     669
     ]
    },
    "total": {
-    "median": 30.777,
-    "p25": 30.286,
-    "p75": 31.025,
+    "median": 30.765,
+    "p25": 30.139,
+    "p75": 31.003,
     "n": 20,
     "ci": [
-     30.383,
-     31.005
+     30.334,
+     30.962
     ]
    },
    "seeds": {
-    "1": 586
+    "1": 615.5
    }
   },
   {
@@ -2617,27 +2617,27 @@
    "half": "bool: toggle back",
    "scope": "local",
    "script": {
-    "median": 540.5,
-    "p25": 485.8,
-    "p75": 680.5,
+    "median": 525.5,
+    "p25": 486.5,
+    "p75": 635.8,
     "n": 20,
     "ci": [
-     488,
-     677.5
+     489.5,
+     614.5
     ]
    },
    "total": {
-    "median": 30.74,
-    "p25": 30.558,
-    "p75": 30.947,
+    "median": 30.609,
+    "p25": 30.423,
+    "p75": 30.941,
     "n": 20,
     "ci": [
-     30.58,
-     30.909
+     30.467,
+     30.912
     ]
    },
    "seeds": {
-    "1": 540.5
+    "1": 525.5
    }
   },
   {
@@ -2647,27 +2647,27 @@
    "half": "enum: cycle",
    "scope": "local",
    "script": {
-    "median": 543,
-    "p25": 501.3,
-    "p75": 671.5,
+    "median": 579,
+    "p25": 497,
+    "p75": 656.5,
     "n": 20,
     "ci": [
-     508.5,
-     641.5
+     506.5,
+     636
     ]
    },
    "total": {
-    "median": 30.529,
-    "p25": 30.371,
-    "p75": 30.992,
+    "median": 30.857,
+    "p25": 30.633,
+    "p75": 30.994,
     "n": 20,
     "ci": [
-     30.469,
-     30.927
+     30.666,
+     30.974
     ]
    },
    "seeds": {
-    "1": 543
+    "1": 579
    }
   },
   {
@@ -2677,27 +2677,27 @@
    "half": "number: type a digit (a derived value reads it)",
    "scope": "local",
    "script": {
-    "median": 362.5,
-    "p25": 341.5,
-    "p75": 422.8,
+    "median": 391,
+    "p25": 350.5,
+    "p75": 422,
     "n": 20,
     "ci": [
-     348.5,
-     398.5
+     358,
+     419
     ]
    },
    "total": {
-    "median": 15.651,
-    "p25": 15.345,
-    "p75": 15.737,
+    "median": 15.435,
+    "p25": 15.216,
+    "p75": 15.603,
     "n": 20,
     "ci": [
-     15.371,
-     15.711
+     15.256,
+     15.572
     ]
    },
    "seeds": {
-    "1": 362.5
+    "1": 391
    }
   },
   {
@@ -2707,27 +2707,27 @@
    "half": "number: delete it",
    "scope": "local",
    "script": {
-    "median": 371.5,
-    "p25": 331.3,
-    "p75": 420.3,
+    "median": 375.5,
+    "p25": 334.8,
+    "p75": 456.5,
     "n": 20,
     "ci": [
-     340.5,
-     397.5
+     337,
+     428.5
     ]
    },
    "total": {
-    "median": 15.531,
-    "p25": 15.296,
-    "p75": 15.698,
+    "median": 15.752,
+    "p25": 15.483,
+    "p75": 15.891,
     "n": 20,
     "ci": [
-     15.316,
-     15.672
+     15.5,
+     15.857
     ]
    },
    "seeds": {
-    "1": 371.5
+    "1": 375.5
    }
   },
   {
@@ -2737,27 +2737,27 @@
    "half": "dispatch: tick (one field running)",
    "scope": "local",
    "script": {
-    "median": 623.5,
-    "p25": 504.8,
-    "p75": 708,
+    "median": 626.5,
+    "p25": 577,
+    "p75": 713,
     "n": 20,
     "ci": [
-     548,
-     692
+     579,
+     700
     ]
    },
    "total": {
-    "median": 32.272,
-    "p25": 32.183,
-    "p75": 32.362,
+    "median": 32.345,
+    "p25": 32.048,
+    "p75": 32.503,
     "n": 20,
     "ci": [
-     32.195,
-     32.346
+     32.109,
+     32.486
     ]
    },
    "seeds": {
-    "1": 623.5
+    "1": 626.5
    }
   },
   {
@@ -2767,27 +2767,27 @@
    "half": "dispatch: serverSet the companion",
    "scope": "local",
    "script": {
-    "median": 575.5,
-    "p25": 510.3,
-    "p75": 679.5,
+    "median": 563.5,
+    "p25": 497.8,
+    "p75": 642,
     "n": 20,
     "ci": [
-     521.5,
-     669.5
+     513,
+     642
     ]
    },
    "total": {
-    "median": 32.186,
-    "p25": 32.01,
-    "p75": 32.523,
+    "median": 32.25,
+    "p25": 32.054,
+    "p75": 32.42,
     "n": 20,
     "ci": [
-     32.08,
-     32.444
+     32.076,
+     32.365
     ]
    },
    "seeds": {
-    "1": 575.5
+    "1": 563.5
    }
   },
   {
@@ -2797,27 +2797,27 @@
    "half": "dispatch: serverSet the companion (again)",
    "scope": "local",
    "script": {
-    "median": 551.5,
-    "p25": 518.3,
-    "p75": 627,
+    "median": 564,
+    "p25": 483.3,
+    "p75": 611.3,
     "n": 20,
     "ci": [
-     526.5,
-     602
+     504,
+     607
     ]
    },
    "total": {
-    "median": 32.246,
-    "p25": 32.141,
-    "p75": 32.554,
+    "median": 32.38,
+    "p25": 32.099,
+    "p75": 32.605,
     "n": 20,
     "ci": [
-     32.165,
-     32.522
+     32.121,
+     32.566
     ]
    },
    "seeds": {
-    "1": 551.5
+    "1": 564
    }
   },
   {
@@ -2827,27 +2827,27 @@
    "half": "dispatch: notify the feed",
    "scope": "local",
    "script": {
-    "median": 588.5,
-    "p25": 528.5,
-    "p75": 664,
+    "median": 589,
+    "p25": 534,
+    "p75": 715,
     "n": 20,
     "ci": [
-     533.5,
-     648.5
+     534.5,
+     686
     ]
    },
    "total": {
-    "median": 32.835,
-    "p25": 32.565,
-    "p75": 33.041,
+    "median": 32.79,
+    "p25": 32.643,
+    "p75": 32.911,
     "n": 20,
     "ci": [
-     32.616,
-     32.975
+     32.68,
+     32.898
     ]
    },
    "seeds": {
-    "1": 588.5
+    "1": 589
    }
   },
   {
@@ -2857,27 +2857,27 @@
    "half": "feed: dismiss the new entry",
    "scope": "local",
    "script": {
-    "median": 625,
-    "p25": 558.8,
-    "p75": 690,
+    "median": 574.5,
+    "p25": 520.8,
+    "p75": 690.3,
     "n": 20,
     "ci": [
-     573.5,
-     670
+     531.5,
+     678
     ]
    },
    "total": {
-    "median": 30.864,
-    "p25": 30.758,
-    "p75": 30.996,
+    "median": 31.032,
+    "p25": 30.79,
+    "p75": 31.223,
     "n": 20,
     "ci": [
-     30.792,
-     30.988
+     30.868,
+     31.209
     ]
    },
    "seeds": {
-    "1": 625
+    "1": 574.5
    }
   },
   {
@@ -2887,27 +2887,27 @@
    "half": "dispatch: serverSet the whole component",
    "scope": "global",
    "script": {
-    "median": 1008.5,
-    "p25": 934.3,
-    "p75": 1173.3,
+    "median": 1083,
+    "p25": 877.8,
+    "p75": 1182,
     "n": 20,
     "ci": [
-     946.5,
-     1118
+     905.5,
+     1176.5
     ]
    },
    "total": {
-    "median": 32.074,
-    "p25": 31.885,
-    "p75": 32.28,
+    "median": 32.312,
+    "p25": 31.862,
+    "p75": 32.435,
     "n": 20,
     "ci": [
-     31.92,
-     32.265
+     31.892,
+     32.417
     ]
    },
    "seeds": {
-    "1": 1008.5
+    "1": 1083
    }
   },
   {
@@ -2917,27 +2917,27 @@
    "half": "dispatch: serverSet the whole component (again)",
    "scope": "global",
    "script": {
-    "median": 948.5,
-    "p25": 906.8,
-    "p75": 1076,
+    "median": 1032.5,
+    "p25": 956.3,
+    "p75": 1226.5,
     "n": 20,
     "ci": [
-     914,
-     1044
+     967,
+     1201
     ]
    },
    "total": {
-    "median": 32.192,
-    "p25": 32.013,
-    "p75": 32.373,
+    "median": 32.338,
+    "p25": 32.135,
+    "p75": 32.555,
     "n": 20,
     "ci": [
-     32.036,
-     32.353
+     32.159,
+     32.515
     ]
    },
    "seeds": {
-    "1": 948.5
+    "1": 1032.5
    }
   },
   {
@@ -2947,27 +2947,27 @@
    "half": "dispatch: whole-state snapshot",
    "scope": "global",
    "script": {
-    "median": 969,
-    "p25": 842.8,
-    "p75": 1082.5,
+    "median": 982.5,
+    "p25": 937,
+    "p75": 1177,
     "n": 20,
     "ci": [
-     864,
-     1078
+     940,
+     1144.5
     ]
    },
    "total": {
-    "median": 32.747,
-    "p25": 32.603,
-    "p75": 32.996,
+    "median": 32.96,
+    "p25": 32.728,
+    "p75": 33.165,
     "n": 20,
     "ci": [
-     32.635,
-     32.988
+     32.757,
+     33.158
     ]
    },
    "seeds": {
-    "1": 969
+    "1": 982.5
    }
   },
   {
@@ -2977,743 +2977,263 @@
    "half": "dispatch: whole-state snapshot (again)",
    "scope": "global",
    "script": {
-    "median": 1004.5,
-    "p25": 962.5,
-    "p75": 1149.3,
+    "median": 1091.5,
+    "p25": 933.5,
+    "p75": 1154,
     "n": 20,
     "ci": [
-     976.5,
-     1119
+     989,
+     1146
     ]
    },
    "total": {
-    "median": 32.847,
-    "p25": 32.625,
-    "p75": 32.992,
+    "median": 33.004,
+    "p25": 32.776,
+    "p75": 33.282,
     "n": 20,
     "ci": [
-     32.666,
-     32.941
+     32.83,
+     33.236
     ]
    },
    "seeds": {
-    "1": 1004.5
+    "1": 1091.5
    }
   },
   {
-   "variant": "tea-inline",
+   "variant": "tea-dirtybits",
    "size": 64,
    "action": "button: add to an int",
    "half": "button: add to an int",
    "scope": "local",
    "script": {
-    "median": 76,
-    "p25": 67.5,
-    "p75": 87,
+    "median": 96,
+    "p25": 83,
+    "p75": 113.8,
     "n": 20,
     "ci": [
-     69,
-     86.5
+     84.5,
+     112.5
     ]
    },
    "total": {
-    "median": 9.053,
-    "p25": 4.274,
-    "p75": 11.862,
+    "median": 10.501,
+    "p25": 5.98,
+    "p75": 14.601,
     "n": 20,
     "ci": [
-     4.999,
-     11.119
+     6.906,
+     13.471
     ]
    },
    "seeds": {
-    "1": 76
+    "1": 96
    }
   },
   {
-   "variant": "tea-inline",
+   "variant": "tea-dirtybits",
    "size": 64,
    "action": "input: type a character",
    "half": "input: type a character",
    "scope": "local",
    "script": {
-    "median": 58,
-    "p25": 51,
-    "p75": 69,
+    "median": 68,
+    "p25": 60,
+    "p75": 76.5,
     "n": 20,
     "ci": [
-     51.5,
-     68.5
+     61,
+     75.5
     ]
    },
    "total": {
-    "median": 3.111,
-    "p25": 1.396,
-    "p75": 13.181,
+    "median": 1.576,
+    "p25": 1.414,
+    "p75": 9.271,
     "n": 20,
     "ci": [
-     1.452,
-     9.232
+     1.428,
+     8.486
     ]
    },
    "seeds": {
-    "1": 58
+    "1": 68
    }
   },
   {
-   "variant": "tea-inline",
+   "variant": "tea-dirtybits",
    "size": 64,
    "action": "input: type a character",
    "half": "input: delete it",
    "scope": "local",
    "script": {
-    "median": 62,
-    "p25": 52.8,
-    "p75": 71,
+    "median": 77.5,
+    "p25": 62.5,
+    "p75": 89.5,
     "n": 20,
     "ci": [
-     54,
-     68
+     63.5,
+     87.5
     ]
    },
    "total": {
-    "median": 3.309,
-    "p25": 1.607,
-    "p75": 13.882,
+    "median": 1.623,
+    "p25": 1.525,
+    "p75": 3.514,
     "n": 20,
     "ci": [
-     1.631,
-     9.715
+     1.541,
+     1.81
     ]
    },
    "seeds": {
-    "1": 62
+    "1": 77.5
    }
   },
   {
-   "variant": "tea-inline",
+   "variant": "tea-dirtybits",
    "size": 64,
    "action": "list: type, push, remove",
    "half": "list: type in the draft",
    "scope": "local",
    "script": {
-    "median": 55,
-    "p25": 51.8,
-    "p75": 63.8,
+    "median": 68,
+    "p25": 57.3,
+    "p75": 77.5,
     "n": 20,
     "ci": [
-     52,
-     61
+     58,
+     75.5
     ]
    },
    "total": {
-    "median": 9.297,
-    "p25": 4.202,
-    "p75": 12.783,
+    "median": 11.289,
+    "p25": 6.077,
+    "p75": 14.235,
     "n": 20,
     "ci": [
-     5.535,
-     12.099
+     6.214,
+     13.94
     ]
    },
    "seeds": {
-    "1": 55
+    "1": 68
    }
   },
   {
-   "variant": "tea-inline",
+   "variant": "tea-dirtybits",
    "size": 64,
    "action": "list: type, push, remove",
    "half": "list: push the draft",
    "scope": "local",
    "script": {
-    "median": 163.5,
-    "p25": 125.8,
-    "p75": 186.3,
+    "median": 189,
+    "p25": 168,
+    "p75": 258.5,
     "n": 20,
     "ci": [
-     128,
-     183
+     168.5,
+     255
     ]
    },
    "total": {
-    "median": 10.702,
-    "p25": 7.159,
-    "p75": 14.273,
+    "median": 5.776,
+    "p25": 2.897,
+    "p75": 11.079,
     "n": 20,
     "ci": [
-     7.81,
-     13.809
+     4.033,
+     10.573
     ]
    },
    "seeds": {
-    "1": 163.5
+    "1": 189
    }
   },
   {
-   "variant": "tea-inline",
+   "variant": "tea-dirtybits",
    "size": 64,
    "action": "list: type, push, remove",
    "half": "list: remove the pushed item",
    "scope": "local",
    "script": {
-    "median": 157,
-    "p25": 123.5,
-    "p75": 182.3,
+    "median": 174,
+    "p25": 150.5,
+    "p75": 183,
     "n": 20,
     "ci": [
-     125.5,
-     179
+     158.5,
+     180
     ]
    },
    "total": {
-    "median": 8.767,
-    "p25": 4.709,
-    "p75": 12.56,
+    "median": 10.174,
+    "p25": 7.141,
+    "p75": 12.609,
     "n": 20,
     "ci": [
-     5.276,
-     11.939
+     7.756,
+     12.045
     ]
    },
    "seeds": {
-    "1": 157
+    "1": 174
    }
   },
   {
-   "variant": "tea-inline",
+   "variant": "tea-dirtybits",
    "size": 64,
    "action": "bool: toggle (a conditional section reads it)",
    "half": "bool: toggle (a conditional section reads it)",
    "scope": "local",
    "script": {
-    "median": 87,
-    "p25": 81,
-    "p75": 103,
+    "median": 105,
+    "p25": 88.8,
+    "p75": 123.8,
     "n": 20,
     "ci": [
-     81.5,
-     101
+     90,
+     117
     ]
    },
    "total": {
-    "median": 8.557,
-    "p25": 4.138,
-    "p75": 12.954,
+    "median": 7.604,
+    "p25": 3.774,
+    "p75": 12.446,
     "n": 20,
     "ci": [
-     4.765,
-     12.648
+     5.066,
+     12.348
     ]
    },
    "seeds": {
-    "1": 87
+    "1": 105
    }
   },
   {
-   "variant": "tea-inline",
+   "variant": "tea-dirtybits",
    "size": 64,
    "action": "bool: toggle (a conditional section reads it)",
    "half": "bool: toggle back",
    "scope": "local",
    "script": {
-    "median": 79,
-    "p25": 69.5,
-    "p75": 96,
-    "n": 20,
-    "ci": [
-     70,
-     94.5
-    ]
-   },
-   "total": {
-    "median": 10.028,
-    "p25": 6.435,
-    "p75": 13.776,
-    "n": 20,
-    "ci": [
-     6.986,
-     13.055
-    ]
-   },
-   "seeds": {
-    "1": 79
-   }
-  },
-  {
-   "variant": "tea-inline",
-   "size": 64,
-   "action": "enum: select or cycle",
-   "half": "enum: cycle",
-   "scope": "local",
-   "script": {
-    "median": 58.5,
-    "p25": 55.8,
-    "p75": 65,
-    "n": 20,
-    "ci": [
-     56,
-     64.5
-    ]
-   },
-   "total": {
-    "median": 9.756,
-    "p25": 5.52,
-    "p75": 13.63,
-    "n": 20,
-    "ci": [
-     5.752,
-     12.944
-    ]
-   },
-   "seeds": {
-    "1": 58.5
-   }
-  },
-  {
-   "variant": "tea-inline",
-   "size": 64,
-   "action": "number: type a digit (a derived value reads it)",
-   "half": "number: type a digit (a derived value reads it)",
-   "scope": "local",
-   "script": {
-    "median": 86.5,
-    "p25": 82,
-    "p75": 92.8,
-    "n": 20,
-    "ci": [
-     82.5,
-     92
-    ]
-   },
-   "total": {
-    "median": 9.032,
-    "p25": 3.981,
-    "p75": 13.406,
-    "n": 20,
-    "ci": [
-     4.617,
-     11.865
-    ]
-   },
-   "seeds": {
-    "1": 86.5
-   }
-  },
-  {
-   "variant": "tea-inline",
-   "size": 64,
-   "action": "number: type a digit (a derived value reads it)",
-   "half": "number: delete it",
-   "scope": "local",
-   "script": {
-    "median": 84,
-    "p25": 69.5,
-    "p75": 92,
-    "n": 20,
-    "ci": [
-     73,
-     91.5
-    ]
-   },
-   "total": {
-    "median": 8.936,
-    "p25": 5.115,
-    "p75": 13.642,
-    "n": 20,
-    "ci": [
-     5.841,
-     12.369
-    ]
-   },
-   "seeds": {
-    "1": 84
-   }
-  },
-  {
-   "variant": "tea-inline",
-   "size": 64,
-   "action": "dispatch: tick (one field running)",
-   "half": "dispatch: tick (one field running)",
-   "scope": "local",
-   "script": {
-    "median": 103,
-    "p25": 82.8,
-    "p75": 117.3,
-    "n": 20,
-    "ci": [
-     84,
-     113.5
-    ]
-   },
-   "total": {
-    "median": 1.599,
-    "p25": 1.157,
-    "p75": 11.179,
-    "n": 20,
-    "ci": [
-     1.197,
-     9.92
-    ]
-   },
-   "seeds": {
-    "1": 103
-   }
-  },
-  {
-   "variant": "tea-inline",
-   "size": 64,
-   "action": "dispatch: serverSet the companion",
-   "half": "dispatch: serverSet the companion",
-   "scope": "local",
-   "script": {
-    "median": 145,
-    "p25": 128.8,
-    "p75": 157.3,
-    "n": 20,
-    "ci": [
-     130.5,
-     154.5
-    ]
-   },
-   "total": {
-    "median": 1.369,
-    "p25": 1.109,
-    "p75": 7.745,
-    "n": 20,
-    "ci": [
-     1.117,
-     6.576
-    ]
-   },
-   "seeds": {
-    "1": 145
-   }
-  },
-  {
-   "variant": "tea-inline",
-   "size": 64,
-   "action": "dispatch: serverSet the companion",
-   "half": "dispatch: serverSet the companion (again)",
-   "scope": "local",
-   "script": {
-    "median": 142,
-    "p25": 125.3,
-    "p75": 152.8,
-    "n": 20,
-    "ci": [
-     127,
-     152
-    ]
-   },
-   "total": {
-    "median": 1.168,
-    "p25": 1.106,
-    "p75": 9.435,
-    "n": 20,
-    "ci": [
-     1.125,
-     7.304
-    ]
-   },
-   "seeds": {
-    "1": 142
-   }
-  },
-  {
-   "variant": "tea-inline",
-   "size": 64,
-   "action": "notify, dismiss",
-   "half": "dispatch: notify the feed",
-   "scope": "local",
-   "script": {
-    "median": 142,
-    "p25": 134,
-    "p75": 155.8,
-    "n": 20,
-    "ci": [
-     135,
-     153
-    ]
-   },
-   "total": {
-    "median": 3.82,
-    "p25": 1.953,
-    "p75": 4.777,
-    "n": 20,
-    "ci": [
-     2.41,
-     4.54
-    ]
-   },
-   "seeds": {
-    "1": 142
-   }
-  },
-  {
-   "variant": "tea-inline",
-   "size": 64,
-   "action": "notify, dismiss",
-   "half": "feed: dismiss the new entry",
-   "scope": "local",
-   "script": {
-    "median": 141,
-    "p25": 123.8,
-    "p75": 154.3,
-    "n": 20,
-    "ci": [
-     127.5,
-     149.5
-    ]
-   },
-   "total": {
-    "median": 11.872,
-    "p25": 9.64,
-    "p75": 12.232,
-    "n": 20,
-    "ci": [
-     10.487,
-     12.114
-    ]
-   },
-   "seeds": {
-    "1": 141
-   }
-  },
-  {
-   "variant": "tea-inline",
-   "size": 64,
-   "action": "dispatch: serverSet the whole component",
-   "half": "dispatch: serverSet the whole component",
-   "scope": "global",
-   "script": {
-    "median": 673.5,
-    "p25": 588.8,
-    "p75": 802.5,
-    "n": 20,
-    "ci": [
-     608,
-     766
-    ]
-   },
-   "total": {
-    "median": 3.536,
-    "p25": 3.177,
-    "p75": 4.899,
-    "n": 20,
-    "ci": [
-     3.205,
-     4.475
-    ]
-   },
-   "seeds": {
-    "1": 673.5
-   }
-  },
-  {
-   "variant": "tea-inline",
-   "size": 64,
-   "action": "dispatch: serverSet the whole component",
-   "half": "dispatch: serverSet the whole component (again)",
-   "scope": "global",
-   "script": {
-    "median": 643,
-    "p25": 607.8,
-    "p75": 719,
-    "n": 20,
-    "ci": [
-     617,
-     683
-    ]
-   },
-   "total": {
-    "median": 3.217,
-    "p25": 3.063,
-    "p75": 4.657,
-    "n": 20,
-    "ci": [
-     3.078,
-     4.273
-    ]
-   },
-   "seeds": {
-    "1": 643
-   }
-  },
-  {
-   "variant": "tea-inline",
-   "size": 64,
-   "action": "dispatch: whole-state snapshot",
-   "half": "dispatch: whole-state snapshot",
-   "scope": "global",
-   "script": {
-    "median": 695,
-    "p25": 613.5,
-    "p75": 752.5,
-    "n": 20,
-    "ci": [
-     626.5,
-     743
-    ]
-   },
-   "total": {
-    "median": 3.687,
-    "p25": 3.484,
-    "p75": 5.156,
-    "n": 20,
-    "ci": [
-     3.488,
-     4.69
-    ]
-   },
-   "seeds": {
-    "1": 695
-   }
-  },
-  {
-   "variant": "tea-inline",
-   "size": 64,
-   "action": "dispatch: whole-state snapshot",
-   "half": "dispatch: whole-state snapshot (again)",
-   "scope": "global",
-   "script": {
-    "median": 691.5,
-    "p25": 642.5,
-    "p75": 729.3,
-    "n": 20,
-    "ci": [
-     647.5,
-     721
-    ]
-   },
-   "total": {
-    "median": 3.551,
-    "p25": 3.385,
-    "p75": 3.687,
-    "n": 20,
-    "ci": [
-     3.411,
-     3.679
-    ]
-   },
-   "seeds": {
-    "1": 691.5
-   }
-  },
-  {
-   "variant": "tea-local",
-   "size": 64,
-   "action": "button: add to an int",
-   "half": "button: add to an int",
-   "scope": "local",
-   "script": {
-    "median": 87.5,
-    "p25": 75.3,
-    "p75": 109.3,
-    "n": 20,
-    "ci": [
-     78,
-     106
-    ]
-   },
-   "total": {
-    "median": 9.128,
-    "p25": 5.737,
-    "p75": 13.972,
-    "n": 20,
-    "ci": [
-     6.164,
-     13.721
-    ]
-   },
-   "seeds": {
-    "1": 87.5
-   }
-  },
-  {
-   "variant": "tea-local",
-   "size": 64,
-   "action": "input: type a character",
-   "half": "input: type a character",
-   "scope": "local",
-   "script": {
-    "median": 66,
-    "p25": 52.8,
-    "p75": 77.3,
-    "n": 20,
-    "ci": [
-     56.5,
-     74
-    ]
-   },
-   "total": {
-    "median": 1.688,
-    "p25": 1.355,
-    "p75": 8.805,
-    "n": 20,
-    "ci": [
-     1.37,
-     7.829
-    ]
-   },
-   "seeds": {
-    "1": 66
-   }
-  },
-  {
-   "variant": "tea-local",
-   "size": 64,
-   "action": "input: type a character",
-   "half": "input: delete it",
-   "scope": "local",
-   "script": {
-    "median": 58.5,
-    "p25": 53.5,
-    "p75": 62.3,
-    "n": 20,
-    "ci": [
-     54,
-     61
-    ]
-   },
-   "total": {
-    "median": 2.043,
-    "p25": 1.508,
-    "p75": 8.387,
-    "n": 20,
-    "ci": [
-     1.543,
-     7.031
-    ]
-   },
-   "seeds": {
-    "1": 58.5
-   }
-  },
-  {
-   "variant": "tea-local",
-   "size": 64,
-   "action": "list: type, push, remove",
-   "half": "list: type in the draft",
-   "scope": "local",
-   "script": {
     "median": 88.5,
-    "p25": 77.5,
-    "p75": 98,
+    "p25": 82,
+    "p75": 101.5,
     "n": 20,
     "ci": [
-     79.5,
-     97
+     84.5,
+     100.5
     ]
    },
    "total": {
-    "median": 7.682,
-    "p25": 4.191,
-    "p75": 11.884,
+    "median": 9.362,
+    "p25": 4.776,
+    "p75": 13.111,
     "n": 20,
     "ci": [
-     4.555,
-     11.263
+     5.844,
+     12.9
     ]
    },
    "seeds": {
@@ -3721,33 +3241,1113 @@
    }
   },
   {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "enum: select or cycle",
+   "half": "enum: cycle",
+   "scope": "local",
+   "script": {
+    "median": 73.5,
+    "p25": 67,
+    "p75": 86.3,
+    "n": 20,
+    "ci": [
+     68,
+     85
+    ]
+   },
+   "total": {
+    "median": 8.785,
+    "p25": 4.234,
+    "p75": 12.798,
+    "n": 20,
+    "ci": [
+     4.947,
+     12.54
+    ]
+   },
+   "seeds": {
+    "1": 73.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: type a digit (a derived value reads it)",
+   "scope": "local",
+   "script": {
+    "median": 92.5,
+    "p25": 81.3,
+    "p75": 101.3,
+    "n": 20,
+    "ci": [
+     85,
+     100
+    ]
+   },
+   "total": {
+    "median": 8.383,
+    "p25": 5.141,
+    "p75": 13.096,
+    "n": 20,
+    "ci": [
+     5.279,
+     12.343
+    ]
+   },
+   "seeds": {
+    "1": 92.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: delete it",
+   "scope": "local",
+   "script": {
+    "median": 87,
+    "p25": 74.5,
+    "p75": 98,
+    "n": 20,
+    "ci": [
+     76,
+     96.5
+    ]
+   },
+   "total": {
+    "median": 8.641,
+    "p25": 4.467,
+    "p75": 13.238,
+    "n": 20,
+    "ci": [
+     5.275,
+     12.657
+    ]
+   },
+   "seeds": {
+    "1": 87
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: tick (one field running)",
+   "half": "dispatch: tick (one field running)",
+   "scope": "local",
+   "script": {
+    "median": 128.5,
+    "p25": 113.8,
+    "p75": 139,
+    "n": 20,
+    "ci": [
+     114.5,
+     139
+    ]
+   },
+   "total": {
+    "median": 1.226,
+    "p25": 1.087,
+    "p75": 6.598,
+    "n": 20,
+    "ci": [
+     1.091,
+     5.339
+    ]
+   },
+   "seeds": {
+    "1": 128.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion",
+   "scope": "local",
+   "script": {
+    "median": 122,
+    "p25": 111,
+    "p75": 127.3,
+    "n": 20,
+    "ci": [
+     112.5,
+     126.5
+    ]
+   },
+   "total": {
+    "median": 1.098,
+    "p25": 1.067,
+    "p75": 1.14,
+    "n": 20,
+    "ci": [
+     1.071,
+     1.13
+    ]
+   },
+   "seeds": {
+    "1": 122
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion (again)",
+   "scope": "local",
+   "script": {
+    "median": 113.5,
+    "p25": 104.3,
+    "p75": 123.5,
+    "n": 20,
+    "ci": [
+     106.5,
+     122
+    ]
+   },
+   "total": {
+    "median": 1.047,
+    "p25": 1.001,
+    "p75": 1.126,
+    "n": 20,
+    "ci": [
+     1.018,
+     1.116
+    ]
+   },
+   "seeds": {
+    "1": 113.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "dispatch: notify the feed",
+   "scope": "local",
+   "script": {
+    "median": 197.5,
+    "p25": 186,
+    "p75": 234,
+    "n": 20,
+    "ci": [
+     186.5,
+     233.5
+    ]
+   },
+   "total": {
+    "median": 3.18,
+    "p25": 1.929,
+    "p75": 7.364,
+    "n": 20,
+    "ci": [
+     1.985,
+     7.103
+    ]
+   },
+   "seeds": {
+    "1": 197.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "feed: dismiss the new entry",
+   "scope": "local",
+   "script": {
+    "median": 153,
+    "p25": 138.3,
+    "p75": 166,
+    "n": 20,
+    "ci": [
+     139.5,
+     164
+    ]
+   },
+   "total": {
+    "median": 9.227,
+    "p25": 4.692,
+    "p75": 13.32,
+    "n": 20,
+    "ci": [
+     5.922,
+     13.148
+    ]
+   },
+   "seeds": {
+    "1": 153
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component",
+   "scope": "global",
+   "script": {
+    "median": 752.5,
+    "p25": 694.3,
+    "p75": 888.3,
+    "n": 20,
+    "ci": [
+     700.5,
+     857
+    ]
+   },
+   "total": {
+    "median": 3.801,
+    "p25": 3.383,
+    "p75": 6.979,
+    "n": 20,
+    "ci": [
+     3.418,
+     6.441
+    ]
+   },
+   "seeds": {
+    "1": 752.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component (again)",
+   "scope": "global",
+   "script": {
+    "median": 716,
+    "p25": 682,
+    "p75": 751.3,
+    "n": 20,
+    "ci": [
+     688,
+     745
+    ]
+   },
+   "total": {
+    "median": 3.535,
+    "p25": 3.209,
+    "p75": 9.424,
+    "n": 20,
+    "ci": [
+     3.221,
+     7.643
+    ]
+   },
+   "seeds": {
+    "1": 716
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 567,
+    "p25": 503.8,
+    "p75": 683,
+    "n": 20,
+    "ci": [
+     507,
+     673
+    ]
+   },
+   "total": {
+    "median": 3.881,
+    "p25": 3.42,
+    "p75": 9.716,
+    "n": 20,
+    "ci": [
+     3.447,
+     7.409
+    ]
+   },
+   "seeds": {
+    "1": 567
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 697.5,
+    "p25": 670.8,
+    "p75": 763.8,
+    "n": 20,
+    "ci": [
+     674.5,
+     749
+    ]
+   },
+   "total": {
+    "median": 3.748,
+    "p25": 3.52,
+    "p75": 7.191,
+    "n": 20,
+    "ci": [
+     3.528,
+     6.055
+    ]
+   },
+   "seeds": {
+    "1": 697.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "button: add to an int",
+   "half": "button: add to an int",
+   "scope": "local",
+   "script": {
+    "median": 75,
+    "p25": 69.3,
+    "p75": 86.8,
+    "n": 20,
+    "ci": [
+     71,
+     84.5
+    ]
+   },
+   "total": {
+    "median": 10.497,
+    "p25": 5.792,
+    "p75": 13.283,
+    "n": 20,
+    "ci": [
+     6.427,
+     12.576
+    ]
+   },
+   "seeds": {
+    "1": 75
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: type a character",
+   "scope": "local",
+   "script": {
+    "median": 63.5,
+    "p25": 56,
+    "p75": 74.3,
+    "n": 20,
+    "ci": [
+     57,
+     71.5
+    ]
+   },
+   "total": {
+    "median": 1.86,
+    "p25": 1.394,
+    "p75": 9.745,
+    "n": 20,
+    "ci": [
+     1.412,
+     9.325
+    ]
+   },
+   "seeds": {
+    "1": 63.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: delete it",
+   "scope": "local",
+   "script": {
+    "median": 68,
+    "p25": 57.8,
+    "p75": 72,
+    "n": 20,
+    "ci": [
+     58,
+     71.5
+    ]
+   },
+   "total": {
+    "median": 1.714,
+    "p25": 1.545,
+    "p75": 7.863,
+    "n": 20,
+    "ci": [
+     1.55,
+     5.241
+    ]
+   },
+   "seeds": {
+    "1": 68
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: type in the draft",
+   "scope": "local",
+   "script": {
+    "median": 51,
+    "p25": 42.8,
+    "p75": 62.8,
+    "n": 20,
+    "ci": [
+     43.5,
+     61
+    ]
+   },
+   "total": {
+    "median": 9.199,
+    "p25": 5.415,
+    "p75": 12.15,
+    "n": 20,
+    "ci": [
+     5.893,
+     12.025
+    ]
+   },
+   "seeds": {
+    "1": 51
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: push the draft",
+   "scope": "local",
+   "script": {
+    "median": 172.5,
+    "p25": 133.8,
+    "p75": 181,
+    "n": 20,
+    "ci": [
+     135.5,
+     180.5
+    ]
+   },
+   "total": {
+    "median": 9.452,
+    "p25": 4.856,
+    "p75": 14.094,
+    "n": 20,
+    "ci": [
+     5.177,
+     13.569
+    ]
+   },
+   "seeds": {
+    "1": 172.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: remove the pushed item",
+   "scope": "local",
+   "script": {
+    "median": 134,
+    "p25": 125.3,
+    "p75": 160,
+    "n": 20,
+    "ci": [
+     128.5,
+     158
+    ]
+   },
+   "total": {
+    "median": 7.315,
+    "p25": 4.808,
+    "p75": 12.047,
+    "n": 20,
+    "ci": [
+     5.138,
+     11.692
+    ]
+   },
+   "seeds": {
+    "1": 134
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle (a conditional section reads it)",
+   "scope": "local",
+   "script": {
+    "median": 87.5,
+    "p25": 80.8,
+    "p75": 107.8,
+    "n": 20,
+    "ci": [
+     81.5,
+     104
+    ]
+   },
+   "total": {
+    "median": 10.048,
+    "p25": 4.51,
+    "p75": 13.071,
+    "n": 20,
+    "ci": [
+     5.091,
+     12.793
+    ]
+   },
+   "seeds": {
+    "1": 87.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle back",
+   "scope": "local",
+   "script": {
+    "median": 76.5,
+    "p25": 68.8,
+    "p75": 85.3,
+    "n": 20,
+    "ci": [
+     69,
+     84
+    ]
+   },
+   "total": {
+    "median": 10.171,
+    "p25": 4.829,
+    "p75": 13.278,
+    "n": 20,
+    "ci": [
+     5.662,
+     12.828
+    ]
+   },
+   "seeds": {
+    "1": 76.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "enum: select or cycle",
+   "half": "enum: cycle",
+   "scope": "local",
+   "script": {
+    "median": 61.5,
+    "p25": 55.5,
+    "p75": 67.3,
+    "n": 20,
+    "ci": [
+     56,
+     64.5
+    ]
+   },
+   "total": {
+    "median": 8.4,
+    "p25": 4.766,
+    "p75": 12.673,
+    "n": 20,
+    "ci": [
+     5.501,
+     11.973
+    ]
+   },
+   "seeds": {
+    "1": 61.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: type a digit (a derived value reads it)",
+   "scope": "local",
+   "script": {
+    "median": 82.5,
+    "p25": 71.5,
+    "p75": 89.5,
+    "n": 20,
+    "ci": [
+     75,
+     88.5
+    ]
+   },
+   "total": {
+    "median": 9.272,
+    "p25": 6.368,
+    "p75": 11.257,
+    "n": 20,
+    "ci": [
+     6.586,
+     11.222
+    ]
+   },
+   "seeds": {
+    "1": 82.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: delete it",
+   "scope": "local",
+   "script": {
+    "median": 77.5,
+    "p25": 67.8,
+    "p75": 93.3,
+    "n": 20,
+    "ci": [
+     69,
+     90.5
+    ]
+   },
+   "total": {
+    "median": 10.615,
+    "p25": 3.347,
+    "p75": 15.082,
+    "n": 20,
+    "ci": [
+     3.573,
+     14.723
+    ]
+   },
+   "seeds": {
+    "1": 77.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: tick (one field running)",
+   "half": "dispatch: tick (one field running)",
+   "scope": "local",
+   "script": {
+    "median": 112,
+    "p25": 93.8,
+    "p75": 126,
+    "n": 20,
+    "ci": [
+     100.5,
+     125.5
+    ]
+   },
+   "total": {
+    "median": 1.246,
+    "p25": 1.094,
+    "p75": 6.646,
+    "n": 20,
+    "ci": [
+     1.107,
+     3.903
+    ]
+   },
+   "seeds": {
+    "1": 112
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion",
+   "scope": "local",
+   "script": {
+    "median": 153.5,
+    "p25": 134.8,
+    "p75": 168.3,
+    "n": 20,
+    "ci": [
+     139.5,
+     165.5
+    ]
+   },
+   "total": {
+    "median": 2.7,
+    "p25": 1.167,
+    "p75": 9.366,
+    "n": 20,
+    "ci": [
+     1.171,
+     9.079
+    ]
+   },
+   "seeds": {
+    "1": 153.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion (again)",
+   "scope": "local",
+   "script": {
+    "median": 133.5,
+    "p25": 124.8,
+    "p75": 148,
+    "n": 20,
+    "ci": [
+     127,
+     146.5
+    ]
+   },
+   "total": {
+    "median": 1.204,
+    "p25": 1.101,
+    "p75": 7.436,
+    "n": 20,
+    "ci": [
+     1.105,
+     6.522
+    ]
+   },
+   "seeds": {
+    "1": 133.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "dispatch: notify the feed",
+   "scope": "local",
+   "script": {
+    "median": 146,
+    "p25": 125,
+    "p75": 169.5,
+    "n": 20,
+    "ci": [
+     130.5,
+     164.5
+    ]
+   },
+   "total": {
+    "median": 1.933,
+    "p25": 1.846,
+    "p75": 3.999,
+    "n": 20,
+    "ci": [
+     1.856,
+     2.856
+    ]
+   },
+   "seeds": {
+    "1": 146
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "feed: dismiss the new entry",
+   "scope": "local",
+   "script": {
+    "median": 143.5,
+    "p25": 127.8,
+    "p75": 160.8,
+    "n": 20,
+    "ci": [
+     128,
+     159
+    ]
+   },
+   "total": {
+    "median": 7.159,
+    "p25": 4.527,
+    "p75": 10.164,
+    "n": 20,
+    "ci": [
+     5.271,
+     9.494
+    ]
+   },
+   "seeds": {
+    "1": 143.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component",
+   "scope": "global",
+   "script": {
+    "median": 661,
+    "p25": 634.8,
+    "p75": 746,
+    "n": 20,
+    "ci": [
+     637,
+     729.5
+    ]
+   },
+   "total": {
+    "median": 3.688,
+    "p25": 3.355,
+    "p75": 11.071,
+    "n": 20,
+    "ci": [
+     3.434,
+     7.643
+    ]
+   },
+   "seeds": {
+    "1": 661
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component (again)",
+   "scope": "global",
+   "script": {
+    "median": 641.5,
+    "p25": 626.3,
+    "p75": 751.5,
+    "n": 20,
+    "ci": [
+     631.5,
+     745
+    ]
+   },
+   "total": {
+    "median": 3.436,
+    "p25": 3.286,
+    "p75": 11.215,
+    "n": 20,
+    "ci": [
+     3.305,
+     7.857
+    ]
+   },
+   "seeds": {
+    "1": 641.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 682.5,
+    "p25": 635.3,
+    "p75": 728.3,
+    "n": 20,
+    "ci": [
+     651.5,
+     709.5
+    ]
+   },
+   "total": {
+    "median": 5.588,
+    "p25": 3.731,
+    "p75": 14.826,
+    "n": 20,
+    "ci": [
+     3.798,
+     10.942
+    ]
+   },
+   "seeds": {
+    "1": 682.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 713.5,
+    "p25": 669.5,
+    "p75": 740.3,
+    "n": 20,
+    "ci": [
+     671.5,
+     735.5
+    ]
+   },
+   "total": {
+    "median": 4.675,
+    "p25": 3.667,
+    "p75": 9.737,
+    "n": 20,
+    "ci": [
+     3.721,
+     7.609
+    ]
+   },
+   "seeds": {
+    "1": 713.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "button: add to an int",
+   "half": "button: add to an int",
+   "scope": "local",
+   "script": {
+    "median": 80.5,
+    "p25": 71.8,
+    "p75": 99.8,
+    "n": 20,
+    "ci": [
+     73,
+     94
+    ]
+   },
+   "total": {
+    "median": 8.783,
+    "p25": 5.054,
+    "p75": 13.603,
+    "n": 20,
+    "ci": [
+     5.576,
+     13.364
+    ]
+   },
+   "seeds": {
+    "1": 80.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: type a character",
+   "scope": "local",
+   "script": {
+    "median": 57,
+    "p25": 51.8,
+    "p75": 70.8,
+    "n": 20,
+    "ci": [
+     53.5,
+     67
+    ]
+   },
+   "total": {
+    "median": 1.334,
+    "p25": 1.267,
+    "p75": 9.511,
+    "n": 20,
+    "ci": [
+     1.277,
+     8.549
+    ]
+   },
+   "seeds": {
+    "1": 57
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: delete it",
+   "scope": "local",
+   "script": {
+    "median": 65.5,
+    "p25": 60.8,
+    "p75": 72.3,
+    "n": 20,
+    "ci": [
+     61,
+     71.5
+    ]
+   },
+   "total": {
+    "median": 1.489,
+    "p25": 1.443,
+    "p75": 3.491,
+    "n": 20,
+    "ci": [
+     1.456,
+     2.403
+    ]
+   },
+   "seeds": {
+    "1": 65.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: type in the draft",
+   "scope": "local",
+   "script": {
+    "median": 79.5,
+    "p25": 68.8,
+    "p75": 87.3,
+    "n": 20,
+    "ci": [
+     70.5,
+     86
+    ]
+   },
+   "total": {
+    "median": 10.988,
+    "p25": 6.769,
+    "p75": 14.738,
+    "n": 20,
+    "ci": [
+     7.549,
+     14.353
+    ]
+   },
+   "seeds": {
+    "1": 79.5
+   }
+  },
+  {
    "variant": "tea-local",
    "size": 64,
    "action": "list: type, push, remove",
    "half": "list: push the draft",
    "scope": "local",
    "script": {
-    "median": 194,
-    "p25": 138.8,
-    "p75": 226.3,
+    "median": 144,
+    "p25": 136,
+    "p75": 195.3,
     "n": 20,
     "ci": [
-     142.5,
-     217.5
+     137,
+     192
     ]
    },
    "total": {
-    "median": 8.694,
-    "p25": 5.818,
-    "p75": 12.968,
+    "median": 9.009,
+    "p25": 3.844,
+    "p75": 13.584,
     "n": 20,
     "ci": [
-     6.683,
-     12.568
+     4.641,
+     13.154
     ]
    },
    "seeds": {
-    "1": 194
+    "1": 144
    }
   },
   {
@@ -3757,293 +4357,23 @@
    "half": "list: remove the pushed item",
    "scope": "local",
    "script": {
-    "median": 166.5,
-    "p25": 160.5,
-    "p75": 189.3,
-    "n": 20,
-    "ci": [
-     163,
-     189
-    ]
-   },
-   "total": {
-    "median": 10.163,
-    "p25": 6.625,
-    "p75": 13.7,
-    "n": 20,
-    "ci": [
-     6.729,
-     12.912
-    ]
-   },
-   "seeds": {
-    "1": 166.5
-   }
-  },
-  {
-   "variant": "tea-local",
-   "size": 64,
-   "action": "bool: toggle (a conditional section reads it)",
-   "half": "bool: toggle (a conditional section reads it)",
-   "scope": "local",
-   "script": {
-    "median": 96.5,
-    "p25": 86.5,
-    "p75": 126.5,
-    "n": 20,
-    "ci": [
-     87.5,
-     118
-    ]
-   },
-   "total": {
-    "median": 8.82,
-    "p25": 5.246,
-    "p75": 13.622,
-    "n": 20,
-    "ci": [
-     5.442,
-     12.766
-    ]
-   },
-   "seeds": {
-    "1": 96.5
-   }
-  },
-  {
-   "variant": "tea-local",
-   "size": 64,
-   "action": "bool: toggle (a conditional section reads it)",
-   "half": "bool: toggle back",
-   "scope": "local",
-   "script": {
-    "median": 83.5,
-    "p25": 77,
-    "p75": 108.5,
-    "n": 20,
-    "ci": [
-     77.5,
-     103
-    ]
-   },
-   "total": {
-    "median": 10.201,
-    "p25": 5.016,
-    "p75": 14.246,
-    "n": 20,
-    "ci": [
-     5.465,
-     13.087
-    ]
-   },
-   "seeds": {
-    "1": 83.5
-   }
-  },
-  {
-   "variant": "tea-local",
-   "size": 64,
-   "action": "enum: select or cycle",
-   "half": "enum: cycle",
-   "scope": "local",
-   "script": {
-    "median": 58,
-    "p25": 48.5,
-    "p75": 68.3,
-    "n": 20,
-    "ci": [
-     49,
-     68
-    ]
-   },
-   "total": {
-    "median": 8.915,
-    "p25": 2.979,
-    "p75": 10.589,
-    "n": 20,
-    "ci": [
-     3.774,
-     10.101
-    ]
-   },
-   "seeds": {
-    "1": 58
-   }
-  },
-  {
-   "variant": "tea-local",
-   "size": 64,
-   "action": "number: type a digit (a derived value reads it)",
-   "half": "number: type a digit (a derived value reads it)",
-   "scope": "local",
-   "script": {
-    "median": 88,
-    "p25": 83.8,
-    "p75": 95.8,
-    "n": 20,
-    "ci": [
-     85,
-     92.5
-    ]
-   },
-   "total": {
-    "median": 8.717,
-    "p25": 3.638,
-    "p75": 13.262,
-    "n": 20,
-    "ci": [
-     4.577,
-     12.579
-    ]
-   },
-   "seeds": {
-    "1": 88
-   }
-  },
-  {
-   "variant": "tea-local",
-   "size": 64,
-   "action": "number: type a digit (a derived value reads it)",
-   "half": "number: delete it",
-   "scope": "local",
-   "script": {
-    "median": 85.5,
-    "p25": 79.3,
-    "p75": 94.3,
-    "n": 20,
-    "ci": [
-     81,
-     92.5
-    ]
-   },
-   "total": {
-    "median": 8.872,
-    "p25": 3.572,
-    "p75": 12.549,
-    "n": 20,
-    "ci": [
-     5.078,
-     11.871
-    ]
-   },
-   "seeds": {
-    "1": 85.5
-   }
-  },
-  {
-   "variant": "tea-local",
-   "size": 64,
-   "action": "dispatch: tick (one field running)",
-   "half": "dispatch: tick (one field running)",
-   "scope": "local",
-   "script": {
-    "median": 107.5,
-    "p25": 98,
-    "p75": 128.3,
-    "n": 20,
-    "ci": [
-     98,
-     125
-    ]
-   },
-   "total": {
-    "median": 2.695,
-    "p25": 1.142,
-    "p75": 11.258,
-    "n": 20,
-    "ci": [
-     1.148,
-     9.667
-    ]
-   },
-   "seeds": {
-    "1": 107.5
-   }
-  },
-  {
-   "variant": "tea-local",
-   "size": 64,
-   "action": "dispatch: serverSet the companion",
-   "half": "dispatch: serverSet the companion",
-   "scope": "local",
-   "script": {
-    "median": 115.5,
-    "p25": 107.5,
-    "p75": 128.8,
-    "n": 20,
-    "ci": [
-     109,
-     125
-    ]
-   },
-   "total": {
-    "median": 1.617,
-    "p25": 1.095,
-    "p75": 9.624,
-    "n": 20,
-    "ci": [
-     1.101,
-     8.001
-    ]
-   },
-   "seeds": {
-    "1": 115.5
-   }
-  },
-  {
-   "variant": "tea-local",
-   "size": 64,
-   "action": "dispatch: serverSet the companion",
-   "half": "dispatch: serverSet the companion (again)",
-   "scope": "local",
-   "script": {
-    "median": 114.5,
-    "p25": 99,
-    "p75": 124.3,
-    "n": 20,
-    "ci": [
-     103.5,
-     123
-    ]
-   },
-   "total": {
-    "median": 2.032,
-    "p25": 1.085,
-    "p75": 9.835,
-    "n": 20,
-    "ci": [
-     1.112,
-     7.9
-    ]
-   },
-   "seeds": {
-    "1": 114.5
-   }
-  },
-  {
-   "variant": "tea-local",
-   "size": 64,
-   "action": "notify, dismiss",
-   "half": "dispatch: notify the feed",
-   "scope": "local",
-   "script": {
     "median": 161.5,
-    "p25": 146,
-    "p75": 184.8,
+    "p25": 145.3,
+    "p75": 164.3,
     "n": 20,
     "ci": [
-     149,
-     179.5
+     147,
+     164
     ]
    },
    "total": {
-    "median": 2.135,
-    "p25": 2.034,
-    "p75": 3.101,
+    "median": 8.441,
+    "p25": 5.408,
+    "p75": 13.447,
     "n": 20,
     "ci": [
-     2.042,
-     2.723
+     5.877,
+     12.58
     ]
    },
    "seeds": {
@@ -4053,31 +4383,301 @@
   {
    "variant": "tea-local",
    "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle (a conditional section reads it)",
+   "scope": "local",
+   "script": {
+    "median": 94.5,
+    "p25": 83.5,
+    "p75": 105.3,
+    "n": 20,
+    "ci": [
+     84.5,
+     105
+    ]
+   },
+   "total": {
+    "median": 8.558,
+    "p25": 4.826,
+    "p75": 14.643,
+    "n": 20,
+    "ci": [
+     5.44,
+     13.661
+    ]
+   },
+   "seeds": {
+    "1": 94.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle back",
+   "scope": "local",
+   "script": {
+    "median": 76,
+    "p25": 72.8,
+    "p75": 80,
+    "n": 20,
+    "ci": [
+     73,
+     80
+    ]
+   },
+   "total": {
+    "median": 10.798,
+    "p25": 6.301,
+    "p75": 13.689,
+    "n": 20,
+    "ci": [
+     7.256,
+     13.502
+    ]
+   },
+   "seeds": {
+    "1": 76
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "enum: select or cycle",
+   "half": "enum: cycle",
+   "scope": "local",
+   "script": {
+    "median": 57,
+    "p25": 48.5,
+    "p75": 61.8,
+    "n": 20,
+    "ci": [
+     49.5,
+     61
+    ]
+   },
+   "total": {
+    "median": 8.453,
+    "p25": 4.971,
+    "p75": 13.271,
+    "n": 20,
+    "ci": [
+     5.568,
+     12.667
+    ]
+   },
+   "seeds": {
+    "1": 57
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: type a digit (a derived value reads it)",
+   "scope": "local",
+   "script": {
+    "median": 73,
+    "p25": 60.3,
+    "p75": 83.5,
+    "n": 20,
+    "ci": [
+     62,
+     82
+    ]
+   },
+   "total": {
+    "median": 7.569,
+    "p25": 5.29,
+    "p75": 8.819,
+    "n": 20,
+    "ci": [
+     5.623,
+     8.737
+    ]
+   },
+   "seeds": {
+    "1": 73
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: delete it",
+   "scope": "local",
+   "script": {
+    "median": 75.5,
+    "p25": 68.3,
+    "p75": 81.3,
+    "n": 20,
+    "ci": [
+     71,
+     80.5
+    ]
+   },
+   "total": {
+    "median": 14.07,
+    "p25": 3.21,
+    "p75": 16.374,
+    "n": 20,
+    "ci": [
+     7.129,
+     16.157
+    ]
+   },
+   "seeds": {
+    "1": 75.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "dispatch: tick (one field running)",
+   "half": "dispatch: tick (one field running)",
+   "scope": "local",
+   "script": {
+    "median": 110,
+    "p25": 108.3,
+    "p75": 124.5,
+    "n": 20,
+    "ci": [
+     109,
+     122
+    ]
+   },
+   "total": {
+    "median": 2.125,
+    "p25": 1.07,
+    "p75": 10.595,
+    "n": 20,
+    "ci": [
+     1.072,
+     8.833
+    ]
+   },
+   "seeds": {
+    "1": 110
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion",
+   "scope": "local",
+   "script": {
+    "median": 119.5,
+    "p25": 108.8,
+    "p75": 125.3,
+    "n": 20,
+    "ci": [
+     111,
+     125
+    ]
+   },
+   "total": {
+    "median": 1.112,
+    "p25": 1.054,
+    "p75": 6.24,
+    "n": 20,
+    "ci": [
+     1.064,
+     5.961
+    ]
+   },
+   "seeds": {
+    "1": 119.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion (again)",
+   "scope": "local",
+   "script": {
+    "median": 108.5,
+    "p25": 103,
+    "p75": 120,
+    "n": 20,
+    "ci": [
+     103.5,
+     119.5
+    ]
+   },
+   "total": {
+    "median": 1.405,
+    "p25": 1.077,
+    "p75": 10.936,
+    "n": 20,
+    "ci": [
+     1.091,
+     10.677
+    ]
+   },
+   "seeds": {
+    "1": 108.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "dispatch: notify the feed",
+   "scope": "local",
+   "script": {
+    "median": 157,
+    "p25": 149.8,
+    "p75": 165,
+    "n": 20,
+    "ci": [
+     151.5,
+     164.5
+    ]
+   },
+   "total": {
+    "median": 1.938,
+    "p25": 1.889,
+    "p75": 2.008,
+    "n": 20,
+    "ci": [
+     1.9,
+     1.992
+    ]
+   },
+   "seeds": {
+    "1": 157
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
    "action": "notify, dismiss",
    "half": "feed: dismiss the new entry",
    "scope": "local",
    "script": {
-    "median": 167.5,
-    "p25": 148.8,
-    "p75": 175.8,
+    "median": 135.5,
+    "p25": 115,
+    "p75": 143,
     "n": 20,
     "ci": [
-     150,
-     173
+     115.5,
+     142
     ]
    },
    "total": {
-    "median": 7.438,
-    "p25": 2.676,
-    "p75": 13.288,
+    "median": 7.583,
+    "p25": 4.409,
+    "p75": 11.665,
     "n": 20,
     "ci": [
-     3.72,
-     12.775
+     5.032,
+     11.387
     ]
    },
    "seeds": {
-    "1": 167.5
+    "1": 135.5
    }
   },
   {
@@ -4087,27 +4687,27 @@
    "half": "dispatch: serverSet the whole component",
    "scope": "global",
    "script": {
-    "median": 583.5,
-    "p25": 521,
-    "p75": 664.5,
+    "median": 581.5,
+    "p25": 518,
+    "p75": 625,
     "n": 20,
     "ci": [
-     522,
-     662.5
+     522.5,
+     616
     ]
    },
    "total": {
-    "median": 3.994,
-    "p25": 3.378,
-    "p75": 13.334,
+    "median": 3.737,
+    "p25": 3.218,
+    "p75": 13.087,
     "n": 20,
     "ci": [
-     3.481,
-     12.741
+     3.319,
+     9.819
     ]
    },
    "seeds": {
-    "1": 583.5
+    "1": 581.5
    }
   },
   {
@@ -4117,27 +4717,27 @@
    "half": "dispatch: serverSet the whole component (again)",
    "scope": "global",
    "script": {
-    "median": 601,
-    "p25": 576.8,
-    "p75": 648.8,
+    "median": 606.5,
+    "p25": 568,
+    "p75": 633,
     "n": 20,
     "ci": [
-     580,
-     639
+     571,
+     629
     ]
    },
    "total": {
-    "median": 3.282,
-    "p25": 2.989,
-    "p75": 10.989,
+    "median": 3.34,
+    "p25": 2.907,
+    "p75": 13.896,
     "n": 20,
     "ci": [
-     2.996,
-     6.898
+     2.924,
+     10.045
     ]
    },
    "seeds": {
-    "1": 601
+    "1": 606.5
    }
   },
   {
@@ -4147,27 +4747,27 @@
    "half": "dispatch: whole-state snapshot",
    "scope": "global",
    "script": {
-    "median": 554,
-    "p25": 517,
-    "p75": 639.5,
+    "median": 529,
+    "p25": 480.3,
+    "p75": 560.3,
     "n": 20,
     "ci": [
-     526,
-     627.5
+     491.5,
+     554
     ]
    },
    "total": {
-    "median": 3.974,
-    "p25": 3.533,
-    "p75": 12.063,
+    "median": 3.279,
+    "p25": 3.193,
+    "p75": 4.207,
     "n": 20,
     "ci": [
-     3.553,
-     9.642
+     3.204,
+     4.074
     ]
    },
    "seeds": {
-    "1": 554
+    "1": 529
    }
   },
   {
@@ -4177,211 +4777,237 @@
    "half": "dispatch: whole-state snapshot (again)",
    "scope": "global",
    "script": {
-    "median": 592.5,
-    "p25": 579,
-    "p75": 673,
+    "median": 564.5,
+    "p25": 543.8,
+    "p75": 622,
     "n": 20,
     "ci": [
-     584.5,
-     666
+     547,
+     614
     ]
    },
    "total": {
-    "median": 3.486,
-    "p25": 3.205,
-    "p75": 5.775,
+    "median": 3.65,
+    "p25": 3.176,
+    "p75": 11.509,
     "n": 20,
     "ci": [
-     3.221,
-     5.339
+     3.212,
+     11.029
     ]
    },
    "seeds": {
-    "1": 592.5
+    "1": 564.5
    }
   }
  ],
  "startup": [
   {
-   "variant": "beni-tea",
-   "size": 64,
-   "script": {
-    "median": 11.005,
-    "p25": 10.691,
-    "p75": 11.394,
-    "n": 5,
-    "ci": [
-     10.585,
-     16.202
-    ]
-   },
-   "total": {
-    "median": 38.82,
-    "p25": 38.23,
-    "p75": 39.01,
-    "n": 5,
-    "ci": [
-     37.85,
-     93.05
-    ]
-   },
-   "compileMs": 0.156,
-   "heapBytes": 878196
-  },
-  {
    "variant": "beni-direct",
    "size": 64,
    "script": {
-    "median": 14.163,
-    "p25": 14.04,
-    "p75": 15.029,
+    "median": 13.897,
+    "p25": 13.809,
+    "p75": 13.905,
     "n": 5,
     "ci": [
-     13.645,
-     26.188
+     13.587,
+     21.463
     ]
    },
    "total": {
-    "median": 44.67,
-    "p25": 42.5,
-    "p75": 44.86,
+    "median": 42.5,
+    "p25": 42.39,
+    "p75": 45.53,
     "n": 5,
     "ci": [
-     42.32,
-     100.25
+     41.87,
+     133.11
     ]
    },
-   "compileMs": 0.17,
+   "compileMs": 0.137,
    "heapBytes": 1173324
+  },
+  {
+   "variant": "beni-tea",
+   "size": 64,
+   "script": {
+    "median": 10.867,
+    "p25": 10.702,
+    "p75": 11.182,
+    "n": 5,
+    "ci": [
+     10.192,
+     18.307
+    ]
+   },
+   "total": {
+    "median": 38.97,
+    "p25": 37.98,
+    "p75": 40.44,
+    "n": 5,
+    "ci": [
+     37.81,
+     92.58
+    ]
+   },
+   "compileMs": 0.16,
+   "heapBytes": 878196
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "script": {
+    "median": 4.059,
+    "p25": 3.818,
+    "p75": 4.14,
+    "n": 5,
+    "ci": [
+     3.81,
+     4.562
+    ]
+   },
+   "total": {
+    "median": 25.95,
+    "p25": 25.09,
+    "p75": 26.14,
+    "n": 5,
+    "ci": [
+     23.98,
+     26.25
+    ]
+   },
+   "compileMs": 0.114,
+   "heapBytes": 680056
   },
   {
    "variant": "solid",
    "size": 64,
    "script": {
-    "median": 6.925,
-    "p25": 6.915,
-    "p75": 7.579,
+    "median": 7.253,
+    "p25": 7.12,
+    "p75": 7.265,
     "n": 5,
     "ci": [
-     6.282,
-     7.745
+     6.463,
+     7.519
     ]
    },
    "total": {
-    "median": 28.11,
-    "p25": 27.58,
-    "p75": 29.83,
+    "median": 27.9,
+    "p25": 27.78,
+    "p75": 28.6,
     "n": 5,
     "ci": [
-     27.57,
-     30.74
+     27.35,
+     31.83
     ]
    },
-   "compileMs": 0.16,
+   "compileMs": 0.148,
    "heapBytes": 900096
-  },
-  {
-   "variant": "tea-dirtybits",
-   "size": 64,
-   "script": {
-    "median": 4.013,
-    "p25": 3.904,
-    "p75": 4.038,
-    "n": 5,
-    "ci": [
-     3.733,
-     4.189
-    ]
-   },
-   "total": {
-    "median": 25.42,
-    "p25": 25.31,
-    "p75": 25.59,
-    "n": 5,
-    "ci": [
-     24.74,
-     26.68
-    ]
-   },
-   "compileMs": 0.125,
-   "heapBytes": 654004
   },
   {
    "variant": "elm",
    "size": 64,
    "script": {
-    "median": 5.99,
-    "p25": 5.762,
-    "p75": 6.364,
+    "median": 6.131,
+    "p25": 5.751,
+    "p75": 6.797,
     "n": 5,
     "ci": [
-     5.682,
-     7.172
+     5.575,
+     7.55
     ]
    },
    "total": {
-    "median": 34.37,
-    "p25": 31.79,
-    "p75": 37.6,
+    "median": 32.85,
+    "p25": 29.99,
+    "p75": 40.86,
     "n": 5,
     "ci": [
-     27.86,
-     38.21
+     27.55,
+     45.85
     ]
    },
-   "compileMs": 0.094,
+   "compileMs": 0.089,
    "heapBytes": 891848
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "script": {
+    "median": 4.827,
+    "p25": 4.067,
+    "p75": 5.13,
+    "n": 5,
+    "ci": [
+     3.472,
+     5.275
+    ]
+   },
+   "total": {
+    "median": 26.68,
+    "p25": 25.04,
+    "p75": 27.89,
+    "n": 5,
+    "ci": [
+     22.95,
+     28.92
+    ]
+   },
+   "compileMs": 0.158,
+   "heapBytes": 654004
   },
   {
    "variant": "tea-inline",
    "size": 64,
    "script": {
-    "median": 4.178,
-    "p25": 4.111,
-    "p75": 4.228,
+    "median": 4.487,
+    "p25": 4.344,
+    "p75": 5.397,
     "n": 5,
     "ci": [
-     4.035,
-     4.348
+     4.244,
+     5.712
     ]
    },
    "total": {
-    "median": 25,
-    "p25": 24.72,
-    "p75": 25.27,
+    "median": 26.37,
+    "p25": 24.47,
+    "p75": 27.78,
     "n": 5,
     "ci": [
-     24.6,
-     25.47
+     24.45,
+     29.65
     ]
    },
-   "compileMs": 0.151,
+   "compileMs": 0.132,
    "heapBytes": 695240
   },
   {
    "variant": "tea-local",
    "size": 64,
    "script": {
-    "median": 5.489,
-    "p25": 5.193,
-    "p75": 6.054,
+    "median": 6.274,
+    "p25": 6.151,
+    "p75": 6.588,
     "n": 5,
     "ci": [
-     5.142,
-     6.748
+     5.665,
+     7.829
     ]
    },
    "total": {
-    "median": 26.25,
-    "p25": 26.16,
-    "p75": 26.39,
+    "median": 27.46,
+    "p25": 27.39,
+    "p75": 40.59,
     "n": 5,
     "ci": [
-     26.11,
-     29.17
+     27.33,
+     70.01
     ]
    },
-   "compileMs": 0.131,
+   "compileMs": 0.154,
    "heapBytes": 727976
   }
  ],

@@ -2,8 +2,8 @@
   "scenario": "big-component",
   "kind": "cpu",
   "date": "2026-10-16",
-  "started": "2026-10-16T16:08:52.724Z",
-  "finished": "2026-10-16T16:10:06.002Z",
+  "started": "2026-10-16T16:44:41.147Z",
+  "finished": "2026-10-16T16:46:09.859Z",
   "sizes": [
     64
   ],
@@ -68,6 +68,18 @@
         "zig, node (beni's flake.lock at that commit)": "zig 0.17.0, node 24",
         "platform": "browser-tea"
       }
+    },
+    "digest": {
+      "emitter": "digest",
+      "framework": "digest",
+      "label": "digest (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      },
+      "excluded": "fails the locality rule here (calls per local event grow 8.6x from N=16 to 256); timed for reference only"
     },
     "elm": {
       "emitter": "elm",
@@ -142,77 +154,85 @@
       }
     }
   },
-  "skipped": [
-    {
-      "variant": "digest",
-      "why": "not in runs.json for big-component"
-    }
-  ],
+  "skipped": [],
   "batches": [
-    {
-      "variant": "beni-tea",
-      "size": 64,
-      "seed": 1,
-      "session": 1,
-      "worker": 0,
-      "attempt": 0,
-      "loadBefore": 0.54,
-      "loadAfter": 0.85,
-      "seconds": 16.146,
-      "kept": true,
-      "at": "2026-10-16T16:09:17.929Z"
-    },
     {
       "variant": "beni-direct",
       "size": 64,
       "seed": 1,
       "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 0.59,
+      "loadAfter": 0.53,
+      "seconds": 16.154,
+      "kept": true,
+      "at": "2026-10-16T16:45:06.446Z"
+    },
+    {
+      "variant": "beni-tea",
+      "size": 64,
+      "seed": 1,
+      "session": 1,
       "worker": 1,
       "attempt": 0,
-      "loadBefore": 0.54,
-      "loadAfter": 1.02,
-      "seconds": 16.58,
+      "loadBefore": 0.59,
+      "loadAfter": 0.53,
+      "seconds": 16.439,
       "kept": true,
-      "at": "2026-10-16T16:09:18.330Z"
+      "at": "2026-10-16T16:45:06.763Z"
+    },
+    {
+      "variant": "digest",
+      "size": 64,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 0.53,
+      "loadAfter": 0.48,
+      "seconds": 15.515,
+      "kept": true,
+      "at": "2026-10-16T16:45:21.989Z"
     },
     {
       "variant": "solid",
       "size": 64,
       "seed": 1,
       "session": 1,
-      "worker": 1,
+      "worker": 0,
       "attempt": 0,
-      "loadBefore": 1.02,
-      "loadAfter": 0.79,
-      "seconds": 15.614,
+      "loadBefore": 0.48,
+      "loadAfter": 0.45,
+      "seconds": 15.787,
       "kept": true,
-      "at": "2026-10-16T16:09:33.967Z"
-    },
-    {
-      "variant": "tea-dirtybits",
-      "size": 64,
-      "seed": 1,
-      "session": 1,
-      "worker": 1,
-      "attempt": 0,
-      "loadBefore": 0.79,
-      "loadAfter": 0.69,
-      "seconds": 15.64,
-      "kept": true,
-      "at": "2026-10-16T16:09:49.639Z"
+      "at": "2026-10-16T16:45:37.837Z"
     },
     {
       "variant": "elm",
       "size": 64,
       "seed": 1,
       "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 0.53,
+      "loadAfter": 0.49,
+      "seconds": 31.907,
+      "kept": true,
+      "at": "2026-10-16T16:45:38.694Z"
+    },
+    {
+      "variant": "tea-dirtybits",
+      "size": 64,
+      "seed": 1,
+      "session": 1,
       "worker": 0,
       "attempt": 0,
-      "loadBefore": 0.85,
-      "loadAfter": 0.69,
-      "seconds": 31.771,
+      "loadBefore": 0.45,
+      "loadAfter": 0.56,
+      "seconds": 15.408,
       "kept": true,
-      "at": "2026-10-16T16:09:49.749Z"
+      "at": "2026-10-16T16:45:53.305Z"
     },
     {
       "variant": "tea-inline",
@@ -221,11 +241,11 @@
       "session": 1,
       "worker": 1,
       "attempt": 0,
-      "loadBefore": 0.69,
-      "loadAfter": 0.62,
-      "seconds": 15.667,
+      "loadBefore": 0.49,
+      "loadAfter": 0.68,
+      "seconds": 16.154,
       "kept": true,
-      "at": "2026-10-16T16:10:05.334Z"
+      "at": "2026-10-16T16:45:54.872Z"
     },
     {
       "variant": "tea-local",
@@ -234,11 +254,11 @@
       "session": 1,
       "worker": 0,
       "attempt": 0,
-      "loadBefore": 0.69,
-      "loadAfter": 0.62,
-      "seconds": 16.023,
+      "loadBefore": 0.56,
+      "loadAfter": 0.66,
+      "seconds": 16.297,
       "kept": true,
-      "at": "2026-10-16T16:10:05.797Z"
+      "at": "2026-10-16T16:46:09.630Z"
     }
   ],
   "machine": {
@@ -258,9 +278,9 @@
     "chromeBin": "/nix/store/ds7933z0wp7872ic6zqzrwsbpj0m8g6l-google-chrome-154.0.8037.97/bin/google-chrome",
     "chromeVersionLine": "Google Chrome 154.0.8037.97",
     "git": {
-      "commit": "af6fed5afe868174be355d05a74aeaee40749808",
+      "commit": "e41e53aa26bfedbc76d92f0841edfdc083f7e2c7",
       "dirty": false
     }
   },
-  "wallSeconds": 73.373
+  "wallSeconds": 88.853
 }
