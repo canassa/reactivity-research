@@ -49,17 +49,21 @@ on(incButton, "click", () => {
   unique-components each widget parses one static HTML string and picks the elements it uses
   by document order (see below).
 
-The shared-components app is a table of rows `[factory, id, initial state, label, ...arguments]`
-in page order; the model is made on each mount from a copy of every row's initial state (TEA's
-`init`, split per widget). (Spelling the arguments positionally and keeping each initial state
-in its row saved about 5% at N=256: property names and a second tree keyed by id no longer
-repeat per widget.)
+The shared-components app is a table of rows `[factory, initial state, label, ...arguments]`
+in page order; row N is widget `wN`, so no row spells out its id. The model is made on each
+mount from a copy of every row's initial state (TEA's `init`, split per widget), and each
+factory is handed its own slice (a summary, which has no state, is handed the model it reads).
+Tabs and options travel as `[title, content]` and `[value, label]` pairs. (Spelling the
+arguments positionally and keeping each initial state in its row saved about 5% at N=256;
+deriving ids from row order about 6% more: property names, ids and a second tree keyed by id no
+longer repeat per widget.)
 
 ## Lists, derived values, external events
 
 - **Keyed lists.** A list is a binding over an array in the model. An action that edits the array
   in place says which rows it touched (`items.add(item)`, `items.drop(id)`,
-  `items.patch(item)`), and the flush patches only those rows. When the array itself is
+  `items.patch(item)`), and the flush patches only those rows. A row's own controls (toggle,
+  remove, dismiss) carry their arm inline in the row's handler, with the row's item id in scope. When the array itself is
   replaced (by a server push, a snapshot or a filtered view), the list reconciles by
   `item.id`: it reuses rows, removes those whose id left, and puts the rest in order in one
   forward pass (a row already in place stays; any other moves before the first row not yet
@@ -71,7 +75,8 @@ repeat per widget.)
 - **Derived values.** A summary reads other widgets' state. At mount it adds its binding to the
   `readers` of each widget it reads. A widget schedules its readers only from the actions that
   write a field a summary reads: `todo` does it on `add`, `toggle` and `remove`, but not on
-  `editDraft`.
+  `editDraft`. The readers sit in the binding group of the field they read, so the action
+  schedules one group.
 - **External events stay messages.** `dispatch(msg)` reaches `receive(msg)`, the part of
   `update` that a message still reaches. `serverSet` and `snapshot` replace a widget's state and
   run all its bindings. `tick` and `notify` call the widget's own arms.
@@ -84,7 +89,7 @@ repeat per widget.)
   no reactive graph, no scheduler beyond a `Set`, and no diffing apart from the keyed list.
 - **Per kind: larger.** Each factory spells out its DOM construction and one action per arm,
   where a template compiler would clone a static HTML string. The first use of a kind costs more.
-- **Per use: about the same as any configured component.** A new widget adds a config row: an id,
+- **Per use: about the same as any configured component.** A new widget adds a config row:
   a label, its parameters and its initial state. Messages and diffs add nothing. The slope
   should match a component framework such as Solid, not beat it, because both pay for the same
   per-instance data.
@@ -109,18 +114,26 @@ repeat per widget.)
 kinds to share: every widget is its own module (`src/widgets/<id>.js`), written out from its
 description. The emitter compiles each widget's expressions to JavaScript, works out the fields
 each binding reads, and inlines every message into the action of its control, which writes the
-fields in place and schedules the per-field binding groups (`onVisits = [...]`) plus
-`R[widget].<field>` for the fields other widgets read. A widget's whole markup, conditional
-sections included, is one static HTML string that `section` parses once; the code takes the
-elements it uses by document order (`const [, , i1, , g1] = section(parent, widget, "...")`).
-The widget gets its own id as a parameter rather than repeating it as a literal, which keeps
-alike lines alike for brotli. The only generic code beyond the runtime is three helpers in
-`widgets/widget.js` (`section`, `loader`, `nextId`).
+fields in place and schedules the per-field binding groups (`onVisits = [...]`); a field other
+widgets read lists their bindings (`R[widget].<field>`, registered at mount) in its own group.
+An enum cycle is a chain of comparisons (`s.tone === "A" ? "B" : …`), since the compiler knows
+the options. A widget's whole markup, conditional sections included, is one static HTML string
+that `section` parses once; the code takes the elements it uses by document order
+(`const [, , i1, , g1] = section(parent, widget, "...")`). Widgets are numbered in page order
+(`wN` is number N): the initial model is an array by number, each widget gets its number as a
+parameter (its section's key, its slice `model[N]`, its readers `R[N]`), and the app mounts
+them with one `map` over the list of widget functions, so no widget's id is spelled out. The
+only generic code beyond the runtime is three helpers in `widgets/widget.js` (`section`,
+`loader`, `nextId`).
 
 What did not help here: building list rows from a parsed template (more bytes than
 `el(...)` calls), a single binding as a bare function instead of a one-item group, and moving
 each widget's initial state or its own state slice into the widget module or its call (all
-smaller at small N but larger at N=256: the init tree compresses better in one place). In
+smaller at small N but larger at N=256: the init tree compresses better in one place). Nor
+did keeping fields in local variables (as digest does; the minifier's per-function letters
+make alike widgets differ, +2% at N=256), fusing a field's bindings into one function (fewer
+calls, more bytes), or marking the referenced elements with an attribute removed at mount
+(−0.8% at N=256 but +25 B for small apps). In
 shared-components, building factories from static markup also lost: the per-widget texts then
 need one assignment each. Expect the slope to be the cost of
 per-widget DOM construction and actions, with no shared factory to amortize it.
