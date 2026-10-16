@@ -643,11 +643,11 @@ export function emit(spec) {
     files,
     style: {
       track: "prototype: no framework implements this strategy",
-      components: "one factory per widget kind, configured per widget; DOM built once with createElement",
+      components: "one factory per widget kind, called with each widget's arguments positionally; DOM built once with createElement",
       messages: "erased for DOM events: each update arm is an action that writes model fields in place",
       updates: "each action schedules the bindings that read the fields it writes (known at compile time); one microtask flush",
       derived: "summaries subscribe once to their sources' readers; sources schedule them when they write a field a summary reads",
-      lists: "keyed: in-place edits patch only their rows; replaced or derived arrays reconcile by key with Solid 2's reconcileArrays",
+      lists: "keyed: in-place edits patch only their rows; replaced or derived arrays reconcile by id in one forward pass",
       externalEvents: "receive(msg): serverSet and snapshot replace a widget's state and run all its bindings; tick and notify call the widget's external arms",
       build: "Vite with no framework plugin, production defaults, hidden source maps",
     },

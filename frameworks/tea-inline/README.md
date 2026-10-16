@@ -43,20 +43,31 @@ on(incButton, "click", () => {
 - **No message:** the click calls the arm itself, so there is no `Msg` object and no `switch`.
 - **No diff:** the action schedules the bindings that read `value`. One microtask later each
   scheduled binding runs once and writes the DOM only if its value changed.
-- **The DOM is built once** with `createElement`, by one factory per widget kind. Every use passes
-  its own config (`c`: label, limits, items, rules, formats). In the dashboard, that is one
-  `counter` factory shared by every counter on the page.
+- **The DOM is built once** per component. In shared-components it is built with `createElement`,
+  by one factory per widget kind, and every use passes its own arguments (label, limits, items,
+  rules, formats): one `counter` factory serves every counter on the page. In
+  unique-components each widget parses one static HTML string and picks the elements it uses
+  by document order (see below).
 
-The app itself is a table of `[factory, config]` rows in page order, plus `init()` for the model.
+The shared-components app is a table of rows `[factory, id, initial state, label, ...arguments]`
+in page order; the model is made on each mount from a copy of every row's initial state (TEA's
+`init`, split per widget). (Spelling the arguments positionally and keeping each initial state
+in its row saved about 5% at N=256: property names and a second tree keyed by id no longer
+repeat per widget.)
 
 ## Lists, derived values, external events
 
 - **Keyed lists.** A list is a binding over an array in the model. An action that edits the array
   in place says which rows it touched (`items.add(item)`, `items.drop(id)`,
   `items.patch(item)`), and the flush patches only those rows. When the array itself is
-  replaced (by a server push, a snapshot or a filtered view), the list reconciles by key. It
-  reuses rows and moves them with Solid 2's `reconcileArrays`, vendored in
-  `template/reconcile.js` with its MIT notice.
+  replaced (by a server push, a snapshot or a filtered view), the list reconciles by
+  `item.id`: it reuses rows, removes those whose id left, and puts the rest in order in one
+  forward pass (a row already in place stays; any other moves before the first row not yet
+  placed). A list that only gains or loses rows moves nothing, a reversed run moves all rows
+  but one; the worst case is a rotation. Solid 2's `reconcileArrays` did the same jobs for
+  about 500 B brotli more.
+- **Conditional blocks.** `when(node)` takes a node built in place with the rest of the DOM and
+  swaps it with an empty text node while hidden; nothing is built lazily.
 - **Derived values.** A summary reads other widgets' state. At mount it adds its binding to the
   `readers` of each widget it reads. A widget schedules its readers only from the actions that
   write a field a summary reads: `todo` does it on `add`, `toggle` and `remove`, but not on
@@ -69,7 +80,7 @@ The app itself is a table of `[factory, config]` rows in page order, plus `init(
 
 ## Expected trade-off
 
-- **Baseline: small.** The runtime is about 1.3 kB brotli, against about 6.5 kB for Solid. It has
+- **Baseline: small.** The runtime is well under 1 kB brotli, against about 6.5 kB for Solid. It has
   no reactive graph, no scheduler beyond a `Set`, and no diffing apart from the keyed list.
 - **Per kind: larger.** Each factory spells out its DOM construction and one action per arm,
   where a template compiler would clone a static HTML string. The first use of a kind costs more.
@@ -83,9 +94,9 @@ The app itself is a table of `[factory, config]` rows in page order, plus `init(
 
 ## Files
 
-- `template/runtime.js`: `el`, `text`, `prop`, `attr`, `on`, `when` (conditional blocks), `list`,
-  `schedule`/`flush`/`settled`. It is counted as runtime.
-- `template/reconcile.js`: `reconcileArrays`, unchanged.
+- `template/runtime.js`: `el`, `text`, `prop` (also for reflected ARIA states), `on`, `when`
+  (conditional blocks), `list` (keyed by `item.id`), `schedule`/`flush`/`settled`. It is
+  counted as runtime.
 - `template/adapter.js`: the contract (`mount`, `dispatch`, `settled`, `dispose`), excluded from
   size.
 - `../../scenarios/shared-components/tea-inline.js`: the emitter, with one factory per widget kind.
@@ -99,7 +110,17 @@ kinds to share: every widget is its own module (`src/widgets/<id>.js`), written 
 description. The emitter compiles each widget's expressions to JavaScript, works out the fields
 each binding reads, and inlines every message into the action of its control, which writes the
 fields in place and schedules the per-field binding groups (`onVisits = [...]`) plus
-`R.<widget>.<field>` for the fields other widgets read. Conditional sections are built detached
-and attached by `when`. The only generic code beyond the runtime is four helpers in
-`widgets/widget.js` (`section`, `loader`, `nextId`, `options`). Expect the slope to be the cost of
+`R[widget].<field>` for the fields other widgets read. A widget's whole markup, conditional
+sections included, is one static HTML string that `section` parses once; the code takes the
+elements it uses by document order (`const [, , i1, , g1] = section(parent, widget, "...")`).
+The widget gets its own id as a parameter rather than repeating it as a literal, which keeps
+alike lines alike for brotli. The only generic code beyond the runtime is three helpers in
+`widgets/widget.js` (`section`, `loader`, `nextId`).
+
+What did not help here: building list rows from a parsed template (more bytes than
+`el(...)` calls), a single binding as a bare function instead of a one-item group, and moving
+each widget's initial state or its own state slice into the widget module or its call (all
+smaller at small N but larger at N=256: the init tree compresses better in one place). In
+shared-components, building factories from static markup also lost: the per-widget texts then
+need one assignment each. Expect the slope to be the cost of
 per-widget DOM construction and actions, with no shared factory to amortize it.
