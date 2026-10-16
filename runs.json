@@ -213,6 +213,21 @@
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3],
       "options": { "fanout": ["low", "mid", "high"] }
+    },
+    "vanilla": {
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3],
+      "options": { "fanout": ["low", "mid", "high"] }
+    },
+    "solid": {
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3],
+      "options": { "fanout": ["low", "mid", "high"] }
+    },
+    "elm": {
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3],
+      "options": { "fanout": ["low", "mid", "high"] }
     }
   }
 }
