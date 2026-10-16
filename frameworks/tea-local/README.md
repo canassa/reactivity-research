@@ -193,30 +193,91 @@ change measured larger in the dashboard).
 ## big-component
 
 `scenarios/big-component/tea-local.js` poses the strategy's weak point: one component whose model
-grows with N. As one instance, every message would re-run all of its ~N bindings (the "re-running
-a whole binding list" cost above, now O(N) per event), and the locality check would fail. The
-variant that passes stays inside the strategy and splits the form as an expert TEA developer
-would: **one instance per fieldset** (2-5 units), each owning a slice of the one model.
+grows with N. The form is one **flat** list of N field units with no sections or groups, and a
+binding may read a field from anywhere earlier in it. The emitter takes a style parameter,
+`--grain unit|form`.
 
-- **State and reducers.** The form's record is split by first appearance in the view: a fieldset
-  owns the fields first touched in it, in its closure. Its reducer arms (one per message, written
-  out from the message's kind and ops) only touch its slice, so no reducer ever copies the whole
-  form. Message 0 of every fieldset is `Load`, which picks its own fields out of a whole-state
-  `serverSet` or `snapshot` (the global events, O(N) by nature; they are not held to locality).
-- **Cross-fieldset bindings.** A derived text, condition, disabled state or validation that reads
-  another fieldset's field reads that instance's slice (`groups[3].m`) in `patch` and watches it
-  (`follow`), as the summaries of the sibling scenarios do. A section total is a reader without a
-  model. The scenario's window (a unit reads only the previous 6 units) bounds how many
-  fieldsets read one, so an event costs a constant number of patches.
-- **Combined buttons across fieldsets** are a message to two instances: the button's fieldset runs
-  its arm for its own fields and sends the other fieldset a message of its own (`forward`; the
-  reducer stays pure).
-- **Result.** Calls per local action are flat from N=16 to N=256 (51 for the first action at every
-  size, ratio 1.00 for all of them), against O(N) for the single-instance form. The cost is bytes:
-  per-fieldset scaffolding (a `patch`, an `instance`, the `Load` arm that repeats the field names,
-  `follow` and `forward` lines) on top of the per-field code. The runtime file is unchanged; the
-  fieldset frame (`widgets/frame.js`) is emitted with the app, as unique-components' is.
-- **Dead end, not built:** the single-instance form (one `patch` for the whole form) is exactly
-  the strategy as written for the other scenarios. It was not generated, since its cost is
-  structural (every message runs all N bindings, 16x more at 16x the size); the split is the
-  honest way to keep locality.
+A first version split the form into one instance per fieldset and passed locality. The owner
+judged that a cheat: the fieldset was a boundary the generator handed it, a convenient block and
+not a precision. The scenario no longer has fieldsets, so the question is again whether the
+strategy can be local on its own terms.
+
+### `--grain unit` (default): one instance per field unit
+
+A **field unit** is what the spec defines as one field with everything that belongs to it: its
+controls, its displays and the bindings it adds over earlier fields (a list brings the draft text
+it is fed from, a time-driven int its gate bool). The emitter finds units from the spec's fields
+and messages, as the scenario's script does (a push message names the draft, a `tickWhen` names the
+gate); it never chunks by position or by count.
+
+- **Per-field granularity, stated plainly.** This is the strategy applied at the smallest grain
+  the app's own structure offers, not a coarser one. The instance is still a TEA component: a
+  model in its closure, a reducer with one arm per message, `send(tag, value)` routed to that
+  instance, and its whole binding list re-run after each message. What changed is only the size
+  of the component, and it is the size of a field and its controls.
+- **Why it is within the strategy.** Per-field dependency tracking would be a mechanism that,
+  after a change, finds the bindings reading that field: dirty bits, read sets per action,
+  signals. None of these is here. The instance re-runs *all* its bindings every time (a handful,
+  whatever N), skipping unchanged writes at the DOM, and nothing knows which of them read the
+  field that changed. The only dependency knowledge is the one tea-local already has for the
+  summaries of the sibling scenarios: a reader instance names the instances it reads (`follow`)
+  and re-runs its whole list when one of them changes. Here a unit's patch is a reader of the
+  earlier units it reads. That is a coarse, per-instance subscription, written by the compiler
+  from the spec's `["f", name]` reads, and the same as the summaries'.
+- **The honest caveat.** The compiler's choice of grain is what makes it local, and at one field
+  per component it gets very close to per-field work: an event runs the patch of the unit, plus
+  the patch of each unit reading it. For a flat form with cross-reads that is what the strategy
+  reduces to; it is not a different mechanism, but the cost of locality here is that the
+  component boundaries are drawn by the compiler (one per unit), where TEA code normally has a
+  developer draw a few. That is why it is recorded as per-field granularity, and why the
+  bytes below are the price of it.
+- **State and reducers.** Each instance owns the slice of its unit's fields. Its reducer arms (one
+  per message, written out from the message's kind and ops) only touch the slice, so no reducer
+  ever copies the whole form. Message 0 of every instance is `Load`, which picks its own fields
+  from a whole-state `serverSet` or `snapshot` (the global events, O(N) by nature; not held to
+  locality).
+- **Which instance builds which view node.** A top-level node belongs to the instance of the latest
+  field it touches (reads or writes): a derived text over this field and an earlier one, a
+  validation, a combined button, a `when` over an earlier field wrapping the unit's nodes. A
+  unit's nodes are a run of siblings in the form, so the template is parsed in a fragment and
+  appended (`unit(form, html, self)` in the frame); the element indexes in the block are those of
+  the fragment's elements in document order.
+- **Cross-unit bindings.** A binding reading another unit's field reads that instance's slice from
+  the frame's registry (`units[3].m`) in `patch` and the reader follows it, so an event runs the
+  unit's patch and the patches of the units that read it (at most 7-8 bindings read a field, the
+  scenario's cap). Distance does not matter: a unit 100 positions later is as cheap as the next.
+- **Combined buttons** write a field of another unit: the button's instance runs its arm for its
+  own fields and sends the other instance a message of its own (`forward`); the reducer stays pure.
+- **Results.** `./rr check big-component tea-local` passes at sizes 1, 4, 16, 64 and seeds 1-3,
+  locality included. Calls per local action grow at most 1.3-1.6x from N=16 to 256 (or 64 to 1024)
+  (`./rr work`: the first action, add to an int, costs 38 calls at every size; median 29 to 29 for
+  seed 1; the slowest grower is the tick, 31 to 43 calls, and typing goes from 14 to 18). Whole-state events (`serverSet` of the form,
+  `snapshot`) cost O(N), 230 to 2470 calls from 16 to 256, marked global.
+- **Bytes.** Brotli totals (mean of seeds 1-3): N=1 1427, N=16 3566, N=64 7411, N=256 20771;
+  fit 2027 B + 74.8 B per unit (R2 0.993). The runtime is 614-784 B and the HTML about 145 B. The
+  per-instance scaffolding (a `patch`, an `instance`, the `Load` arm that repeats the field names,
+  `follow` and `forward` lines) is paid N times.
+
+### `--grain form`: the whole form as one instance (dead end)
+
+The strategy exactly as written for the other scenarios: one model with N fields, one reducer, one
+`patch` over every binding of the form. It is generated and correct (`./rr check` passes the
+script at sizes 4, 16 and 64), and fails locality:
+
+| N | 16 | 32 | 64 | 128 | 256 |
+|---|---|---|---|---|---|
+| calls, add to an int | 83 | 120 | 194 | 355 | 683 |
+| calls, tick | 85 | 122 | 196 | 357 | 685 |
+
+- Locality check, seed 1: 8.2x from N=16 to 256 and 13.6x from N=64 to 1024 (limit 8x;
+  seeds 2 and 3: 10.7x and 10.6x at 16 to 256). Every local action costs the same, whichever
+  field it touches, because the binding list is re-run whole: 83 to 683 calls, about 2.5 calls per
+  unit, per event.
+- It also does work the counter cannot see: every reducer arm writes `{ ...m, field: value }`
+  over the form's ~1.07 N fields, a copy that grows with N. The numbers above understate it.
+- Bytes: 2000 B + 68.3 B per unit (N=256: 19096 B mean, against 20771 B for `unit`). So the
+  per-instance scaffolding costs 6.5 B per unit (about 9%); that is the price of passing.
+- Why it lost: re-running the whole binding list of an instance is the strategy's defining trait,
+  and on a form that is one component it makes work linear in the form. Nothing smaller than the
+  whole form exists in it unless the compiler draws one. Passing needs the component boundaries
+  the unit grain draws.
