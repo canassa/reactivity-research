@@ -1,8 +1,8 @@
 // unique-components in digest (prototype): compiled dirty checking, one component per widget.
 //
 // What a compiler for this approach would produce when every widget is its own component:
-// - One function per widget, written out in full from that widget's description: its state as
-//   a literal, its template (static HTML, escaped at build time), its handlers (what each
+// - One function per widget, written out in full from that widget's description: its state (its
+//   setter's defaults), its template (static HTML, escaped at build time), its handlers (what each
 //   message does, as that widget's own statements), its bindings (one closure per dynamic DOM
 //   property, the derived expressions compiled to JavaScript) and, for a time-driven field, its
 //   tick function.
@@ -15,9 +15,11 @@
 // - Locality: an event runs only its widget's bindings. A widget that reads others subscribes
 //   its binding list to theirs (`dep`, a compile-time fact), external events digest only the
 //   widgets they name, and a tick digests only the fields whose gate is on.
-// - State is plain variables: a field only its widget uses is a local of the widget's function,
-//   a field another widget reads a module variable, a feed list a field of the widget's record
-//   (`notify` pushes into it by name). External replacements go through the widget's setter.
+// - State is plain variables: a field only its widget uses is a parameter of the widget's
+//   function, a field another widget reads a module variable, a feed list a field of the widget's
+//   record (`notify` pushes into it by name). External replacements go through the widget's
+//   setter, the first argument of `widget()`, whose defaults are the initial state: `widget()`
+//   calls it once with no fields.
 // - Nodes are found by their position in the template, each binding's as a distance from the
 //   previous binding's (`text(3, …)`), resolved once at creation;
 //   handlers are given to the controls (buttons, inputs, selects) in document order.
@@ -134,7 +136,7 @@ function handler(m, fields) {
 function initial(f, v) {
   if (f.type !== "list") return lit(v);
   if (v.every((it, i) => it.id === i + 1)) {
-    return `L(${v.map((it) => lit(f.checkable ? [it.text, it.done ? 1 : 0] : it.text)).join(", ")})`;
+    return `${f.checkable ? "C" : "L"}(${v.map((it) => lit(f.checkable ? [it.text, it.done ? 1 : 0] : it.text)).join(", ")})`;
   }
   return lit(v);
 }
@@ -243,17 +245,18 @@ function widgetCode(w, init) {
 
   const html = `<h2>${esc(w.label)}</h2>` + w.view.map(view).join("");
   const own = w.fields.filter((f) => !FEED[cur].has(f.name) && !READ[cur].has(f.name));
-  const read = w.fields.filter((f) => !FEED[cur].has(f.name) && READ[cur].has(f.name));
   const shared = w.fields.filter((f) => FEED[cur].has(f.name));
   const handlers = ctl.map((h) => `    ${h}`).join("\n");
-  // External events replace the widget's whole state: its setter assigns every field.
-  const set = `(v) => ({ ${w.fields.map((f) => `${f.name}: ${F(f.name)}`).join(", ")} } = v)`;
+  // External events replace the widget's whole state: its setter assigns every field. Each
+  // field's default is its initial value, so the setter also initialises the state (`widget()`
+  // calls it with no fields). A field named like a property of Object.prototype would pick that
+  // property up instead.
+  for (const f of w.fields) if (f.name in {}) throw new Error(`digest: field name ${f.name} shadows an Object.prototype property`);
+  const set = `(v) => ({ ${w.fields.map((f) => `${f.name}: ${F(f.name)} = ${initial(f, init[f.name])}`).join(", ")} } = v)`;
 
   const body = [
-    ...(own.length ? [`  let ${own.map((f) => `$${f.name} = ${initial(f, init[f.name])}`).join(", ")};`] : []),
-    ...read.map((f) => `  ${F(f.name)} = ${initial(f, init[f.name])};`),
-    ...(shared.length ? [`  const s = (O.${cur} = { ${shared.map((f) => `${f.name}: ${initial(f, init[f.name])}`).join(", ")} });`] : []),
-    `  widget(\`${tpl(html)}\`, ${set},\n${handlers}\n  );`,
+    ...(shared.length ? [`  const s = (O.${cur} = {});`] : []),
+    `  widget(${set},\n${handlers}\n    \`${tpl(html)}\`,\n  );`,
     ...binds.map((b) => "  " + b)];
   for (const f of w.fields) {
     if (f.tick) body.push(`  T.push(() => ${F(f.tickWhen)} && (${F(f.name)} = Math.min(${f.max}, ${F(f.name)} + ${f.tick}), run(W.${w.id})));`);
@@ -265,7 +268,7 @@ function widgetCode(w, init) {
     return d;
   };
   if (reads.size) body.push(`  dep(${[...reads].map(back).join(", ")});`);
-  return `// ${w.id}\nconst ${w.id} = () => {\n${body.join("\n")}\n};`;
+  return `// ${w.id}\nconst ${w.id} = (${own.map((f) => F(f.name)).join(", ")}) => {\n${body.join("\n")}\n};`;
 }
 
 function appFile(spec) {
@@ -287,14 +290,14 @@ function appFile(spec) {
   // External events: only the branches this app can receive.
   const fields = spec.widgets.flatMap((w) => w.fields);
   const branches = [
-    `if (m.type == "serverSet") S[m.widget](structuredClone(m.state)), run(W[m.widget]);`,
-    `else if (m.type == "snapshot") for (const k in m.state.widgets) S[k](structuredClone(m.state.widgets[k])), run(W[k]);`,
+    `if (m.type == "serverSet") W[m.widget].s(structuredClone(m.state)), run(W[m.widget]);`,
+    `else if (m.type == "snapshot") for (const k in m.state.widgets) W[k].s(structuredClone(m.state.widgets[k])), run(W[k]);`,
   ];
   if (fields.some((f) => f.tick)) branches.push(`else if (m.type == "tick") for (const t of T) t();`);
   if (fields.some((f) => f.feed)) branches.push(`else if (m.type == "notify") O[m.widget][m.field].push({ ...m.item }), run(W[m.widget]);`);
 
   const body = code.join("\n\n") + "\n\n" + branches.join("\n");
-  const names = ["widget", "bind", "text", "show", "list", "dep", "run", "nx", "add", "L", "S", "O", "W", "T"]
+  const names = ["widget", "bind", "text", "show", "list", "dep", "run", "nx", "add", "L", "C", "O", "W", "T"]
     .filter((x) => new RegExp(`(^|[^\\w.])${x}\\b`, "m").test(body));
   const ids = spec.widgets.map((w) => w.id).join(", ");
 
@@ -306,7 +309,7 @@ let ${shared.join(", ")};
 ` : ""}
 ${code.join("\n\n")}
 
-// External events: each replaces the state of the widgets it concerns (with their setters, S)
+// External events: each replaces the state of the widgets it concerns (with their setters, W[k].s)
 // and digests only those (\`run(W[k])\`; a time-driven field's tick function digests its own
 // widget).
 const receive = (m) => {
