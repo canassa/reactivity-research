@@ -71,10 +71,10 @@ const WIDGET_FILE = `import { html } from "../runtime.js";
 
 // A widget's <section> with its heading and the kind's static markup \`inner\`: every element, in
 // document order.
-export function section(parent, id, c, kind, inner) {
+export function section(parent, id, label, kind, inner) {
   const t = html(\`<section data-role=widget-\${kind}><h2></h2>\${inner}</section>\`, parent);
   t[0].dataset.key = id;
-  t[1].textContent = c.label;
+  t[1].textContent = label;
   return t;
 }
 `;
@@ -85,34 +85,34 @@ import { section } from "./widget.js";
 
 // Dirty bits: value 1. Message tags: inc 0, dec 1, reset 2.
 
-function update(c, s, msg) {
+function update([, , , step, min, max, start], s, msg) {
   switch (msg.type) {
     case 0:
       mark(1);
-      return { value: Math.min(c.max, s.value + c.step) };
+      return { value: Math.min(max, s.value + step) };
     case 1:
       mark(1);
-      return { value: Math.max(c.min, s.value - c.step) };
+      return { value: Math.max(min, s.value - step) };
     case 2:
       mark(1);
-      return { value: c.start };
+      return { value: start };
   }
   return s;
 }
 
-function view(parent, c, id) {
-  const [, , value, dec, inc, reset] = section(parent, id, c, "counter",
+function view(parent, [, , label, step, min, max], id) {
+  const [, , value, dec, inc, reset] = section(parent, id, label, "counter",
     "<output data-role=value></output><button data-role=dec></button><button data-role=inc></button><button data-role=reset>Reset</button>");
-  dec.textContent = "-" + c.step;
-  inc.textContent = "+" + c.step;
+  dec.textContent = "-" + step;
+  inc.textContent = "+" + step;
   onClick(dec, id, 1);
   onClick(inc, id, 0);
   onClick(reset, id, 2);
   return (s, d) => {
     if (d & 1) {
       setText(value, s.value);
-      prop(dec, "disabled", s.value <= c.min);
-      prop(inc, "disabled", s.value >= c.max);
+      prop(dec, "disabled", s.value <= min);
+      prop(inc, "disabled", s.value >= max);
     }
   };
 }
@@ -134,9 +134,9 @@ function update(c, s, msg) {
   return s;
 }
 
-function view(parent, c, id) {
-  const t = section(parent, id, c, "toggles", "<ul></ul><p data-role=count></p>");
-  const boxes = c.items.map((name, i) => {
+function view(parent, [, , label, items], id) {
+  const t = section(parent, id, label, "toggles", "<ul></ul><p data-role=count></p>");
+  const boxes = items.map((name, i) => {
     const [, , box] = html("<li><label><input type=checkbox data-role=toggle></label></li>", t[2]);
     box.dataset.key = i;
     box.after(name);
@@ -146,7 +146,7 @@ function view(parent, c, id) {
   return (s, d) => {
     if (d & 1) {
       boxes.forEach((box, i) => prop(box, "checked", s.on[i]));
-      setText(t[3], s.on.filter(Boolean).length + " of " + c.items.length + " on");
+      setText(t[3], s.on.filter(Boolean).length + " of " + items.length + " on");
     }
   };
 }
@@ -168,16 +168,16 @@ function update(c, s, msg) {
   return s;
 }
 
-function view(parent, c, id) {
-  const [, , input, p] = section(parent, id, c, "field", "<input type=text data-role=input><p data-role=error></p>");
-  input.placeholder = c.placeholder;
-  p.textContent = c.message;
+function view(parent, [, , label, placeholder, valid, message], id) {
+  const [, , input, p] = section(parent, id, label, "field", "<input type=text data-role=input><p data-role=error></p>");
+  input.placeholder = placeholder;
+  p.textContent = message;
   onInput(input, id, 0);
   const error = branch(p);
   return (s, d) => {
     if (d & 1) {
       prop(input, "value", s.text);
-      error(!c.valid(s.text));
+      error(!valid(s.text));
     }
   };
 }
@@ -212,17 +212,17 @@ function update(c, s, msg) {
   return s;
 }
 
-function view(parent, c, id) {
-  const [, , draft, add, ul, left] = section(parent, id, c, "todo",
+function view(parent, [, , label, placeholder, addText, removeText], id) {
+  const [, , draft, add, ul, left] = section(parent, id, label, "todo",
     "<input type=text data-role=draft><button data-role=add></button><ul></ul><p data-role=left></p>");
-  draft.placeholder = c.placeholder;
-  add.textContent = c.addText;
+  draft.placeholder = placeholder;
+  add.textContent = addText;
   onInput(draft, id, 0);
   onClick(add, id, 1);
   const items = list(ul, (item) => {
     const [li, box, label, remove] = html("<li><input type=checkbox data-role=toggle><span></span><button data-role=remove></button></li>");
     li.dataset.key = item.id;
-    remove.textContent = c.removeText;
+    remove.textContent = removeText;
     onCheck(box, id, 2, item.id);
     onClick(remove, id, 3, item.id);
     return [li, (item) => {
@@ -256,9 +256,9 @@ function update(c, s, msg) {
   return s;
 }
 
-function view(parent, c, id) {
-  const t = section(parent, id, c, "tabs", "<div role=tablist></div><p data-role=tab-content role=tabpanel></p>");
-  const tabs = c.tabs.map((tab, i) => {
+function view(parent, [, , label, tabs], id) {
+  const t = section(parent, id, label, "tabs", "<div role=tablist></div><p data-role=tab-content role=tabpanel></p>");
+  const buttons = tabs.map((tab, i) => {
     const [button] = html("<button data-role=tab role=tab></button>", t[2]);
     button.dataset.key = i;
     button.textContent = tab.title;
@@ -267,8 +267,8 @@ function view(parent, c, id) {
   });
   return (s, d) => {
     if (d & 1) {
-      tabs.forEach((tab, i) => prop(tab, "ariaSelected", String(i === s.active)));
-      setText(t[3], c.tabs[s.active].content);
+      buttons.forEach((tab, i) => prop(tab, "ariaSelected", String(i === s.active)));
+      setText(t[3], tabs[s.active].content);
     }
   };
 }
@@ -290,16 +290,16 @@ function update(c, s, msg) {
   return s;
 }
 
-function view(parent, c, id) {
-  const [, , toggle, p] = section(parent, id, c, "panel", "<button data-role=toggle></button><p data-role=body></p>");
-  p.textContent = c.body;
+function view(parent, [, , label, showText, hideText, body], id) {
+  const [, , toggle, p] = section(parent, id, label, "panel", "<button data-role=toggle></button><p data-role=body></p>");
+  p.textContent = body;
   onClick(toggle, id, 0);
-  const body = branch(p);
+  const shown = branch(p);
   return (s, d) => {
     if (d & 1) {
       prop(toggle, "ariaExpanded", String(s.open));
-      setText(toggle, s.open ? c.hideText : c.showText);
-      body(s.open);
+      setText(toggle, s.open ? hideText : showText);
+      shown(s.open);
     }
   };
 }
@@ -324,21 +324,21 @@ function update(c, s, msg) {
   return s;
 }
 
-function view(parent, c, id) {
-  const [, , select, input] = section(parent, id, c, "choice", "<select data-role=select></select><input type=text data-role=extra>");
-  for (const option of c.options) {
+function view(parent, [, , label, options, extraFor, extraPlaceholder], id) {
+  const [, , select, input] = section(parent, id, label, "choice", "<select data-role=select></select><input type=text data-role=extra>");
+  for (const option of options) {
     const [o] = html("<option></option>", select);
     o.value = option.value;
     o.textContent = option.label;
   }
-  input.placeholder = c.extraPlaceholder;
+  input.placeholder = extraPlaceholder;
   onInput(select, id, 0);
   onInput(input, id, 1);
   const extra = branch(input);
   return (s, d) => {
     if (d & 1) prop(select, "value", s.option);
     if (d & 3) {
-      const show = c.extraFor.includes(s.option);
+      const show = extraFor.includes(s.option);
       extra(show);
       if (show) prop(input, "value", s.extra);
     }
@@ -362,8 +362,8 @@ function update(c, s, msg) {
   return s;
 }
 
-function view(parent, c, id) {
-  const [, , input, formatted] = section(parent, id, c, "amount", "<input type=number data-role=input><output data-role=formatted></output>");
+function view(parent, [, , label, format], id) {
+  const [, , input, formatted] = section(parent, id, label, "amount", "<input type=number data-role=input><output data-role=formatted></output>");
   // Only a valid number becomes a message; anything else stays in the input as typed.
   input.addEventListener("input", () => {
     const value = input.valueAsNumber;
@@ -372,7 +372,7 @@ function view(parent, c, id) {
   return (s, d) => {
     if (d & 1) {
       prop(input, "value", String(s.value));
-      setText(formatted, c.format(s.value));
+      setText(formatted, format(s.value));
     }
   };
 }
@@ -394,16 +394,16 @@ function update(c, s, msg) {
   return s;
 }
 
-export function matches(c, query) {
+export function matches(items, query) {
   const q = query.toLowerCase();
-  return c.items.filter((item) => item.text.toLowerCase().includes(q));
+  return items.filter((item) => item.text.toLowerCase().includes(q));
 }
 
-function view(parent, c, id) {
-  const [, , input, ul, count] = section(parent, id, c, "filter", "<input type=text data-role=query><ul></ul><p data-role=matches></p>");
-  input.placeholder = c.placeholder;
+function view(parent, [, , label, items, placeholder], id) {
+  const [, , input, ul, count] = section(parent, id, label, "filter", "<input type=text data-role=query><ul></ul><p data-role=matches></p>");
+  input.placeholder = placeholder;
   onInput(input, id, 0);
-  const items = list(ul, (item) => {
+  const rows = list(ul, (item) => {
     const [li] = html("<li></li>");
     li.dataset.key = item.id;
     return [li, (item) => setText(li, item.text)];
@@ -411,8 +411,8 @@ function view(parent, c, id) {
   return (s, d) => {
     if (d & 1) {
       prop(input, "value", s.query);
-      const shown = matches(c, s.query);
-      items(shown);
+      const shown = matches(items, s.query);
+      rows(shown);
       setText(count, shown.length + " matches");
     }
   };
@@ -435,22 +435,22 @@ function update(c, s, msg) {
   return s;
 }
 
-function view(parent, c, id) {
-  const t = section(parent, id, c, "rating", "<div></div><p data-role=rating-label></p>");
-  const stars = [];
-  for (let n = 1; n <= c.stars; n++) {
+function view(parent, [, , label, stars, labels], id) {
+  const t = section(parent, id, label, "rating", "<div></div><p data-role=rating-label></p>");
+  const buttons = [];
+  for (let n = 1; n <= stars; n++) {
     const [button] = html("<button data-role=star></button>", t[2]);
     button.dataset.key = n;
     onClick(button, id, 0, n);
-    stars.push(button);
+    buttons.push(button);
   }
   return (s, d) => {
     if (d & 1) {
-      stars.forEach((button, i) => {
+      buttons.forEach((button, i) => {
         prop(button, "ariaPressed", String(i < s.stars));
         setText(button, i < s.stars ? "★" : "☆");
       });
-      setText(t[3], c.labels[s.stars]);
+      setText(t[3], labels[s.stars]);
     }
   };
 }
@@ -475,13 +475,13 @@ function update(c, s, msg) {
   return s;
 }
 
-function view(parent, c, id) {
-  const [, , ul, p] = section(parent, id, c, "feed", "<ul></ul><p data-role=empty></p>");
-  p.textContent = c.emptyText;
+function view(parent, [, , label, emptyText, dismissText], id) {
+  const [, , ul, p] = section(parent, id, label, "feed", "<ul></ul><p data-role=empty></p>");
+  p.textContent = emptyText;
   const entries = list(ul, (entry) => {
     const [li, label, dismiss] = html("<li><span></span><button data-role=dismiss></button></li>");
     li.dataset.key = entry.id;
-    dismiss.textContent = c.dismissText;
+    dismiss.textContent = dismissText;
     onClick(dismiss, id, 0, entry.id);
     return [li, (entry) => setText(label, entry.text)];
   });
@@ -527,12 +527,12 @@ function formatTime(seconds) {
   return Math.floor(seconds / 60) + ":" + (s < 10 ? "0" : "") + s;
 }
 
-function view(parent, c, id) {
-  const [, , time, start, stop, reset] = section(parent, id, c, "clock",
+function view(parent, [, , label, startText, stopText, resetText], id) {
+  const [, , time, start, stop, reset] = section(parent, id, label, "clock",
     "<output data-role=time></output><button data-role=start></button><button data-role=stop></button><button data-role=reset></button>");
-  start.textContent = c.startText;
-  stop.textContent = c.stopText;
-  reset.textContent = c.resetText;
+  start.textContent = startText;
+  stop.textContent = stopText;
+  reset.textContent = resetText;
   onClick(start, id, 0);
   onClick(stop, id, 1);
   onClick(reset, id, 2);
@@ -551,11 +551,11 @@ export const kind = { update, view };
   summary: `import { setText } from "../runtime.js";
 import { section } from "./widget.js";
 
-// A summary has no state of its own: \`c.text(widgets)\` derives its line from other widgets,
+// A summary has no state of its own: \`text(widgets)\` derives its line from other widgets,
 // and the app's patch calls it again only when a field it reads is dirty.
-function view(parent, c, id) {
-  const [, , line] = section(parent, id, c, "summary", "<p data-role=summary></p>");
-  return (widgets) => setText(line, c.text(widgets));
+function view(parent, [, , label, text], id) {
+  const [, , line] = section(parent, id, label, "summary", "<p data-role=summary></p>");
+  return (widgets) => setText(line, text(widgets));
 }
 
 export const kind = { view };
@@ -594,7 +594,8 @@ const PHRASES = {
   feed: (v, w) => `${v} in ${tplText(w.label)}`,
 };
 
-const configName = (w) => w.id.toUpperCase();
+// The name of a filter's items, when a summary reads that filter.
+const configName = (w) => w.id.toUpperCase() + "_ITEMS";
 
 // The source of a summary's `text(widgets)` function.
 function summaryText(spec, w, indent) {
@@ -629,18 +630,21 @@ function summaryTrigger(spec, w) {
 // ---------------------------------------------------------------------------------------------
 // The app module
 
-// A widget's config object, written at `indent`.
-function configLiteral(spec, w, indent) {
+// A widget's row, written at `indent`: its kind, its initial state (0 for a summary, which has
+// none), its label and its kind's parameters in order (PARAMS), which the kind's functions
+// destructure by position.
+function rowLiteral(spec, w, indent, named) {
   const inner = indent + "  ";
-  const fields = [`label: ${JSON.stringify(w.label)}`];
+  const slice = spec.initialState.widgets[w.id];
+  const fields = [`${w.kind}.kind`, slice === undefined ? "0" : literal(slice, inner), JSON.stringify(w.label)];
   for (const name of PARAMS[w.kind]) {
-    const value = DERIVED[name] ? DERIVED[name](w) : literal(w[name], inner);
-    fields.push(`${name}: ${value}`);
+    if (name === "items" && named.has(w.id)) fields.push(configName(w));
+    else fields.push(DERIVED[name] ? DERIVED[name](w) : literal(w[name], inner));
   }
-  if (w.kind === "summary") fields.push(`text: ${summaryText(spec, w, inner)}`);
-  const flat = `{ ${fields.join(", ")} }`;
+  if (w.kind === "summary") fields.push(summaryText(spec, w, inner));
+  const flat = `[${fields.join(", ")}]`;
   if (flat.length + indent.length <= 90 && !flat.includes("\n")) return flat;
-  return `{\n${fields.map((f) => inner + f + ",").join("\n")}\n${indent}}`;
+  return `[\n${fields.map((f) => inner + f + ",").join("\n")}\n${indent}]`;
 }
 
 function appFile(spec) {
@@ -653,19 +657,14 @@ function appFile(spec) {
     `import { take, touch, html } from "./runtime.js";`,
     ...kinds.map((k) => `import * as ${k} from "./widgets/${k}.js";`),
   ];
-  // Configs are written inline in the widget table, except filters a summary reads, which are
-  // named so the summary can call `filter.matches` with them.
+  // The items of a filter a summary reads are named, so the summary can call `filter.matches`
+  // with them.
   const named = new Set(summaries.flatMap((w) => w.sources)
     .filter((id) => spec.widgets.find((x) => x.id === id).kind === "filter"));
   const configs = spec.widgets.filter((w) => named.has(w.id))
-    .map((w) => `const ${configName(w)} = ${configLiteral(spec, w, "")};\n`);
+    .map((w) => `const ${configName(w)} = ${literal(w.items)};\n`);
   if (Object.keys(spec.initialState).join() !== "widgets") throw new Error("the model is expected to be { widgets }");
-  const slices = spec.initialState.widgets;
-  const table = spec.widgets.map((w) => {
-    const entry = [`${w.kind}.kind`, named.has(w.id) ? configName(w) : configLiteral(spec, w, "  ")];
-    if (slices[w.id] !== undefined) entry.push(literal(slices[w.id], "  "));
-    return `  ${w.id}: [${entry.join(", ")}],`;
-  });
+  const table = spec.widgets.map((w) => `  ${w.id}: ${rowLiteral(spec, w, "  ", named)},`);
   const tick = clocks.length
     ? `    case "tick":
       for (const id of ${literal(clocks.map((w) => w.id))}) model = route(model, id, msg);
@@ -676,8 +675,8 @@ function appFile(spec) {
 
   return `${imports.join("\n")}
 
-${configs.length ? configs.join("\n") + "\n" : ""}// Every widget in page order: its kind, its config and its initial state (summaries have
-// none), the only per-widget code (the kinds' modules do the rest).
+${configs.length ? configs.join("\n") + "\n" : ""}// Every widget in page order, one row each (see the kinds' modules for what their parameters
+// are): the only per-widget code.
 const WIDGETS = {
 ${table.join("\n")}
 };
@@ -685,7 +684,7 @@ ${table.join("\n")}
 // The initial model: one slice per widget with state.
 export function init() {
   const widgets = {};
-  for (const id in WIDGETS) if (WIDGETS[id][2]) widgets[id] = WIDGETS[id][2];
+  for (const id in WIDGETS) if (WIDGETS[id][1]) widgets[id] = WIDGETS[id][1];
   return { widgets };
 }
 
@@ -699,9 +698,9 @@ function set(model, id, s, bits) {
 
 // Run one widget's reducer and file the bits its arm marked under that widget.
 function route(model, id, msg) {
-  const [kind, c] = WIDGETS[id];
+  const row = WIDGETS[id];
   const s = model.widgets[id];
-  const next = kind.update(c, s, msg);
+  const next = row[0].update(row, s, msg);
   const bits = take();
   return next === s ? model : set(model, id, next, bits);
 }
@@ -727,8 +726,8 @@ export function view(root, model) {
   const patches = {};
   // A summary's state is the whole model: it derives its line from other widgets.
   for (const id in WIDGETS) {
-    const [kind, c] = WIDGETS[id];
-    (patches[id] = kind.view(dash, c, id))(c.text ? w : w[id], -1);
+    const row = WIDGETS[id];
+    (patches[id] = row[0].view(dash, row, id))(row[1] ? w[id] : w, -1);
   }
   return (model, dirty) => {
     const w = model.widgets;
