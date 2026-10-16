@@ -112,7 +112,6 @@ function compileNode(w, n, cx) {
   const msgOf = (name) => w.messages.find((m) => m.name === name);
   const fieldOf = (name) => w.fields.find((f) => f.name === name);
   const tag = (name) => w.messages.findIndex((m) => m.name === name);
-  const send = (name, payload) => `self.send([${tag(name)}${payload ? ", " + payload : ""}])`;
   // Open an element in the template; returns its reference.
   const open = (tag, a = {}) => {
     cx.html += `<${tag}${attrs(a)}>`;
@@ -159,10 +158,7 @@ function compileNode(w, n, cx) {
         const v = open("input", number ? { type: "number", "data-role": n.msg }
           : { type: "text", "data-role": n.msg, ...(n.placeholder ? { placeholder: n.placeholder } : {}) });
         if (number) {
-          create(`on(${v}, "input", () => {`);
-          create(`  const n = ${v}.valueAsNumber;`);
-          create(`  if (Number.isInteger(n) && n >= ${f.min} && n <= ${f.max}) ${send(n.msg, "n")};`);
-          create(`});`);
+          create(`onInt(${v}, self, ${tag(n.msg)}, ${f.min}, ${f.max});`);
           cx.patch.push(`setProp(${v}, "valueAsNumber", m.${f.name});`);
         } else {
           create(`onValue(${v}, self, ${tag(n.msg)});`);
@@ -310,7 +306,7 @@ function reducerCase(w, m, i, cx) {
 // ---------------------------------------------------------------------------------------------
 // One widget module.
 
-const RUNTIME = ["on", "onSend", "onValue", "setText", "setProp", "instance", "list", "template"];
+const RUNTIME = ["on", "onSend", "onValue", "onInt", "setText", "setProp", "instance", "list", "template"];
 const FRAME = ["widget", "place", "nextId", "subscribe"];
 
 // Returns { code, sources }: the module, and the earlier widgets its factory takes.
@@ -365,7 +361,6 @@ function widgetFile(spec, w) {
   fn.push(...cx.patch.map((l) => "    " + l));
   fn.push(`  }`);
   for (const s of sources) fn.push(`  ${s}.watch(patch);`);
-  fn.push(`  patch();`);
   if (feed) fn.push(`  self.notify = (item) => self.send([${notifyIndex}, item]);`);
   fn.push(`  return self;`);
   fn.push(`}`);

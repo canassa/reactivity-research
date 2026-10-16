@@ -55,6 +55,15 @@ export function onValue(node, self, tag, type = "input") {
   node.addEventListener(type, () => self.send([tag, node.value]));
 }
 
+// A number input decoded as an integer in [min, max]: `[tag, n]` is sent only for such a value;
+// anything else stays in the input, unsent.
+export function onInt(node, self, tag, min, max) {
+  node.addEventListener("input", () => {
+    const n = node.valueAsNumber;
+    if (Number.isInteger(n) && n >= min && n <= max) self.send([tag, n]);
+  });
+}
+
 // A static template, parsed once: returns a function that clones its (single) root element.
 export function template(html) {
   const t = document.createElement("template");
@@ -67,10 +76,6 @@ export function setText(node, value) {
   node = node.firstChild;
   value = String(value);
   if (node.data !== value) node.data = value;
-}
-
-export function setAttr(node, key, value) {
-  if (node.getAttribute(key) !== value) node.setAttribute(key, value);
 }
 
 export function setProp(node, key, value) {
@@ -98,6 +103,7 @@ export function instance(model, update, patch, config) {
     for (const watcher of watchers) schedule(watcher);
   };
   // `m` is the current model, read by the instance's patch and by its watchers.
+  schedule(patch); // the first render, in the flush after mount
   const self = {
     m: model,
     send: (msg) => set(update(self.m, msg, config)),

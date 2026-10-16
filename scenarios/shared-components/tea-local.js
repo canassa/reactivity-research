@@ -99,7 +99,6 @@ export function counter(parent, c, model) {
     setProp(dec, "disabled", m.value <= c.min);
     setProp(inc, "disabled", m.value >= c.max);
   }
-  patch();
   return self;
 }
 `,
@@ -128,7 +127,6 @@ export function toggles(parent, c, model) {
     boxes.forEach((box, i) => setProp(box, "checked", m.on[i]));
     setText(count, \`\${m.on.filter(Boolean).length} of \${c.items.length} on\`);
   }
-  patch();
   return self;
 }
 `,
@@ -153,7 +151,6 @@ export function field(parent, c, model) {
     if (problem) setText(error, problem);
     show(root, error, problem);
   }
-  patch();
   return self;
 }
 `,
@@ -204,12 +201,11 @@ export function todo(parent, c, model) {
     items(m.items);
     setText(left, \`\${m.items.filter((item) => !item.done).length} left\`);
   }
-  patch();
   return self;
 }
 `,
 
-  tabs: `${HEAD(["element", "on", "setText", "setAttr", "instance"])}
+  tabs: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 // type Msg = Select Int
 function update(model, msg) {
   return { active: msg[1] };
@@ -228,15 +224,14 @@ export function tabs(parent, c, model) {
 
   function patch() {
     const m = self.m;
-    buttons.forEach((button, i) => setAttr(button, "aria-selected", i === m.active ? "true" : "false"));
+    buttons.forEach((button, i) => setProp(button, "ariaSelected", i === m.active ? "true" : "false"));
     setText(content, c.tabs[m.active].content);
   }
-  patch();
   return self;
 }
 `,
 
-  panel: `${HEAD(["element", "on", "setText", "setAttr", "show", "instance"])}
+  panel: `${HEAD(["element", "on", "setText", "show", "setProp", "instance"])}
 // type Msg = Toggle
 function update(model) {
   return { open: !model.open };
@@ -251,11 +246,10 @@ export function panel(parent, c, model) {
 
   function patch() {
     const m = self.m;
-    setAttr(toggle, "aria-expanded", m.open ? "true" : "false");
+    setProp(toggle, "ariaExpanded", m.open ? "true" : "false");
     setText(toggle, m.open ? c.hideText : c.showText);
     show(root, body, m.open);
   }
-  patch();
   return self;
 }
 `,
@@ -284,7 +278,6 @@ export function choice(parent, c, model) {
     setProp(extra, "value", m.extra);
     show(root, extra, c.extraFor.includes(m.option));
   }
-  patch();
   return self;
 }
 `,
@@ -311,7 +304,6 @@ export function amount(parent, c, model) {
     if (input.valueAsNumber !== m.value) input.value = m.value;
     setText(formatted, c.format(m.value));
   }
-  patch();
   return self;
 }
 `,
@@ -342,12 +334,11 @@ export function filter(parent, c, model) {
     shown(matches);
     setText(count, \`\${matches.length} matches\`);
   }
-  patch();
   return self;
 }
 `,
 
-  rating: `${HEAD(["element", "on", "setText", "setAttr", "instance"])}
+  rating: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 // type Msg = Rate Int
 function update(model, msg) {
   return { stars: msg[1] };
@@ -368,12 +359,11 @@ export function rating(parent, c, model) {
   function patch() {
     const m = self.m;
     stars.forEach((button, i) => {
-      setAttr(button, "aria-pressed", i < m.stars ? "true" : "false");
+      setProp(button, "ariaPressed", i < m.stars ? "true" : "false");
       setText(button, i < m.stars ? "★" : "☆");
     });
     setText(label, c.labels[m.stars]);
   }
-  patch();
   return self;
 }
 `,
@@ -405,7 +395,6 @@ export function feed(parent, c, model) {
     entries(m.entries);
     show(root, empty, m.entries.length === 0);
   }
-  patch();
   return self;
 }
 `,
@@ -444,7 +433,6 @@ export function clock(parent, c, model) {
     setProp(start, "disabled", m.running);
     setProp(stop, "disabled", !m.running);
   }
-  patch();
   return self;
 }
 `,
