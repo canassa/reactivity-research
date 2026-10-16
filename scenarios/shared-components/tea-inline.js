@@ -88,15 +88,15 @@ const FACTORIES = {
   ];
 
   // The arms of update: dec, inc, reset.
-  on(decButton, "click", () => {
+  on(decButton, () => {
     s.value = Math.max(min, s.value - step);
     schedule(onValue);
   });
-  on(incButton, "click", () => {
+  on(incButton, () => {
     s.value = Math.min(max, s.value + step);
     schedule(onValue);
   });
-  on(resetButton, "click", () => {
+  on(resetButton, () => {
     s.value = start;
     schedule(onValue);
   });
@@ -116,7 +116,7 @@ const FACTORIES = {
     const box = el("input", label, { type: "checkbox", "data-role": "toggle", "data-key": i });
     label.append(name);
     // The arm of update: toggle(i) writes \`on[i]\`.
-    on(box, "change", () => {
+    on(box, () => {
       s.on[i] = !s.on[i];
       schedule(boxes[i], onCount);
     });
@@ -139,10 +139,10 @@ const FACTORIES = {
   const onText = [() => prop(input, "value", s.text), () => when(error, invalid(s.text))];
 
   // The arm of update: edit(text).
-  on(input, "input", () => {
+  on(input, () => {
     s.text = input.value;
     schedule(onText);
-  });
+  }, "input");
 
   return loader(s, onText);
 }`,
@@ -165,11 +165,11 @@ const FACTORIES = {
     };
     // The arms of update for this row's item: toggle(id), which schedules the row's binding,
     // and remove(id).
-    on(box, "change", () => {
+    on(box, () => {
       item.done = !item.done;
       schedule(set, onItems);
     });
-    on(el("button", node, { "data-role": "remove" }, removeText), "click", () => {
+    on(el("button", node, { "data-role": "remove" }, removeText), () => {
       s.items.splice(s.items.indexOf(item), 1);
       items.drop(item.id);
       schedule(onItems);
@@ -183,11 +183,11 @@ const FACTORIES = {
 
   // The arms of update: editDraft, add. The list edits (here and in the rows) tell the list
   // which rows changed.
-  on(draft, "input", () => {
+  on(draft, () => {
     s.draft = draft.value;
     schedule(onDraft);
-  });
-  on(addButton, "click", () => {
+  }, "input");
+  on(addButton, () => {
     const title = s.draft.trim();
     if (!title) return;
     const item = { id: s.items.reduce((max, item) => Math.max(max, item.id), 0) + 1, text: title, done: false };
@@ -210,7 +210,7 @@ const FACTORIES = {
   const onActive = tabs.map(([title], i) => {
     const button = el("button", bar, { role: "tab", "data-role": "tab", "data-key": i }, title);
     // The arm of update: select(i).
-    on(button, "click", () => {
+    on(button, () => {
       s.active = i;
       schedule(onActive);
     });
@@ -239,7 +239,7 @@ const FACTORIES = {
   ];
 
   // The arm of update: toggle.
-  on(button, "click", () => {
+  on(button, () => {
     s.open = !s.open;
     schedule(onOpen);
   });
@@ -256,10 +256,10 @@ const FACTORIES = {
   for (const [value, label] of options) el("option", select, { value }, label);
   const input = el("input", root, { type: "text", "data-role": "extra", placeholder: extraPlaceholder });
   // The arm of update: editExtra(text).
-  on(input, "input", () => {
+  on(input, () => {
     s.extra = input.value;
     schedule(onExtra);
-  });
+  }, "input");
 
   // The extra input reads \`option\` (whether it is shown) and \`extra\`.
   const onExtra = () => {
@@ -270,10 +270,10 @@ const FACTORIES = {
   const onOption = [() => prop(select, "value", s.option), onExtra];
 
   // The arm of update: choose(option).
-  on(select, "change", () => {
+  on(select, () => {
     s.option = select.value;
     schedule(onOption);
-  });
+  }, "change");
 
   return loader(s, onOption);
 }`,
@@ -289,12 +289,12 @@ const FACTORIES = {
   const onValue = [() => prop(input, "value", String(s.value)), () => text(output, format(s.value)), readers[id]];
 
   // The arm of update: set(n), sent only while the input holds a number.
-  on(input, "input", () => {
+  on(input, () => {
     const value = input.valueAsNumber;
     if (Number.isNaN(value)) return;
     s.value = value;
     schedule(onValue);
-  });
+  }, "input");
 
   return loader(s, onValue);
 }`,
@@ -318,10 +318,10 @@ const FACTORIES = {
   const onQuery = [() => prop(query, "value", s.query), items, () => text(matches, \`\${shown().length} matches\`), readers[id]];
 
   // The arm of update: edit(query).
-  on(query, "input", () => {
+  on(query, () => {
     s.query = query.value;
     schedule(onQuery);
-  });
+  }, "input");
 
   return loader(s, onQuery);
 }`,
@@ -337,7 +337,7 @@ const FACTORIES = {
     const n = i + 1;
     const button = el("button", row, { "data-role": "star", "data-key": n });
     // The arm of update: rate(n).
-    on(button, "click", () => {
+    on(button, () => {
       s.stars = n;
       schedule(onStars);
     });
@@ -361,7 +361,7 @@ const FACTORIES = {
     const node = el("li", null, { "data-key": entry.id });
     const label = el("span", node);
     // The arm of update for this row's entry: dismiss(id). The row keeps its entry current.
-    on(el("button", node, { "data-role": "dismiss" }, dismissText), "click", () => {
+    on(el("button", node, { "data-role": "dismiss" }, dismissText), () => {
       s.entries.splice(s.entries.indexOf(entry), 1);
       entries.drop(entry.id);
       schedule(onEntries);
@@ -401,15 +401,15 @@ export function clock(parent, s, readers, id, heading, startText, stopText, rese
   const onRunning = [() => prop(startButton, "disabled", s.running), () => prop(stopButton, "disabled", !s.running)];
 
   // The arms of update: start, stop, reset.
-  on(startButton, "click", () => {
+  on(startButton, () => {
     s.running = true;
     schedule(onRunning);
   });
-  on(stopButton, "click", () => {
+  on(stopButton, () => {
     s.running = false;
     schedule(onRunning);
   });
-  on(resetButton, "click", () => {
+  on(resetButton, () => {
     s.seconds = 0;
     s.running = false;
     schedule(onSeconds, onRunning);

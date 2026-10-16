@@ -59,7 +59,8 @@ export function prop(node, key, value) {
   if (node[key] !== value) node[key] = value;
 }
 
-export function on(node, type, handler) {
+// A listener: for clicks unless `type` says otherwise.
+export function on(node, handler, type = "click") {
   node.addEventListener(type, handler);
 }
 

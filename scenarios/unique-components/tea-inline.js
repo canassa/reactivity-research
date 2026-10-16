@@ -220,10 +220,10 @@ function widgetFile(w, reads) {
     actions.push(() => {
       const f = m.field && field(m.field);
       const done = sched(writesOf(m));
-      const wrap = (event, body) => [`on(${node}, "${event}", () => {`, ...body.map((l) => "  " + l), "});"];
+      const wrap = (event, body) => [`on(${node}, () => {`, ...body.map((l) => "  " + l), event === "click" ? "});" : `}, "${event}");`];
       switch (m.kind) {
         case "click": return wrap("click", [...opLines(m), ...done]);
-        case "check": return wrap("change", [`s.${f.name} = !s.${f.name};`, ...done]);
+        case "check": return wrap("click", [`s.${f.name} = !s.${f.name};`, ...done]);
         case "select": return wrap("change", [`s.${f.name} = ${node}.value;`, ...done]);
         case "input":
           if (f.type === "int") {
@@ -355,9 +355,9 @@ function widgetFile(w, reads) {
         // The row's binding: the list hands it the item of its id, so the row keeps its item
         // current for its controls' arms; a toggle schedules it as is.
         row.push(`const set = (next = item) => { item = next; ${set.join(" ")} };`);
-        if (n.check) row.push(`on(box, "change", () => {`, itemAction(n.check), "});");
+        if (n.check) row.push("on(box, () => {", itemAction(n.check), "});");
         if (n.remove) {
-          row.push(`on(el("button", node, ${attrs({ "data-role": str(n.remove) })}, ${str(n.removeText)}), "click", () => {`, itemAction(n.remove), "});");
+          row.push(`on(el("button", node, ${attrs({ "data-role": str(n.remove) })}, ${str(n.removeText)}), () => {`, itemAction(n.remove), "});");
         }
         row.push("return [node, set];");
         build.push(`const ${l} = list(${u}, () => s.${f.name}, (item) => {`,
