@@ -7,6 +7,12 @@
   const app = document.getElementById("app");
   const tip = document.getElementById("tip");
   let mode = "br";
+  // One colour per framework across every scenario (colour follows the entity, not its position).
+  const NAMES = [...new Set(DATA.scenarios.flatMap((sc) => sc.variants.map((v) => v.name)))];
+  const colorOfName = (n) => SLOTS[NAMES.indexOf(n) % SLOTS.length];
+  // Which view is shown: a scenario's name, or "compare". Kept in the URL hash.
+  const views = () => [...DATA.scenarios.map((sc) => sc.name), ...(DATA.scenarios.length > 1 ? ["compare"] : [])];
+  let view = decodeURIComponent(location.hash.slice(1)) || "";
 
   const el = (tag, attrs = {}, ...kids) => {
     const e = document.createElement(tag);
@@ -221,7 +227,7 @@
     const w = sc.work;
     if (!w) return card("Work per event against N", null, el("p", { class: "note", text: "No work results for this scenario yet. Run ./rr work " + sc.name + " all: it counts the JavaScript function calls one event costs, at several sizes, and this chart appears here." }), sc.variants);
     const names = sc.variants.map((v) => v.name).filter((n) => w.run.variants[n]);
-    const colorOf = (n) => SLOTS[sc.variants.findIndex((v) => v.name === n) % SLOTS.length];
+    const colorOf = colorOfName;
     const acts = w.run.actions.filter((a) => !a.setup);
     const locals = acts.filter((a) => a.scope === "local").map((a) => a.name);
     const rowsOf = (n) => {
@@ -272,7 +278,7 @@
   function renderScenario(sc) {
     const out = [el("h2", { text: `Scenario: ${sc.name}` })];
     const vs = sc.variants;
-    const color = (i) => SLOTS[i % SLOTS.length];
+    const color = (i) => colorOfName(vs[i].name);
     const unit = mode === "br" ? "B brotli" : "B raw";
 
     // 1. Size against N: every framework's total on one graph.
@@ -357,16 +363,98 @@
     return out;
   }
 
+  // Least squares over [x, y] points.
+  function fit(points) {
+    const n = points.length, mx = points.reduce((a, [x]) => a + x, 0) / n, my = points.reduce((a, [, y]) => a + y, 0) / n;
+    let sxy = 0, sxx = 0;
+    for (const [x, y] of points) { sxy += (x - mx) * (y - my); sxx += (x - mx) ** 2; }
+    const slope = sxx ? sxy / sxx : 0;
+    return { slope, baseline: my - slope * mx };
+  }
+
+  // Grouped vertical bars: one group per category, one bar per series.
+  function groupedBars({ categories, series, unit, yFmt = fmt }) {
+    const W = 1060, H = 300, L = 56, R = 14, T = 24, B = 54;
+    const max = Math.max(1, ...series.flatMap((s) => s.values.filter((v) => v != null)));
+    const ticks = niceTicks(max), top = ticks[ticks.length - 1];
+    const Y = (y) => T + (1 - y / top) * (H - T - B);
+    const band = (W - L - R) / categories.length;
+    const bw = Math.min(24, (band * 0.7) / series.length);
+    const svg = sv("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+    for (const t of ticks) {
+      svg.append(sv("line", { class: "gridline", x1: L, x2: W - R, y1: Y(t), y2: Y(t) }));
+      svg.append(sv("text", { x: L - 6, y: Y(t) + 4, "text-anchor": "end", text: yFmt(t) }));
+    }
+    svg.append(sv("text", { x: L - 6, y: 11, "text-anchor": "end", text: unit }));
+    categories.forEach((c, i) => {
+      const cx = L + band * (i + 0.5);
+      svg.append(sv("text", { x: cx, y: H - B + 16, "text-anchor": "middle", text: c }));
+      series.forEach((s, j) => {
+        const v = s.values[i];
+        if (v == null) return;
+        const x = cx - (series.length * (bw + 2)) / 2 + j * (bw + 2), y = Y(v), h = Math.max(0, Y(0) - y);
+        const bar = sv("path", { d: roundedTop(x, y, bw, h), fill: s.color });
+        bar.addEventListener("pointermove", (e) => showTip(e, c, series.map((q) => [q.color, q.values[i] == null ? "—" : `${yFmt(q.values[i])} ${unit}`, q.name])));
+        bar.addEventListener("pointerleave", hideTip);
+        svg.append(bar);
+        svg.append(sv("text", { x: x + bw / 2, y: y - 4, "text-anchor": "middle", text: yFmt(v) }));
+      });
+    });
+    svg.append(sv("line", { class: "axis", x1: L, x2: W - R, y1: Y(0), y2: Y(0) }));
+    return svg;
+  }
+
+  // Every framework's growth in each scenario, side by side.
+  function renderCompare() {
+    const scs = DATA.scenarios;
+    const from = 16;
+    const stat = (sc, n) => {
+      const v = sc.variants.find((x) => x.name === n);
+      if (!v) return null;
+      const pts = bySize(v.records, M.total);
+      const steady = pts.filter((p) => p.x >= from);
+      return { n1: pts.find((p) => p.x === Math.min(...pts.map((q) => q.x)))?.y, slope: steady.length >= 2 ? fit(steady.map((p) => [p.x, p.y])).slope : null, max: pts[pts.length - 1] };
+    };
+    const names = NAMES.filter((n) => scs.some((sc) => sc.variants.some((v) => v.name === n)));
+    const scColor = (i) => SLOTS[i % SLOTS.length];
+    const slopeSeries = scs.map((sc, i) => ({ name: sc.name, color: scColor(i), values: names.map((n) => stat(sc, n)?.slope ?? null) }));
+    const baseSeries = scs.map((sc, i) => ({ name: sc.name, color: scColor(i), values: names.map((n) => stat(sc, n)?.n1 ?? null) }));
+    const unit = mode === "br" ? "B brotli" : "B raw";
+    const rows = names.map((n) => {
+      const st = scs.map((sc) => stat(sc, n));
+      const ratio = st.length === 2 && st[0]?.slope && st[1]?.slope ? (st[1].slope / st[0].slope).toFixed(1) + "×" : "—";
+      return [n, ...st.flatMap((x) => [x?.n1 != null ? fmt(x.n1) : "—", x?.slope != null ? x.slope.toFixed(1) : "—"]), ratio];
+    });
+    // One entry per framework and run, for the source line.
+    const allVariants = [...new Map(scs.flatMap((sc) => sc.variants).map((v) => [v.name + "|" + v.run.dir, v])).values()];
+    return [
+      el("h2", { text: "Compare scenarios" }),
+      card(`Bytes per added widget (slope from N=${from})`,
+        "Least squares over the medians at N ≥ " + from + ", the same way for every scenario, so the slopes compare. shared-components: one more use of an existing component kind. unique-components: one more component, used once.",
+        [legend(slopeSeries.map((s) => [s.name, s.color]), true), groupedBars({ categories: names, series: slopeSeries, unit: unit + "/widget", yFmt: (t) => t.toFixed(0) })], allVariants),
+      card("Baseline: the smallest app (N=1)", "Median total at the smallest measured size: mostly the runtime.",
+        [legend(baseSeries.map((s) => [s.name, s.color]), true), groupedBars({ categories: names, series: baseSeries, unit })], allVariants),
+      card("Table", null, table(["framework", ...scs.flatMap((sc) => [`${sc.name} N=1`, `${sc.name} slope`]), scs.length === 2 ? `slope ratio (${scs[1].name} / ${scs[0].name})` : ""], rows), allVariants),
+    ];
+  }
+
   function render() {
     hideTip();
     const total = DATA.scenarios.reduce((a, s) => a + s.variants.length, 0);
+    if (!views().includes(view)) view = DATA.scenarios[0].name;
+    const tabs = el("nav", { class: "tabs" }, views().map((v) => el("a", {
+      href: "#" + encodeURIComponent(v), class: v === view ? "on" : "",
+      onclick: (e) => { e.preventDefault(); view = v; history.replaceState(null, "", "#" + encodeURIComponent(v)); render(); },
+    }, v === "compare" ? "Compare scenarios" : v)));
     app.replaceChildren(
       el("h1", { text: "How many bytes does a reactive UI ship?" }),
-      el("p", { class: "lead", text: `Everything the browser downloads, HTML + JavaScript, against the size of the app. ${DATA.scenarios.length} scenario(s), ${total} framework variant(s); the latest run per variant.` }),
+      el("p", { class: "lead", text: `Everything the browser downloads, HTML + JavaScript, against the size of the app. ${DATA.scenarios.length} scenario(s), ${NAMES.length} framework variant(s); the latest run per variant and scenario.` }),
       el("div", { class: "controls" },
         el("label", {}, el("input", { type: "radio", name: "mode", value: "br", ...(mode === "br" ? { checked: "" } : {}), onchange: () => { mode = "br"; render(); } }), "compressed (brotli 11)"),
         el("label", {}, el("input", { type: "radio", name: "mode", value: "raw", ...(mode === "raw" ? { checked: "" } : {}), onchange: () => { mode = "raw"; render(); } }), "raw")),
-      ...DATA.scenarios.flatMap(renderScenario));
+      tabs,
+      ...(view === "compare" ? renderCompare() : renderScenario(DATA.scenarios.find((sc) => sc.name === view))));
   }
+  window.addEventListener("hashchange", () => { view = decodeURIComponent(location.hash.slice(1)); render(); });
   render();
 })();

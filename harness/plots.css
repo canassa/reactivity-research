@@ -62,3 +62,9 @@ summary { cursor: pointer; color: var(--text-2); font-size: 12px; }
 #tip .row i { width: 12px; border-top: 2px solid; }
 #tip b { font-variant-numeric: tabular-nums; }
 #tip .head { color: var(--text-2); margin-bottom: 2px; }
+
+/* Scenario tabs. */
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 14px 0 4px; border-bottom: 1px solid var(--grid); }
+.tabs a { padding: 6px 12px; text-decoration: none; color: var(--text-2); border: 1px solid transparent; border-bottom: none; border-radius: 6px 6px 0 0; margin-bottom: -1px; }
+.tabs a:hover { color: var(--text); }
+.tabs a.on { color: var(--text); background: var(--card); border-color: var(--grid); font-weight: 600; }
