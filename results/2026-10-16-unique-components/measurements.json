@@ -1,0 +1,7193 @@
+[
+ {
+  "variant": "solid",
+  "size": 1,
+  "seed": 1,
+  "options": {
+   "size": 1,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "e4a7d91db21c4d24",
+  "html": {
+   "raw": 321,
+   "br": 143
+  },
+  "js": {
+   "raw": 21932,
+   "br": 7665
+  },
+  "total": {
+   "raw": 22253,
+   "br": 7808
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18390,
+    "tooling": 670,
+    "app": 2872
+   },
+   "br": {
+    "runtime": 6620,
+    "app": 1045
+   }
+  },
+  "adapter": {
+   "raw": 241,
+   "br": 110
+  },
+  "bundle": {
+   "raw": 22173,
+   "br": 7775,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8051,
+   "node_modules/solid-js/web/dist/web.js": 4921,
+   "node_modules/solid-js/store/dist/store.js": 5418,
+   "src/store.js": 477,
+   "src/list.js": 60,
+   "src/widgets/W1.jsx": 2180,
+   "src/App.jsx": 155,
+   "src/adapter.jsx": 241
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 1,
+  "seed": 2,
+  "options": {
+   "size": 1,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "96125e7ac9d000a9",
+  "html": {
+   "raw": 321,
+   "br": 148
+  },
+  "js": {
+   "raw": 18850,
+   "br": 6551
+  },
+  "total": {
+   "raw": 19171,
+   "br": 6699
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 16810,
+    "tooling": 670,
+    "app": 1370
+   },
+   "br": {
+    "runtime": 5991,
+    "app": 560
+   }
+  },
+  "adapter": {
+   "raw": 238,
+   "br": 127
+  },
+  "bundle": {
+   "raw": 19088,
+   "br": 6678,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 6551,
+   "node_modules/solid-js/web/dist/web.js": 4839,
+   "node_modules/solid-js/store/dist/store.js": 5420,
+   "src/store.js": 359,
+   "src/widgets/W1.jsx": 856,
+   "src/App.jsx": 155,
+   "src/adapter.jsx": 238
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 1,
+  "seed": 3,
+  "options": {
+   "size": 1,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "a340c2c0a4acf408",
+  "html": {
+   "raw": 321,
+   "br": 153
+  },
+  "js": {
+   "raw": 20466,
+   "br": 7021
+  },
+  "total": {
+   "raw": 20787,
+   "br": 7174
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 17123,
+    "tooling": 670,
+    "app": 2673
+   },
+   "br": {
+    "runtime": 6118,
+    "app": 903
+   }
+  },
+  "adapter": {
+   "raw": 242,
+   "br": 120
+  },
+  "bundle": {
+   "raw": 20708,
+   "br": 7141,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 6863,
+   "node_modules/solid-js/web/dist/web.js": 4842,
+   "node_modules/solid-js/store/dist/store.js": 5418,
+   "src/store.js": 387,
+   "src/widgets/W1.jsx": 2131,
+   "src/App.jsx": 155,
+   "src/adapter.jsx": 242
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 2,
+  "seed": 1,
+  "options": {
+   "size": 2,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "aa09029fdfbbc7ad",
+  "html": {
+   "raw": 321,
+   "br": 146
+  },
+  "js": {
+   "raw": 22502,
+   "br": 7815
+  },
+  "total": {
+   "raw": 22823,
+   "br": 7961
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18389,
+    "tooling": 670,
+    "app": 3443
+   },
+   "br": {
+    "runtime": 6618,
+    "app": 1197
+   }
+  },
+  "adapter": {
+   "raw": 245,
+   "br": 116
+  },
+  "bundle": {
+   "raw": 22747,
+   "br": 7931,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8050,
+   "node_modules/solid-js/web/dist/web.js": 4921,
+   "node_modules/solid-js/store/dist/store.js": 5418,
+   "src/store.js": 491,
+   "src/list.js": 60,
+   "src/widgets/W1.jsx": 2178,
+   "src/widgets/W2.jsx": 535,
+   "src/App.jsx": 179,
+   "src/adapter.jsx": 245
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 2,
+  "seed": 2,
+  "options": {
+   "size": 2,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "63584a34505ea336",
+  "html": {
+   "raw": 321,
+   "br": 143
+  },
+  "js": {
+   "raw": 19903,
+   "br": 6897
+  },
+  "total": {
+   "raw": 20224,
+   "br": 7040
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 17124,
+    "tooling": 670,
+    "app": 2109
+   },
+   "br": {
+    "runtime": 6114,
+    "app": 783
+   }
+  },
+  "adapter": {
+   "raw": 238,
+   "br": 111
+  },
+  "bundle": {
+   "raw": 20141,
+   "br": 7008,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 6861,
+   "node_modules/solid-js/web/dist/web.js": 4842,
+   "node_modules/solid-js/store/dist/store.js": 5421,
+   "src/store.js": 374,
+   "src/widgets/W1.jsx": 856,
+   "src/widgets/W2.jsx": 700,
+   "src/App.jsx": 179,
+   "src/adapter.jsx": 238
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 2,
+  "seed": 3,
+  "options": {
+   "size": 2,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "11059940a6a1e099",
+  "html": {
+   "raw": 321,
+   "br": 138
+  },
+  "js": {
+   "raw": 23780,
+   "br": 8107
+  },
+  "total": {
+   "raw": 24101,
+   "br": 8245
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18389,
+    "tooling": 670,
+    "app": 4721
+   },
+   "br": {
+    "runtime": 6618,
+    "app": 1489
+   }
+  },
+  "adapter": {
+   "raw": 245,
+   "br": 114
+  },
+  "bundle": {
+   "raw": 24025,
+   "br": 8221,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8050,
+   "node_modules/solid-js/web/dist/web.js": 4921,
+   "node_modules/solid-js/store/dist/store.js": 5418,
+   "src/store.js": 544,
+   "src/widgets/W1.jsx": 2125,
+   "src/list.js": 60,
+   "src/widgets/W2.jsx": 1813,
+   "src/App.jsx": 179,
+   "src/adapter.jsx": 245
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 4,
+  "seed": 1,
+  "options": {
+   "size": 4,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "0ed9084167776d62",
+  "html": {
+   "raw": 321,
+   "br": 144
+  },
+  "js": {
+   "raw": 25592,
+   "br": 8622
+  },
+  "total": {
+   "raw": 25913,
+   "br": 8766
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18397,
+    "tooling": 670,
+    "app": 6525
+   },
+   "br": {
+    "runtime": 6607,
+    "app": 2015
+   }
+  },
+  "adapter": {
+   "raw": 241,
+   "br": 125
+  },
+  "bundle": {
+   "raw": 25833,
+   "br": 8747,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8058,
+   "node_modules/solid-js/web/dist/web.js": 4921,
+   "node_modules/solid-js/store/dist/store.js": 5418,
+   "src/store.js": 703,
+   "src/list.js": 60,
+   "src/widgets/W1.jsx": 2177,
+   "src/widgets/W2.jsx": 534,
+   "src/widgets/W3.jsx": 1369,
+   "src/widgets/W4.jsx": 1465,
+   "src/App.jsx": 217,
+   "src/adapter.jsx": 241
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 4,
+  "seed": 2,
+  "options": {
+   "size": 4,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "1b611d245fe52ade",
+  "html": {
+   "raw": 321,
+   "br": 141
+  },
+  "js": {
+   "raw": 25304,
+   "br": 8542
+  },
+  "total": {
+   "raw": 25625,
+   "br": 8683
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18398,
+    "tooling": 670,
+    "app": 6236
+   },
+   "br": {
+    "runtime": 6615,
+    "app": 1927
+   }
+  },
+  "adapter": {
+   "raw": 245,
+   "br": 118
+  },
+  "bundle": {
+   "raw": 25549,
+   "br": 8660,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8050,
+   "node_modules/solid-js/web/dist/web.js": 4925,
+   "node_modules/solid-js/store/dist/store.js": 5423,
+   "src/store.js": 699,
+   "src/widgets/W1.jsx": 853,
+   "src/widgets/W2.jsx": 697,
+   "src/list.js": 60,
+   "src/widgets/W3.jsx": 2826,
+   "src/widgets/W4.jsx": 884,
+   "src/App.jsx": 217,
+   "src/adapter.jsx": 245
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 4,
+  "seed": 3,
+  "options": {
+   "size": 4,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "e07358709a8b2d6c",
+  "html": {
+   "raw": 321,
+   "br": 151
+  },
+  "js": {
+   "raw": 27258,
+   "br": 8896
+  },
+  "total": {
+   "raw": 27579,
+   "br": 9047
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18393,
+    "tooling": 670,
+    "app": 8195
+   },
+   "br": {
+    "runtime": 6620,
+    "app": 2276
+   }
+  },
+  "adapter": {
+   "raw": 245,
+   "br": 115
+  },
+  "bundle": {
+   "raw": 27503,
+   "br": 9011,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8054,
+   "node_modules/solid-js/web/dist/web.js": 4921,
+   "node_modules/solid-js/store/dist/store.js": 5418,
+   "src/store.js": 693,
+   "src/widgets/W1.jsx": 2124,
+   "src/list.js": 60,
+   "src/widgets/W2.jsx": 1812,
+   "src/widgets/W3.jsx": 1756,
+   "src/widgets/W4.jsx": 1533,
+   "src/App.jsx": 217,
+   "src/adapter.jsx": 245
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 8,
+  "seed": 1,
+  "options": {
+   "size": 8,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "54da6b80847a1195",
+  "html": {
+   "raw": 321,
+   "br": 147
+  },
+  "js": {
+   "raw": 30757,
+   "br": 9812
+  },
+  "total": {
+   "raw": 31078,
+   "br": 9959
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18397,
+    "tooling": 670,
+    "app": 11690
+   },
+   "br": {
+    "runtime": 6614,
+    "app": 3198
+   }
+  },
+  "adapter": {
+   "raw": 245,
+   "br": 130
+  },
+  "bundle": {
+   "raw": 31002,
+   "br": 9942,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8055,
+   "node_modules/solid-js/web/dist/web.js": 4920,
+   "node_modules/solid-js/store/dist/store.js": 5422,
+   "src/store.js": 1102,
+   "src/list.js": 60,
+   "src/widgets/W1.jsx": 2178,
+   "src/widgets/W2.jsx": 534,
+   "src/widgets/W3.jsx": 1367,
+   "src/widgets/W4.jsx": 1465,
+   "src/widgets/W5.jsx": 1059,
+   "src/widgets/W6.jsx": 1023,
+   "src/widgets/W7.jsx": 1164,
+   "src/widgets/W8.jsx": 1445,
+   "src/App.jsx": 293,
+   "src/adapter.jsx": 245
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 8,
+  "seed": 2,
+  "options": {
+   "size": 8,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "1bf2dd5bee8b31c8",
+  "html": {
+   "raw": 321,
+   "br": 144
+  },
+  "js": {
+   "raw": 31977,
+   "br": 10093
+  },
+  "total": {
+   "raw": 32298,
+   "br": 10237
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18408,
+    "tooling": 670,
+    "app": 12899
+   },
+   "br": {
+    "runtime": 6618,
+    "app": 3475
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 133
+  },
+  "bundle": {
+   "raw": 32227,
+   "br": 10226,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8046,
+   "node_modules/solid-js/web/dist/web.js": 4925,
+   "node_modules/solid-js/store/dist/store.js": 5437,
+   "src/store.js": 1032,
+   "src/widgets/W1.jsx": 853,
+   "src/widgets/W2.jsx": 697,
+   "src/list.js": 60,
+   "src/widgets/W3.jsx": 2817,
+   "src/widgets/W4.jsx": 884,
+   "src/widgets/W5.jsx": 3477,
+   "src/widgets/W6.jsx": 954,
+   "src/widgets/W7.jsx": 896,
+   "src/widgets/W8.jsx": 936,
+   "src/App.jsx": 293,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 8,
+  "seed": 3,
+  "options": {
+   "size": 8,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "4fccb471ded77d3a",
+  "html": {
+   "raw": 321,
+   "br": 140
+  },
+  "js": {
+   "raw": 36321,
+   "br": 10932
+  },
+  "total": {
+   "raw": 36642,
+   "br": 11072
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18414,
+    "tooling": 670,
+    "app": 17237
+   },
+   "br": {
+    "runtime": 6621,
+    "app": 4311
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 121
+  },
+  "bundle": {
+   "raw": 36571,
+   "br": 11053,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8048,
+   "node_modules/solid-js/web/dist/web.js": 4929,
+   "node_modules/solid-js/store/dist/store.js": 5437,
+   "src/store.js": 1329,
+   "src/widgets/W1.jsx": 2124,
+   "src/list.js": 59,
+   "src/widgets/W2.jsx": 1809,
+   "src/widgets/W3.jsx": 1753,
+   "src/widgets/W4.jsx": 1533,
+   "src/widgets/W5.jsx": 2455,
+   "src/widgets/W6.jsx": 2998,
+   "src/widgets/W7.jsx": 2004,
+   "src/widgets/W8.jsx": 880,
+   "src/App.jsx": 293,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 1,
+  "options": {
+   "size": 16,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "06b4b8079a75412f",
+  "html": {
+   "raw": 321,
+   "br": 151
+  },
+  "js": {
+   "raw": 45103,
+   "br": 12735
+  },
+  "total": {
+   "raw": 45424,
+   "br": 12886
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18404,
+    "tooling": 670,
+    "app": 26029
+   },
+   "br": {
+    "runtime": 6615,
+    "app": 6120
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 112
+  },
+  "bundle": {
+   "raw": 45353,
+   "br": 12847,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8058,
+   "node_modules/solid-js/web/dist/web.js": 4924,
+   "node_modules/solid-js/store/dist/store.js": 5422,
+   "src/store.js": 1788,
+   "src/list.js": 59,
+   "src/widgets/W1.jsx": 2174,
+   "src/widgets/W2.jsx": 534,
+   "src/widgets/W3.jsx": 1366,
+   "src/widgets/W4.jsx": 1465,
+   "src/widgets/W5.jsx": 1059,
+   "src/widgets/W6.jsx": 1023,
+   "src/widgets/W7.jsx": 1164,
+   "src/widgets/W8.jsx": 1444,
+   "src/widgets/W9.jsx": 1967,
+   "src/widgets/W10.jsx": 1742,
+   "src/widgets/W11.jsx": 1699,
+   "src/widgets/W12.jsx": 1383,
+   "src/widgets/W13.jsx": 1931,
+   "src/widgets/W14.jsx": 1976,
+   "src/widgets/W15.jsx": 1959,
+   "src/widgets/W16.jsx": 851,
+   "src/App.jsx": 445,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 2,
+  "options": {
+   "size": 16,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "6a00f7831995e073",
+  "html": {
+   "raw": 321,
+   "br": 143
+  },
+  "js": {
+   "raw": 45903,
+   "br": 12963
+  },
+  "total": {
+   "raw": 46224,
+   "br": 13106
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18443,
+    "tooling": 670,
+    "app": 26790
+   },
+   "br": {
+    "runtime": 6629,
+    "app": 6334
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 108
+  },
+  "bundle": {
+   "raw": 46153,
+   "br": 13071,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8042,
+   "node_modules/solid-js/web/dist/web.js": 4952,
+   "node_modules/solid-js/store/dist/store.js": 5449,
+   "src/store.js": 1632,
+   "src/widgets/W1.jsx": 853,
+   "src/widgets/W2.jsx": 697,
+   "src/list.js": 59,
+   "src/widgets/W3.jsx": 2811,
+   "src/widgets/W4.jsx": 884,
+   "src/widgets/W5.jsx": 3470,
+   "src/widgets/W6.jsx": 954,
+   "src/widgets/W7.jsx": 896,
+   "src/widgets/W8.jsx": 936,
+   "src/widgets/W9.jsx": 1152,
+   "src/widgets/W10.jsx": 3144,
+   "src/widgets/W11.jsx": 832,
+   "src/widgets/W12.jsx": 1111,
+   "src/widgets/W13.jsx": 1414,
+   "src/widgets/W14.jsx": 1832,
+   "src/widgets/W15.jsx": 2698,
+   "src/widgets/W16.jsx": 970,
+   "src/App.jsx": 445,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 3,
+  "options": {
+   "size": 16,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "ce312fef036656e8",
+  "html": {
+   "raw": 321,
+   "br": 143
+  },
+  "js": {
+   "raw": 46421,
+   "br": 12732
+  },
+  "total": {
+   "raw": 46742,
+   "br": 12875
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18412,
+    "tooling": 670,
+    "app": 27339
+   },
+   "br": {
+    "runtime": 6625,
+    "app": 6107
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 102
+  },
+  "bundle": {
+   "raw": 46671,
+   "br": 12834,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8051,
+   "node_modules/solid-js/web/dist/web.js": 4929,
+   "node_modules/solid-js/store/dist/store.js": 5432,
+   "src/store.js": 1947,
+   "src/widgets/W1.jsx": 2124,
+   "src/list.js": 59,
+   "src/widgets/W2.jsx": 1809,
+   "src/widgets/W3.jsx": 1753,
+   "src/widgets/W4.jsx": 1533,
+   "src/widgets/W5.jsx": 2455,
+   "src/widgets/W6.jsx": 3001,
+   "src/widgets/W7.jsx": 2004,
+   "src/widgets/W8.jsx": 880,
+   "src/widgets/W9.jsx": 545,
+   "src/widgets/W10.jsx": 1332,
+   "src/widgets/W11.jsx": 647,
+   "src/widgets/W12.jsx": 1143,
+   "src/widgets/W13.jsx": 1922,
+   "src/widgets/W14.jsx": 1361,
+   "src/widgets/W15.jsx": 1286,
+   "src/widgets/W16.jsx": 1093,
+   "src/App.jsx": 445,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 1,
+  "options": {
+   "size": 32,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "4ae0dd53bd0666bf",
+  "html": {
+   "raw": 321,
+   "br": 147
+  },
+  "js": {
+   "raw": 72770,
+   "br": 17524
+  },
+  "total": {
+   "raw": 73091,
+   "br": 17671
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18434,
+    "tooling": 670,
+    "app": 53666
+   },
+   "br": {
+    "runtime": 6624,
+    "app": 10900
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 149
+  },
+  "bundle": {
+   "raw": 73020,
+   "br": 17673,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8045,
+   "node_modules/solid-js/web/dist/web.js": 4946,
+   "node_modules/solid-js/store/dist/store.js": 5443,
+   "src/store.js": 3002,
+   "src/list.js": 59,
+   "src/widgets/W1.jsx": 2174,
+   "src/widgets/W2.jsx": 534,
+   "src/widgets/W3.jsx": 1366,
+   "src/widgets/W4.jsx": 1465,
+   "src/widgets/W5.jsx": 1059,
+   "src/widgets/W6.jsx": 1023,
+   "src/widgets/W7.jsx": 1164,
+   "src/widgets/W8.jsx": 1444,
+   "src/widgets/W9.jsx": 1967,
+   "src/widgets/W10.jsx": 1742,
+   "src/widgets/W11.jsx": 1699,
+   "src/widgets/W12.jsx": 1383,
+   "src/widgets/W13.jsx": 1931,
+   "src/widgets/W14.jsx": 1976,
+   "src/widgets/W15.jsx": 1957,
+   "src/widgets/W16.jsx": 851,
+   "src/widgets/W17.jsx": 1364,
+   "src/widgets/W18.jsx": 1003,
+   "src/widgets/W19.jsx": 1150,
+   "src/widgets/W20.jsx": 2312,
+   "src/widgets/W21.jsx": 798,
+   "src/widgets/W22.jsx": 1047,
+   "src/widgets/W23.jsx": 3792,
+   "src/widgets/W24.jsx": 927,
+   "src/widgets/W25.jsx": 701,
+   "src/widgets/W26.jsx": 2047,
+   "src/widgets/W27.jsx": 1812,
+   "src/widgets/W28.jsx": 2130,
+   "src/widgets/W29.jsx": 1838,
+   "src/widgets/W30.jsx": 1591,
+   "src/widgets/W31.jsx": 1559,
+   "src/widgets/W32.jsx": 2050,
+   "src/App.jsx": 749,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 2,
+  "options": {
+   "size": 32,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "acacb6a3ce0d8ce0",
+  "html": {
+   "raw": 321,
+   "br": 150
+  },
+  "js": {
+   "raw": 71539,
+   "br": 17485
+  },
+  "total": {
+   "raw": 71860,
+   "br": 17635
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18440,
+    "tooling": 670,
+    "app": 52429
+   },
+   "br": {
+    "runtime": 6634,
+    "app": 10851
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 138
+  },
+  "bundle": {
+   "raw": 71789,
+   "br": 17623,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8045,
+   "node_modules/solid-js/web/dist/web.js": 4952,
+   "node_modules/solid-js/store/dist/store.js": 5443,
+   "src/store.js": 2611,
+   "src/widgets/W1.jsx": 853,
+   "src/widgets/W2.jsx": 697,
+   "src/list.js": 59,
+   "src/widgets/W3.jsx": 2811,
+   "src/widgets/W4.jsx": 884,
+   "src/widgets/W5.jsx": 3474,
+   "src/widgets/W6.jsx": 954,
+   "src/widgets/W7.jsx": 896,
+   "src/widgets/W8.jsx": 936,
+   "src/widgets/W9.jsx": 1152,
+   "src/widgets/W10.jsx": 3144,
+   "src/widgets/W11.jsx": 832,
+   "src/widgets/W12.jsx": 1111,
+   "src/widgets/W13.jsx": 1414,
+   "src/widgets/W14.jsx": 1832,
+   "src/widgets/W15.jsx": 2698,
+   "src/widgets/W16.jsx": 970,
+   "src/widgets/W17.jsx": 1695,
+   "src/widgets/W18.jsx": 880,
+   "src/widgets/W19.jsx": 2547,
+   "src/widgets/W20.jsx": 1282,
+   "src/widgets/W21.jsx": 1109,
+   "src/widgets/W22.jsx": 1093,
+   "src/widgets/W23.jsx": 862,
+   "src/widgets/W24.jsx": 1839,
+   "src/widgets/W25.jsx": 1589,
+   "src/widgets/W26.jsx": 2935,
+   "src/widgets/W27.jsx": 1149,
+   "src/widgets/W28.jsx": 1734,
+   "src/widgets/W29.jsx": 1179,
+   "src/widgets/W30.jsx": 1752,
+   "src/widgets/W31.jsx": 1527,
+   "src/widgets/W32.jsx": 1180,
+   "src/App.jsx": 749,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 3,
+  "options": {
+   "size": 32,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "41ee0cbce4087d06",
+  "html": {
+   "raw": 321,
+   "br": 144
+  },
+  "js": {
+   "raw": 72592,
+   "br": 17069
+  },
+  "total": {
+   "raw": 72913,
+   "br": 17213
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18434,
+    "tooling": 670,
+    "app": 53488
+   },
+   "br": {
+    "runtime": 6631,
+    "app": 10438
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 142
+  },
+  "bundle": {
+   "raw": 72842,
+   "br": 17211,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8051,
+   "node_modules/solid-js/web/dist/web.js": 4946,
+   "node_modules/solid-js/store/dist/store.js": 5437,
+   "src/store.js": 3317,
+   "src/widgets/W1.jsx": 2124,
+   "src/list.js": 59,
+   "src/widgets/W2.jsx": 1809,
+   "src/widgets/W3.jsx": 1753,
+   "src/widgets/W4.jsx": 1533,
+   "src/widgets/W5.jsx": 2455,
+   "src/widgets/W6.jsx": 2998,
+   "src/widgets/W7.jsx": 2004,
+   "src/widgets/W8.jsx": 880,
+   "src/widgets/W9.jsx": 545,
+   "src/widgets/W10.jsx": 1332,
+   "src/widgets/W11.jsx": 647,
+   "src/widgets/W12.jsx": 1143,
+   "src/widgets/W13.jsx": 1922,
+   "src/widgets/W14.jsx": 1361,
+   "src/widgets/W15.jsx": 1286,
+   "src/widgets/W16.jsx": 1093,
+   "src/widgets/W17.jsx": 1096,
+   "src/widgets/W18.jsx": 1660,
+   "src/widgets/W19.jsx": 1603,
+   "src/widgets/W20.jsx": 1050,
+   "src/widgets/W21.jsx": 1541,
+   "src/widgets/W22.jsx": 1564,
+   "src/widgets/W23.jsx": 1397,
+   "src/widgets/W24.jsx": 1489,
+   "src/widgets/W25.jsx": 3177,
+   "src/widgets/W26.jsx": 1061,
+   "src/widgets/W27.jsx": 1305,
+   "src/widgets/W28.jsx": 1620,
+   "src/widgets/W29.jsx": 619,
+   "src/widgets/W30.jsx": 2413,
+   "src/widgets/W31.jsx": 1450,
+   "src/widgets/W32.jsx": 1433,
+   "src/App.jsx": 749,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 1,
+  "options": {
+   "size": 64,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "807566e0fde69e7e",
+  "html": {
+   "raw": 321,
+   "br": 142
+  },
+  "js": {
+   "raw": 127745,
+   "br": 25889
+  },
+  "total": {
+   "raw": 128066,
+   "br": 26031
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18441,
+    "tooling": 670,
+    "app": 108634
+   },
+   "br": {
+    "runtime": 6623,
+    "app": 19266
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 98
+  },
+  "bundle": {
+   "raw": 127995,
+   "br": 25987,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8040,
+   "node_modules/solid-js/web/dist/web.js": 4952,
+   "node_modules/solid-js/store/dist/store.js": 5449,
+   "src/store.js": 5742,
+   "src/list.js": 59,
+   "src/widgets/W1.jsx": 2174,
+   "src/widgets/W2.jsx": 534,
+   "src/widgets/W3.jsx": 1366,
+   "src/widgets/W4.jsx": 1465,
+   "src/widgets/W5.jsx": 1059,
+   "src/widgets/W6.jsx": 1023,
+   "src/widgets/W7.jsx": 1164,
+   "src/widgets/W8.jsx": 1444,
+   "src/widgets/W9.jsx": 1967,
+   "src/widgets/W10.jsx": 1742,
+   "src/widgets/W11.jsx": 1699,
+   "src/widgets/W12.jsx": 1383,
+   "src/widgets/W13.jsx": 1931,
+   "src/widgets/W14.jsx": 1976,
+   "src/widgets/W15.jsx": 1957,
+   "src/widgets/W16.jsx": 851,
+   "src/widgets/W17.jsx": 1364,
+   "src/widgets/W18.jsx": 1003,
+   "src/widgets/W19.jsx": 1150,
+   "src/widgets/W20.jsx": 2312,
+   "src/widgets/W21.jsx": 798,
+   "src/widgets/W22.jsx": 1047,
+   "src/widgets/W23.jsx": 3787,
+   "src/widgets/W24.jsx": 927,
+   "src/widgets/W25.jsx": 701,
+   "src/widgets/W26.jsx": 2047,
+   "src/widgets/W27.jsx": 1810,
+   "src/widgets/W28.jsx": 2130,
+   "src/widgets/W29.jsx": 1838,
+   "src/widgets/W30.jsx": 1591,
+   "src/widgets/W31.jsx": 1559,
+   "src/widgets/W32.jsx": 2050,
+   "src/widgets/W33.jsx": 2445,
+   "src/widgets/W34.jsx": 1633,
+   "src/widgets/W35.jsx": 2147,
+   "src/widgets/W36.jsx": 1211,
+   "src/widgets/W37.jsx": 2143,
+   "src/widgets/W38.jsx": 1624,
+   "src/widgets/W39.jsx": 670,
+   "src/widgets/W40.jsx": 1098,
+   "src/widgets/W41.jsx": 1524,
+   "src/widgets/W42.jsx": 2092,
+   "src/widgets/W43.jsx": 861,
+   "src/widgets/W44.jsx": 2775,
+   "src/widgets/W45.jsx": 1731,
+   "src/widgets/W46.jsx": 1338,
+   "src/widgets/W47.jsx": 914,
+   "src/widgets/W48.jsx": 1560,
+   "src/widgets/W49.jsx": 1078,
+   "src/widgets/W50.jsx": 1166,
+   "src/widgets/W51.jsx": 1975,
+   "src/widgets/W52.jsx": 1337,
+   "src/widgets/W53.jsx": 2237,
+   "src/widgets/W54.jsx": 1148,
+   "src/widgets/W55.jsx": 2046,
+   "src/widgets/W56.jsx": 946,
+   "src/widgets/W57.jsx": 2020,
+   "src/widgets/W58.jsx": 602,
+   "src/widgets/W59.jsx": 1120,
+   "src/widgets/W60.jsx": 2904,
+   "src/widgets/W61.jsx": 1736,
+   "src/widgets/W62.jsx": 2943,
+   "src/widgets/W63.jsx": 1260,
+   "src/widgets/W64.jsx": 1343,
+   "src/App.jsx": 1357,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 2,
+  "options": {
+   "size": 64,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "31c1729932ae5aae",
+  "html": {
+   "raw": 321,
+   "br": 150
+  },
+  "js": {
+   "raw": 119850,
+   "br": 24781
+  },
+  "total": {
+   "raw": 120171,
+   "br": 24931
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18443,
+    "tooling": 670,
+    "app": 100737
+   },
+   "br": {
+    "runtime": 6628,
+    "app": 18153
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 154
+  },
+  "bundle": {
+   "raw": 120100,
+   "br": 24935,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8042,
+   "node_modules/solid-js/web/dist/web.js": 4952,
+   "node_modules/solid-js/store/dist/store.js": 5449,
+   "src/store.js": 4729,
+   "src/widgets/W1.jsx": 853,
+   "src/widgets/W2.jsx": 697,
+   "src/list.js": 59,
+   "src/widgets/W3.jsx": 2811,
+   "src/widgets/W4.jsx": 884,
+   "src/widgets/W5.jsx": 3471,
+   "src/widgets/W6.jsx": 954,
+   "src/widgets/W7.jsx": 896,
+   "src/widgets/W8.jsx": 936,
+   "src/widgets/W9.jsx": 1152,
+   "src/widgets/W10.jsx": 3144,
+   "src/widgets/W11.jsx": 832,
+   "src/widgets/W12.jsx": 1111,
+   "src/widgets/W13.jsx": 1414,
+   "src/widgets/W14.jsx": 1832,
+   "src/widgets/W15.jsx": 2698,
+   "src/widgets/W16.jsx": 970,
+   "src/widgets/W17.jsx": 1695,
+   "src/widgets/W18.jsx": 880,
+   "src/widgets/W19.jsx": 2547,
+   "src/widgets/W20.jsx": 1282,
+   "src/widgets/W21.jsx": 1109,
+   "src/widgets/W22.jsx": 1093,
+   "src/widgets/W23.jsx": 862,
+   "src/widgets/W24.jsx": 1839,
+   "src/widgets/W25.jsx": 1589,
+   "src/widgets/W26.jsx": 2935,
+   "src/widgets/W27.jsx": 1149,
+   "src/widgets/W28.jsx": 1734,
+   "src/widgets/W29.jsx": 1179,
+   "src/widgets/W30.jsx": 1752,
+   "src/widgets/W31.jsx": 1527,
+   "src/widgets/W32.jsx": 1180,
+   "src/widgets/W33.jsx": 1777,
+   "src/widgets/W34.jsx": 1577,
+   "src/widgets/W35.jsx": 1699,
+   "src/widgets/W36.jsx": 2255,
+   "src/widgets/W37.jsx": 1309,
+   "src/widgets/W38.jsx": 1771,
+   "src/widgets/W39.jsx": 1364,
+   "src/widgets/W40.jsx": 804,
+   "src/widgets/W41.jsx": 1778,
+   "src/widgets/W42.jsx": 1696,
+   "src/widgets/W43.jsx": 3127,
+   "src/widgets/W44.jsx": 727,
+   "src/widgets/W45.jsx": 1091,
+   "src/widgets/W46.jsx": 1488,
+   "src/widgets/W47.jsx": 1980,
+   "src/widgets/W48.jsx": 1099,
+   "src/widgets/W49.jsx": 1114,
+   "src/widgets/W50.jsx": 1324,
+   "src/widgets/W51.jsx": 952,
+   "src/widgets/W52.jsx": 1695,
+   "src/widgets/W53.jsx": 1460,
+   "src/widgets/W54.jsx": 1137,
+   "src/widgets/W55.jsx": 1488,
+   "src/widgets/W56.jsx": 1347,
+   "src/widgets/W57.jsx": 834,
+   "src/widgets/W58.jsx": 1173,
+   "src/widgets/W59.jsx": 1490,
+   "src/widgets/W60.jsx": 1134,
+   "src/widgets/W61.jsx": 976,
+   "src/widgets/W62.jsx": 1860,
+   "src/widgets/W63.jsx": 1185,
+   "src/widgets/W64.jsx": 874,
+   "src/App.jsx": 1357,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 3,
+  "options": {
+   "size": 64,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "aaad9928ef0c2436",
+  "html": {
+   "raw": 321,
+   "br": 151
+  },
+  "js": {
+   "raw": 121798,
+   "br": 24612
+  },
+  "total": {
+   "raw": 122119,
+   "br": 24763
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18434,
+    "tooling": 670,
+    "app": 102694
+   },
+   "br": {
+    "runtime": 6631,
+    "app": 17981
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 148
+  },
+  "bundle": {
+   "raw": 122048,
+   "br": 24760,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8051,
+   "node_modules/solid-js/web/dist/web.js": 4946,
+   "node_modules/solid-js/store/dist/store.js": 5437,
+   "src/store.js": 5324,
+   "src/widgets/W1.jsx": 2124,
+   "src/list.js": 59,
+   "src/widgets/W2.jsx": 1809,
+   "src/widgets/W3.jsx": 1753,
+   "src/widgets/W4.jsx": 1533,
+   "src/widgets/W5.jsx": 2455,
+   "src/widgets/W6.jsx": 2998,
+   "src/widgets/W7.jsx": 2004,
+   "src/widgets/W8.jsx": 880,
+   "src/widgets/W9.jsx": 545,
+   "src/widgets/W10.jsx": 1332,
+   "src/widgets/W11.jsx": 647,
+   "src/widgets/W12.jsx": 1143,
+   "src/widgets/W13.jsx": 1922,
+   "src/widgets/W14.jsx": 1361,
+   "src/widgets/W15.jsx": 1286,
+   "src/widgets/W16.jsx": 1093,
+   "src/widgets/W17.jsx": 1096,
+   "src/widgets/W18.jsx": 1660,
+   "src/widgets/W19.jsx": 1603,
+   "src/widgets/W20.jsx": 1050,
+   "src/widgets/W21.jsx": 1541,
+   "src/widgets/W22.jsx": 1564,
+   "src/widgets/W23.jsx": 1397,
+   "src/widgets/W24.jsx": 1489,
+   "src/widgets/W25.jsx": 3177,
+   "src/widgets/W26.jsx": 1061,
+   "src/widgets/W27.jsx": 1305,
+   "src/widgets/W28.jsx": 1620,
+   "src/widgets/W29.jsx": 619,
+   "src/widgets/W30.jsx": 2413,
+   "src/widgets/W31.jsx": 1450,
+   "src/widgets/W32.jsx": 1433,
+   "src/widgets/W33.jsx": 1852,
+   "src/widgets/W34.jsx": 1669,
+   "src/widgets/W35.jsx": 450,
+   "src/widgets/W36.jsx": 1666,
+   "src/widgets/W37.jsx": 983,
+   "src/widgets/W38.jsx": 1490,
+   "src/widgets/W39.jsx": 1396,
+   "src/widgets/W40.jsx": 1424,
+   "src/widgets/W41.jsx": 2160,
+   "src/widgets/W42.jsx": 1729,
+   "src/widgets/W43.jsx": 1949,
+   "src/widgets/W44.jsx": 1385,
+   "src/widgets/W45.jsx": 807,
+   "src/widgets/W46.jsx": 2308,
+   "src/widgets/W47.jsx": 1675,
+   "src/widgets/W48.jsx": 1422,
+   "src/widgets/W49.jsx": 579,
+   "src/widgets/W50.jsx": 1115,
+   "src/widgets/W51.jsx": 734,
+   "src/widgets/W52.jsx": 1955,
+   "src/widgets/W53.jsx": 930,
+   "src/widgets/W54.jsx": 781,
+   "src/widgets/W55.jsx": 1175,
+   "src/widgets/W56.jsx": 1839,
+   "src/widgets/W57.jsx": 1720,
+   "src/widgets/W58.jsx": 1831,
+   "src/widgets/W59.jsx": 1556,
+   "src/widgets/W60.jsx": 1722,
+   "src/widgets/W61.jsx": 1715,
+   "src/widgets/W62.jsx": 2137,
+   "src/widgets/W63.jsx": 1140,
+   "src/widgets/W64.jsx": 1297,
+   "src/App.jsx": 1357,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 1,
+  "options": {
+   "size": 128,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "70fc613fcf2e4daa",
+  "html": {
+   "raw": 321,
+   "br": 143
+  },
+  "js": {
+   "raw": 228720,
+   "br": 39859
+  },
+  "total": {
+   "raw": 229041,
+   "br": 40002
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18443,
+    "tooling": 670,
+    "app": 209607
+   },
+   "br": {
+    "runtime": 6629,
+    "app": 33230
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 93
+  },
+  "bundle": {
+   "raw": 228970,
+   "br": 39952,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8043,
+   "node_modules/solid-js/web/dist/web.js": 4951,
+   "node_modules/solid-js/store/dist/store.js": 5449,
+   "src/store.js": 10497,
+   "src/list.js": 59,
+   "src/widgets/W1.jsx": 2174,
+   "src/widgets/W2.jsx": 534,
+   "src/widgets/W3.jsx": 1366,
+   "src/widgets/W4.jsx": 1465,
+   "src/widgets/W5.jsx": 1059,
+   "src/widgets/W6.jsx": 1023,
+   "src/widgets/W7.jsx": 1164,
+   "src/widgets/W8.jsx": 1444,
+   "src/widgets/W9.jsx": 1967,
+   "src/widgets/W10.jsx": 1742,
+   "src/widgets/W11.jsx": 1699,
+   "src/widgets/W12.jsx": 1383,
+   "src/widgets/W13.jsx": 1931,
+   "src/widgets/W14.jsx": 1976,
+   "src/widgets/W15.jsx": 1957,
+   "src/widgets/W16.jsx": 851,
+   "src/widgets/W17.jsx": 1364,
+   "src/widgets/W18.jsx": 1003,
+   "src/widgets/W19.jsx": 1150,
+   "src/widgets/W20.jsx": 2311,
+   "src/widgets/W21.jsx": 798,
+   "src/widgets/W22.jsx": 1047,
+   "src/widgets/W23.jsx": 3791,
+   "src/widgets/W24.jsx": 927,
+   "src/widgets/W25.jsx": 701,
+   "src/widgets/W26.jsx": 2047,
+   "src/widgets/W27.jsx": 1810,
+   "src/widgets/W28.jsx": 2130,
+   "src/widgets/W29.jsx": 1838,
+   "src/widgets/W30.jsx": 1591,
+   "src/widgets/W31.jsx": 1559,
+   "src/widgets/W32.jsx": 2050,
+   "src/widgets/W33.jsx": 2444,
+   "src/widgets/W34.jsx": 1633,
+   "src/widgets/W35.jsx": 2147,
+   "src/widgets/W36.jsx": 1211,
+   "src/widgets/W37.jsx": 2143,
+   "src/widgets/W38.jsx": 1624,
+   "src/widgets/W39.jsx": 670,
+   "src/widgets/W40.jsx": 1098,
+   "src/widgets/W41.jsx": 1524,
+   "src/widgets/W42.jsx": 2092,
+   "src/widgets/W43.jsx": 861,
+   "src/widgets/W44.jsx": 2775,
+   "src/widgets/W45.jsx": 1731,
+   "src/widgets/W46.jsx": 1338,
+   "src/widgets/W47.jsx": 914,
+   "src/widgets/W48.jsx": 1560,
+   "src/widgets/W49.jsx": 1078,
+   "src/widgets/W50.jsx": 1166,
+   "src/widgets/W51.jsx": 1974,
+   "src/widgets/W52.jsx": 1337,
+   "src/widgets/W53.jsx": 2237,
+   "src/widgets/W54.jsx": 1148,
+   "src/widgets/W55.jsx": 2046,
+   "src/widgets/W56.jsx": 946,
+   "src/widgets/W57.jsx": 2020,
+   "src/widgets/W58.jsx": 602,
+   "src/widgets/W59.jsx": 1120,
+   "src/widgets/W60.jsx": 2904,
+   "src/widgets/W61.jsx": 1735,
+   "src/widgets/W62.jsx": 2943,
+   "src/widgets/W63.jsx": 1260,
+   "src/widgets/W64.jsx": 1343,
+   "src/widgets/W65.jsx": 1746,
+   "src/widgets/W66.jsx": 314,
+   "src/widgets/W67.jsx": 1980,
+   "src/widgets/W68.jsx": 1083,
+   "src/widgets/W69.jsx": 1219,
+   "src/widgets/W70.jsx": 1422,
+   "src/widgets/W71.jsx": 2451,
+   "src/widgets/W72.jsx": 1664,
+   "src/widgets/W73.jsx": 889,
+   "src/widgets/W74.jsx": 1019,
+   "src/widgets/W75.jsx": 1421,
+   "src/widgets/W76.jsx": 1334,
+   "src/widgets/W77.jsx": 1323,
+   "src/widgets/W78.jsx": 1841,
+   "src/widgets/W79.jsx": 1268,
+   "src/widgets/W80.jsx": 1176,
+   "src/widgets/W81.jsx": 1700,
+   "src/widgets/W82.jsx": 1040,
+   "src/widgets/W83.jsx": 1040,
+   "src/widgets/W84.jsx": 1891,
+   "src/widgets/W85.jsx": 1005,
+   "src/widgets/W86.jsx": 1275,
+   "src/widgets/W87.jsx": 1434,
+   "src/widgets/W88.jsx": 1046,
+   "src/widgets/W89.jsx": 1845,
+   "src/widgets/W90.jsx": 1055,
+   "src/widgets/W91.jsx": 1105,
+   "src/widgets/W92.jsx": 1631,
+   "src/widgets/W93.jsx": 1861,
+   "src/widgets/W94.jsx": 2997,
+   "src/widgets/W95.jsx": 1103,
+   "src/widgets/W96.jsx": 1638,
+   "src/widgets/W97.jsx": 453,
+   "src/widgets/W98.jsx": 1015,
+   "src/widgets/W99.jsx": 474,
+   "src/widgets/W100.jsx": 2425,
+   "src/widgets/W101.jsx": 1336,
+   "src/widgets/W102.jsx": 1021,
+   "src/widgets/W103.jsx": 1773,
+   "src/widgets/W104.jsx": 1734,
+   "src/widgets/W105.jsx": 1871,
+   "src/widgets/W106.jsx": 1957,
+   "src/widgets/W107.jsx": 2051,
+   "src/widgets/W108.jsx": 1923,
+   "src/widgets/W109.jsx": 1366,
+   "src/widgets/W110.jsx": 1315,
+   "src/widgets/W111.jsx": 2040,
+   "src/widgets/W112.jsx": 939,
+   "src/widgets/W113.jsx": 2233,
+   "src/widgets/W114.jsx": 2027,
+   "src/widgets/W115.jsx": 1994,
+   "src/widgets/W116.jsx": 1513,
+   "src/widgets/W117.jsx": 1501,
+   "src/widgets/W118.jsx": 1985,
+   "src/widgets/W119.jsx": 2137,
+   "src/widgets/W120.jsx": 959,
+   "src/widgets/W121.jsx": 1673,
+   "src/widgets/W122.jsx": 2470,
+   "src/widgets/W123.jsx": 979,
+   "src/widgets/W124.jsx": 1388,
+   "src/widgets/W125.jsx": 986,
+   "src/widgets/W126.jsx": 880,
+   "src/widgets/W127.jsx": 1455,
+   "src/widgets/W128.jsx": 1313,
+   "src/App.jsx": 2573,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 2,
+  "options": {
+   "size": 128,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "811fa2d483d75882",
+  "html": {
+   "raw": 321,
+   "br": 151
+  },
+  "js": {
+   "raw": 220230,
+   "br": 38822
+  },
+  "total": {
+   "raw": 220551,
+   "br": 38973
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18445,
+    "tooling": 670,
+    "app": 201115
+   },
+   "br": {
+    "runtime": 6633,
+    "app": 32189
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 132
+  },
+  "bundle": {
+   "raw": 220480,
+   "br": 38954,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8045,
+   "node_modules/solid-js/web/dist/web.js": 4951,
+   "node_modules/solid-js/store/dist/store.js": 5449,
+   "src/store.js": 9928,
+   "src/widgets/W1.jsx": 853,
+   "src/widgets/W2.jsx": 697,
+   "src/list.js": 59,
+   "src/widgets/W3.jsx": 2811,
+   "src/widgets/W4.jsx": 884,
+   "src/widgets/W5.jsx": 3474,
+   "src/widgets/W6.jsx": 954,
+   "src/widgets/W7.jsx": 896,
+   "src/widgets/W8.jsx": 936,
+   "src/widgets/W9.jsx": 1152,
+   "src/widgets/W10.jsx": 3144,
+   "src/widgets/W11.jsx": 832,
+   "src/widgets/W12.jsx": 1110,
+   "src/widgets/W13.jsx": 1412,
+   "src/widgets/W14.jsx": 1832,
+   "src/widgets/W15.jsx": 2698,
+   "src/widgets/W16.jsx": 970,
+   "src/widgets/W17.jsx": 1695,
+   "src/widgets/W18.jsx": 880,
+   "src/widgets/W19.jsx": 2547,
+   "src/widgets/W20.jsx": 1282,
+   "src/widgets/W21.jsx": 1109,
+   "src/widgets/W22.jsx": 1093,
+   "src/widgets/W23.jsx": 862,
+   "src/widgets/W24.jsx": 1839,
+   "src/widgets/W25.jsx": 1589,
+   "src/widgets/W26.jsx": 2935,
+   "src/widgets/W27.jsx": 1149,
+   "src/widgets/W28.jsx": 1734,
+   "src/widgets/W29.jsx": 1179,
+   "src/widgets/W30.jsx": 1752,
+   "src/widgets/W31.jsx": 1527,
+   "src/widgets/W32.jsx": 1180,
+   "src/widgets/W33.jsx": 1777,
+   "src/widgets/W34.jsx": 1577,
+   "src/widgets/W35.jsx": 1699,
+   "src/widgets/W36.jsx": 2255,
+   "src/widgets/W37.jsx": 1309,
+   "src/widgets/W38.jsx": 1771,
+   "src/widgets/W39.jsx": 1364,
+   "src/widgets/W40.jsx": 804,
+   "src/widgets/W41.jsx": 1778,
+   "src/widgets/W42.jsx": 1696,
+   "src/widgets/W43.jsx": 3130,
+   "src/widgets/W44.jsx": 727,
+   "src/widgets/W45.jsx": 1091,
+   "src/widgets/W46.jsx": 1488,
+   "src/widgets/W47.jsx": 1980,
+   "src/widgets/W48.jsx": 1099,
+   "src/widgets/W49.jsx": 1114,
+   "src/widgets/W50.jsx": 1324,
+   "src/widgets/W51.jsx": 952,
+   "src/widgets/W52.jsx": 1695,
+   "src/widgets/W53.jsx": 1460,
+   "src/widgets/W54.jsx": 1137,
+   "src/widgets/W55.jsx": 1488,
+   "src/widgets/W56.jsx": 1347,
+   "src/widgets/W57.jsx": 834,
+   "src/widgets/W58.jsx": 1173,
+   "src/widgets/W59.jsx": 1490,
+   "src/widgets/W60.jsx": 1134,
+   "src/widgets/W61.jsx": 976,
+   "src/widgets/W62.jsx": 1860,
+   "src/widgets/W63.jsx": 1185,
+   "src/widgets/W64.jsx": 874,
+   "src/widgets/W65.jsx": 1013,
+   "src/widgets/W66.jsx": 892,
+   "src/widgets/W67.jsx": 1273,
+   "src/widgets/W68.jsx": 1159,
+   "src/widgets/W69.jsx": 2311,
+   "src/widgets/W70.jsx": 2272,
+   "src/widgets/W71.jsx": 1892,
+   "src/widgets/W72.jsx": 1248,
+   "src/widgets/W73.jsx": 2767,
+   "src/widgets/W74.jsx": 1287,
+   "src/widgets/W75.jsx": 1247,
+   "src/widgets/W76.jsx": 1613,
+   "src/widgets/W77.jsx": 628,
+   "src/widgets/W78.jsx": 1754,
+   "src/widgets/W79.jsx": 1238,
+   "src/widgets/W80.jsx": 944,
+   "src/widgets/W81.jsx": 1520,
+   "src/widgets/W82.jsx": 1137,
+   "src/widgets/W83.jsx": 1746,
+   "src/widgets/W84.jsx": 900,
+   "src/widgets/W85.jsx": 644,
+   "src/widgets/W86.jsx": 1358,
+   "src/widgets/W87.jsx": 2353,
+   "src/widgets/W88.jsx": 1288,
+   "src/widgets/W89.jsx": 1879,
+   "src/widgets/W90.jsx": 1144,
+   "src/widgets/W91.jsx": 1262,
+   "src/widgets/W92.jsx": 1449,
+   "src/widgets/W93.jsx": 1974,
+   "src/widgets/W94.jsx": 2138,
+   "src/widgets/W95.jsx": 1819,
+   "src/widgets/W96.jsx": 721,
+   "src/widgets/W97.jsx": 772,
+   "src/widgets/W98.jsx": 914,
+   "src/widgets/W99.jsx": 1794,
+   "src/widgets/W100.jsx": 2080,
+   "src/widgets/W101.jsx": 1475,
+   "src/widgets/W102.jsx": 1375,
+   "src/widgets/W103.jsx": 1638,
+   "src/widgets/W104.jsx": 1089,
+   "src/widgets/W105.jsx": 984,
+   "src/widgets/W106.jsx": 1165,
+   "src/widgets/W107.jsx": 1752,
+   "src/widgets/W108.jsx": 2242,
+   "src/widgets/W109.jsx": 1967,
+   "src/widgets/W110.jsx": 1027,
+   "src/widgets/W111.jsx": 2603,
+   "src/widgets/W112.jsx": 1425,
+   "src/widgets/W113.jsx": 691,
+   "src/widgets/W114.jsx": 1571,
+   "src/widgets/W115.jsx": 1645,
+   "src/widgets/W116.jsx": 1095,
+   "src/widgets/W117.jsx": 2047,
+   "src/widgets/W118.jsx": 1631,
+   "src/widgets/W119.jsx": 2034,
+   "src/widgets/W120.jsx": 1139,
+   "src/widgets/W121.jsx": 1145,
+   "src/widgets/W122.jsx": 1608,
+   "src/widgets/W123.jsx": 2034,
+   "src/widgets/W124.jsx": 1258,
+   "src/widgets/W125.jsx": 858,
+   "src/widgets/W126.jsx": 1387,
+   "src/widgets/W127.jsx": 1537,
+   "src/widgets/W128.jsx": 1108,
+   "src/App.jsx": 2573,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 3,
+  "options": {
+   "size": 128,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "3be5733fc5837853",
+  "html": {
+   "raw": 321,
+   "br": 151
+  },
+  "js": {
+   "raw": 227918,
+   "br": 39644
+  },
+  "total": {
+   "raw": 228239,
+   "br": 39795
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18445,
+    "tooling": 670,
+    "app": 208803
+   },
+   "br": {
+    "runtime": 6633,
+    "app": 33011
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 137
+  },
+  "bundle": {
+   "raw": 228168,
+   "br": 39781,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8045,
+   "node_modules/solid-js/web/dist/web.js": 4951,
+   "node_modules/solid-js/store/dist/store.js": 5449,
+   "src/store.js": 10609,
+   "src/widgets/W1.jsx": 2124,
+   "src/list.js": 59,
+   "src/widgets/W2.jsx": 1809,
+   "src/widgets/W3.jsx": 1753,
+   "src/widgets/W4.jsx": 1533,
+   "src/widgets/W5.jsx": 2455,
+   "src/widgets/W6.jsx": 2993,
+   "src/widgets/W7.jsx": 2004,
+   "src/widgets/W8.jsx": 880,
+   "src/widgets/W9.jsx": 545,
+   "src/widgets/W10.jsx": 1332,
+   "src/widgets/W11.jsx": 647,
+   "src/widgets/W12.jsx": 1143,
+   "src/widgets/W13.jsx": 1922,
+   "src/widgets/W14.jsx": 1361,
+   "src/widgets/W15.jsx": 1286,
+   "src/widgets/W16.jsx": 1093,
+   "src/widgets/W17.jsx": 1096,
+   "src/widgets/W18.jsx": 1660,
+   "src/widgets/W19.jsx": 1603,
+   "src/widgets/W20.jsx": 1050,
+   "src/widgets/W21.jsx": 1541,
+   "src/widgets/W22.jsx": 1564,
+   "src/widgets/W23.jsx": 1397,
+   "src/widgets/W24.jsx": 1489,
+   "src/widgets/W25.jsx": 3175,
+   "src/widgets/W26.jsx": 1061,
+   "src/widgets/W27.jsx": 1305,
+   "src/widgets/W28.jsx": 1620,
+   "src/widgets/W29.jsx": 619,
+   "src/widgets/W30.jsx": 2413,
+   "src/widgets/W31.jsx": 1450,
+   "src/widgets/W32.jsx": 1432,
+   "src/widgets/W33.jsx": 1852,
+   "src/widgets/W34.jsx": 1669,
+   "src/widgets/W35.jsx": 450,
+   "src/widgets/W36.jsx": 1665,
+   "src/widgets/W37.jsx": 983,
+   "src/widgets/W38.jsx": 1490,
+   "src/widgets/W39.jsx": 1396,
+   "src/widgets/W40.jsx": 1424,
+   "src/widgets/W41.jsx": 2160,
+   "src/widgets/W42.jsx": 1728,
+   "src/widgets/W43.jsx": 1949,
+   "src/widgets/W44.jsx": 1385,
+   "src/widgets/W45.jsx": 807,
+   "src/widgets/W46.jsx": 2307,
+   "src/widgets/W47.jsx": 1675,
+   "src/widgets/W48.jsx": 1422,
+   "src/widgets/W49.jsx": 579,
+   "src/widgets/W50.jsx": 1115,
+   "src/widgets/W51.jsx": 734,
+   "src/widgets/W52.jsx": 1955,
+   "src/widgets/W53.jsx": 930,
+   "src/widgets/W54.jsx": 781,
+   "src/widgets/W55.jsx": 1175,
+   "src/widgets/W56.jsx": 1839,
+   "src/widgets/W57.jsx": 1720,
+   "src/widgets/W58.jsx": 1831,
+   "src/widgets/W59.jsx": 1556,
+   "src/widgets/W60.jsx": 1722,
+   "src/widgets/W61.jsx": 1715,
+   "src/widgets/W62.jsx": 2137,
+   "src/widgets/W63.jsx": 1140,
+   "src/widgets/W64.jsx": 1297,
+   "src/widgets/W65.jsx": 2163,
+   "src/widgets/W66.jsx": 1071,
+   "src/widgets/W67.jsx": 2172,
+   "src/widgets/W68.jsx": 1714,
+   "src/widgets/W69.jsx": 727,
+   "src/widgets/W70.jsx": 1915,
+   "src/widgets/W71.jsx": 1799,
+   "src/widgets/W72.jsx": 1552,
+   "src/widgets/W73.jsx": 2114,
+   "src/widgets/W74.jsx": 2112,
+   "src/widgets/W75.jsx": 3088,
+   "src/widgets/W76.jsx": 656,
+   "src/widgets/W77.jsx": 1883,
+   "src/widgets/W78.jsx": 2057,
+   "src/widgets/W79.jsx": 718,
+   "src/widgets/W80.jsx": 1651,
+   "src/widgets/W81.jsx": 1080,
+   "src/widgets/W82.jsx": 2141,
+   "src/widgets/W83.jsx": 1305,
+   "src/widgets/W84.jsx": 860,
+   "src/widgets/W85.jsx": 1202,
+   "src/widgets/W86.jsx": 1041,
+   "src/widgets/W87.jsx": 1299,
+   "src/widgets/W88.jsx": 1169,
+   "src/widgets/W89.jsx": 898,
+   "src/widgets/W90.jsx": 1065,
+   "src/widgets/W91.jsx": 924,
+   "src/widgets/W92.jsx": 2114,
+   "src/widgets/W93.jsx": 1304,
+   "src/widgets/W94.jsx": 2147,
+   "src/widgets/W95.jsx": 1836,
+   "src/widgets/W96.jsx": 2509,
+   "src/widgets/W97.jsx": 1966,
+   "src/widgets/W98.jsx": 622,
+   "src/widgets/W99.jsx": 1413,
+   "src/widgets/W100.jsx": 1704,
+   "src/widgets/W101.jsx": 707,
+   "src/widgets/W102.jsx": 1216,
+   "src/widgets/W103.jsx": 809,
+   "src/widgets/W104.jsx": 1084,
+   "src/widgets/W105.jsx": 2430,
+   "src/widgets/W106.jsx": 1681,
+   "src/widgets/W107.jsx": 1331,
+   "src/widgets/W108.jsx": 1549,
+   "src/widgets/W109.jsx": 1763,
+   "src/widgets/W110.jsx": 1633,
+   "src/widgets/W111.jsx": 1324,
+   "src/widgets/W112.jsx": 1551,
+   "src/widgets/W113.jsx": 1649,
+   "src/widgets/W114.jsx": 1330,
+   "src/widgets/W115.jsx": 861,
+   "src/widgets/W116.jsx": 2997,
+   "src/widgets/W117.jsx": 1923,
+   "src/widgets/W118.jsx": 2926,
+   "src/widgets/W119.jsx": 1528,
+   "src/widgets/W120.jsx": 939,
+   "src/widgets/W121.jsx": 771,
+   "src/widgets/W122.jsx": 1662,
+   "src/widgets/W123.jsx": 2085,
+   "src/widgets/W124.jsx": 1463,
+   "src/widgets/W125.jsx": 998,
+   "src/widgets/W126.jsx": 2261,
+   "src/widgets/W127.jsx": 2615,
+   "src/widgets/W128.jsx": 542,
+   "src/App.jsx": 2573,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 1,
+  "options": {
+   "size": 256,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "d1ae0e015241ac15",
+  "html": {
+   "raw": 321,
+   "br": 142
+  },
+  "js": {
+   "raw": 431552,
+   "br": 65458
+  },
+  "total": {
+   "raw": 431873,
+   "br": 65600
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18443,
+    "tooling": 670,
+    "app": 412439
+   },
+   "br": {
+    "runtime": 6629,
+    "app": 58829
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 167
+  },
+  "bundle": {
+   "raw": 431802,
+   "br": 65625,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8043,
+   "node_modules/solid-js/web/dist/web.js": 4951,
+   "node_modules/solid-js/store/dist/store.js": 5449,
+   "src/store.js": 20082,
+   "src/list.js": 59,
+   "src/widgets/W1.jsx": 2174,
+   "src/widgets/W2.jsx": 534,
+   "src/widgets/W3.jsx": 1366,
+   "src/widgets/W4.jsx": 1465,
+   "src/widgets/W5.jsx": 1059,
+   "src/widgets/W6.jsx": 1023,
+   "src/widgets/W7.jsx": 1164,
+   "src/widgets/W8.jsx": 1444,
+   "src/widgets/W9.jsx": 1967,
+   "src/widgets/W10.jsx": 1742,
+   "src/widgets/W11.jsx": 1699,
+   "src/widgets/W12.jsx": 1383,
+   "src/widgets/W13.jsx": 1931,
+   "src/widgets/W14.jsx": 1976,
+   "src/widgets/W15.jsx": 1957,
+   "src/widgets/W16.jsx": 851,
+   "src/widgets/W17.jsx": 1364,
+   "src/widgets/W18.jsx": 1003,
+   "src/widgets/W19.jsx": 1150,
+   "src/widgets/W20.jsx": 2311,
+   "src/widgets/W21.jsx": 798,
+   "src/widgets/W22.jsx": 1047,
+   "src/widgets/W23.jsx": 3791,
+   "src/widgets/W24.jsx": 927,
+   "src/widgets/W25.jsx": 701,
+   "src/widgets/W26.jsx": 2047,
+   "src/widgets/W27.jsx": 1810,
+   "src/widgets/W28.jsx": 2130,
+   "src/widgets/W29.jsx": 1838,
+   "src/widgets/W30.jsx": 1591,
+   "src/widgets/W31.jsx": 1559,
+   "src/widgets/W32.jsx": 2050,
+   "src/widgets/W33.jsx": 2444,
+   "src/widgets/W34.jsx": 1633,
+   "src/widgets/W35.jsx": 2147,
+   "src/widgets/W36.jsx": 1211,
+   "src/widgets/W37.jsx": 2143,
+   "src/widgets/W38.jsx": 1624,
+   "src/widgets/W39.jsx": 670,
+   "src/widgets/W40.jsx": 1098,
+   "src/widgets/W41.jsx": 1524,
+   "src/widgets/W42.jsx": 2092,
+   "src/widgets/W43.jsx": 861,
+   "src/widgets/W44.jsx": 2775,
+   "src/widgets/W45.jsx": 1731,
+   "src/widgets/W46.jsx": 1338,
+   "src/widgets/W47.jsx": 914,
+   "src/widgets/W48.jsx": 1560,
+   "src/widgets/W49.jsx": 1078,
+   "src/widgets/W50.jsx": 1166,
+   "src/widgets/W51.jsx": 1974,
+   "src/widgets/W52.jsx": 1337,
+   "src/widgets/W53.jsx": 2237,
+   "src/widgets/W54.jsx": 1148,
+   "src/widgets/W55.jsx": 2046,
+   "src/widgets/W56.jsx": 946,
+   "src/widgets/W57.jsx": 2020,
+   "src/widgets/W58.jsx": 602,
+   "src/widgets/W59.jsx": 1120,
+   "src/widgets/W60.jsx": 2904,
+   "src/widgets/W61.jsx": 1735,
+   "src/widgets/W62.jsx": 2943,
+   "src/widgets/W63.jsx": 1260,
+   "src/widgets/W64.jsx": 1343,
+   "src/widgets/W65.jsx": 1746,
+   "src/widgets/W66.jsx": 314,
+   "src/widgets/W67.jsx": 1980,
+   "src/widgets/W68.jsx": 1083,
+   "src/widgets/W69.jsx": 1219,
+   "src/widgets/W70.jsx": 1422,
+   "src/widgets/W71.jsx": 2451,
+   "src/widgets/W72.jsx": 1664,
+   "src/widgets/W73.jsx": 889,
+   "src/widgets/W74.jsx": 1019,
+   "src/widgets/W75.jsx": 1421,
+   "src/widgets/W76.jsx": 1334,
+   "src/widgets/W77.jsx": 1323,
+   "src/widgets/W78.jsx": 1841,
+   "src/widgets/W79.jsx": 1268,
+   "src/widgets/W80.jsx": 1176,
+   "src/widgets/W81.jsx": 1700,
+   "src/widgets/W82.jsx": 1040,
+   "src/widgets/W83.jsx": 1040,
+   "src/widgets/W84.jsx": 1891,
+   "src/widgets/W85.jsx": 1005,
+   "src/widgets/W86.jsx": 1275,
+   "src/widgets/W87.jsx": 1434,
+   "src/widgets/W88.jsx": 1046,
+   "src/widgets/W89.jsx": 1845,
+   "src/widgets/W90.jsx": 1055,
+   "src/widgets/W91.jsx": 1105,
+   "src/widgets/W92.jsx": 1631,
+   "src/widgets/W93.jsx": 1861,
+   "src/widgets/W94.jsx": 2997,
+   "src/widgets/W95.jsx": 1103,
+   "src/widgets/W96.jsx": 1638,
+   "src/widgets/W97.jsx": 453,
+   "src/widgets/W98.jsx": 1015,
+   "src/widgets/W99.jsx": 474,
+   "src/widgets/W100.jsx": 2425,
+   "src/widgets/W101.jsx": 1336,
+   "src/widgets/W102.jsx": 1021,
+   "src/widgets/W103.jsx": 1773,
+   "src/widgets/W104.jsx": 1734,
+   "src/widgets/W105.jsx": 1871,
+   "src/widgets/W106.jsx": 1957,
+   "src/widgets/W107.jsx": 2051,
+   "src/widgets/W108.jsx": 1923,
+   "src/widgets/W109.jsx": 1366,
+   "src/widgets/W110.jsx": 1315,
+   "src/widgets/W111.jsx": 2040,
+   "src/widgets/W112.jsx": 939,
+   "src/widgets/W113.jsx": 2233,
+   "src/widgets/W114.jsx": 2027,
+   "src/widgets/W115.jsx": 1994,
+   "src/widgets/W116.jsx": 1513,
+   "src/widgets/W117.jsx": 1501,
+   "src/widgets/W118.jsx": 1985,
+   "src/widgets/W119.jsx": 2137,
+   "src/widgets/W120.jsx": 959,
+   "src/widgets/W121.jsx": 1673,
+   "src/widgets/W122.jsx": 2470,
+   "src/widgets/W123.jsx": 979,
+   "src/widgets/W124.jsx": 1388,
+   "src/widgets/W125.jsx": 986,
+   "src/widgets/W126.jsx": 880,
+   "src/widgets/W127.jsx": 1455,
+   "src/widgets/W128.jsx": 1313,
+   "src/widgets/W129.jsx": 2080,
+   "src/widgets/W130.jsx": 1615,
+   "src/widgets/W131.jsx": 1434,
+   "src/widgets/W132.jsx": 1045,
+   "src/widgets/W133.jsx": 1369,
+   "src/widgets/W134.jsx": 1262,
+   "src/widgets/W135.jsx": 2640,
+   "src/widgets/W136.jsx": 924,
+   "src/widgets/W137.jsx": 1020,
+   "src/widgets/W138.jsx": 2119,
+   "src/widgets/W139.jsx": 810,
+   "src/widgets/W140.jsx": 1830,
+   "src/widgets/W141.jsx": 1310,
+   "src/widgets/W142.jsx": 2414,
+   "src/widgets/W143.jsx": 1414,
+   "src/widgets/W144.jsx": 1080,
+   "src/widgets/W145.jsx": 2014,
+   "src/widgets/W146.jsx": 1896,
+   "src/widgets/W147.jsx": 2506,
+   "src/widgets/W148.jsx": 1462,
+   "src/widgets/W149.jsx": 1970,
+   "src/widgets/W150.jsx": 929,
+   "src/widgets/W151.jsx": 1350,
+   "src/widgets/W152.jsx": 1433,
+   "src/widgets/W153.jsx": 1186,
+   "src/widgets/W154.jsx": 1164,
+   "src/widgets/W155.jsx": 1744,
+   "src/widgets/W156.jsx": 1363,
+   "src/widgets/W157.jsx": 1408,
+   "src/widgets/W158.jsx": 1636,
+   "src/widgets/W159.jsx": 2352,
+   "src/widgets/W160.jsx": 1892,
+   "src/widgets/W161.jsx": 1917,
+   "src/widgets/W162.jsx": 1313,
+   "src/widgets/W163.jsx": 2724,
+   "src/widgets/W164.jsx": 842,
+   "src/widgets/W165.jsx": 1287,
+   "src/widgets/W166.jsx": 1619,
+   "src/widgets/W167.jsx": 1245,
+   "src/widgets/W168.jsx": 1415,
+   "src/widgets/W169.jsx": 2314,
+   "src/widgets/W170.jsx": 1840,
+   "src/widgets/W171.jsx": 925,
+   "src/widgets/W172.jsx": 1052,
+   "src/widgets/W173.jsx": 2629,
+   "src/widgets/W174.jsx": 452,
+   "src/widgets/W175.jsx": 855,
+   "src/widgets/W176.jsx": 1120,
+   "src/widgets/W177.jsx": 1312,
+   "src/widgets/W178.jsx": 1655,
+   "src/widgets/W179.jsx": 661,
+   "src/widgets/W180.jsx": 500,
+   "src/widgets/W181.jsx": 1941,
+   "src/widgets/W182.jsx": 883,
+   "src/widgets/W183.jsx": 759,
+   "src/widgets/W184.jsx": 1418,
+   "src/widgets/W185.jsx": 1160,
+   "src/widgets/W186.jsx": 1162,
+   "src/widgets/W187.jsx": 840,
+   "src/widgets/W188.jsx": 1076,
+   "src/widgets/W189.jsx": 1258,
+   "src/widgets/W190.jsx": 2065,
+   "src/widgets/W191.jsx": 1548,
+   "src/widgets/W192.jsx": 884,
+   "src/widgets/W193.jsx": 2243,
+   "src/widgets/W194.jsx": 1802,
+   "src/widgets/W195.jsx": 1550,
+   "src/widgets/W196.jsx": 1862,
+   "src/widgets/W197.jsx": 898,
+   "src/widgets/W198.jsx": 783,
+   "src/widgets/W199.jsx": 853,
+   "src/widgets/W200.jsx": 929,
+   "src/widgets/W201.jsx": 2972,
+   "src/widgets/W202.jsx": 2326,
+   "src/widgets/W203.jsx": 2328,
+   "src/widgets/W204.jsx": 1687,
+   "src/widgets/W205.jsx": 1381,
+   "src/widgets/W206.jsx": 1071,
+   "src/widgets/W207.jsx": 1456,
+   "src/widgets/W208.jsx": 758,
+   "src/widgets/W209.jsx": 1886,
+   "src/widgets/W210.jsx": 1556,
+   "src/widgets/W211.jsx": 785,
+   "src/widgets/W212.jsx": 834,
+   "src/widgets/W213.jsx": 1780,
+   "src/widgets/W214.jsx": 1478,
+   "src/widgets/W215.jsx": 579,
+   "src/widgets/W216.jsx": 1240,
+   "src/widgets/W217.jsx": 509,
+   "src/widgets/W218.jsx": 2388,
+   "src/widgets/W219.jsx": 2094,
+   "src/widgets/W220.jsx": 2175,
+   "src/widgets/W221.jsx": 1317,
+   "src/widgets/W222.jsx": 1576,
+   "src/widgets/W223.jsx": 650,
+   "src/widgets/W224.jsx": 1089,
+   "src/widgets/W225.jsx": 1207,
+   "src/widgets/W226.jsx": 2264,
+   "src/widgets/W227.jsx": 1191,
+   "src/widgets/W228.jsx": 1412,
+   "src/widgets/W229.jsx": 1091,
+   "src/widgets/W230.jsx": 1452,
+   "src/widgets/W231.jsx": 1293,
+   "src/widgets/W232.jsx": 1171,
+   "src/widgets/W233.jsx": 2214,
+   "src/widgets/W234.jsx": 509,
+   "src/widgets/W235.jsx": 1508,
+   "src/widgets/W236.jsx": 1178,
+   "src/widgets/W237.jsx": 2167,
+   "src/widgets/W238.jsx": 2411,
+   "src/widgets/W239.jsx": 1558,
+   "src/widgets/W240.jsx": 1098,
+   "src/widgets/W241.jsx": 3244,
+   "src/widgets/W242.jsx": 1485,
+   "src/widgets/W243.jsx": 1912,
+   "src/widgets/W244.jsx": 1471,
+   "src/widgets/W245.jsx": 475,
+   "src/widgets/W246.jsx": 896,
+   "src/widgets/W247.jsx": 1470,
+   "src/widgets/W248.jsx": 1515,
+   "src/widgets/W249.jsx": 1178,
+   "src/widgets/W250.jsx": 2539,
+   "src/widgets/W251.jsx": 2006,
+   "src/widgets/W252.jsx": 2243,
+   "src/widgets/W253.jsx": 1022,
+   "src/widgets/W254.jsx": 1998,
+   "src/widgets/W255.jsx": 1437,
+   "src/widgets/W256.jsx": 2023,
+   "src/App.jsx": 5005,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 2,
+  "options": {
+   "size": 256,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "ef64a8b7ba5ce7dc",
+  "html": {
+   "raw": 321,
+   "br": 153
+  },
+  "js": {
+   "raw": 431841,
+   "br": 65170
+  },
+  "total": {
+   "raw": 432162,
+   "br": 65323
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18453,
+    "tooling": 670,
+    "app": 412718
+   },
+   "br": {
+    "runtime": 6635,
+    "app": 58535
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 227
+  },
+  "bundle": {
+   "raw": 432091,
+   "br": 65397,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8039,
+   "node_modules/solid-js/web/dist/web.js": 4958,
+   "node_modules/solid-js/store/dist/store.js": 5456,
+   "src/store.js": 20553,
+   "src/widgets/W1.jsx": 853,
+   "src/widgets/W2.jsx": 697,
+   "src/list.js": 59,
+   "src/widgets/W3.jsx": 2811,
+   "src/widgets/W4.jsx": 884,
+   "src/widgets/W5.jsx": 3467,
+   "src/widgets/W6.jsx": 954,
+   "src/widgets/W7.jsx": 896,
+   "src/widgets/W8.jsx": 936,
+   "src/widgets/W9.jsx": 1152,
+   "src/widgets/W10.jsx": 3144,
+   "src/widgets/W11.jsx": 832,
+   "src/widgets/W12.jsx": 1110,
+   "src/widgets/W13.jsx": 1412,
+   "src/widgets/W14.jsx": 1832,
+   "src/widgets/W15.jsx": 2698,
+   "src/widgets/W16.jsx": 970,
+   "src/widgets/W17.jsx": 1695,
+   "src/widgets/W18.jsx": 880,
+   "src/widgets/W19.jsx": 2547,
+   "src/widgets/W20.jsx": 1282,
+   "src/widgets/W21.jsx": 1109,
+   "src/widgets/W22.jsx": 1093,
+   "src/widgets/W23.jsx": 862,
+   "src/widgets/W24.jsx": 1839,
+   "src/widgets/W25.jsx": 1589,
+   "src/widgets/W26.jsx": 2935,
+   "src/widgets/W27.jsx": 1149,
+   "src/widgets/W28.jsx": 1734,
+   "src/widgets/W29.jsx": 1179,
+   "src/widgets/W30.jsx": 1752,
+   "src/widgets/W31.jsx": 1527,
+   "src/widgets/W32.jsx": 1180,
+   "src/widgets/W33.jsx": 1777,
+   "src/widgets/W34.jsx": 1577,
+   "src/widgets/W35.jsx": 1699,
+   "src/widgets/W36.jsx": 2255,
+   "src/widgets/W37.jsx": 1309,
+   "src/widgets/W38.jsx": 1771,
+   "src/widgets/W39.jsx": 1364,
+   "src/widgets/W40.jsx": 804,
+   "src/widgets/W41.jsx": 1778,
+   "src/widgets/W42.jsx": 1696,
+   "src/widgets/W43.jsx": 3127,
+   "src/widgets/W44.jsx": 727,
+   "src/widgets/W45.jsx": 1091,
+   "src/widgets/W46.jsx": 1488,
+   "src/widgets/W47.jsx": 1980,
+   "src/widgets/W48.jsx": 1099,
+   "src/widgets/W49.jsx": 1114,
+   "src/widgets/W50.jsx": 1324,
+   "src/widgets/W51.jsx": 952,
+   "src/widgets/W52.jsx": 1695,
+   "src/widgets/W53.jsx": 1460,
+   "src/widgets/W54.jsx": 1137,
+   "src/widgets/W55.jsx": 1488,
+   "src/widgets/W56.jsx": 1347,
+   "src/widgets/W57.jsx": 834,
+   "src/widgets/W58.jsx": 1173,
+   "src/widgets/W59.jsx": 1490,
+   "src/widgets/W60.jsx": 1134,
+   "src/widgets/W61.jsx": 976,
+   "src/widgets/W62.jsx": 1860,
+   "src/widgets/W63.jsx": 1185,
+   "src/widgets/W64.jsx": 874,
+   "src/widgets/W65.jsx": 1013,
+   "src/widgets/W66.jsx": 892,
+   "src/widgets/W67.jsx": 1273,
+   "src/widgets/W68.jsx": 1159,
+   "src/widgets/W69.jsx": 2311,
+   "src/widgets/W70.jsx": 2272,
+   "src/widgets/W71.jsx": 1892,
+   "src/widgets/W72.jsx": 1248,
+   "src/widgets/W73.jsx": 2767,
+   "src/widgets/W74.jsx": 1287,
+   "src/widgets/W75.jsx": 1247,
+   "src/widgets/W76.jsx": 1613,
+   "src/widgets/W77.jsx": 628,
+   "src/widgets/W78.jsx": 1754,
+   "src/widgets/W79.jsx": 1238,
+   "src/widgets/W80.jsx": 944,
+   "src/widgets/W81.jsx": 1520,
+   "src/widgets/W82.jsx": 1137,
+   "src/widgets/W83.jsx": 1746,
+   "src/widgets/W84.jsx": 900,
+   "src/widgets/W85.jsx": 644,
+   "src/widgets/W86.jsx": 1358,
+   "src/widgets/W87.jsx": 2353,
+   "src/widgets/W88.jsx": 1288,
+   "src/widgets/W89.jsx": 1879,
+   "src/widgets/W90.jsx": 1144,
+   "src/widgets/W91.jsx": 1262,
+   "src/widgets/W92.jsx": 1449,
+   "src/widgets/W93.jsx": 1974,
+   "src/widgets/W94.jsx": 2138,
+   "src/widgets/W95.jsx": 1819,
+   "src/widgets/W96.jsx": 721,
+   "src/widgets/W97.jsx": 772,
+   "src/widgets/W98.jsx": 914,
+   "src/widgets/W99.jsx": 1794,
+   "src/widgets/W100.jsx": 2080,
+   "src/widgets/W101.jsx": 1475,
+   "src/widgets/W102.jsx": 1375,
+   "src/widgets/W103.jsx": 1638,
+   "src/widgets/W104.jsx": 1089,
+   "src/widgets/W105.jsx": 984,
+   "src/widgets/W106.jsx": 1165,
+   "src/widgets/W107.jsx": 1752,
+   "src/widgets/W108.jsx": 2242,
+   "src/widgets/W109.jsx": 1967,
+   "src/widgets/W110.jsx": 1027,
+   "src/widgets/W111.jsx": 2603,
+   "src/widgets/W112.jsx": 1425,
+   "src/widgets/W113.jsx": 691,
+   "src/widgets/W114.jsx": 1571,
+   "src/widgets/W115.jsx": 1645,
+   "src/widgets/W116.jsx": 1095,
+   "src/widgets/W117.jsx": 2047,
+   "src/widgets/W118.jsx": 1631,
+   "src/widgets/W119.jsx": 2034,
+   "src/widgets/W120.jsx": 1139,
+   "src/widgets/W121.jsx": 1145,
+   "src/widgets/W122.jsx": 1608,
+   "src/widgets/W123.jsx": 2034,
+   "src/widgets/W124.jsx": 1258,
+   "src/widgets/W125.jsx": 858,
+   "src/widgets/W126.jsx": 1387,
+   "src/widgets/W127.jsx": 1537,
+   "src/widgets/W128.jsx": 1108,
+   "src/widgets/W129.jsx": 1343,
+   "src/widgets/W130.jsx": 1294,
+   "src/widgets/W131.jsx": 1913,
+   "src/widgets/W132.jsx": 2043,
+   "src/widgets/W133.jsx": 1509,
+   "src/widgets/W134.jsx": 1106,
+   "src/widgets/W135.jsx": 1237,
+   "src/widgets/W136.jsx": 1146,
+   "src/widgets/W137.jsx": 701,
+   "src/widgets/W138.jsx": 1347,
+   "src/widgets/W139.jsx": 2409,
+   "src/widgets/W140.jsx": 2344,
+   "src/widgets/W141.jsx": 2892,
+   "src/widgets/W142.jsx": 371,
+   "src/widgets/W143.jsx": 2907,
+   "src/widgets/W144.jsx": 1454,
+   "src/widgets/W145.jsx": 1186,
+   "src/widgets/W146.jsx": 1032,
+   "src/widgets/W147.jsx": 2394,
+   "src/widgets/W148.jsx": 1299,
+   "src/widgets/W149.jsx": 950,
+   "src/widgets/W150.jsx": 1144,
+   "src/widgets/W151.jsx": 2792,
+   "src/widgets/W152.jsx": 1537,
+   "src/widgets/W153.jsx": 1324,
+   "src/widgets/W154.jsx": 1898,
+   "src/widgets/W155.jsx": 828,
+   "src/widgets/W156.jsx": 685,
+   "src/widgets/W157.jsx": 2620,
+   "src/widgets/W158.jsx": 1024,
+   "src/widgets/W159.jsx": 586,
+   "src/widgets/W160.jsx": 795,
+   "src/widgets/W161.jsx": 1702,
+   "src/widgets/W162.jsx": 2767,
+   "src/widgets/W163.jsx": 2045,
+   "src/widgets/W164.jsx": 1373,
+   "src/widgets/W165.jsx": 2664,
+   "src/widgets/W166.jsx": 931,
+   "src/widgets/W167.jsx": 1011,
+   "src/widgets/W168.jsx": 971,
+   "src/widgets/W169.jsx": 1699,
+   "src/widgets/W170.jsx": 2894,
+   "src/widgets/W171.jsx": 1079,
+   "src/widgets/W172.jsx": 2699,
+   "src/widgets/W173.jsx": 2374,
+   "src/widgets/W174.jsx": 2201,
+   "src/widgets/W175.jsx": 1144,
+   "src/widgets/W176.jsx": 1526,
+   "src/widgets/W177.jsx": 1381,
+   "src/widgets/W178.jsx": 2283,
+   "src/widgets/W179.jsx": 1113,
+   "src/widgets/W180.jsx": 1401,
+   "src/widgets/W181.jsx": 1173,
+   "src/widgets/W182.jsx": 2207,
+   "src/widgets/W183.jsx": 2131,
+   "src/widgets/W184.jsx": 675,
+   "src/widgets/W185.jsx": 1213,
+   "src/widgets/W186.jsx": 1806,
+   "src/widgets/W187.jsx": 2432,
+   "src/widgets/W188.jsx": 1299,
+   "src/widgets/W189.jsx": 1100,
+   "src/widgets/W190.jsx": 2336,
+   "src/widgets/W191.jsx": 461,
+   "src/widgets/W192.jsx": 1812,
+   "src/widgets/W193.jsx": 2083,
+   "src/widgets/W194.jsx": 2459,
+   "src/widgets/W195.jsx": 1231,
+   "src/widgets/W196.jsx": 1169,
+   "src/widgets/W197.jsx": 1801,
+   "src/widgets/W198.jsx": 2520,
+   "src/widgets/W199.jsx": 1733,
+   "src/widgets/W200.jsx": 665,
+   "src/widgets/W201.jsx": 1542,
+   "src/widgets/W202.jsx": 1740,
+   "src/widgets/W203.jsx": 2145,
+   "src/widgets/W204.jsx": 1319,
+   "src/widgets/W205.jsx": 1678,
+   "src/widgets/W206.jsx": 1536,
+   "src/widgets/W207.jsx": 1065,
+   "src/widgets/W208.jsx": 1351,
+   "src/widgets/W209.jsx": 1531,
+   "src/widgets/W210.jsx": 494,
+   "src/widgets/W211.jsx": 2312,
+   "src/widgets/W212.jsx": 1467,
+   "src/widgets/W213.jsx": 2181,
+   "src/widgets/W214.jsx": 987,
+   "src/widgets/W215.jsx": 2058,
+   "src/widgets/W216.jsx": 781,
+   "src/widgets/W217.jsx": 1698,
+   "src/widgets/W218.jsx": 1311,
+   "src/widgets/W219.jsx": 1315,
+   "src/widgets/W220.jsx": 1409,
+   "src/widgets/W221.jsx": 1743,
+   "src/widgets/W222.jsx": 2095,
+   "src/widgets/W223.jsx": 956,
+   "src/widgets/W224.jsx": 895,
+   "src/widgets/W225.jsx": 644,
+   "src/widgets/W226.jsx": 787,
+   "src/widgets/W227.jsx": 1097,
+   "src/widgets/W228.jsx": 968,
+   "src/widgets/W229.jsx": 1979,
+   "src/widgets/W230.jsx": 2425,
+   "src/widgets/W231.jsx": 1224,
+   "src/widgets/W232.jsx": 957,
+   "src/widgets/W233.jsx": 1819,
+   "src/widgets/W234.jsx": 1877,
+   "src/widgets/W235.jsx": 1493,
+   "src/widgets/W236.jsx": 1021,
+   "src/widgets/W237.jsx": 1155,
+   "src/widgets/W238.jsx": 1189,
+   "src/widgets/W239.jsx": 1646,
+   "src/widgets/W240.jsx": 801,
+   "src/widgets/W241.jsx": 851,
+   "src/widgets/W242.jsx": 2954,
+   "src/widgets/W243.jsx": 1572,
+   "src/widgets/W244.jsx": 1022,
+   "src/widgets/W245.jsx": 1760,
+   "src/widgets/W246.jsx": 2064,
+   "src/widgets/W247.jsx": 682,
+   "src/widgets/W248.jsx": 972,
+   "src/widgets/W249.jsx": 2643,
+   "src/widgets/W250.jsx": 1365,
+   "src/widgets/W251.jsx": 1285,
+   "src/widgets/W252.jsx": 916,
+   "src/widgets/W253.jsx": 2548,
+   "src/widgets/W254.jsx": 2880,
+   "src/widgets/W255.jsx": 1750,
+   "src/widgets/W256.jsx": 927,
+   "src/App.jsx": 5005,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 3,
+  "options": {
+   "size": 256,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "fe91d99f09230921",
+  "html": {
+   "raw": 321,
+   "br": 144
+  },
+  "js": {
+   "raw": 432545,
+   "br": 66010
+  },
+  "total": {
+   "raw": 432866,
+   "br": 66154
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 18449,
+    "tooling": 670,
+    "app": 413426
+   },
+   "br": {
+    "runtime": 6635,
+    "app": 59375
+   }
+  },
+  "adapter": {
+   "raw": 250,
+   "br": 132
+  },
+  "bundle": {
+   "raw": 432795,
+   "br": 66142,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "node_modules/solid-js/dist/solid.js": 8042,
+   "node_modules/solid-js/web/dist/web.js": 4951,
+   "node_modules/solid-js/store/dist/store.js": 5456,
+   "src/store.js": 19622,
+   "src/widgets/W1.jsx": 2124,
+   "src/list.js": 59,
+   "src/widgets/W2.jsx": 1809,
+   "src/widgets/W3.jsx": 1753,
+   "src/widgets/W4.jsx": 1533,
+   "src/widgets/W5.jsx": 2455,
+   "src/widgets/W6.jsx": 2990,
+   "src/widgets/W7.jsx": 2004,
+   "src/widgets/W8.jsx": 880,
+   "src/widgets/W9.jsx": 545,
+   "src/widgets/W10.jsx": 1332,
+   "src/widgets/W11.jsx": 647,
+   "src/widgets/W12.jsx": 1143,
+   "src/widgets/W13.jsx": 1922,
+   "src/widgets/W14.jsx": 1361,
+   "src/widgets/W15.jsx": 1286,
+   "src/widgets/W16.jsx": 1093,
+   "src/widgets/W17.jsx": 1096,
+   "src/widgets/W18.jsx": 1660,
+   "src/widgets/W19.jsx": 1603,
+   "src/widgets/W20.jsx": 1050,
+   "src/widgets/W21.jsx": 1541,
+   "src/widgets/W22.jsx": 1564,
+   "src/widgets/W23.jsx": 1397,
+   "src/widgets/W24.jsx": 1489,
+   "src/widgets/W25.jsx": 3175,
+   "src/widgets/W26.jsx": 1061,
+   "src/widgets/W27.jsx": 1305,
+   "src/widgets/W28.jsx": 1620,
+   "src/widgets/W29.jsx": 619,
+   "src/widgets/W30.jsx": 2413,
+   "src/widgets/W31.jsx": 1450,
+   "src/widgets/W32.jsx": 1432,
+   "src/widgets/W33.jsx": 1852,
+   "src/widgets/W34.jsx": 1669,
+   "src/widgets/W35.jsx": 450,
+   "src/widgets/W36.jsx": 1665,
+   "src/widgets/W37.jsx": 983,
+   "src/widgets/W38.jsx": 1490,
+   "src/widgets/W39.jsx": 1396,
+   "src/widgets/W40.jsx": 1424,
+   "src/widgets/W41.jsx": 2160,
+   "src/widgets/W42.jsx": 1728,
+   "src/widgets/W43.jsx": 1949,
+   "src/widgets/W44.jsx": 1385,
+   "src/widgets/W45.jsx": 807,
+   "src/widgets/W46.jsx": 2307,
+   "src/widgets/W47.jsx": 1675,
+   "src/widgets/W48.jsx": 1422,
+   "src/widgets/W49.jsx": 579,
+   "src/widgets/W50.jsx": 1115,
+   "src/widgets/W51.jsx": 734,
+   "src/widgets/W52.jsx": 1955,
+   "src/widgets/W53.jsx": 930,
+   "src/widgets/W54.jsx": 781,
+   "src/widgets/W55.jsx": 1175,
+   "src/widgets/W56.jsx": 1839,
+   "src/widgets/W57.jsx": 1720,
+   "src/widgets/W58.jsx": 1831,
+   "src/widgets/W59.jsx": 1556,
+   "src/widgets/W60.jsx": 1722,
+   "src/widgets/W61.jsx": 1715,
+   "src/widgets/W62.jsx": 2137,
+   "src/widgets/W63.jsx": 1140,
+   "src/widgets/W64.jsx": 1297,
+   "src/widgets/W65.jsx": 2163,
+   "src/widgets/W66.jsx": 1071,
+   "src/widgets/W67.jsx": 2172,
+   "src/widgets/W68.jsx": 1714,
+   "src/widgets/W69.jsx": 727,
+   "src/widgets/W70.jsx": 1915,
+   "src/widgets/W71.jsx": 1799,
+   "src/widgets/W72.jsx": 1552,
+   "src/widgets/W73.jsx": 2114,
+   "src/widgets/W74.jsx": 2112,
+   "src/widgets/W75.jsx": 3088,
+   "src/widgets/W76.jsx": 656,
+   "src/widgets/W77.jsx": 1883,
+   "src/widgets/W78.jsx": 2057,
+   "src/widgets/W79.jsx": 718,
+   "src/widgets/W80.jsx": 1651,
+   "src/widgets/W81.jsx": 1080,
+   "src/widgets/W82.jsx": 2141,
+   "src/widgets/W83.jsx": 1305,
+   "src/widgets/W84.jsx": 860,
+   "src/widgets/W85.jsx": 1202,
+   "src/widgets/W86.jsx": 1041,
+   "src/widgets/W87.jsx": 1299,
+   "src/widgets/W88.jsx": 1169,
+   "src/widgets/W89.jsx": 898,
+   "src/widgets/W90.jsx": 1065,
+   "src/widgets/W91.jsx": 924,
+   "src/widgets/W92.jsx": 2114,
+   "src/widgets/W93.jsx": 1304,
+   "src/widgets/W94.jsx": 2147,
+   "src/widgets/W95.jsx": 1836,
+   "src/widgets/W96.jsx": 2509,
+   "src/widgets/W97.jsx": 1966,
+   "src/widgets/W98.jsx": 622,
+   "src/widgets/W99.jsx": 1413,
+   "src/widgets/W100.jsx": 1704,
+   "src/widgets/W101.jsx": 707,
+   "src/widgets/W102.jsx": 1216,
+   "src/widgets/W103.jsx": 809,
+   "src/widgets/W104.jsx": 1084,
+   "src/widgets/W105.jsx": 2430,
+   "src/widgets/W106.jsx": 1681,
+   "src/widgets/W107.jsx": 1331,
+   "src/widgets/W108.jsx": 1549,
+   "src/widgets/W109.jsx": 1763,
+   "src/widgets/W110.jsx": 1633,
+   "src/widgets/W111.jsx": 1324,
+   "src/widgets/W112.jsx": 1551,
+   "src/widgets/W113.jsx": 1649,
+   "src/widgets/W114.jsx": 1330,
+   "src/widgets/W115.jsx": 861,
+   "src/widgets/W116.jsx": 2997,
+   "src/widgets/W117.jsx": 1923,
+   "src/widgets/W118.jsx": 2926,
+   "src/widgets/W119.jsx": 1528,
+   "src/widgets/W120.jsx": 939,
+   "src/widgets/W121.jsx": 771,
+   "src/widgets/W122.jsx": 1662,
+   "src/widgets/W123.jsx": 2085,
+   "src/widgets/W124.jsx": 1463,
+   "src/widgets/W125.jsx": 998,
+   "src/widgets/W126.jsx": 2261,
+   "src/widgets/W127.jsx": 2615,
+   "src/widgets/W128.jsx": 542,
+   "src/widgets/W129.jsx": 1438,
+   "src/widgets/W130.jsx": 1576,
+   "src/widgets/W131.jsx": 1407,
+   "src/widgets/W132.jsx": 1419,
+   "src/widgets/W133.jsx": 684,
+   "src/widgets/W134.jsx": 897,
+   "src/widgets/W135.jsx": 1623,
+   "src/widgets/W136.jsx": 1050,
+   "src/widgets/W137.jsx": 2034,
+   "src/widgets/W138.jsx": 1711,
+   "src/widgets/W139.jsx": 1880,
+   "src/widgets/W140.jsx": 950,
+   "src/widgets/W141.jsx": 920,
+   "src/widgets/W142.jsx": 2007,
+   "src/widgets/W143.jsx": 746,
+   "src/widgets/W144.jsx": 1044,
+   "src/widgets/W145.jsx": 2514,
+   "src/widgets/W146.jsx": 3035,
+   "src/widgets/W147.jsx": 1068,
+   "src/widgets/W148.jsx": 2188,
+   "src/widgets/W149.jsx": 614,
+   "src/widgets/W150.jsx": 981,
+   "src/widgets/W151.jsx": 1177,
+   "src/widgets/W152.jsx": 1795,
+   "src/widgets/W153.jsx": 1781,
+   "src/widgets/W154.jsx": 1280,
+   "src/widgets/W155.jsx": 1322,
+   "src/widgets/W156.jsx": 1195,
+   "src/widgets/W157.jsx": 1818,
+   "src/widgets/W158.jsx": 2068,
+   "src/widgets/W159.jsx": 1222,
+   "src/widgets/W160.jsx": 1124,
+   "src/widgets/W161.jsx": 1461,
+   "src/widgets/W162.jsx": 1897,
+   "src/widgets/W163.jsx": 1295,
+   "src/widgets/W164.jsx": 2589,
+   "src/widgets/W165.jsx": 1430,
+   "src/widgets/W166.jsx": 2729,
+   "src/widgets/W167.jsx": 3098,
+   "src/widgets/W168.jsx": 1307,
+   "src/widgets/W169.jsx": 634,
+   "src/widgets/W170.jsx": 2332,
+   "src/widgets/W171.jsx": 1353,
+   "src/widgets/W172.jsx": 2725,
+   "src/widgets/W173.jsx": 706,
+   "src/widgets/W174.jsx": 1956,
+   "src/widgets/W175.jsx": 742,
+   "src/widgets/W176.jsx": 1229,
+   "src/widgets/W177.jsx": 1378,
+   "src/widgets/W178.jsx": 1011,
+   "src/widgets/W179.jsx": 924,
+   "src/widgets/W180.jsx": 1505,
+   "src/widgets/W181.jsx": 2331,
+   "src/widgets/W182.jsx": 1256,
+   "src/widgets/W183.jsx": 1509,
+   "src/widgets/W184.jsx": 1118,
+   "src/widgets/W185.jsx": 1159,
+   "src/widgets/W186.jsx": 3638,
+   "src/widgets/W187.jsx": 866,
+   "src/widgets/W188.jsx": 1387,
+   "src/widgets/W189.jsx": 2152,
+   "src/widgets/W190.jsx": 1432,
+   "src/widgets/W191.jsx": 2027,
+   "src/widgets/W192.jsx": 823,
+   "src/widgets/W193.jsx": 1322,
+   "src/widgets/W194.jsx": 1485,
+   "src/widgets/W195.jsx": 2301,
+   "src/widgets/W196.jsx": 2271,
+   "src/widgets/W197.jsx": 1865,
+   "src/widgets/W198.jsx": 476,
+   "src/widgets/W199.jsx": 2455,
+   "src/widgets/W200.jsx": 1090,
+   "src/widgets/W201.jsx": 1963,
+   "src/widgets/W202.jsx": 832,
+   "src/widgets/W203.jsx": 746,
+   "src/widgets/W204.jsx": 869,
+   "src/widgets/W205.jsx": 2084,
+   "src/widgets/W206.jsx": 1013,
+   "src/widgets/W207.jsx": 2023,
+   "src/widgets/W208.jsx": 757,
+   "src/widgets/W209.jsx": 1168,
+   "src/widgets/W210.jsx": 884,
+   "src/widgets/W211.jsx": 1897,
+   "src/widgets/W212.jsx": 2390,
+   "src/widgets/W213.jsx": 2385,
+   "src/widgets/W214.jsx": 1878,
+   "src/widgets/W215.jsx": 1818,
+   "src/widgets/W216.jsx": 1130,
+   "src/widgets/W217.jsx": 2565,
+   "src/widgets/W218.jsx": 1344,
+   "src/widgets/W219.jsx": 1655,
+   "src/widgets/W220.jsx": 1878,
+   "src/widgets/W221.jsx": 901,
+   "src/widgets/W222.jsx": 1413,
+   "src/widgets/W223.jsx": 1582,
+   "src/widgets/W224.jsx": 862,
+   "src/widgets/W225.jsx": 428,
+   "src/widgets/W226.jsx": 1080,
+   "src/widgets/W227.jsx": 1455,
+   "src/widgets/W228.jsx": 1461,
+   "src/widgets/W229.jsx": 1715,
+   "src/widgets/W230.jsx": 1876,
+   "src/widgets/W231.jsx": 1494,
+   "src/widgets/W232.jsx": 1005,
+   "src/widgets/W233.jsx": 2014,
+   "src/widgets/W234.jsx": 634,
+   "src/widgets/W235.jsx": 2078,
+   "src/widgets/W236.jsx": 1224,
+   "src/widgets/W237.jsx": 1326,
+   "src/widgets/W238.jsx": 1670,
+   "src/widgets/W239.jsx": 2308,
+   "src/widgets/W240.jsx": 912,
+   "src/widgets/W241.jsx": 1511,
+   "src/widgets/W242.jsx": 1366,
+   "src/widgets/W243.jsx": 1111,
+   "src/widgets/W244.jsx": 1842,
+   "src/widgets/W245.jsx": 970,
+   "src/widgets/W246.jsx": 1297,
+   "src/widgets/W247.jsx": 1142,
+   "src/widgets/W248.jsx": 1768,
+   "src/widgets/W249.jsx": 1516,
+   "src/widgets/W250.jsx": 1231,
+   "src/widgets/W251.jsx": 1275,
+   "src/widgets/W252.jsx": 1931,
+   "src/widgets/W253.jsx": 1807,
+   "src/widgets/W254.jsx": 1371,
+   "src/widgets/W255.jsx": 1192,
+   "src/widgets/W256.jsx": 1302,
+   "src/App.jsx": 5005,
+   "src/adapter.jsx": 250
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 1,
+  "seed": 1,
+  "options": {
+   "size": 1,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "24a21600c28224cf",
+  "html": {
+   "raw": 329,
+   "br": 142
+  },
+  "js": {
+   "raw": 3724,
+   "br": 1564
+  },
+  "total": {
+   "raw": 4053,
+   "br": 1706
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1375,
+    "tooling": 670,
+    "app": 1679
+   },
+   "br": {
+    "runtime": 944,
+    "app": 620
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 48
+  },
+  "bundle": {
+   "raw": 3835,
+   "br": 1612,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1375,
+   "src/app.js": 1679,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 1,
+  "seed": 2,
+  "options": {
+   "size": 1,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "3b6795381a367ace",
+  "html": {
+   "raw": 329,
+   "br": 145
+  },
+  "js": {
+   "raw": 2145,
+   "br": 965
+  },
+  "total": {
+   "raw": 2474,
+   "br": 1110
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 743,
+    "tooling": 670,
+    "app": 732
+   },
+   "br": {
+    "runtime": 665,
+    "app": 300
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 44
+  },
+  "bundle": {
+   "raw": 2256,
+   "br": 1009,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 743,
+   "src/app.js": 732,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 1,
+  "seed": 3,
+  "options": {
+   "size": 1,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "875eb5616bcba580",
+  "html": {
+   "raw": 329,
+   "br": 145
+  },
+  "js": {
+   "raw": 3205,
+   "br": 1300
+  },
+  "total": {
+   "raw": 3534,
+   "br": 1445
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 830,
+    "tooling": 670,
+    "app": 1705
+   },
+   "br": {
+    "runtime": 700,
+    "app": 600
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 42
+  },
+  "bundle": {
+   "raw": 3316,
+   "br": 1342,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 830,
+   "src/app.js": 1705,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 2,
+  "seed": 1,
+  "options": {
+   "size": 2,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "599f12dbb11d3cef",
+  "html": {
+   "raw": 329,
+   "br": 146
+  },
+  "js": {
+   "raw": 4045,
+   "br": 1683
+  },
+  "total": {
+   "raw": 4374,
+   "br": 1829
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1375,
+    "tooling": 670,
+    "app": 2000
+   },
+   "br": {
+    "runtime": 944,
+    "app": 739
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 45
+  },
+  "bundle": {
+   "raw": 4156,
+   "br": 1728,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1375,
+   "src/app.js": 2000,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 2,
+  "seed": 2,
+  "options": {
+   "size": 2,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "4241ab2495cbe807",
+  "html": {
+   "raw": 329,
+   "br": 147
+  },
+  "js": {
+   "raw": 2624,
+   "br": 1151
+  },
+  "total": {
+   "raw": 2953,
+   "br": 1298
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 830,
+    "tooling": 670,
+    "app": 1124
+   },
+   "br": {
+    "runtime": 700,
+    "app": 451
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 45
+  },
+  "bundle": {
+   "raw": 2735,
+   "br": 1196,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 830,
+   "src/app.js": 1124,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 2,
+  "seed": 3,
+  "options": {
+   "size": 2,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "7d76f297ebf4310d",
+  "html": {
+   "raw": 329,
+   "br": 145
+  },
+  "js": {
+   "raw": 4970,
+   "br": 1939
+  },
+  "total": {
+   "raw": 5299,
+   "br": 2084
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1337,
+    "tooling": 670,
+    "app": 2963
+   },
+   "br": {
+    "runtime": 926,
+    "app": 1013
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 46
+  },
+  "bundle": {
+   "raw": 5081,
+   "br": 1985,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1337,
+   "src/app.js": 2963,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 4,
+  "seed": 1,
+  "options": {
+   "size": 4,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "563e6dcc28ff9753",
+  "html": {
+   "raw": 329,
+   "br": 145
+  },
+  "js": {
+   "raw": 6052,
+   "br": 2318
+  },
+  "total": {
+   "raw": 6381,
+   "br": 2463
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1429,
+    "tooling": 670,
+    "app": 3953
+   },
+   "br": {
+    "runtime": 956,
+    "app": 1362
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 47
+  },
+  "bundle": {
+   "raw": 6163,
+   "br": 2365,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1429,
+   "src/app.js": 3953,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 4,
+  "seed": 2,
+  "options": {
+   "size": 4,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "a6aedb6ce9edbedc",
+  "html": {
+   "raw": 329,
+   "br": 144
+  },
+  "js": {
+   "raw": 5781,
+   "br": 2200
+  },
+  "total": {
+   "raw": 6110,
+   "br": 2344
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1391,
+    "tooling": 670,
+    "app": 3720
+   },
+   "br": {
+    "runtime": 940,
+    "app": 1260
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 49
+  },
+  "bundle": {
+   "raw": 5892,
+   "br": 2249,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1391,
+   "src/app.js": 3720,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 4,
+  "seed": 3,
+  "options": {
+   "size": 4,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "9561ec1195f737ca",
+  "html": {
+   "raw": 329,
+   "br": 140
+  },
+  "js": {
+   "raw": 7190,
+   "br": 2518
+  },
+  "total": {
+   "raw": 7519,
+   "br": 2658
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1337,
+    "tooling": 670,
+    "app": 5183
+   },
+   "br": {
+    "runtime": 926,
+    "app": 1592
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 54
+  },
+  "bundle": {
+   "raw": 7301,
+   "br": 2572,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1337,
+   "src/app.js": 5183,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 8,
+  "seed": 1,
+  "options": {
+   "size": 8,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "b8210c7a2d92614c",
+  "html": {
+   "raw": 329,
+   "br": 146
+  },
+  "js": {
+   "raw": 9399,
+   "br": 3179
+  },
+  "total": {
+   "raw": 9728,
+   "br": 3325
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 7291
+   },
+   "br": {
+    "runtime": 959,
+    "app": 2220
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 43
+  },
+  "bundle": {
+   "raw": 9510,
+   "br": 3222,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 7291,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 8,
+  "seed": 2,
+  "options": {
+   "size": 8,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "112445c396b21c15",
+  "html": {
+   "raw": 329,
+   "br": 147
+  },
+  "js": {
+   "raw": 10125,
+   "br": 3339
+  },
+  "total": {
+   "raw": 10454,
+   "br": 3486
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 8017
+   },
+   "br": {
+    "runtime": 959,
+    "app": 2380
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 52
+  },
+  "bundle": {
+   "raw": 10236,
+   "br": 3391,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 8017,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 8,
+  "seed": 3,
+  "options": {
+   "size": 8,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "121da2bc49e7064f",
+  "html": {
+   "raw": 329,
+   "br": 146
+  },
+  "js": {
+   "raw": 13306,
+   "br": 4025
+  },
+  "total": {
+   "raw": 13635,
+   "br": 4171
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 11198
+   },
+   "br": {
+    "runtime": 959,
+    "app": 3066
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 44
+  },
+  "bundle": {
+   "raw": 13417,
+   "br": 4069,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 11198,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 1,
+  "options": {
+   "size": 16,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "df41df91587000d9",
+  "html": {
+   "raw": 329,
+   "br": 147
+  },
+  "js": {
+   "raw": 18495,
+   "br": 5378
+  },
+  "total": {
+   "raw": 18824,
+   "br": 5525
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 16387
+   },
+   "br": {
+    "runtime": 959,
+    "app": 4419
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 50
+  },
+  "bundle": {
+   "raw": 18606,
+   "br": 5428,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 16387,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 2,
+  "options": {
+   "size": 16,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "d0a0b9d31c3a4e2b",
+  "html": {
+   "raw": 329,
+   "br": 148
+  },
+  "js": {
+   "raw": 19092,
+   "br": 5478
+  },
+  "total": {
+   "raw": 19421,
+   "br": 5626
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 16984
+   },
+   "br": {
+    "runtime": 959,
+    "app": 4519
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 45
+  },
+  "bundle": {
+   "raw": 19203,
+   "br": 5523,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 16984,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 3,
+  "options": {
+   "size": 16,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "8ebf523073cc5fe7",
+  "html": {
+   "raw": 329,
+   "br": 145
+  },
+  "js": {
+   "raw": 19540,
+   "br": 5350
+  },
+  "total": {
+   "raw": 19869,
+   "br": 5495
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 17432
+   },
+   "br": {
+    "runtime": 959,
+    "app": 4391
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 49
+  },
+  "bundle": {
+   "raw": 19651,
+   "br": 5399,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 17432,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 1,
+  "options": {
+   "size": 32,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "7a60f53c0c4ecfd0",
+  "html": {
+   "raw": 329,
+   "br": 144
+  },
+  "js": {
+   "raw": 36124,
+   "br": 8951
+  },
+  "total": {
+   "raw": 36453,
+   "br": 9095
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 34016
+   },
+   "br": {
+    "runtime": 959,
+    "app": 7992
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 53
+  },
+  "bundle": {
+   "raw": 36235,
+   "br": 9004,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 34016,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 2,
+  "options": {
+   "size": 32,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "a9058b5702377f41",
+  "html": {
+   "raw": 329,
+   "br": 141
+  },
+  "js": {
+   "raw": 35952,
+   "br": 8965
+  },
+  "total": {
+   "raw": 36281,
+   "br": 9106
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 33844
+   },
+   "br": {
+    "runtime": 959,
+    "app": 8006
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 74
+  },
+  "bundle": {
+   "raw": 36063,
+   "br": 9039,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 33844,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 3,
+  "options": {
+   "size": 32,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "008e11588da0a669",
+  "html": {
+   "raw": 329,
+   "br": 147
+  },
+  "js": {
+   "raw": 36192,
+   "br": 8677
+  },
+  "total": {
+   "raw": 36521,
+   "br": 8824
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 34084
+   },
+   "br": {
+    "runtime": 959,
+    "app": 7718
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 89
+  },
+  "bundle": {
+   "raw": 36303,
+   "br": 8766,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 34084,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 1,
+  "options": {
+   "size": 64,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "ab0035a380395e0c",
+  "html": {
+   "raw": 329,
+   "br": 143
+  },
+  "js": {
+   "raw": 71125,
+   "br": 15211
+  },
+  "total": {
+   "raw": 71454,
+   "br": 15354
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 69017
+   },
+   "br": {
+    "runtime": 959,
+    "app": 14252
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 60
+  },
+  "bundle": {
+   "raw": 71236,
+   "br": 15271,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 69017,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 2,
+  "options": {
+   "size": 64,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "10c70e419667dc06",
+  "html": {
+   "raw": 329,
+   "br": 143
+  },
+  "js": {
+   "raw": 66989,
+   "br": 14493
+  },
+  "total": {
+   "raw": 67318,
+   "br": 14636
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 64881
+   },
+   "br": {
+    "runtime": 959,
+    "app": 13534
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 44
+  },
+  "bundle": {
+   "raw": 67100,
+   "br": 14537,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 64881,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 3,
+  "options": {
+   "size": 64,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "2b215300f058689e",
+  "html": {
+   "raw": 329,
+   "br": 144
+  },
+  "js": {
+   "raw": 67636,
+   "br": 14414
+  },
+  "total": {
+   "raw": 67965,
+   "br": 14558
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 65528
+   },
+   "br": {
+    "runtime": 959,
+    "app": 13455
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 70
+  },
+  "bundle": {
+   "raw": 67747,
+   "br": 14484,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 65528,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 1,
+  "options": {
+   "size": 128,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "48013b3fa726433a",
+  "html": {
+   "raw": 329,
+   "br": 146
+  },
+  "js": {
+   "raw": 135078,
+   "br": 25430
+  },
+  "total": {
+   "raw": 135407,
+   "br": 25576
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 132970
+   },
+   "br": {
+    "runtime": 959,
+    "app": 24471
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 23
+  },
+  "bundle": {
+   "raw": 135189,
+   "br": 25453,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 132970,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 2,
+  "options": {
+   "size": 128,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "3315e0be1b61d82e",
+  "html": {
+   "raw": 329,
+   "br": 138
+  },
+  "js": {
+   "raw": 130858,
+   "br": 24717
+  },
+  "total": {
+   "raw": 131187,
+   "br": 24855
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 128750
+   },
+   "br": {
+    "runtime": 959,
+    "app": 23758
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 55
+  },
+  "bundle": {
+   "raw": 130969,
+   "br": 24772,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 128750,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 3,
+  "options": {
+   "size": 128,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "947ca16648ee7e77",
+  "html": {
+   "raw": 329,
+   "br": 139
+  },
+  "js": {
+   "raw": 135321,
+   "br": 25462
+  },
+  "total": {
+   "raw": 135650,
+   "br": 25601
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 133213
+   },
+   "br": {
+    "runtime": 959,
+    "app": 24503
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 58
+  },
+  "bundle": {
+   "raw": 135432,
+   "br": 25520,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 133213,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 1,
+  "options": {
+   "size": 256,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "c2b29eaa19c447a5",
+  "html": {
+   "raw": 329,
+   "br": 141
+  },
+  "js": {
+   "raw": 263647,
+   "br": 43961
+  },
+  "total": {
+   "raw": 263976,
+   "br": 44102
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 261539
+   },
+   "br": {
+    "runtime": 959,
+    "app": 43002
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 63
+  },
+  "bundle": {
+   "raw": 263758,
+   "br": 44024,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 261539,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 2,
+  "options": {
+   "size": 256,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "40b74a78bc1a0283",
+  "html": {
+   "raw": 329,
+   "br": 145
+  },
+  "js": {
+   "raw": 265743,
+   "br": 43899
+  },
+  "total": {
+   "raw": 266072,
+   "br": 44044
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 263635
+   },
+   "br": {
+    "runtime": 959,
+    "app": 42940
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": -11
+  },
+  "bundle": {
+   "raw": 265854,
+   "br": 43888,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 263635,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 3,
+  "options": {
+   "size": 256,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "97f2059d99a66f93",
+  "html": {
+   "raw": 329,
+   "br": 146
+  },
+  "js": {
+   "raw": 265312,
+   "br": 44586
+  },
+  "total": {
+   "raw": 265641,
+   "br": 44732
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 1438,
+    "tooling": 670,
+    "app": 263204
+   },
+   "br": {
+    "runtime": 959,
+    "app": 43627
+   }
+  },
+  "adapter": {
+   "raw": 111,
+   "br": 27
+  },
+  "bundle": {
+   "raw": 265423,
+   "br": 44613,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 1438,
+   "src/app.js": 263204,
+   "src/adapter.js": 111
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 1,
+  "seed": 1,
+  "options": {
+   "size": 1,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "58926300e44bf539",
+  "html": {
+   "raw": 329,
+   "br": 145
+  },
+  "js": {
+   "raw": 5678,
+   "br": 2227
+  },
+  "total": {
+   "raw": 6007,
+   "br": 2372
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2320,
+    "tooling": 670,
+    "app": 2688
+   },
+   "br": {
+    "runtime": 1233,
+    "app": 994
+   }
+  },
+  "adapter": {
+   "raw": 103,
+   "br": 48
+  },
+  "bundle": {
+   "raw": 5781,
+   "br": 2275,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 941,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 2075,
+   "src/app.js": 343,
+   "src/adapter.js": 103
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 1,
+  "seed": 2,
+  "options": {
+   "size": 1,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "4c4b2d9c03ce0c6e",
+  "html": {
+   "raw": 329,
+   "br": 146
+  },
+  "js": {
+   "raw": 2569,
+   "br": 1123
+  },
+  "total": {
+   "raw": 2898,
+   "br": 1269
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 644,
+    "tooling": 670,
+    "app": 1255
+   },
+   "br": {
+    "runtime": 576,
+    "app": 547
+   }
+  },
+  "adapter": {
+   "raw": 103,
+   "br": 45
+  },
+  "bundle": {
+   "raw": 2672,
+   "br": 1168,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 644,
+   "src/widgets/frame.js": 115,
+   "src/widgets/w1.js": 797,
+   "src/app.js": 343,
+   "src/adapter.js": 103
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 1,
+  "seed": 3,
+  "options": {
+   "size": 1,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "f2e5495e660ddfc7",
+  "html": {
+   "raw": 329,
+   "br": 145
+  },
+  "js": {
+   "raw": 3828,
+   "br": 1488
+  },
+  "total": {
+   "raw": 4157,
+   "br": 1633
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 701,
+    "tooling": 670,
+    "app": 2457
+   },
+   "br": {
+    "runtime": 594,
+    "app": 894
+   }
+  },
+  "adapter": {
+   "raw": 103,
+   "br": 42
+  },
+  "bundle": {
+   "raw": 3931,
+   "br": 1530,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 701,
+   "src/widgets/frame.js": 217,
+   "src/widgets/w1.js": 1897,
+   "src/app.js": 343,
+   "src/adapter.js": 103
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 2,
+  "seed": 1,
+  "options": {
+   "size": 2,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "7e062c26d5fbb313",
+  "html": {
+   "raw": 329,
+   "br": 146
+  },
+  "js": {
+   "raw": 6192,
+   "br": 2430
+  },
+  "total": {
+   "raw": 6521,
+   "br": 2576
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 3165
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 1185
+   }
+  },
+  "adapter": {
+   "raw": 103,
+   "br": 42
+  },
+  "bundle": {
+   "raw": 6295,
+   "br": 2472,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 2075,
+   "src/widgets/w2.js": 467,
+   "src/app.js": 353,
+   "src/adapter.js": 103
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 2,
+  "seed": 2,
+  "options": {
+   "size": 2,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "3a992368b810b0ab",
+  "html": {
+   "raw": 329,
+   "br": 143
+  },
+  "js": {
+   "raw": 3183,
+   "br": 1333
+  },
+  "total": {
+   "raw": 3512,
+   "br": 1476
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 701,
+    "tooling": 670,
+    "app": 1812
+   },
+   "br": {
+    "runtime": 594,
+    "app": 739
+   }
+  },
+  "adapter": {
+   "raw": 103,
+   "br": 47
+  },
+  "bundle": {
+   "raw": 3286,
+   "br": 1380,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/runtime.js": 701,
+   "src/widgets/frame.js": 115,
+   "src/widgets/w1.js": 797,
+   "src/widgets/w2.js": 547,
+   "src/app.js": 353,
+   "src/adapter.js": 103
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 2,
+  "seed": 3,
+  "options": {
+   "size": 2,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "d861ca7ef2ee60d5",
+  "html": {
+   "raw": 329,
+   "br": 145
+  },
+  "js": {
+   "raw": 7378,
+   "br": 2735
+  },
+  "total": {
+   "raw": 7707,
+   "br": 2880
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 4351
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 1490
+   }
+  },
+  "adapter": {
+   "raw": 103,
+   "br": 30
+  },
+  "bundle": {
+   "raw": 7481,
+   "br": 2765,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 1897,
+   "src/widgets/w2.js": 1831,
+   "src/app.js": 353,
+   "src/adapter.js": 103
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 4,
+  "seed": 1,
+  "options": {
+   "size": 4,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "e180835c072c7284",
+  "html": {
+   "raw": 329,
+   "br": 141
+  },
+  "js": {
+   "raw": 8936,
+   "br": 3207
+  },
+  "total": {
+   "raw": 9265,
+   "br": 3348
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 5909
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 1962
+   }
+  },
+  "adapter": {
+   "raw": 103,
+   "br": 46
+  },
+  "bundle": {
+   "raw": 9039,
+   "br": 3253,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 2075,
+   "src/widgets/w2.js": 467,
+   "src/widgets/w3.js": 1403,
+   "src/widgets/w4.js": 1316,
+   "src/app.js": 378,
+   "src/adapter.js": 103
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 4,
+  "seed": 2,
+  "options": {
+   "size": 4,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "669e1384ad47a049",
+  "html": {
+   "raw": 329,
+   "br": 144
+  },
+  "js": {
+   "raw": 8740,
+   "br": 3068
+  },
+  "total": {
+   "raw": 9069,
+   "br": 3212
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 5713
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 1823
+   }
+  },
+  "adapter": {
+   "raw": 103,
+   "br": 31
+  },
+  "bundle": {
+   "raw": 8843,
+   "br": 3099,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 797,
+   "src/widgets/w2.js": 547,
+   "src/widgets/w3.js": 2889,
+   "src/widgets/w4.js": 832,
+   "src/app.js": 378,
+   "src/adapter.js": 103
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 4,
+  "seed": 3,
+  "options": {
+   "size": 4,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "ae0bb9f480520740",
+  "html": {
+   "raw": 329,
+   "br": 146
+  },
+  "js": {
+   "raw": 10672,
+   "br": 3475
+  },
+  "total": {
+   "raw": 11001,
+   "br": 3621
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 7645
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 2230
+   }
+  },
+  "adapter": {
+   "raw": 103,
+   "br": 42
+  },
+  "bundle": {
+   "raw": 10775,
+   "br": 3517,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 1897,
+   "src/widgets/w2.js": 1831,
+   "src/widgets/w3.js": 1751,
+   "src/widgets/w4.js": 1523,
+   "src/app.js": 373,
+   "src/adapter.js": 103
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 8,
+  "seed": 1,
+  "options": {
+   "size": 8,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "50c960b0e2c42d23",
+  "html": {
+   "raw": 329,
+   "br": 144
+  },
+  "js": {
+   "raw": 13599,
+   "br": 4321
+  },
+  "total": {
+   "raw": 13928,
+   "br": 4465
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 10572
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 3076
+   }
+  },
+  "adapter": {
+   "raw": 103,
+   "br": 44
+  },
+  "bundle": {
+   "raw": 13702,
+   "br": 4365,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 2075,
+   "src/widgets/w2.js": 467,
+   "src/widgets/w3.js": 1403,
+   "src/widgets/w4.js": 1316,
+   "src/widgets/w5.js": 997,
+   "src/widgets/w6.js": 899,
+   "src/widgets/w7.js": 1316,
+   "src/widgets/w8.js": 1396,
+   "src/app.js": 433,
+   "src/adapter.js": 103
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 8,
+  "seed": 2,
+  "options": {
+   "size": 8,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "90750d9d1378713f",
+  "html": {
+   "raw": 329,
+   "br": 146
+  },
+  "js": {
+   "raw": 14715,
+   "br": 4538
+  },
+  "total": {
+   "raw": 15044,
+   "br": 4684
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 11688
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 3293
+   }
+  },
+  "adapter": {
+   "raw": 103,
+   "br": 28
+  },
+  "bundle": {
+   "raw": 14818,
+   "br": 4566,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 797,
+   "src/widgets/w2.js": 547,
+   "src/widgets/w3.js": 2889,
+   "src/widgets/w4.js": 832,
+   "src/widgets/w5.js": 3327,
+   "src/widgets/w6.js": 882,
+   "src/widgets/w7.js": 946,
+   "src/widgets/w8.js": 765,
+   "src/app.js": 433,
+   "src/adapter.js": 103
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 8,
+  "seed": 3,
+  "options": {
+   "size": 8,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "bdbe3b1d58e5cbb7",
+  "html": {
+   "raw": 329,
+   "br": 141
+  },
+  "js": {
+   "raw": 18831,
+   "br": 5276
+  },
+  "total": {
+   "raw": 19160,
+   "br": 5417
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 15804
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 4031
+   }
+  },
+  "adapter": {
+   "raw": 103,
+   "br": 44
+  },
+  "bundle": {
+   "raw": 18934,
+   "br": 5320,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 1897,
+   "src/widgets/w2.js": 1831,
+   "src/widgets/w3.js": 1751,
+   "src/widgets/w4.js": 1523,
+   "src/widgets/w5.js": 2324,
+   "src/widgets/w6.js": 3045,
+   "src/widgets/w7.js": 1977,
+   "src/widgets/w8.js": 763,
+   "src/app.js": 423,
+   "src/adapter.js": 103
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 1,
+  "options": {
+   "size": 16,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "0575be456af08c40",
+  "html": {
+   "raw": 329,
+   "br": 140
+  },
+  "js": {
+   "raw": 26541,
+   "br": 7135
+  },
+  "total": {
+   "raw": 26870,
+   "br": 7275
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 23514
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 5890
+   }
+  },
+  "adapter": {
+   "raw": 104,
+   "br": 58
+  },
+  "bundle": {
+   "raw": 26645,
+   "br": 7193,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 2075,
+   "src/widgets/w2.js": 467,
+   "src/widgets/w3.js": 1403,
+   "src/widgets/w4.js": 1316,
+   "src/widgets/w5.js": 1002,
+   "src/widgets/w6.js": 904,
+   "src/widgets/w7.js": 1320,
+   "src/widgets/w8.js": 1396,
+   "src/widgets/w9.js": 1851,
+   "src/widgets/w10.js": 1582,
+   "src/widgets/w11.js": 1512,
+   "src/widgets/w12.js": 1440,
+   "src/widgets/w13.js": 1901,
+   "src/widgets/w14.js": 1938,
+   "src/widgets/w15.js": 1869,
+   "src/widgets/w16.js": 722,
+   "src/app.js": 546,
+   "src/adapter.js": 104
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 2,
+  "options": {
+   "size": 16,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "f462d0e047653abb",
+  "html": {
+   "raw": 329,
+   "br": 145
+  },
+  "js": {
+   "raw": 27352,
+   "br": 7231
+  },
+  "total": {
+   "raw": 27681,
+   "br": 7376
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 24325
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 5986
+   }
+  },
+  "adapter": {
+   "raw": 104,
+   "br": 65
+  },
+  "bundle": {
+   "raw": 27456,
+   "br": 7296,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 797,
+   "src/widgets/w2.js": 547,
+   "src/widgets/w3.js": 2889,
+   "src/widgets/w4.js": 832,
+   "src/widgets/w5.js": 3329,
+   "src/widgets/w6.js": 887,
+   "src/widgets/w7.js": 950,
+   "src/widgets/w8.js": 765,
+   "src/widgets/w9.js": 1083,
+   "src/widgets/w10.js": 2983,
+   "src/widgets/w11.js": 796,
+   "src/widgets/w12.js": 1128,
+   "src/widgets/w13.js": 1259,
+   "src/widgets/w14.js": 1713,
+   "src/widgets/w15.js": 2629,
+   "src/widgets/w16.js": 935,
+   "src/app.js": 533,
+   "src/adapter.js": 104
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 3,
+  "options": {
+   "size": 16,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "88d5faad86a91ec3",
+  "html": {
+   "raw": 329,
+   "br": 146
+  },
+  "js": {
+   "raw": 27896,
+   "br": 7008
+  },
+  "total": {
+   "raw": 28225,
+   "br": 7154
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 24869
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 5763
+   }
+  },
+  "adapter": {
+   "raw": 104,
+   "br": 45
+  },
+  "bundle": {
+   "raw": 28000,
+   "br": 7053,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 1897,
+   "src/widgets/w2.js": 1831,
+   "src/widgets/w3.js": 1751,
+   "src/widgets/w4.js": 1523,
+   "src/widgets/w5.js": 2328,
+   "src/widgets/w6.js": 3045,
+   "src/widgets/w7.js": 1977,
+   "src/widgets/w8.js": 763,
+   "src/widgets/w9.js": 468,
+   "src/widgets/w10.js": 1274,
+   "src/widgets/w11.js": 524,
+   "src/widgets/w12.js": 1135,
+   "src/widgets/w13.js": 1850,
+   "src/widgets/w14.js": 1417,
+   "src/widgets/w15.js": 1307,
+   "src/widgets/w16.js": 986,
+   "src/app.js": 523,
+   "src/adapter.js": 104
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 1,
+  "options": {
+   "size": 32,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "67501f348a3b4fe4",
+  "html": {
+   "raw": 329,
+   "br": 147
+  },
+  "js": {
+   "raw": 51310,
+   "br": 11690
+  },
+  "total": {
+   "raw": 51639,
+   "br": 11837
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 48283
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 10445
+   }
+  },
+  "adapter": {
+   "raw": 104,
+   "br": 22
+  },
+  "bundle": {
+   "raw": 51414,
+   "br": 11712,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 2075,
+   "src/widgets/w2.js": 467,
+   "src/widgets/w3.js": 1403,
+   "src/widgets/w4.js": 1316,
+   "src/widgets/w5.js": 997,
+   "src/widgets/w6.js": 899,
+   "src/widgets/w7.js": 1319,
+   "src/widgets/w8.js": 1401,
+   "src/widgets/w9.js": 1856,
+   "src/widgets/w10.js": 1587,
+   "src/widgets/w11.js": 1514,
+   "src/widgets/w12.js": 1440,
+   "src/widgets/w13.js": 1901,
+   "src/widgets/w14.js": 1938,
+   "src/widgets/w15.js": 1871,
+   "src/widgets/w16.js": 722,
+   "src/widgets/w17.js": 1200,
+   "src/widgets/w18.js": 985,
+   "src/widgets/w19.js": 1136,
+   "src/widgets/w20.js": 2344,
+   "src/widgets/w21.js": 707,
+   "src/widgets/w22.js": 914,
+   "src/widgets/w23.js": 3680,
+   "src/widgets/w24.js": 763,
+   "src/widgets/w25.js": 559,
+   "src/widgets/w26.js": 1873,
+   "src/widgets/w27.js": 1759,
+   "src/widgets/w28.js": 1975,
+   "src/widgets/w29.js": 1694,
+   "src/widgets/w30.js": 1512,
+   "src/widgets/w31.js": 1431,
+   "src/widgets/w32.js": 1993,
+   "src/app.js": 782,
+   "src/adapter.js": 104
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 2,
+  "options": {
+   "size": 32,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "3d9c57265c98506e",
+  "html": {
+   "raw": 329,
+   "br": 146
+  },
+  "js": {
+   "raw": 50137,
+   "br": 11704
+  },
+  "total": {
+   "raw": 50466,
+   "br": 11850
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 47110
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 10459
+   }
+  },
+  "adapter": {
+   "raw": 104,
+   "br": 33
+  },
+  "bundle": {
+   "raw": 50241,
+   "br": 11737,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 797,
+   "src/widgets/w2.js": 547,
+   "src/widgets/w3.js": 2889,
+   "src/widgets/w4.js": 832,
+   "src/widgets/w5.js": 3327,
+   "src/widgets/w6.js": 885,
+   "src/widgets/w7.js": 951,
+   "src/widgets/w8.js": 772,
+   "src/widgets/w9.js": 1088,
+   "src/widgets/w10.js": 2983,
+   "src/widgets/w11.js": 796,
+   "src/widgets/w12.js": 1128,
+   "src/widgets/w13.js": 1259,
+   "src/widgets/w14.js": 1714,
+   "src/widgets/w15.js": 2629,
+   "src/widgets/w16.js": 935,
+   "src/widgets/w17.js": 1677,
+   "src/widgets/w18.js": 816,
+   "src/widgets/w19.js": 2572,
+   "src/widgets/w20.js": 1086,
+   "src/widgets/w21.js": 1225,
+   "src/widgets/w22.js": 952,
+   "src/widgets/w23.js": 832,
+   "src/widgets/w24.js": 1734,
+   "src/widgets/w25.js": 1405,
+   "src/widgets/w26.js": 2551,
+   "src/widgets/w27.js": 1019,
+   "src/widgets/w28.js": 1535,
+   "src/widgets/w29.js": 1029,
+   "src/widgets/w30.js": 1661,
+   "src/widgets/w31.js": 1363,
+   "src/widgets/w32.js": 1087,
+   "src/app.js": 764,
+   "src/adapter.js": 104
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 3,
+  "options": {
+   "size": 32,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "38a023e3b5eb6bd9",
+  "html": {
+   "raw": 329,
+   "br": 144
+  },
+  "js": {
+   "raw": 52052,
+   "br": 11444
+  },
+  "total": {
+   "raw": 52381,
+   "br": 11588
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 49025
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 10199
+   }
+  },
+  "adapter": {
+   "raw": 104,
+   "br": 26
+  },
+  "bundle": {
+   "raw": 52156,
+   "br": 11470,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 1897,
+   "src/widgets/w2.js": 1831,
+   "src/widgets/w3.js": 1751,
+   "src/widgets/w4.js": 1523,
+   "src/widgets/w5.js": 2329,
+   "src/widgets/w6.js": 3050,
+   "src/widgets/w7.js": 1977,
+   "src/widgets/w8.js": 763,
+   "src/widgets/w9.js": 468,
+   "src/widgets/w10.js": 1272,
+   "src/widgets/w11.js": 524,
+   "src/widgets/w12.js": 1135,
+   "src/widgets/w13.js": 1850,
+   "src/widgets/w14.js": 1417,
+   "src/widgets/w15.js": 1309,
+   "src/widgets/w16.js": 986,
+   "src/widgets/w17.js": 993,
+   "src/widgets/w18.js": 1436,
+   "src/widgets/w19.js": 1517,
+   "src/widgets/w20.js": 962,
+   "src/widgets/w21.js": 1562,
+   "src/widgets/w22.js": 1612,
+   "src/widgets/w23.js": 1282,
+   "src/widgets/w24.js": 1441,
+   "src/widgets/w25.js": 3239,
+   "src/widgets/w26.js": 1066,
+   "src/widgets/w27.js": 1276,
+   "src/widgets/w28.js": 1542,
+   "src/widgets/w29.js": 579,
+   "src/widgets/w30.js": 2386,
+   "src/widgets/w31.js": 1490,
+   "src/widgets/w32.js": 1533,
+   "src/app.js": 757,
+   "src/adapter.js": 104
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 1,
+  "options": {
+   "size": 64,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "787481398594c539",
+  "html": {
+   "raw": 329,
+   "br": 140
+  },
+  "js": {
+   "raw": 100755,
+   "br": 19840
+  },
+  "total": {
+   "raw": 101084,
+   "br": 19980
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 97728
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 18595
+   }
+  },
+  "adapter": {
+   "raw": 104,
+   "br": 38
+  },
+  "bundle": {
+   "raw": 100859,
+   "br": 19878,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 2075,
+   "src/widgets/w2.js": 467,
+   "src/widgets/w3.js": 1403,
+   "src/widgets/w4.js": 1316,
+   "src/widgets/w5.js": 997,
+   "src/widgets/w6.js": 901,
+   "src/widgets/w7.js": 1321,
+   "src/widgets/w8.js": 1401,
+   "src/widgets/w9.js": 1856,
+   "src/widgets/w10.js": 1587,
+   "src/widgets/w11.js": 1514,
+   "src/widgets/w12.js": 1440,
+   "src/widgets/w13.js": 1901,
+   "src/widgets/w14.js": 1938,
+   "src/widgets/w15.js": 1871,
+   "src/widgets/w16.js": 722,
+   "src/widgets/w17.js": 1200,
+   "src/widgets/w18.js": 985,
+   "src/widgets/w19.js": 1136,
+   "src/widgets/w20.js": 2344,
+   "src/widgets/w21.js": 707,
+   "src/widgets/w22.js": 914,
+   "src/widgets/w23.js": 3682,
+   "src/widgets/w24.js": 763,
+   "src/widgets/w25.js": 559,
+   "src/widgets/w26.js": 1873,
+   "src/widgets/w27.js": 1759,
+   "src/widgets/w28.js": 1975,
+   "src/widgets/w29.js": 1694,
+   "src/widgets/w30.js": 1512,
+   "src/widgets/w31.js": 1433,
+   "src/widgets/w32.js": 1993,
+   "src/widgets/w33.js": 2368,
+   "src/widgets/w34.js": 1424,
+   "src/widgets/w35.js": 2195,
+   "src/widgets/w36.js": 1268,
+   "src/widgets/w37.js": 2041,
+   "src/widgets/w38.js": 1672,
+   "src/widgets/w39.js": 560,
+   "src/widgets/w40.js": 875,
+   "src/widgets/w41.js": 1387,
+   "src/widgets/w42.js": 2083,
+   "src/widgets/w43.js": 778,
+   "src/widgets/w44.js": 2862,
+   "src/widgets/w45.js": 1732,
+   "src/widgets/w46.js": 1194,
+   "src/widgets/w47.js": 868,
+   "src/widgets/w48.js": 1209,
+   "src/widgets/w49.js": 963,
+   "src/widgets/w50.js": 1124,
+   "src/widgets/w51.js": 1970,
+   "src/widgets/w52.js": 1158,
+   "src/widgets/w53.js": 2207,
+   "src/widgets/w54.js": 1067,
+   "src/widgets/w55.js": 2035,
+   "src/widgets/w56.js": 797,
+   "src/widgets/w57.js": 1808,
+   "src/widgets/w58.js": 506,
+   "src/widgets/w59.js": 1134,
+   "src/widgets/w60.js": 2805,
+   "src/widgets/w61.js": 1636,
+   "src/widgets/w62.js": 2925,
+   "src/widgets/w63.js": 1130,
+   "src/widgets/w64.js": 1196,
+   "src/app.js": 1242,
+   "src/adapter.js": 104
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 2,
+  "options": {
+   "size": 64,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "c36dd3e33b281e3d",
+  "html": {
+   "raw": 329,
+   "br": 146
+  },
+  "js": {
+   "raw": 93814,
+   "br": 18976
+  },
+  "total": {
+   "raw": 94143,
+   "br": 19122
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 90787
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 17731
+   }
+  },
+  "adapter": {
+   "raw": 104,
+   "br": 48
+  },
+  "bundle": {
+   "raw": 93918,
+   "br": 19024,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 797,
+   "src/widgets/w2.js": 547,
+   "src/widgets/w3.js": 2889,
+   "src/widgets/w4.js": 832,
+   "src/widgets/w5.js": 3329,
+   "src/widgets/w6.js": 885,
+   "src/widgets/w7.js": 951,
+   "src/widgets/w8.js": 772,
+   "src/widgets/w9.js": 1088,
+   "src/widgets/w10.js": 2990,
+   "src/widgets/w11.js": 798,
+   "src/widgets/w12.js": 1128,
+   "src/widgets/w13.js": 1259,
+   "src/widgets/w14.js": 1714,
+   "src/widgets/w15.js": 2629,
+   "src/widgets/w16.js": 935,
+   "src/widgets/w17.js": 1677,
+   "src/widgets/w18.js": 816,
+   "src/widgets/w19.js": 2572,
+   "src/widgets/w20.js": 1086,
+   "src/widgets/w21.js": 1225,
+   "src/widgets/w22.js": 952,
+   "src/widgets/w23.js": 832,
+   "src/widgets/w24.js": 1734,
+   "src/widgets/w25.js": 1405,
+   "src/widgets/w26.js": 2553,
+   "src/widgets/w27.js": 1019,
+   "src/widgets/w28.js": 1535,
+   "src/widgets/w29.js": 1029,
+   "src/widgets/w30.js": 1663,
+   "src/widgets/w31.js": 1363,
+   "src/widgets/w32.js": 1087,
+   "src/widgets/w33.js": 1553,
+   "src/widgets/w34.js": 1405,
+   "src/widgets/w35.js": 1593,
+   "src/widgets/w36.js": 2039,
+   "src/widgets/w37.js": 1196,
+   "src/widgets/w38.js": 1694,
+   "src/widgets/w39.js": 1362,
+   "src/widgets/w40.js": 720,
+   "src/widgets/w41.js": 1722,
+   "src/widgets/w42.js": 1629,
+   "src/widgets/w43.js": 3132,
+   "src/widgets/w44.js": 658,
+   "src/widgets/w45.js": 1008,
+   "src/widgets/w46.js": 1487,
+   "src/widgets/w47.js": 1871,
+   "src/widgets/w48.js": 1015,
+   "src/widgets/w49.js": 1066,
+   "src/widgets/w50.js": 1437,
+   "src/widgets/w51.js": 864,
+   "src/widgets/w52.js": 1703,
+   "src/widgets/w53.js": 1650,
+   "src/widgets/w54.js": 1140,
+   "src/widgets/w55.js": 1396,
+   "src/widgets/w56.js": 1092,
+   "src/widgets/w57.js": 731,
+   "src/widgets/w58.js": 1032,
+   "src/widgets/w59.js": 1493,
+   "src/widgets/w60.js": 1056,
+   "src/widgets/w61.js": 869,
+   "src/widgets/w62.js": 1805,
+   "src/widgets/w63.js": 1063,
+   "src/widgets/w64.js": 719,
+   "src/app.js": 1226,
+   "src/adapter.js": 104
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 3,
+  "options": {
+   "size": 64,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "5fcd04fe44b8b147",
+  "html": {
+   "raw": 329,
+   "br": 146
+  },
+  "js": {
+   "raw": 96393,
+   "br": 18981
+  },
+  "total": {
+   "raw": 96722,
+   "br": 19127
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 93366
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 17736
+   }
+  },
+  "adapter": {
+   "raw": 104,
+   "br": 116
+  },
+  "bundle": {
+   "raw": 96497,
+   "br": 19097,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 1897,
+   "src/widgets/w2.js": 1831,
+   "src/widgets/w3.js": 1751,
+   "src/widgets/w4.js": 1523,
+   "src/widgets/w5.js": 2331,
+   "src/widgets/w6.js": 3050,
+   "src/widgets/w7.js": 1984,
+   "src/widgets/w8.js": 765,
+   "src/widgets/w9.js": 468,
+   "src/widgets/w10.js": 1272,
+   "src/widgets/w11.js": 524,
+   "src/widgets/w12.js": 1135,
+   "src/widgets/w13.js": 1850,
+   "src/widgets/w14.js": 1417,
+   "src/widgets/w15.js": 1309,
+   "src/widgets/w16.js": 986,
+   "src/widgets/w17.js": 993,
+   "src/widgets/w18.js": 1436,
+   "src/widgets/w19.js": 1517,
+   "src/widgets/w20.js": 962,
+   "src/widgets/w21.js": 1562,
+   "src/widgets/w22.js": 1612,
+   "src/widgets/w23.js": 1282,
+   "src/widgets/w24.js": 1441,
+   "src/widgets/w25.js": 3239,
+   "src/widgets/w26.js": 1066,
+   "src/widgets/w27.js": 1276,
+   "src/widgets/w28.js": 1542,
+   "src/widgets/w29.js": 579,
+   "src/widgets/w30.js": 2386,
+   "src/widgets/w31.js": 1492,
+   "src/widgets/w32.js": 1533,
+   "src/widgets/w33.js": 1653,
+   "src/widgets/w34.js": 1697,
+   "src/widgets/w35.js": 457,
+   "src/widgets/w36.js": 1582,
+   "src/widgets/w37.js": 871,
+   "src/widgets/w38.js": 1465,
+   "src/widgets/w39.js": 1217,
+   "src/widgets/w40.js": 1265,
+   "src/widgets/w41.js": 1957,
+   "src/widgets/w42.js": 1657,
+   "src/widgets/w43.js": 1769,
+   "src/widgets/w44.js": 1323,
+   "src/widgets/w45.js": 723,
+   "src/widgets/w46.js": 2052,
+   "src/widgets/w47.js": 1547,
+   "src/widgets/w48.js": 1448,
+   "src/widgets/w49.js": 507,
+   "src/widgets/w50.js": 971,
+   "src/widgets/w51.js": 649,
+   "src/widgets/w52.js": 1869,
+   "src/widgets/w53.js": 986,
+   "src/widgets/w54.js": 695,
+   "src/widgets/w55.js": 1077,
+   "src/widgets/w56.js": 1751,
+   "src/widgets/w57.js": 1639,
+   "src/widgets/w58.js": 1663,
+   "src/widgets/w59.js": 1521,
+   "src/widgets/w60.js": 1623,
+   "src/widgets/w61.js": 1724,
+   "src/widgets/w62.js": 2065,
+   "src/widgets/w63.js": 1059,
+   "src/widgets/w64.js": 1362,
+   "src/app.js": 1241,
+   "src/adapter.js": 104
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 1,
+  "options": {
+   "size": 128,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "64e2c2e30f966f0a",
+  "html": {
+   "raw": 329,
+   "br": 146
+  },
+  "js": {
+   "raw": 191593,
+   "br": 33738
+  },
+  "total": {
+   "raw": 191922,
+   "br": 33884
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 188566
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 32493
+   }
+  },
+  "adapter": {
+   "raw": 104,
+   "br": -25
+  },
+  "bundle": {
+   "raw": 191697,
+   "br": 33713,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 2075,
+   "src/widgets/w2.js": 467,
+   "src/widgets/w3.js": 1403,
+   "src/widgets/w4.js": 1316,
+   "src/widgets/w5.js": 997,
+   "src/widgets/w6.js": 904,
+   "src/widgets/w7.js": 1321,
+   "src/widgets/w8.js": 1401,
+   "src/widgets/w9.js": 1856,
+   "src/widgets/w10.js": 1587,
+   "src/widgets/w11.js": 1522,
+   "src/widgets/w12.js": 1440,
+   "src/widgets/w13.js": 1901,
+   "src/widgets/w14.js": 1942,
+   "src/widgets/w15.js": 1871,
+   "src/widgets/w16.js": 726,
+   "src/widgets/w17.js": 1200,
+   "src/widgets/w18.js": 985,
+   "src/widgets/w19.js": 1136,
+   "src/widgets/w20.js": 2344,
+   "src/widgets/w21.js": 711,
+   "src/widgets/w22.js": 914,
+   "src/widgets/w23.js": 3688,
+   "src/widgets/w24.js": 763,
+   "src/widgets/w25.js": 563,
+   "src/widgets/w26.js": 1873,
+   "src/widgets/w27.js": 1759,
+   "src/widgets/w28.js": 1975,
+   "src/widgets/w29.js": 1694,
+   "src/widgets/w30.js": 1512,
+   "src/widgets/w31.js": 1433,
+   "src/widgets/w32.js": 1993,
+   "src/widgets/w33.js": 2368,
+   "src/widgets/w34.js": 1420,
+   "src/widgets/w35.js": 2195,
+   "src/widgets/w36.js": 1260,
+   "src/widgets/w37.js": 2041,
+   "src/widgets/w38.js": 1672,
+   "src/widgets/w39.js": 560,
+   "src/widgets/w40.js": 875,
+   "src/widgets/w41.js": 1387,
+   "src/widgets/w42.js": 2083,
+   "src/widgets/w43.js": 778,
+   "src/widgets/w44.js": 2862,
+   "src/widgets/w45.js": 1732,
+   "src/widgets/w46.js": 1194,
+   "src/widgets/w47.js": 868,
+   "src/widgets/w48.js": 1209,
+   "src/widgets/w49.js": 963,
+   "src/widgets/w50.js": 1124,
+   "src/widgets/w51.js": 1970,
+   "src/widgets/w52.js": 1158,
+   "src/widgets/w53.js": 2207,
+   "src/widgets/w54.js": 1067,
+   "src/widgets/w55.js": 2035,
+   "src/widgets/w56.js": 797,
+   "src/widgets/w57.js": 1808,
+   "src/widgets/w58.js": 506,
+   "src/widgets/w59.js": 1134,
+   "src/widgets/w60.js": 2805,
+   "src/widgets/w61.js": 1636,
+   "src/widgets/w62.js": 2925,
+   "src/widgets/w63.js": 1130,
+   "src/widgets/w64.js": 1196,
+   "src/widgets/w65.js": 1630,
+   "src/widgets/w66.js": 287,
+   "src/widgets/w67.js": 1885,
+   "src/widgets/w68.js": 1104,
+   "src/widgets/w69.js": 1169,
+   "src/widgets/w70.js": 1464,
+   "src/widgets/w71.js": 2270,
+   "src/widgets/w72.js": 1506,
+   "src/widgets/w73.js": 794,
+   "src/widgets/w74.js": 984,
+   "src/widgets/w75.js": 1324,
+   "src/widgets/w76.js": 1136,
+   "src/widgets/w77.js": 1178,
+   "src/widgets/w78.js": 1802,
+   "src/widgets/w79.js": 1214,
+   "src/widgets/w80.js": 1078,
+   "src/widgets/w81.js": 1519,
+   "src/widgets/w82.js": 958,
+   "src/widgets/w83.js": 972,
+   "src/widgets/w84.js": 1768,
+   "src/widgets/w85.js": 938,
+   "src/widgets/w86.js": 1172,
+   "src/widgets/w87.js": 1268,
+   "src/widgets/w88.js": 909,
+   "src/widgets/w89.js": 1673,
+   "src/widgets/w90.js": 949,
+   "src/widgets/w91.js": 944,
+   "src/widgets/w92.js": 1562,
+   "src/widgets/w93.js": 1567,
+   "src/widgets/w94.js": 3186,
+   "src/widgets/w95.js": 989,
+   "src/widgets/w96.js": 1679,
+   "src/widgets/w97.js": 429,
+   "src/widgets/w98.js": 1000,
+   "src/widgets/w99.js": 428,
+   "src/widgets/w100.js": 2437,
+   "src/widgets/w101.js": 1153,
+   "src/widgets/w102.js": 1052,
+   "src/widgets/w103.js": 1538,
+   "src/widgets/w104.js": 1512,
+   "src/widgets/w105.js": 1971,
+   "src/widgets/w106.js": 1958,
+   "src/widgets/w107.js": 2106,
+   "src/widgets/w108.js": 1675,
+   "src/widgets/w109.js": 1190,
+   "src/widgets/w110.js": 1178,
+   "src/widgets/w111.js": 1990,
+   "src/widgets/w112.js": 867,
+   "src/widgets/w113.js": 2271,
+   "src/widgets/w114.js": 1959,
+   "src/widgets/w115.js": 1877,
+   "src/widgets/w116.js": 1574,
+   "src/widgets/w117.js": 1425,
+   "src/widgets/w118.js": 1914,
+   "src/widgets/w119.js": 2112,
+   "src/widgets/w120.js": 796,
+   "src/widgets/w121.js": 1704,
+   "src/widgets/w122.js": 2227,
+   "src/widgets/w123.js": 884,
+   "src/widgets/w124.js": 1391,
+   "src/widgets/w125.js": 825,
+   "src/widgets/w126.js": 850,
+   "src/widgets/w127.js": 1408,
+   "src/widgets/w128.js": 1240,
+   "src/app.js": 2240,
+   "src/adapter.js": 104
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 2,
+  "options": {
+   "size": 128,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "1b645229bff2dde4",
+  "html": {
+   "raw": 329,
+   "br": 144
+  },
+  "js": {
+   "raw": 184595,
+   "br": 32593
+  },
+  "total": {
+   "raw": 184924,
+   "br": 32737
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 181568
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 31348
+   }
+  },
+  "adapter": {
+   "raw": 104,
+   "br": 61
+  },
+  "bundle": {
+   "raw": 184699,
+   "br": 32654,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 797,
+   "src/widgets/w2.js": 547,
+   "src/widgets/w3.js": 2889,
+   "src/widgets/w4.js": 832,
+   "src/widgets/w5.js": 3329,
+   "src/widgets/w6.js": 885,
+   "src/widgets/w7.js": 955,
+   "src/widgets/w8.js": 772,
+   "src/widgets/w9.js": 1088,
+   "src/widgets/w10.js": 2990,
+   "src/widgets/w11.js": 802,
+   "src/widgets/w12.js": 1128,
+   "src/widgets/w13.js": 1263,
+   "src/widgets/w14.js": 1714,
+   "src/widgets/w15.js": 2633,
+   "src/widgets/w16.js": 935,
+   "src/widgets/w17.js": 1677,
+   "src/widgets/w18.js": 816,
+   "src/widgets/w19.js": 2572,
+   "src/widgets/w20.js": 1086,
+   "src/widgets/w21.js": 1225,
+   "src/widgets/w22.js": 952,
+   "src/widgets/w23.js": 832,
+   "src/widgets/w24.js": 1734,
+   "src/widgets/w25.js": 1405,
+   "src/widgets/w26.js": 2553,
+   "src/widgets/w27.js": 1019,
+   "src/widgets/w28.js": 1535,
+   "src/widgets/w29.js": 1029,
+   "src/widgets/w30.js": 1663,
+   "src/widgets/w31.js": 1363,
+   "src/widgets/w32.js": 1087,
+   "src/widgets/w33.js": 1553,
+   "src/widgets/w34.js": 1405,
+   "src/widgets/w35.js": 1593,
+   "src/widgets/w36.js": 2039,
+   "src/widgets/w37.js": 1196,
+   "src/widgets/w38.js": 1694,
+   "src/widgets/w39.js": 1362,
+   "src/widgets/w40.js": 720,
+   "src/widgets/w41.js": 1722,
+   "src/widgets/w42.js": 1629,
+   "src/widgets/w43.js": 3132,
+   "src/widgets/w44.js": 658,
+   "src/widgets/w45.js": 1008,
+   "src/widgets/w46.js": 1487,
+   "src/widgets/w47.js": 1871,
+   "src/widgets/w48.js": 1015,
+   "src/widgets/w49.js": 1066,
+   "src/widgets/w50.js": 1437,
+   "src/widgets/w51.js": 864,
+   "src/widgets/w52.js": 1703,
+   "src/widgets/w53.js": 1650,
+   "src/widgets/w54.js": 1140,
+   "src/widgets/w55.js": 1396,
+   "src/widgets/w56.js": 1092,
+   "src/widgets/w57.js": 727,
+   "src/widgets/w58.js": 1032,
+   "src/widgets/w59.js": 1493,
+   "src/widgets/w60.js": 1052,
+   "src/widgets/w61.js": 869,
+   "src/widgets/w62.js": 1805,
+   "src/widgets/w63.js": 1063,
+   "src/widgets/w64.js": 719,
+   "src/widgets/w65.js": 1186,
+   "src/widgets/w66.js": 832,
+   "src/widgets/w67.js": 1210,
+   "src/widgets/w68.js": 1053,
+   "src/widgets/w69.js": 2014,
+   "src/widgets/w70.js": 2231,
+   "src/widgets/w71.js": 1789,
+   "src/widgets/w72.js": 1233,
+   "src/widgets/w73.js": 2917,
+   "src/widgets/w74.js": 1292,
+   "src/widgets/w75.js": 1084,
+   "src/widgets/w76.js": 1557,
+   "src/widgets/w77.js": 630,
+   "src/widgets/w78.js": 1754,
+   "src/widgets/w79.js": 1178,
+   "src/widgets/w80.js": 816,
+   "src/widgets/w81.js": 1481,
+   "src/widgets/w82.js": 930,
+   "src/widgets/w83.js": 1784,
+   "src/widgets/w84.js": 758,
+   "src/widgets/w85.js": 631,
+   "src/widgets/w86.js": 1303,
+   "src/widgets/w87.js": 2449,
+   "src/widgets/w88.js": 1159,
+   "src/widgets/w89.js": 1689,
+   "src/widgets/w90.js": 1028,
+   "src/widgets/w91.js": 1130,
+   "src/widgets/w92.js": 1397,
+   "src/widgets/w93.js": 1890,
+   "src/widgets/w94.js": 2074,
+   "src/widgets/w95.js": 1610,
+   "src/widgets/w96.js": 645,
+   "src/widgets/w97.js": 709,
+   "src/widgets/w98.js": 907,
+   "src/widgets/w99.js": 1790,
+   "src/widgets/w100.js": 1867,
+   "src/widgets/w101.js": 1285,
+   "src/widgets/w102.js": 1220,
+   "src/widgets/w103.js": 1617,
+   "src/widgets/w104.js": 963,
+   "src/widgets/w105.js": 909,
+   "src/widgets/w106.js": 1093,
+   "src/widgets/w107.js": 1797,
+   "src/widgets/w108.js": 2062,
+   "src/widgets/w109.js": 1831,
+   "src/widgets/w110.js": 964,
+   "src/widgets/w111.js": 2608,
+   "src/widgets/w112.js": 1330,
+   "src/widgets/w113.js": 585,
+   "src/widgets/w114.js": 1528,
+   "src/widgets/w115.js": 1661,
+   "src/widgets/w116.js": 1067,
+   "src/widgets/w117.js": 2084,
+   "src/widgets/w118.js": 1654,
+   "src/widgets/w119.js": 1890,
+   "src/widgets/w120.js": 1039,
+   "src/widgets/w121.js": 1351,
+   "src/widgets/w122.js": 1490,
+   "src/widgets/w123.js": 2165,
+   "src/widgets/w124.js": 1183,
+   "src/widgets/w125.js": 797,
+   "src/widgets/w126.js": 1233,
+   "src/widgets/w127.js": 1520,
+   "src/widgets/w128.js": 898,
+   "src/app.js": 2168,
+   "src/adapter.js": 104
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 3,
+  "options": {
+   "size": 128,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "0276b17314b71e3d",
+  "html": {
+   "raw": 329,
+   "br": 145
+  },
+  "js": {
+   "raw": 192731,
+   "br": 33863
+  },
+  "total": {
+   "raw": 193060,
+   "br": 34008
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 189704
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 32618
+   }
+  },
+  "adapter": {
+   "raw": 104,
+   "br": 22
+  },
+  "bundle": {
+   "raw": 192835,
+   "br": 33885,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 1897,
+   "src/widgets/w2.js": 1831,
+   "src/widgets/w3.js": 1751,
+   "src/widgets/w4.js": 1523,
+   "src/widgets/w5.js": 2325,
+   "src/widgets/w6.js": 3048,
+   "src/widgets/w7.js": 1984,
+   "src/widgets/w8.js": 768,
+   "src/widgets/w9.js": 473,
+   "src/widgets/w10.js": 1277,
+   "src/widgets/w11.js": 524,
+   "src/widgets/w12.js": 1135,
+   "src/widgets/w13.js": 1850,
+   "src/widgets/w14.js": 1417,
+   "src/widgets/w15.js": 1309,
+   "src/widgets/w16.js": 986,
+   "src/widgets/w17.js": 997,
+   "src/widgets/w18.js": 1436,
+   "src/widgets/w19.js": 1517,
+   "src/widgets/w20.js": 962,
+   "src/widgets/w21.js": 1562,
+   "src/widgets/w22.js": 1612,
+   "src/widgets/w23.js": 1282,
+   "src/widgets/w24.js": 1441,
+   "src/widgets/w25.js": 3243,
+   "src/widgets/w26.js": 1066,
+   "src/widgets/w27.js": 1276,
+   "src/widgets/w28.js": 1542,
+   "src/widgets/w29.js": 579,
+   "src/widgets/w30.js": 2390,
+   "src/widgets/w31.js": 1492,
+   "src/widgets/w32.js": 1533,
+   "src/widgets/w33.js": 1653,
+   "src/widgets/w34.js": 1697,
+   "src/widgets/w35.js": 457,
+   "src/widgets/w36.js": 1582,
+   "src/widgets/w37.js": 871,
+   "src/widgets/w38.js": 1469,
+   "src/widgets/w39.js": 1217,
+   "src/widgets/w40.js": 1265,
+   "src/widgets/w41.js": 1957,
+   "src/widgets/w42.js": 1657,
+   "src/widgets/w43.js": 1773,
+   "src/widgets/w44.js": 1323,
+   "src/widgets/w45.js": 723,
+   "src/widgets/w46.js": 2052,
+   "src/widgets/w47.js": 1547,
+   "src/widgets/w48.js": 1448,
+   "src/widgets/w49.js": 507,
+   "src/widgets/w50.js": 971,
+   "src/widgets/w51.js": 649,
+   "src/widgets/w52.js": 1869,
+   "src/widgets/w53.js": 986,
+   "src/widgets/w54.js": 695,
+   "src/widgets/w55.js": 1077,
+   "src/widgets/w56.js": 1751,
+   "src/widgets/w57.js": 1639,
+   "src/widgets/w58.js": 1663,
+   "src/widgets/w59.js": 1523,
+   "src/widgets/w60.js": 1623,
+   "src/widgets/w61.js": 1724,
+   "src/widgets/w62.js": 2065,
+   "src/widgets/w63.js": 1059,
+   "src/widgets/w64.js": 1362,
+   "src/widgets/w65.js": 2128,
+   "src/widgets/w66.js": 1021,
+   "src/widgets/w67.js": 2119,
+   "src/widgets/w68.js": 1729,
+   "src/widgets/w69.js": 657,
+   "src/widgets/w70.js": 2026,
+   "src/widgets/w71.js": 1823,
+   "src/widgets/w72.js": 1628,
+   "src/widgets/w73.js": 1963,
+   "src/widgets/w74.js": 2095,
+   "src/widgets/w75.js": 3343,
+   "src/widgets/w76.js": 580,
+   "src/widgets/w77.js": 1865,
+   "src/widgets/w78.js": 1902,
+   "src/widgets/w79.js": 682,
+   "src/widgets/w80.js": 1391,
+   "src/widgets/w81.js": 1001,
+   "src/widgets/w82.js": 2054,
+   "src/widgets/w83.js": 1355,
+   "src/widgets/w84.js": 758,
+   "src/widgets/w85.js": 1182,
+   "src/widgets/w86.js": 1028,
+   "src/widgets/w87.js": 1299,
+   "src/widgets/w88.js": 943,
+   "src/widgets/w89.js": 966,
+   "src/widgets/w90.js": 994,
+   "src/widgets/w91.js": 811,
+   "src/widgets/w92.js": 2276,
+   "src/widgets/w93.js": 1210,
+   "src/widgets/w94.js": 1943,
+   "src/widgets/w95.js": 1693,
+   "src/widgets/w96.js": 2522,
+   "src/widgets/w97.js": 1926,
+   "src/widgets/w98.js": 492,
+   "src/widgets/w99.js": 1409,
+   "src/widgets/w100.js": 1702,
+   "src/widgets/w101.js": 586,
+   "src/widgets/w102.js": 977,
+   "src/widgets/w103.js": 767,
+   "src/widgets/w104.js": 869,
+   "src/widgets/w105.js": 2261,
+   "src/widgets/w106.js": 1593,
+   "src/widgets/w107.js": 1251,
+   "src/widgets/w108.js": 1410,
+   "src/widgets/w109.js": 1657,
+   "src/widgets/w110.js": 1567,
+   "src/widgets/w111.js": 1242,
+   "src/widgets/w112.js": 1428,
+   "src/widgets/w113.js": 1548,
+   "src/widgets/w114.js": 1261,
+   "src/widgets/w115.js": 773,
+   "src/widgets/w116.js": 2868,
+   "src/widgets/w117.js": 1740,
+   "src/widgets/w118.js": 2789,
+   "src/widgets/w119.js": 1501,
+   "src/widgets/w120.js": 806,
+   "src/widgets/w121.js": 774,
+   "src/widgets/w122.js": 1517,
+   "src/widgets/w123.js": 2135,
+   "src/widgets/w124.js": 1283,
+   "src/widgets/w125.js": 918,
+   "src/widgets/w126.js": 2205,
+   "src/widgets/w127.js": 2574,
+   "src/widgets/w128.js": 509,
+   "src/app.js": 2227,
+   "src/adapter.js": 104
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 1,
+  "options": {
+   "size": 256,
+   "seed": 1,
+   "readerEvery": 8
+  },
+  "inputs": "4673ac45f854399d",
+  "html": {
+   "raw": 329,
+   "br": 142
+  },
+  "js": {
+   "raw": 375708,
+   "br": 59213
+  },
+  "total": {
+   "raw": 376037,
+   "br": 59355
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 372681
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 57968
+   }
+  },
+  "adapter": {
+   "raw": 104,
+   "br": 71
+  },
+  "bundle": {
+   "raw": 375812,
+   "br": 59284,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 2075,
+   "src/widgets/w2.js": 467,
+   "src/widgets/w3.js": 1403,
+   "src/widgets/w4.js": 1316,
+   "src/widgets/w5.js": 997,
+   "src/widgets/w6.js": 904,
+   "src/widgets/w7.js": 1321,
+   "src/widgets/w8.js": 1401,
+   "src/widgets/w9.js": 1856,
+   "src/widgets/w10.js": 1587,
+   "src/widgets/w11.js": 1522,
+   "src/widgets/w12.js": 1440,
+   "src/widgets/w13.js": 1901,
+   "src/widgets/w14.js": 1942,
+   "src/widgets/w15.js": 1871,
+   "src/widgets/w16.js": 726,
+   "src/widgets/w17.js": 1200,
+   "src/widgets/w18.js": 985,
+   "src/widgets/w19.js": 1136,
+   "src/widgets/w20.js": 2344,
+   "src/widgets/w21.js": 711,
+   "src/widgets/w22.js": 914,
+   "src/widgets/w23.js": 3688,
+   "src/widgets/w24.js": 763,
+   "src/widgets/w25.js": 563,
+   "src/widgets/w26.js": 1873,
+   "src/widgets/w27.js": 1763,
+   "src/widgets/w28.js": 1975,
+   "src/widgets/w29.js": 1694,
+   "src/widgets/w30.js": 1512,
+   "src/widgets/w31.js": 1437,
+   "src/widgets/w32.js": 1993,
+   "src/widgets/w33.js": 2368,
+   "src/widgets/w34.js": 1428,
+   "src/widgets/w35.js": 2195,
+   "src/widgets/w36.js": 1260,
+   "src/widgets/w37.js": 2041,
+   "src/widgets/w38.js": 1672,
+   "src/widgets/w39.js": 560,
+   "src/widgets/w40.js": 875,
+   "src/widgets/w41.js": 1383,
+   "src/widgets/w42.js": 2083,
+   "src/widgets/w43.js": 778,
+   "src/widgets/w44.js": 2862,
+   "src/widgets/w45.js": 1732,
+   "src/widgets/w46.js": 1194,
+   "src/widgets/w47.js": 868,
+   "src/widgets/w48.js": 1209,
+   "src/widgets/w49.js": 963,
+   "src/widgets/w50.js": 1124,
+   "src/widgets/w51.js": 1970,
+   "src/widgets/w52.js": 1158,
+   "src/widgets/w53.js": 2207,
+   "src/widgets/w54.js": 1067,
+   "src/widgets/w55.js": 2035,
+   "src/widgets/w56.js": 797,
+   "src/widgets/w57.js": 1808,
+   "src/widgets/w58.js": 506,
+   "src/widgets/w59.js": 1134,
+   "src/widgets/w60.js": 2805,
+   "src/widgets/w61.js": 1636,
+   "src/widgets/w62.js": 2925,
+   "src/widgets/w63.js": 1130,
+   "src/widgets/w64.js": 1196,
+   "src/widgets/w65.js": 1630,
+   "src/widgets/w66.js": 287,
+   "src/widgets/w67.js": 1885,
+   "src/widgets/w68.js": 1104,
+   "src/widgets/w69.js": 1169,
+   "src/widgets/w70.js": 1464,
+   "src/widgets/w71.js": 2270,
+   "src/widgets/w72.js": 1506,
+   "src/widgets/w73.js": 794,
+   "src/widgets/w74.js": 984,
+   "src/widgets/w75.js": 1324,
+   "src/widgets/w76.js": 1136,
+   "src/widgets/w77.js": 1178,
+   "src/widgets/w78.js": 1802,
+   "src/widgets/w79.js": 1214,
+   "src/widgets/w80.js": 1078,
+   "src/widgets/w81.js": 1519,
+   "src/widgets/w82.js": 958,
+   "src/widgets/w83.js": 972,
+   "src/widgets/w84.js": 1768,
+   "src/widgets/w85.js": 938,
+   "src/widgets/w86.js": 1172,
+   "src/widgets/w87.js": 1268,
+   "src/widgets/w88.js": 909,
+   "src/widgets/w89.js": 1673,
+   "src/widgets/w90.js": 949,
+   "src/widgets/w91.js": 948,
+   "src/widgets/w92.js": 1562,
+   "src/widgets/w93.js": 1567,
+   "src/widgets/w94.js": 3186,
+   "src/widgets/w95.js": 989,
+   "src/widgets/w96.js": 1679,
+   "src/widgets/w97.js": 429,
+   "src/widgets/w98.js": 1000,
+   "src/widgets/w99.js": 428,
+   "src/widgets/w100.js": 2437,
+   "src/widgets/w101.js": 1153,
+   "src/widgets/w102.js": 1052,
+   "src/widgets/w103.js": 1538,
+   "src/widgets/w104.js": 1512,
+   "src/widgets/w105.js": 1971,
+   "src/widgets/w106.js": 1958,
+   "src/widgets/w107.js": 2106,
+   "src/widgets/w108.js": 1675,
+   "src/widgets/w109.js": 1190,
+   "src/widgets/w110.js": 1178,
+   "src/widgets/w111.js": 1990,
+   "src/widgets/w112.js": 867,
+   "src/widgets/w113.js": 2271,
+   "src/widgets/w114.js": 1959,
+   "src/widgets/w115.js": 1877,
+   "src/widgets/w116.js": 1574,
+   "src/widgets/w117.js": 1425,
+   "src/widgets/w118.js": 1914,
+   "src/widgets/w119.js": 2112,
+   "src/widgets/w120.js": 796,
+   "src/widgets/w121.js": 1704,
+   "src/widgets/w122.js": 2227,
+   "src/widgets/w123.js": 884,
+   "src/widgets/w124.js": 1391,
+   "src/widgets/w125.js": 825,
+   "src/widgets/w126.js": 850,
+   "src/widgets/w127.js": 1408,
+   "src/widgets/w128.js": 1240,
+   "src/widgets/w129.js": 2073,
+   "src/widgets/w130.js": 1479,
+   "src/widgets/w131.js": 1372,
+   "src/widgets/w132.js": 995,
+   "src/widgets/w133.js": 1373,
+   "src/widgets/w134.js": 1156,
+   "src/widgets/w135.js": 2559,
+   "src/widgets/w136.js": 859,
+   "src/widgets/w137.js": 1007,
+   "src/widgets/w138.js": 1933,
+   "src/widgets/w139.js": 633,
+   "src/widgets/w140.js": 1670,
+   "src/widgets/w141.js": 1345,
+   "src/widgets/w142.js": 2270,
+   "src/widgets/w143.js": 1327,
+   "src/widgets/w144.js": 959,
+   "src/widgets/w145.js": 2148,
+   "src/widgets/w146.js": 1879,
+   "src/widgets/w147.js": 2404,
+   "src/widgets/w148.js": 1448,
+   "src/widgets/w149.js": 1733,
+   "src/widgets/w150.js": 883,
+   "src/widgets/w151.js": 1343,
+   "src/widgets/w152.js": 1280,
+   "src/widgets/w153.js": 1121,
+   "src/widgets/w154.js": 1071,
+   "src/widgets/w155.js": 1569,
+   "src/widgets/w156.js": 1234,
+   "src/widgets/w157.js": 1400,
+   "src/widgets/w158.js": 1636,
+   "src/widgets/w159.js": 2205,
+   "src/widgets/w160.js": 1873,
+   "src/widgets/w161.js": 1988,
+   "src/widgets/w162.js": 1260,
+   "src/widgets/w163.js": 2597,
+   "src/widgets/w164.js": 770,
+   "src/widgets/w165.js": 1173,
+   "src/widgets/w166.js": 1521,
+   "src/widgets/w167.js": 1158,
+   "src/widgets/w168.js": 1311,
+   "src/widgets/w169.js": 2350,
+   "src/widgets/w170.js": 1811,
+   "src/widgets/w171.js": 832,
+   "src/widgets/w172.js": 953,
+   "src/widgets/w173.js": 2496,
+   "src/widgets/w174.js": 435,
+   "src/widgets/w175.js": 723,
+   "src/widgets/w176.js": 930,
+   "src/widgets/w177.js": 1258,
+   "src/widgets/w178.js": 1614,
+   "src/widgets/w179.js": 653,
+   "src/widgets/w180.js": 489,
+   "src/widgets/w181.js": 1901,
+   "src/widgets/w182.js": 775,
+   "src/widgets/w183.js": 640,
+   "src/widgets/w184.js": 1314,
+   "src/widgets/w185.js": 1103,
+   "src/widgets/w186.js": 1097,
+   "src/widgets/w187.js": 786,
+   "src/widgets/w188.js": 1187,
+   "src/widgets/w189.js": 1223,
+   "src/widgets/w190.js": 1966,
+   "src/widgets/w191.js": 1613,
+   "src/widgets/w192.js": 742,
+   "src/widgets/w193.js": 2052,
+   "src/widgets/w194.js": 1497,
+   "src/widgets/w195.js": 1367,
+   "src/widgets/w196.js": 1771,
+   "src/widgets/w197.js": 818,
+   "src/widgets/w198.js": 652,
+   "src/widgets/w199.js": 752,
+   "src/widgets/w200.js": 739,
+   "src/widgets/w201.js": 3001,
+   "src/widgets/w202.js": 2290,
+   "src/widgets/w203.js": 2276,
+   "src/widgets/w204.js": 1637,
+   "src/widgets/w205.js": 1377,
+   "src/widgets/w206.js": 1105,
+   "src/widgets/w207.js": 1543,
+   "src/widgets/w208.js": 652,
+   "src/widgets/w209.js": 1691,
+   "src/widgets/w210.js": 1543,
+   "src/widgets/w211.js": 764,
+   "src/widgets/w212.js": 772,
+   "src/widgets/w213.js": 1654,
+   "src/widgets/w214.js": 1515,
+   "src/widgets/w215.js": 499,
+   "src/widgets/w216.js": 1102,
+   "src/widgets/w217.js": 478,
+   "src/widgets/w218.js": 2460,
+   "src/widgets/w219.js": 2151,
+   "src/widgets/w220.js": 2150,
+   "src/widgets/w221.js": 1295,
+   "src/widgets/w222.js": 1565,
+   "src/widgets/w223.js": 682,
+   "src/widgets/w224.js": 928,
+   "src/widgets/w225.js": 1204,
+   "src/widgets/w226.js": 2104,
+   "src/widgets/w227.js": 1188,
+   "src/widgets/w228.js": 1305,
+   "src/widgets/w229.js": 987,
+   "src/widgets/w230.js": 1308,
+   "src/widgets/w231.js": 1110,
+   "src/widgets/w232.js": 986,
+   "src/widgets/w233.js": 2068,
+   "src/widgets/w234.js": 519,
+   "src/widgets/w235.js": 1749,
+   "src/widgets/w236.js": 1170,
+   "src/widgets/w237.js": 2274,
+   "src/widgets/w238.js": 2426,
+   "src/widgets/w239.js": 1317,
+   "src/widgets/w240.js": 1016,
+   "src/widgets/w241.js": 3179,
+   "src/widgets/w242.js": 1396,
+   "src/widgets/w243.js": 1871,
+   "src/widgets/w244.js": 1409,
+   "src/widgets/w245.js": 473,
+   "src/widgets/w246.js": 784,
+   "src/widgets/w247.js": 1540,
+   "src/widgets/w248.js": 1492,
+   "src/widgets/w249.js": 1053,
+   "src/widgets/w250.js": 2396,
+   "src/widgets/w251.js": 1958,
+   "src/widgets/w252.js": 2075,
+   "src/widgets/w253.js": 1018,
+   "src/widgets/w254.js": 1883,
+   "src/widgets/w255.js": 1418,
+   "src/widgets/w256.js": 1729,
+   "src/app.js": 4250,
+   "src/adapter.js": 104
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 2,
+  "options": {
+   "size": 256,
+   "seed": 2,
+   "readerEvery": 8
+  },
+  "inputs": "f7c0a30dae4706a9",
+  "html": {
+   "raw": 329,
+   "br": 144
+  },
+  "js": {
+   "raw": 377996,
+   "br": 59036
+  },
+  "total": {
+   "raw": 378325,
+   "br": 59180
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 374969
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 57791
+   }
+  },
+  "adapter": {
+   "raw": 104,
+   "br": -2
+  },
+  "bundle": {
+   "raw": 378100,
+   "br": 59034,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 797,
+   "src/widgets/w2.js": 547,
+   "src/widgets/w3.js": 2889,
+   "src/widgets/w4.js": 832,
+   "src/widgets/w5.js": 3327,
+   "src/widgets/w6.js": 883,
+   "src/widgets/w7.js": 955,
+   "src/widgets/w8.js": 772,
+   "src/widgets/w9.js": 1088,
+   "src/widgets/w10.js": 2990,
+   "src/widgets/w11.js": 802,
+   "src/widgets/w12.js": 1128,
+   "src/widgets/w13.js": 1263,
+   "src/widgets/w14.js": 1714,
+   "src/widgets/w15.js": 2633,
+   "src/widgets/w16.js": 935,
+   "src/widgets/w17.js": 1677,
+   "src/widgets/w18.js": 816,
+   "src/widgets/w19.js": 2572,
+   "src/widgets/w20.js": 1086,
+   "src/widgets/w21.js": 1229,
+   "src/widgets/w22.js": 952,
+   "src/widgets/w23.js": 832,
+   "src/widgets/w24.js": 1734,
+   "src/widgets/w25.js": 1405,
+   "src/widgets/w26.js": 2555,
+   "src/widgets/w27.js": 1019,
+   "src/widgets/w28.js": 1539,
+   "src/widgets/w29.js": 1029,
+   "src/widgets/w30.js": 1663,
+   "src/widgets/w31.js": 1363,
+   "src/widgets/w32.js": 1087,
+   "src/widgets/w33.js": 1553,
+   "src/widgets/w34.js": 1405,
+   "src/widgets/w35.js": 1593,
+   "src/widgets/w36.js": 2039,
+   "src/widgets/w37.js": 1196,
+   "src/widgets/w38.js": 1694,
+   "src/widgets/w39.js": 1362,
+   "src/widgets/w40.js": 720,
+   "src/widgets/w41.js": 1722,
+   "src/widgets/w42.js": 1629,
+   "src/widgets/w43.js": 3132,
+   "src/widgets/w44.js": 658,
+   "src/widgets/w45.js": 1008,
+   "src/widgets/w46.js": 1487,
+   "src/widgets/w47.js": 1871,
+   "src/widgets/w48.js": 1015,
+   "src/widgets/w49.js": 1066,
+   "src/widgets/w50.js": 1437,
+   "src/widgets/w51.js": 864,
+   "src/widgets/w52.js": 1703,
+   "src/widgets/w53.js": 1650,
+   "src/widgets/w54.js": 1140,
+   "src/widgets/w55.js": 1396,
+   "src/widgets/w56.js": 1092,
+   "src/widgets/w57.js": 731,
+   "src/widgets/w58.js": 1032,
+   "src/widgets/w59.js": 1493,
+   "src/widgets/w60.js": 1056,
+   "src/widgets/w61.js": 869,
+   "src/widgets/w62.js": 1805,
+   "src/widgets/w63.js": 1063,
+   "src/widgets/w64.js": 719,
+   "src/widgets/w65.js": 1186,
+   "src/widgets/w66.js": 832,
+   "src/widgets/w67.js": 1210,
+   "src/widgets/w68.js": 1053,
+   "src/widgets/w69.js": 2014,
+   "src/widgets/w70.js": 2231,
+   "src/widgets/w71.js": 1789,
+   "src/widgets/w72.js": 1233,
+   "src/widgets/w73.js": 2917,
+   "src/widgets/w74.js": 1292,
+   "src/widgets/w75.js": 1084,
+   "src/widgets/w76.js": 1557,
+   "src/widgets/w77.js": 630,
+   "src/widgets/w78.js": 1754,
+   "src/widgets/w79.js": 1178,
+   "src/widgets/w80.js": 816,
+   "src/widgets/w81.js": 1481,
+   "src/widgets/w82.js": 930,
+   "src/widgets/w83.js": 1784,
+   "src/widgets/w84.js": 758,
+   "src/widgets/w85.js": 631,
+   "src/widgets/w86.js": 1303,
+   "src/widgets/w87.js": 2449,
+   "src/widgets/w88.js": 1159,
+   "src/widgets/w89.js": 1689,
+   "src/widgets/w90.js": 1028,
+   "src/widgets/w91.js": 1130,
+   "src/widgets/w92.js": 1397,
+   "src/widgets/w93.js": 1890,
+   "src/widgets/w94.js": 2074,
+   "src/widgets/w95.js": 1610,
+   "src/widgets/w96.js": 645,
+   "src/widgets/w97.js": 709,
+   "src/widgets/w98.js": 907,
+   "src/widgets/w99.js": 1790,
+   "src/widgets/w100.js": 1867,
+   "src/widgets/w101.js": 1285,
+   "src/widgets/w102.js": 1220,
+   "src/widgets/w103.js": 1617,
+   "src/widgets/w104.js": 963,
+   "src/widgets/w105.js": 909,
+   "src/widgets/w106.js": 1093,
+   "src/widgets/w107.js": 1797,
+   "src/widgets/w108.js": 2062,
+   "src/widgets/w109.js": 1831,
+   "src/widgets/w110.js": 964,
+   "src/widgets/w111.js": 2608,
+   "src/widgets/w112.js": 1330,
+   "src/widgets/w113.js": 585,
+   "src/widgets/w114.js": 1528,
+   "src/widgets/w115.js": 1661,
+   "src/widgets/w116.js": 1067,
+   "src/widgets/w117.js": 2088,
+   "src/widgets/w118.js": 1654,
+   "src/widgets/w119.js": 1890,
+   "src/widgets/w120.js": 1039,
+   "src/widgets/w121.js": 1351,
+   "src/widgets/w122.js": 1490,
+   "src/widgets/w123.js": 2165,
+   "src/widgets/w124.js": 1183,
+   "src/widgets/w125.js": 797,
+   "src/widgets/w126.js": 1233,
+   "src/widgets/w127.js": 1520,
+   "src/widgets/w128.js": 898,
+   "src/widgets/w129.js": 1425,
+   "src/widgets/w130.js": 1274,
+   "src/widgets/w131.js": 2068,
+   "src/widgets/w132.js": 1868,
+   "src/widgets/w133.js": 1437,
+   "src/widgets/w134.js": 937,
+   "src/widgets/w135.js": 1163,
+   "src/widgets/w136.js": 929,
+   "src/widgets/w137.js": 667,
+   "src/widgets/w138.js": 1331,
+   "src/widgets/w139.js": 2501,
+   "src/widgets/w140.js": 2273,
+   "src/widgets/w141.js": 2653,
+   "src/widgets/w142.js": 335,
+   "src/widgets/w143.js": 2903,
+   "src/widgets/w144.js": 1197,
+   "src/widgets/w145.js": 1261,
+   "src/widgets/w146.js": 975,
+   "src/widgets/w147.js": 2451,
+   "src/widgets/w148.js": 1185,
+   "src/widgets/w149.js": 851,
+   "src/widgets/w150.js": 1062,
+   "src/widgets/w151.js": 2915,
+   "src/widgets/w152.js": 1481,
+   "src/widgets/w153.js": 1228,
+   "src/widgets/w154.js": 1741,
+   "src/widgets/w155.js": 726,
+   "src/widgets/w156.js": 561,
+   "src/widgets/w157.js": 2591,
+   "src/widgets/w158.js": 851,
+   "src/widgets/w159.js": 533,
+   "src/widgets/w160.js": 723,
+   "src/widgets/w161.js": 1537,
+   "src/widgets/w162.js": 2785,
+   "src/widgets/w163.js": 1823,
+   "src/widgets/w164.js": 1170,
+   "src/widgets/w165.js": 2733,
+   "src/widgets/w166.js": 795,
+   "src/widgets/w167.js": 894,
+   "src/widgets/w168.js": 864,
+   "src/widgets/w169.js": 1525,
+   "src/widgets/w170.js": 2832,
+   "src/widgets/w171.js": 1135,
+   "src/widgets/w172.js": 2798,
+   "src/widgets/w173.js": 2174,
+   "src/widgets/w174.js": 2326,
+   "src/widgets/w175.js": 1069,
+   "src/widgets/w176.js": 1423,
+   "src/widgets/w177.js": 1219,
+   "src/widgets/w178.js": 2246,
+   "src/widgets/w179.js": 1101,
+   "src/widgets/w180.js": 1327,
+   "src/widgets/w181.js": 1095,
+   "src/widgets/w182.js": 2070,
+   "src/widgets/w183.js": 2150,
+   "src/widgets/w184.js": 588,
+   "src/widgets/w185.js": 1060,
+   "src/widgets/w186.js": 1821,
+   "src/widgets/w187.js": 2353,
+   "src/widgets/w188.js": 1132,
+   "src/widgets/w189.js": 1104,
+   "src/widgets/w190.js": 2392,
+   "src/widgets/w191.js": 412,
+   "src/widgets/w192.js": 1861,
+   "src/widgets/w193.js": 2056,
+   "src/widgets/w194.js": 2400,
+   "src/widgets/w195.js": 1174,
+   "src/widgets/w196.js": 1091,
+   "src/widgets/w197.js": 1819,
+   "src/widgets/w198.js": 2520,
+   "src/widgets/w199.js": 1920,
+   "src/widgets/w200.js": 613,
+   "src/widgets/w201.js": 1460,
+   "src/widgets/w202.js": 1670,
+   "src/widgets/w203.js": 2203,
+   "src/widgets/w204.js": 1463,
+   "src/widgets/w205.js": 1512,
+   "src/widgets/w206.js": 1450,
+   "src/widgets/w207.js": 1021,
+   "src/widgets/w208.js": 1218,
+   "src/widgets/w209.js": 1432,
+   "src/widgets/w210.js": 465,
+   "src/widgets/w211.js": 2315,
+   "src/widgets/w212.js": 1480,
+   "src/widgets/w213.js": 2039,
+   "src/widgets/w214.js": 1019,
+   "src/widgets/w215.js": 1898,
+   "src/widgets/w216.js": 697,
+   "src/widgets/w217.js": 1709,
+   "src/widgets/w218.js": 1344,
+   "src/widgets/w219.js": 1234,
+   "src/widgets/w220.js": 1467,
+   "src/widgets/w221.js": 1603,
+   "src/widgets/w222.js": 1884,
+   "src/widgets/w223.js": 856,
+   "src/widgets/w224.js": 732,
+   "src/widgets/w225.js": 522,
+   "src/widgets/w226.js": 770,
+   "src/widgets/w227.js": 1072,
+   "src/widgets/w228.js": 1036,
+   "src/widgets/w229.js": 1799,
+   "src/widgets/w230.js": 2395,
+   "src/widgets/w231.js": 1219,
+   "src/widgets/w232.js": 848,
+   "src/widgets/w233.js": 1890,
+   "src/widgets/w234.js": 1738,
+   "src/widgets/w235.js": 1437,
+   "src/widgets/w236.js": 1001,
+   "src/widgets/w237.js": 1134,
+   "src/widgets/w238.js": 1128,
+   "src/widgets/w239.js": 1746,
+   "src/widgets/w240.js": 722,
+   "src/widgets/w241.js": 723,
+   "src/widgets/w242.js": 3045,
+   "src/widgets/w243.js": 1376,
+   "src/widgets/w244.js": 952,
+   "src/widgets/w245.js": 1771,
+   "src/widgets/w246.js": 2028,
+   "src/widgets/w247.js": 614,
+   "src/widgets/w248.js": 879,
+   "src/widgets/w249.js": 2599,
+   "src/widgets/w250.js": 1325,
+   "src/widgets/w251.js": 1282,
+   "src/widgets/w252.js": 933,
+   "src/widgets/w253.js": 2443,
+   "src/widgets/w254.js": 2887,
+   "src/widgets/w255.js": 1648,
+   "src/widgets/w256.js": 766,
+   "src/app.js": 4149,
+   "src/adapter.js": 104
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 3,
+  "options": {
+   "size": 256,
+   "seed": 3,
+   "readerEvery": 8
+  },
+  "inputs": "a3c952978efb6647",
+  "html": {
+   "raw": 329,
+   "br": 139
+  },
+  "js": {
+   "raw": 378466,
+   "br": 59746
+  },
+  "total": {
+   "raw": 378795,
+   "br": 59885
+  },
+  "attribution": {
+   "raw": {
+    "runtime": 2357,
+    "tooling": 670,
+    "app": 375439
+   },
+   "br": {
+    "runtime": 1245,
+    "app": 58501
+   }
+  },
+  "adapter": {
+   "raw": 104,
+   "br": 77
+  },
+  "bundle": {
+   "raw": 378570,
+   "br": 59823,
+   "files": 1
+  },
+  "perSource": {
+   "(unmapped)": 670,
+   "src/reconcile.js": 1379,
+   "src/runtime.js": 978,
+   "src/widgets/frame.js": 270,
+   "src/widgets/w1.js": 1897,
+   "src/widgets/w2.js": 1831,
+   "src/widgets/w3.js": 1751,
+   "src/widgets/w4.js": 1523,
+   "src/widgets/w5.js": 2324,
+   "src/widgets/w6.js": 3048,
+   "src/widgets/w7.js": 1988,
+   "src/widgets/w8.js": 768,
+   "src/widgets/w9.js": 473,
+   "src/widgets/w10.js": 1277,
+   "src/widgets/w11.js": 524,
+   "src/widgets/w12.js": 1135,
+   "src/widgets/w13.js": 1850,
+   "src/widgets/w14.js": 1417,
+   "src/widgets/w15.js": 1309,
+   "src/widgets/w16.js": 986,
+   "src/widgets/w17.js": 993,
+   "src/widgets/w18.js": 1436,
+   "src/widgets/w19.js": 1517,
+   "src/widgets/w20.js": 962,
+   "src/widgets/w21.js": 1562,
+   "src/widgets/w22.js": 1612,
+   "src/widgets/w23.js": 1282,
+   "src/widgets/w24.js": 1441,
+   "src/widgets/w25.js": 3243,
+   "src/widgets/w26.js": 1066,
+   "src/widgets/w27.js": 1276,
+   "src/widgets/w28.js": 1542,
+   "src/widgets/w29.js": 579,
+   "src/widgets/w30.js": 2390,
+   "src/widgets/w31.js": 1492,
+   "src/widgets/w32.js": 1533,
+   "src/widgets/w33.js": 1653,
+   "src/widgets/w34.js": 1697,
+   "src/widgets/w35.js": 457,
+   "src/widgets/w36.js": 1582,
+   "src/widgets/w37.js": 871,
+   "src/widgets/w38.js": 1469,
+   "src/widgets/w39.js": 1217,
+   "src/widgets/w40.js": 1265,
+   "src/widgets/w41.js": 1957,
+   "src/widgets/w42.js": 1657,
+   "src/widgets/w43.js": 1773,
+   "src/widgets/w44.js": 1327,
+   "src/widgets/w45.js": 723,
+   "src/widgets/w46.js": 2052,
+   "src/widgets/w47.js": 1547,
+   "src/widgets/w48.js": 1448,
+   "src/widgets/w49.js": 507,
+   "src/widgets/w50.js": 971,
+   "src/widgets/w51.js": 653,
+   "src/widgets/w52.js": 1869,
+   "src/widgets/w53.js": 986,
+   "src/widgets/w54.js": 695,
+   "src/widgets/w55.js": 1081,
+   "src/widgets/w56.js": 1751,
+   "src/widgets/w57.js": 1639,
+   "src/widgets/w58.js": 1663,
+   "src/widgets/w59.js": 1523,
+   "src/widgets/w60.js": 1623,
+   "src/widgets/w61.js": 1724,
+   "src/widgets/w62.js": 2065,
+   "src/widgets/w63.js": 1059,
+   "src/widgets/w64.js": 1362,
+   "src/widgets/w65.js": 2132,
+   "src/widgets/w66.js": 1025,
+   "src/widgets/w67.js": 2123,
+   "src/widgets/w68.js": 1729,
+   "src/widgets/w69.js": 657,
+   "src/widgets/w70.js": 2026,
+   "src/widgets/w71.js": 1823,
+   "src/widgets/w72.js": 1628,
+   "src/widgets/w73.js": 1963,
+   "src/widgets/w74.js": 2095,
+   "src/widgets/w75.js": 3343,
+   "src/widgets/w76.js": 584,
+   "src/widgets/w77.js": 1865,
+   "src/widgets/w78.js": 1902,
+   "src/widgets/w79.js": 682,
+   "src/widgets/w80.js": 1391,
+   "src/widgets/w81.js": 1001,
+   "src/widgets/w82.js": 2054,
+   "src/widgets/w83.js": 1355,
+   "src/widgets/w84.js": 758,
+   "src/widgets/w85.js": 1182,
+   "src/widgets/w86.js": 1028,
+   "src/widgets/w87.js": 1299,
+   "src/widgets/w88.js": 943,
+   "src/widgets/w89.js": 966,
+   "src/widgets/w90.js": 994,
+   "src/widgets/w91.js": 811,
+   "src/widgets/w92.js": 2276,
+   "src/widgets/w93.js": 1210,
+   "src/widgets/w94.js": 1943,
+   "src/widgets/w95.js": 1693,
+   "src/widgets/w96.js": 2520,
+   "src/widgets/w97.js": 1926,
+   "src/widgets/w98.js": 492,
+   "src/widgets/w99.js": 1409,
+   "src/widgets/w100.js": 1702,
+   "src/widgets/w101.js": 586,
+   "src/widgets/w102.js": 977,
+   "src/widgets/w103.js": 767,
+   "src/widgets/w104.js": 869,
+   "src/widgets/w105.js": 2261,
+   "src/widgets/w106.js": 1593,
+   "src/widgets/w107.js": 1251,
+   "src/widgets/w108.js": 1414,
+   "src/widgets/w109.js": 1657,
+   "src/widgets/w110.js": 1567,
+   "src/widgets/w111.js": 1242,
+   "src/widgets/w112.js": 1428,
+   "src/widgets/w113.js": 1548,
+   "src/widgets/w114.js": 1261,
+   "src/widgets/w115.js": 773,
+   "src/widgets/w116.js": 2868,
+   "src/widgets/w117.js": 1740,
+   "src/widgets/w118.js": 2789,
+   "src/widgets/w119.js": 1501,
+   "src/widgets/w120.js": 806,
+   "src/widgets/w121.js": 774,
+   "src/widgets/w122.js": 1517,
+   "src/widgets/w123.js": 2135,
+   "src/widgets/w124.js": 1283,
+   "src/widgets/w125.js": 918,
+   "src/widgets/w126.js": 2205,
+   "src/widgets/w127.js": 2574,
+   "src/widgets/w128.js": 509,
+   "src/widgets/w129.js": 1375,
+   "src/widgets/w130.js": 1515,
+   "src/widgets/w131.js": 1281,
+   "src/widgets/w132.js": 1244,
+   "src/widgets/w133.js": 553,
+   "src/widgets/w134.js": 853,
+   "src/widgets/w135.js": 1615,
+   "src/widgets/w136.js": 958,
+   "src/widgets/w137.js": 1975,
+   "src/widgets/w138.js": 1616,
+   "src/widgets/w139.js": 1730,
+   "src/widgets/w140.js": 867,
+   "src/widgets/w141.js": 882,
+   "src/widgets/w142.js": 2155,
+   "src/widgets/w143.js": 685,
+   "src/widgets/w144.js": 871,
+   "src/widgets/w145.js": 2375,
+   "src/widgets/w146.js": 2804,
+   "src/widgets/w147.js": 1114,
+   "src/widgets/w148.js": 2193,
+   "src/widgets/w149.js": 563,
+   "src/widgets/w150.js": 967,
+   "src/widgets/w151.js": 1022,
+   "src/widgets/w152.js": 1604,
+   "src/widgets/w153.js": 1685,
+   "src/widgets/w154.js": 1331,
+   "src/widgets/w155.js": 1207,
+   "src/widgets/w156.js": 972,
+   "src/widgets/w157.js": 1699,
+   "src/widgets/w158.js": 2079,
+   "src/widgets/w159.js": 1214,
+   "src/widgets/w160.js": 1047,
+   "src/widgets/w161.js": 1549,
+   "src/widgets/w162.js": 1871,
+   "src/widgets/w163.js": 1207,
+   "src/widgets/w164.js": 2392,
+   "src/widgets/w165.js": 1337,
+   "src/widgets/w166.js": 2663,
+   "src/widgets/w167.js": 2939,
+   "src/widgets/w168.js": 1101,
+   "src/widgets/w169.js": 597,
+   "src/widgets/w170.js": 2237,
+   "src/widgets/w171.js": 1439,
+   "src/widgets/w172.js": 2664,
+   "src/widgets/w173.js": 572,
+   "src/widgets/w174.js": 1907,
+   "src/widgets/w175.js": 726,
+   "src/widgets/w176.js": 1220,
+   "src/widgets/w177.js": 1198,
+   "src/widgets/w178.js": 978,
+   "src/widgets/w179.js": 935,
+   "src/widgets/w180.js": 1424,
+   "src/widgets/w181.js": 2400,
+   "src/widgets/w182.js": 1282,
+   "src/widgets/w183.js": 1475,
+   "src/widgets/w184.js": 1037,
+   "src/widgets/w185.js": 1043,
+   "src/widgets/w186.js": 3400,
+   "src/widgets/w187.js": 735,
+   "src/widgets/w188.js": 1374,
+   "src/widgets/w189.js": 2032,
+   "src/widgets/w190.js": 1285,
+   "src/widgets/w191.js": 2008,
+   "src/widgets/w192.js": 735,
+   "src/widgets/w193.js": 1133,
+   "src/widgets/w194.js": 1425,
+   "src/widgets/w195.js": 2289,
+   "src/widgets/w196.js": 2145,
+   "src/widgets/w197.js": 1766,
+   "src/widgets/w198.js": 400,
+   "src/widgets/w199.js": 2778,
+   "src/widgets/w200.js": 939,
+   "src/widgets/w201.js": 1929,
+   "src/widgets/w202.js": 840,
+   "src/widgets/w203.js": 588,
+   "src/widgets/w204.js": 749,
+   "src/widgets/w205.js": 2089,
+   "src/widgets/w206.js": 983,
+   "src/widgets/w207.js": 1793,
+   "src/widgets/w208.js": 698,
+   "src/widgets/w209.js": 1235,
+   "src/widgets/w210.js": 790,
+   "src/widgets/w211.js": 1976,
+   "src/widgets/w212.js": 2558,
+   "src/widgets/w213.js": 2307,
+   "src/widgets/w214.js": 1928,
+   "src/widgets/w215.js": 1673,
+   "src/widgets/w216.js": 1038,
+   "src/widgets/w217.js": 2408,
+   "src/widgets/w218.js": 1265,
+   "src/widgets/w219.js": 1616,
+   "src/widgets/w220.js": 1732,
+   "src/widgets/w221.js": 820,
+   "src/widgets/w222.js": 1423,
+   "src/widgets/w223.js": 1453,
+   "src/widgets/w224.js": 732,
+   "src/widgets/w225.js": 410,
+   "src/widgets/w226.js": 1021,
+   "src/widgets/w227.js": 1301,
+   "src/widgets/w228.js": 1376,
+   "src/widgets/w229.js": 1617,
+   "src/widgets/w230.js": 1887,
+   "src/widgets/w231.js": 1313,
+   "src/widgets/w232.js": 886,
+   "src/widgets/w233.js": 2051,
+   "src/widgets/w234.js": 479,
+   "src/widgets/w235.js": 2054,
+   "src/widgets/w236.js": 1096,
+   "src/widgets/w237.js": 1190,
+   "src/widgets/w238.js": 1543,
+   "src/widgets/w239.js": 2256,
+   "src/widgets/w240.js": 765,
+   "src/widgets/w241.js": 1407,
+   "src/widgets/w242.js": 1217,
+   "src/widgets/w243.js": 1035,
+   "src/widgets/w244.js": 1802,
+   "src/widgets/w245.js": 979,
+   "src/widgets/w246.js": 1185,
+   "src/widgets/w247.js": 1076,
+   "src/widgets/w248.js": 1731,
+   "src/widgets/w249.js": 1541,
+   "src/widgets/w250.js": 1200,
+   "src/widgets/w251.js": 1130,
+   "src/widgets/w252.js": 1778,
+   "src/widgets/w253.js": 1640,
+   "src/widgets/w254.js": 1266,
+   "src/widgets/w255.js": 1046,
+   "src/widgets/w256.js": 1139,
+   "src/app.js": 4205,
+   "src/adapter.js": 104
+  }
+ }
+]
