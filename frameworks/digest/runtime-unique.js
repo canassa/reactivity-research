@@ -93,8 +93,6 @@ export const list = (d, items, role, html, make, p = E[(P += d)], map = new Map(
 // Small helpers for handlers.
 // The option after v (the first after the last), the options as arguments.
 export const nx = (v, ...a) => a[(a.indexOf(v) + 1) % a.length];
-// Remove item i from list l, in place (one call, where a filter calls back once per item).
-export const rm = (l, i) => l.splice(l.indexOf(i), 1);
 // A new item gets the next id and is not done (a list without checkboxes never reads `done`).
 export const add = (l, text) => l.push({ id: Math.max(0, ...l.map((i) => i.id)) + 1, text, done: false });
 // A list from its items' texts, as arguments; the ids are 1, 2, …

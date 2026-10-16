@@ -133,7 +133,7 @@ function handler(m, fields) {
     case "select": return `() => ${L} = X.value`;
     // An item control's handler is created with its item and reads `r.i`, the item's current
     // value (the very object in the list).
-    case "item": return m.op === "remove" ? `() => rm(${L}, r.i)` : `() => r.i.done = X.checked`;
+    case "item": return m.op === "remove" ? `() => ${L} = ${L}.filter((i) => i != r.i)` : `() => r.i.done = X.checked`;
   }
   throw new Error(`digest: unknown message kind ${m.kind}`);
 }
@@ -315,7 +315,7 @@ function appFile(spec) {
   for (let i = 1; i < branches.length; i++) branches[i] = "else " + branches[i];
 
   const body = code.join("\n\n") + "\n\n" + branches.join("\n");
-  const names = ["widget", "bind", "text", "show", "list", "dep", "run", "nx", "add", "rm", "L", "C", "O", "W", "T", "S", "X"]
+  const names = ["widget", "bind", "text", "show", "list", "dep", "run", "nx", "add", "L", "C", "O", "W", "T", "S", "X"]
     .filter((x) => new RegExp(`(^|[^\\w.])${x}\\b`, "m").test(body));
   const ids = spec.widgets.map((w) => w.id).join(", ");
 
