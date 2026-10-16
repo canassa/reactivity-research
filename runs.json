@@ -190,12 +190,21 @@
       "$comment": "Only N=1: from N=4 up the nav bar replaces the pinned buttons whose aria-current changes, because beni's shipped HTML vocabulary types aria-* as String (never removed); that fails the node-identity rule. Upstream fix: pub attribute \"aria-current\" : Maybe String. See notes/2026-10-17-routed-app-beni.md.",
       "sizes": [1],
       "seeds": [1, 2, 3]
+    },
+    "marko": {
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3]
     }
   },
   "derived-graph": {
     "$comment": "No frameworks yet. An entry is expected to look like the others (sizes 1 to 256, seeds 1 to 3) plus \"options\": { \"fanout\": [\"low\", \"mid\", \"high\"] }, which measures each readers-per-value level as its own variant (solid, solid-fanout=low, solid-fanout=high); see scenarios/derived-graph/README.md. No digest: the sheet is one model and a flat binding list re-runs all of it, so it fails the prototype locality rule (calls per local action grow 17x from N=16 to 256, rows fixed); it is excluded until fixed, see frameworks/digest/README.md (derived-graph).",
     "$bench": { "$comment": "N=64 with the default 2,000 items: the dashboards' bench size; the work actions as do/undo pairs (harness/bench/derived-graph.js).", "sizes": [64], "seeds": [1], "also": { "digest": "fails the locality rule here (calls per local event grow 17x from N=16 to 256); timed for reference only" } },
     "tea-inline": {
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3],
+      "options": { "fanout": ["low", "mid", "high"] }
+    },
+    "marko": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3],
       "options": { "fanout": ["low", "mid", "high"] }
