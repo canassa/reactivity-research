@@ -91,11 +91,10 @@ const KINDS = {
   },
 
   todo: {
-    args: "l, ph, add, rm, items, m",
+    args: "l, ph, add, rm, items, m, draft = \"\"",
     body: `
   // The initial items are texts, and m a bit mask of the done ones (bit i: item i).
   items = items.map((text, i) => ({ id: i + 1, text, done: (m >> i) & 1 }));
-  let draft = "";
   widget("todo", l, \`<input type=text data-role=draft placeholder="\${ph}"><button data-role=add>\${add}</button><ul></ul><p data-role=left></p>\`, (v) => ({ items, draft } = v),
     (t) => draft = t.value, // draft
     // add: the trimmed draft goes in the parameter, which a click handler has no use for
