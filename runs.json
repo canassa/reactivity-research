@@ -1,6 +1,7 @@
 {
   "$comment": "The predefined runs of ./rr report: per scenario, per emitter, the sizes, seeds and options. A list in options measures every value as its own variant. Sizes and seeds live only here, per framework.",
   "shared-components": {
+    "$bench": { "$comment": "./rr bench: the sizes and seeds it times, within each framework's own sizes below.", "sizes": [16, 64, 256], "seeds": [1, 2] },
     "solid": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3]
@@ -36,6 +37,7 @@
     }
   },
   "unique-components": {
+    "$bench": { "sizes": [16, 64, 256], "seeds": [1, 2] },
     "elm": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3]
@@ -72,6 +74,7 @@
   },
   "big-component": {
     "$comment": "No digest: on the flat form it fails the prototype locality rule (calls per local action grow 8.6x from N=16 to 256, 14x from 64 to 1024), so it is excluded until fixed; see frameworks/digest/README.md (big-component) and notes/2026-10-16-big-component-digest-flat.md.",
+    "$bench": { "sizes": [16, 64, 256], "seeds": [1, 2] },
     "elm": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3]

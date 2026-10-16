@@ -14,6 +14,7 @@ commands:
   check      quick aid: run the interaction script on one small build in headless Chrome
   hub        one long-lived address for the plots and every app (reloads on code changes)
   work       count the JavaScript calls one event costs against N: local or global work
+  bench      CPU time of one event and of startup against N, from Chrome traces (results/cpu/)
   plots      build the plots page from results/ and serve it
   report     measure every run in runs.json (only what changed), then serve the plots
 
@@ -24,6 +25,16 @@ selection options:
   --sizes 16,64 --seeds 1,2 --runs R   (work; default 16,32,64,128,256 and seed 1; R fresh pages per count, default 2)
   --force                              (measure, report) remeasure even if nothing changed
   plus the scenario's options and each emitter's own options (./rr help <scenario>)
+
+bench options (./rr bench <scenario|all> <framework|all|a,b>; see harness/bench/README.md):
+  --sizes 16,64,256 --seeds 1,2   default: runs.json's "$bench" block, else these
+  --sessions S       fresh browsers, framework order rotated and reversed (default 2)
+  --quick            one size, one seed, one session, few reps: for development
+  --aa               bench every app twice under two names (an A/A check)
+  --taskset CPUS     pin Chrome, e.g. 1-5,7-11      --chrome PATH   the Chrome binary (or $CHROME)
+  --max-load L       redo a batch whose 1-minute load is above L (default 1.0)
+  --remote HOST      run it on HOST over ssh at this pushed commit, copy results/cpu/ back
+  --out DIR          the results directory (default results/cpu/<date>-<scenario>)
 
 serve/plots options:
   --local      no cloudflared tunnel
@@ -51,6 +62,8 @@ export async function main(argv) {
         return await (await import("./report.js")).reportCommand(rest);
       case "work":
         return await (await import("./work.js")).workCommand(rest);
+      case "bench":
+        return await (await import("./bench.js")).benchCommand(rest);
       case "plots":
         return await (await import("./plots.js")).plotsCommand(rest);
       case "help":
