@@ -96,7 +96,8 @@ for (const type of ["click", "input", "change", "keydown"]) {
 
 // One line per element, with sorted attributes and the live properties that matter
 // (input value or checked, select value); whitespace and comments ignored.
-function canonLive(node, depth = 0, out = []) {
+// `exempt`: an input whose displayed value is not compared (written as :value=*).
+function canonLive(node, depth = 0, out = [], exempt = null) {
   const pad = "  ".repeat(depth);
   const attrs = [];
   for (const a of node.attributes) {
@@ -104,7 +105,7 @@ function canonLive(node, depth = 0, out = []) {
     if (a.name === "checked" || a.name === "selected") continue;
     attrs.push(`${a.name}="${a.value}"`);
   }
-  if (node.tagName === "INPUT") attrs.push(node.type === "checkbox" ? `:checked=${node.checked}` : `:value="${node.value}"`);
+  if (node.tagName === "INPUT") attrs.push(node.type === "checkbox" ? `:checked=${node.checked}` : node === exempt ? ":value=*" : `:value="${node.value}"`);
   if (node.tagName === "SELECT") attrs.push(`:value="${node.value}"`);
   out.push(`${pad}<${node.tagName.toLowerCase()}${attrs.sort().map((a) => " " + a).join("")}>`);
   let text = "";
@@ -115,7 +116,7 @@ function canonLive(node, depth = 0, out = []) {
   };
   for (const c of node.childNodes) {
     if (c.nodeType === 3) text += c.data;
-    else if (c.nodeType === 1) { flush(); canonLive(c, depth + 1, out); }
+    else if (c.nodeType === 1) { flush(); canonLive(c, depth + 1, out, exempt); }
   }
   flush();
   return out;
@@ -141,13 +142,16 @@ function canonRef(node, depth = 0, out = []) {
   return out;
 }
 
-function compare() {
+// `exempt`: an input whose displayed value is exempt for this step (a script step typing an
+// invalid value, which the scenario says sends no message and keeps the typed text).
+function compare(exempt = null) {
   const live = [];
-  for (const c of root.children) canonLive(c, 0, live);
+  for (const c of root.children) canonLive(c, 0, live, exempt);
   const want = state ? canonRef(ref.render(spec, state)) : [];
   const n = Math.max(live.length, want.length);
   for (let i = 0; i < n; i++) {
-    if (live[i] !== want[i]) {
+    const same = live[i] === want[i] || (live[i]?.includes(":value=*") && live[i] === want[i]?.replace(/:value="[^"]*"/, ":value=*"));
+    if (!same) {
       const from = Math.max(0, i - 4);
       const ctx = (arr) => arr.slice(from, i + 4).map((l, j) => (from + j === i ? "» " : "  ") + l).join("\n");
       return { ok: false, line: i, text: `first difference at line ${i + 1}\n\npage:\n${ctx(live)}\n\nreference:\n${ctx(want)}` };
@@ -219,7 +223,7 @@ async function perform(label, act, msg, opts = {}) {
   if (mounted) {
     if (manual) result.match = null;
     else {
-      const c = compare();
+      const c = compare(opts.exemptValue ? target : null);
       tally.compared++;
       result.match = c.ok;
       result.diff = c.text;
@@ -298,7 +302,7 @@ async function runStep(step) {
         t.value = step.value;
         if (t.type !== "number") t.setSelectionRange(step.value.length, step.value.length);
         t.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText", data: step.value.slice(-1) || null }));
-      }, step.msg, { target: t, selector: step.target, typed: true });
+      }, step.msg, { target: t, selector: step.target, typed: true, exemptValue: !!step.exemptValue });
     }
     case "select": {
       const t = find(step.target);
