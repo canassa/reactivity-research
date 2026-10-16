@@ -134,6 +134,15 @@
     "tea-inline": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3]
+    },
+    "beni-tea": {
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3]
+    },
+    "beni-direct": {
+      "$comment": "No 16 and up: beni's ownership checker (its 64-path width cap) refuses the app from N=16 tables, every seed; N=1 to 15 build. See notes/2026-10-16-beni-big-table.md.",
+      "sizes": [1, 2, 4, 8],
+      "seeds": [1, 2, 3]
     }
   }
 }
