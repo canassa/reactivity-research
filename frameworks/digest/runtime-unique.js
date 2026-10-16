@@ -88,7 +88,8 @@ export const list = (d, items, role, html, make, p = E[(P += d)], map = new Map(
   });
 
 // Small helpers for handlers.
-export const nx = (a, v) => a[(a.indexOf(v) + 1) % a.length];
+// The option after v (the first after the last), the options as arguments.
+export const nx = (v, ...a) => a[(a.indexOf(v) + 1) % a.length];
 // A new item gets the next id and is not done (a list without checkboxes never reads `done`).
 export const add = (l, text) => l.push({ id: Math.max(0, ...l.map((i) => i.id)) + 1, text, done: false });
 // A list from its items' texts, as arguments; the ids are 1, 2, …

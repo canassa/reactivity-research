@@ -97,7 +97,7 @@ function op(o, fields) {
     case "set": return { e: `${L} = ${lit(o[2])}` };
     case "toggle": return { e: `${L} = !${L}` };
     case "reset": return { e: `${L} = ${lit(f.initial)}` };
-    case "cycle": return { e: `${L} = nx(${lit(f.options)}, ${L})` };
+    case "cycle": return { e: `${L} = nx(${[L, ...f.options.map(lit)].join(", ")})` };
     // The trimmed draft goes in `t`, the handler's parameter, which it is called without (it
     // reads its control, when it needs it, from `X`).
     case "push": return { e: `(t = ${F(o[2])}.trim()) && (add(${L}, t), ${F(o[2])} = "")`, t: 1 };
