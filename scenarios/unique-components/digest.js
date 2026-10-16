@@ -15,7 +15,8 @@
 // - Locality: an event runs only its widget's bindings. A widget that reads others subscribes
 //   its binding list to theirs (`dep`, a compile-time fact), external events digest only the
 //   widgets they name, and a tick digests only the fields whose gate is on.
-// - Nodes are found by their position in the template (`e[3]`), resolved once at creation.
+// - Nodes are found by their position in the template (`text(3, …)`), resolved once at creation;
+//   handlers are given to the controls (buttons, inputs, selects) in document order.
 // - Code only where it is used: the receive branches (`tick`, `notify`) exist only if some
 //   widget has a time-driven field or a feed list.
 
@@ -271,10 +272,10 @@ export function emit(spec) {
       components: "one function per widget, written out in full from that widget's description (state literal, template, handlers, bindings, tick); no shared per-kind factories, no data rows, no interpreter",
       state: "plain mutable objects, one per widget; external replacements are deep-copied into them",
       templates: "one static HTML string per widget (texts escaped at build time); nodes are found by their position in the template, once",
-      handlers: "one arrow function per message, keyed by the control's data-role, compiled from the message's ops; small generic helpers (clamp, next option, add an item)",
+      handlers: "one arrow function per control, given to the controls in document order, compiled from the message's ops; small generic helpers (clamp, next option, add an item)",
       lists: "keyed by id, reconciled in place by the runtime; item template and item bindings are the widget's own code",
       conditionals: "a binding that swaps one node with an empty text node",
-      events: "one delegated click and input listener; handlers keyed by data-role",
+      events: "one delegated click and input listener that calls the target's handler",
       derived: "expressions compiled to JavaScript inside the bindings; a reader's whole binding list is added to each source widget's list (compile-time dependency); no memoization",
       time: "each time-driven field pushes its own tick function; a tick digests only the widgets whose gate is on",
       build: "Vite production build, no plugin, hidden source maps",

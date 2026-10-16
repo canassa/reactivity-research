@@ -4,8 +4,8 @@
 // messages, view), and what this emitter writes:
 // - One factory per widget kind present in the app, emitted once: the kind's template (HTML
 //   with the instance's constants spliced in, escaped at build time), its bindings (one closure
-//   per dynamic DOM property, reading the instance's state) and its handlers (the kind's update
-//   cases, keyed by the data-role of the element that triggers them).
+//   per dynamic DOM property, on the template element at a known position) and its handlers
+//   (the kind's update cases, one per control, in the template's document order).
 // - One row of plain data per widget instance: [factory, ...constants, ...initial state].
 //   Rules are partially evaluated at build time into data: every field rule becomes one regular
 //   expression, every amount format a prefix, a number of decimals and a suffix.
@@ -339,8 +339,8 @@ export function emit(spec) {
       state: "plain mutable objects, one per widget; external replacements merge into them",
       templates: "HTML strings with the instance's constants (escaped at build time), parsed once per widget or list item",
       lists: "keyed by id, reconciled in place by the runtime",
-      conditionals: "a binding that inserts or removes one node",
-      events: "one delegated click and input listener; handlers keyed by data-role",
+      conditionals: "a binding that swaps one node with an empty text node",
+      events: "one delegated click and input listener; handlers given to the controls in document order (an expando the listener reads)",
       derived: "plain functions read by bindings; a summary's binding sits in each source's list; no memoization",
       build: "Vite production build, no plugin, hidden source maps",
     },
