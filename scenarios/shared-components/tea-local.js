@@ -117,7 +117,7 @@ export function toggles(parent, heading, items, model) {
   const ul = element(root, "ul");
   const boxes = items.map((name, i) => {
     const label = element(element(ul, "li"), "label");
-    const box = on(element(label, "input", { type: "checkbox", "data-role": "toggle", "data-key": i }), "change", () => self.send(0, i));
+    const box = on(element(label, "input", { type: "checkbox", "data-role": "toggle", "data-key": i }), "click", () => self.send(0, i));
     label.append(name);
     return box;
   });
@@ -168,7 +168,7 @@ export function todo(parent, heading, placeholder, addText, removeText, model) {
   // A row: its elements, then its binding list (an item keeps its id, the row's key).
   const items = list(element(root, "ul"), (item) => {
     const li = element(null, "li");
-    const box = on(element(li, "input", { type: "checkbox", "data-role": "toggle" }), "change", () => self.send(2, item.id));
+    const box = on(element(li, "input", { type: "checkbox", "data-role": "toggle" }), "click", () => self.send(2, item.id));
     const label = element(li, "span", null, " ");
     on(element(li, "button", { "data-role": "remove" }, removeText), "click", () => self.send(3, item.id));
     return [li, box, label];
@@ -232,7 +232,7 @@ export function choice(parent, heading, options, extraFor, extraPlaceholder, mod
     (model, value) => ({ ...model, extra: value }),
   ], patch);
   const root = widget(parent, heading, "choice", self);
-  const select = on(element(root, "select", { "data-role": "select" }), "change", () => self.send(0, select.value));
+  const select = on(element(root, "select", { "data-role": "select" }), "input", () => self.send(0, select.value));
   for (const option of options) element(select, "option", { value: option.value }, option.label);
   const extra = on(element(null, "input", { type: "text", "data-role": "extra", placeholder: extraPlaceholder }), "input", () => self.send(1, extra.value));
 }
@@ -562,7 +562,7 @@ export function emit(spec) {
       externalEvents: "serverSet/snapshot replace instance models; tick and notify are messages to clock and feed instances",
       lists: "runtime keyed list by item.id: patch changed rows, one forward placement pass when order or membership changes",
       conditionals: "node built once, attached while shown",
-      events: "addEventListener per element: click, input, change for checkboxes and selects",
+      events: "addEventListener per element: click for buttons and checkboxes, input for text and number inputs and selects (as the unique widgets' wire)",
       build: "Vite production build, no framework plugin, hidden source maps",
     },
   };
