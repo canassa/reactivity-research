@@ -1,0 +1,534 @@
+// The unique-components scenario as tea-inline, a prototype strategy (see
+// frameworks/tea-inline/README.md).
+//
+// The emitter plays the compiler of a TEA app, as in shared-components, but here there are no
+// kinds to share: every widget is its own component (src/widgets/<id>.js), written out from
+// its description as that widget's own code.
+// - A widget builds its DOM once: one `el(...)` per element, static markup and text inline,
+//   conditional sections built detached and attached by `when`, keyed lists with a row
+//   builder written for that list.
+// - Every dynamic expression (a text, a disabled state, a condition, a validation rule) is
+//   compiled to JavaScript and becomes a binding. The emitter works out at compile time which
+//   fields each binding reads, and groups the bindings per field (`onVisits = [...]`).
+// - Every message (a `case` arm of the widget's `update`) is inlined into the action its
+//   control calls: it writes the fields its ops change, in place, and schedules the groups of
+//   exactly those fields, plus the bindings of other widgets that read them (`R.<id>.<field>`,
+//   only for the fields some widget reads). No `Msg` object, no switch, no op table.
+// - External events stay messages: `receive(msg)` routes serverSet/snapshot to a widget's
+//   `load`, `tick` to the widgets that have a time-driven field and `notify` to the feed.
+//
+// Style choices (also in `style` below): one module per widget, direct createElement
+// construction, in-place model edits, per-field binding groups, one microtask flush, keyed
+// list rows patched in place by the action that knows which row it touched (other list edits
+// replace the array and reconcile by key), and the runtime and reconciler of tea-inline.
+// The only generic code is the runtime and four small helpers in widgets/widget.js
+// (section, loader, nextId, options); no widget behaviour is kept as data.
+
+import { templateFiles } from "../../frameworks/tea-inline/framework.js";
+import { literal, tplText } from "../../frameworks/shared/jsx.js";
+
+export const framework = "tea-inline";
+
+export const params = {};
+
+const cap = (s) => s[0].toUpperCase() + s.slice(1);
+const str = JSON.stringify;
+
+const WIDGET_FILE = `import { el, schedule } from "../runtime.js";
+
+// The section every widget renders into: its key and its heading.
+export function section(parent, id, label) {
+  const root = el("section", parent, { "data-key": id, "data-role": "widget" });
+  el("h2", root, null, label);
+  return root;
+}
+
+// serverSet and snapshot: replace the widget's state (a copy: the message is not ours to edit)
+// and run every binding it has, and those of the widgets reading it.
+export const loader = (s, all) => (next) => {
+  Object.assign(s, structuredClone(next));
+  schedule(all);
+};
+
+// A new list item's id: one more than the largest.
+export const nextId = (items) => items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
+
+// The options of a select.
+export function options(select, values) {
+  for (const value of values) el("option", select, { value }, value);
+}
+`;
+
+// ---------------------------------------------------------------------------------------------
+// Expressions: compiled to JavaScript over the widget's state \`s\` and the slices of the
+// widgets it reads. \`deps\` records the fields an expression reads.
+
+// Drop the parentheses around a whole expression.
+function bare(code) {
+  if (code[0] !== "(" || code.at(-1) !== ")") return code;
+  let depth = 0;
+  for (let i = 0; i < code.length - 1; i++) {
+    if (code[i] === '"') i = code.indexOf('"', i + 1);
+    else if (code[i] === "(") depth++;
+    else if (code[i] === ")" && --depth === 0) return code;
+  }
+  return code.slice(1, -1);
+}
+
+const exprCode = (e, deps) => bare(inner(e, deps));
+
+function inner(e, deps) {
+  const go = (x) => inner(x, deps);
+  switch (e[0]) {
+    case "f": deps.own.add(e[1]); return `s.${e[1]}`;
+    case "w": deps.cross.add(`${e[1]}.${e[2]}`); return `${e[1]}.${e[2]}`;
+    case "k": return str(e[1]);
+    case "+": case "-": return `(${go(e[1])} ${e[0]} ${go(e[2])})`;
+    case "count": case "len": return `${go(e[1])}.length`;
+    case "done": return `${go(e[1])}.filter((item) => item.done).length`;
+    case "left": return `${go(e[1])}.filter((item) => !item.done).length`;
+    case "has": return `${go(e[1])}.includes(${str(e[2])})`;
+    case "==": return `(${go(e[1])} === ${go(e[2])})`;
+    case "!=": return `(${go(e[1])} !== ${go(e[2])})`;
+    case "<": case "<=": case ">": case ">=": return `(${go(e[1])} ${e[0]} ${go(e[2])})`;
+    case "and": return `(${go(e[1])} && ${go(e[2])})`;
+    case "or": return `(${go(e[1])} || ${go(e[2])})`;
+    case "not": return `!${go(e[1])}`;
+    case "if": return `(${go(e[1])} ? ${go(e[2])} : ${go(e[3])})`;
+  }
+  throw new Error(`unknown expression ${JSON.stringify(e)}`);
+}
+
+// The text parts as an expression: a template literal, or a plain string when static.
+function partsCode(parts, deps) {
+  if (parts.every((p) => typeof p === "string")) return { static: parts.join("") };
+  if (parts.length === 1) return { code: exprCode(parts[0], deps) };
+  return { code: "`" + parts.map((p) => (typeof p === "string" ? tplText(p) : `\${${exprCode(p, deps)}}`)).join("") + "`" };
+}
+
+// Every cross-widget read of a view, to know which fields other widgets read.
+function crossReads(nodes, out) {
+  const expr = (e) => {
+    if (!Array.isArray(e)) return;
+    if (e[0] === "w") out.push([e[1], e[2]]);
+    else e.slice(1).forEach(expr);
+  };
+  for (const n of nodes) {
+    for (const p of n.parts || []) expr(p);
+    for (const p of n.text || []) expr(p);
+    if (n.disabled) expr(n.disabled);
+    if (n.cond) expr(n.cond);
+    if (n.invalid) expr(n.invalid.when);
+    crossReads(n.children || [], out);
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
+// One widget: its module.
+
+function widgetFile(w, reads) {
+  const field = (name) => w.fields.find((f) => f.name === name);
+  const message = (name) => w.messages.find((m) => m.name === name);
+  const ids = {};
+  const id = (p) => p + (ids[p] = (ids[p] || 0) + 1);
+
+  const build = []; // construction lines
+  const bindings = []; // { code, own, cross, name }
+  const actions = []; // thunks writing the handlers, once the binding groups are known
+  const consts = []; // option lists
+  const lists = {}; // list field -> its variable
+  const crossIds = new Set();
+  const optionNames = {};
+
+  const bind = (mk, name) => {
+    const deps = { own: new Set(), cross: new Set() };
+    const code = mk(deps);
+    deps.cross.forEach((c) => crossIds.add(c.split(".")[0]));
+    bindings.push({ code, own: [...deps.own], cross: [...deps.cross], name });
+  };
+
+  const optionsOf = (f) => {
+    if (!optionNames[f.name]) {
+      optionNames[f.name] = "o" + cap(f.name);
+      consts.push(`const ${optionNames[f.name]} = ${literal(f.options)};`);
+    }
+    return optionNames[f.name];
+  };
+
+  const attrs = (o) => `{ ${Object.entries(o).map(([k, v]) => `${/^\w+$/.test(k) ? k : str(k)}: ${v}`).join(", ")} }`;
+
+  // The scheduling call of an action writing \`fields\`.
+  const sched = (fields) => {
+    const args = [];
+    for (const f of new Set(fields)) {
+      if (groupFields.has(f)) args.push("on" + cap(f));
+      if (reads[w.id]?.has(f)) args.push(`R.${w.id}.${f}`);
+    }
+    return args.length ? [`schedule(${args.join(", ")});`] : [];
+  };
+  let groupFields = new Set();
+
+  // The code of a click message: its ops, inlined.
+  function opLines(m) {
+    const lines = [];
+    for (const op of m.ops) {
+      const [kind, name] = op;
+      const f = field(name);
+      const v = `s.${name}`;
+      switch (kind) {
+        case "add":
+          lines.push(op[2] > 0 ? `${v} = Math.min(${f.max}, ${v} + ${op[2]});` : `${v} = Math.max(${f.min}, ${v} - ${-op[2]});`);
+          break;
+        case "set": lines.push(`${v} = ${str(op[2])};`); break;
+        case "toggle": lines.push(`${v} = !${v};`); break;
+        case "reset": lines.push(`${v} = ${literal(f.initial)};`); break;
+        case "cycle": {
+          const o = optionsOf(f);
+          lines.push(`${v} = ${o}[(${o}.indexOf(${v}) + 1) % ${o}.length];`);
+          break;
+        }
+        case "push": case "pushText": {
+          if (m.ops.length !== 1) throw new Error("push inside a combined message");
+          const item = (text) => `{ id: nextId(${v}), text: ${text}${f.checkable ? ", done: false" : ""} }`;
+          if (kind === "push") {
+            lines.push(`const title = s.${op[2]}.trim();`, "if (!title) return;", `const item = ${item("title")};`);
+          } else lines.push(`const item = ${item(str(op[2]))};`);
+          lines.push(`${v}.push(item);`);
+          if (kind === "push") lines.push(`s.${op[2]} = "";`);
+          if (lists[name]) lines.push(`${lists[name]}.add(item);`);
+          break;
+        }
+        case "pop": lines.push(`${v} = ${v}.slice(0, -1);`); break;
+        case "shift": lines.push(`${v} = ${v}.slice(1);`); break;
+        case "clear": lines.push(`${v} = [];`); break;
+        case "clearDone": lines.push(`${v} = ${v}.filter((item) => !item.done);`); break;
+        default: throw new Error(`unknown op ${kind}`);
+      }
+    }
+    return lines;
+  }
+
+  const writesOf = (m) => {
+    if (m.kind !== "click") return [m.field];
+    return m.ops.flatMap((op) => (op[0] === "push" ? [op[1], op[2]] : [op[1]]));
+  };
+
+  // The handler of a message on the element \`node\`.
+  function handler(node, m) {
+    actions.push(() => {
+      const f = m.field && field(m.field);
+      const done = sched(writesOf(m));
+      const wrap = (event, body) => [`on(${node}, "${event}", () => {`, ...body.map((l) => "  " + l), "});"];
+      switch (m.kind) {
+        case "click": return wrap("click", [...opLines(m), ...done]);
+        case "check": return wrap("change", [`s.${f.name} = !s.${f.name};`, ...done]);
+        case "select": return wrap("change", [`s.${f.name} = ${node}.value;`, ...done]);
+        case "input":
+          if (f.type === "int") {
+            return wrap("input", [`const value = ${node}.valueAsNumber;`,
+              `if (!Number.isInteger(value) || value < ${f.min} || value > ${f.max}) return;`,
+              `s.${f.name} = value;`, ...done]);
+          }
+          return wrap("input", [`s.${f.name} = ${node}.value;`, ...done]);
+      }
+      throw new Error(`unknown message kind ${m.kind}`);
+    });
+  }
+
+  // A named action for an item control: \`toggleIn…(id)\` or \`removeFrom…(id)\`.
+  function itemAction(name) {
+    const m = message(name);
+    actions.push(() => {
+      const v = `s.${m.field}`;
+      const lv = lists[m.field];
+      const find = `${v}.find((item) => item.id === id)`;
+      const body = m.op === "toggle"
+        ? [`const item = ${find};`, "item.done = !item.done;", `${lv}.patch(item);`]
+        : [`${v}.splice(${v}.findIndex((item) => item.id === id), 1);`, `${lv}.drop(id);`];
+      return [`const ${name} = (id) => {`, ...[...body, ...sched([m.field])].map((l) => "  " + l), "};"];
+    });
+    return name;
+  }
+
+  function node(n, parent) {
+    switch (n.el) {
+      case "text": {
+        const t = id("t");
+        const p = partsCode(n.parts, { own: new Set(), cross: new Set() });
+        if (p.static !== undefined) build.push(`el("${n.tag}", ${parent}, null, ${str(p.static)});`);
+        else {
+          build.push(`const ${t} = el("${n.tag}", ${parent});`);
+          bind((deps) => `() => text(${t}, ${partsCode(n.parts, deps).code})`);
+        }
+        return;
+      }
+      case "button": {
+        const b = id("b");
+        const p = partsCode(n.text, { own: new Set(), cross: new Set() });
+        const a = attrs({ "data-role": str(n.msg) });
+        build.push(`const ${b} = el("button", ${parent}, ${a}${p.static !== undefined ? `, ${str(p.static)}` : ""});`);
+        if (p.static === undefined) bind((deps) => `() => text(${b}, ${partsCode(n.text, deps).code})`);
+        if (n.disabled) bind((deps) => `() => prop(${b}, "disabled", ${exprCode(n.disabled, deps)})`);
+        handler(b, message(n.msg));
+        return;
+      }
+      case "input": {
+        const m = message(n.msg);
+        const f = field(m.field);
+        const num = f.type === "int";
+        let at = n.label ? id("l") : parent;
+        if (n.label) build.push(`const ${at} = el("label", ${parent}, null, ${str(n.label)});`);
+        const i = id("i");
+        const o = { type: str(num ? "number" : "text"), "data-role": str(n.msg) };
+        if (n.placeholder) o.placeholder = str(n.placeholder);
+        build.push(`const ${i} = el("input", ${at}, ${attrs(o)});`);
+        bind((deps) => `() => prop(${i}, "value", ${num ? `String(${exprCode(["f", f.name], deps)})` : exprCode(["f", f.name], deps)})`);
+        handler(i, m);
+        if (n.invalid) {
+          const e = id("e");
+          const v = id("v");
+          build.push(`const ${e} = el("p", null, ${attrs({ "data-role": str(n.msg + "Error") })}, ${str(n.invalid.message)});`);
+          build.push(`const ${v} = when(${parent}, () => ${e});`);
+          bind((deps) => `() => ${v}(${exprCode(n.invalid.when, deps)})`);
+        }
+        return;
+      }
+      case "check": {
+        const m = message(n.msg);
+        const l = id("l");
+        const c = id("c");
+        build.push(`const ${l} = el("label", ${parent});`);
+        build.push(`const ${c} = el("input", ${l}, ${attrs({ type: str("checkbox"), "data-role": str(n.msg) })});`);
+        build.push(`${l}.append(${str(n.label)});`);
+        bind((deps) => `() => prop(${c}, "checked", ${exprCode(["f", m.field], deps)})`);
+        handler(c, m);
+        return;
+      }
+      case "select": {
+        const m = message(n.msg);
+        const f = field(m.field);
+        const at = n.label ? id("l") : parent;
+        if (n.label) build.push(`const ${at} = el("label", ${parent}, null, ${str(n.label)});`);
+        const s2 = id("o");
+        build.push(`const ${s2} = el("select", ${at}, ${attrs({ "data-role": str(n.msg) })});`);
+        build.push(`options(${s2}, ${optionsOf(f)});`);
+        bind((deps) => `() => prop(${s2}, "value", ${exprCode(["f", f.name], deps)})`);
+        handler(s2, m);
+        return;
+      }
+      case "list": {
+        const f = field(n.field);
+        const l = id("ls");
+        lists[n.field] = l;
+        const tail = [];
+        const row = [`const node = el("li", null, ${attrs({ "data-key": "item.id", "data-role": str(n.field + "Item") })});`];
+        const set = [];
+        if (n.check) {
+          row.push(`const box = el("input", node, ${attrs({ type: str("checkbox"), "data-role": str(n.check) })});`);
+          row.push(`on(box, "change", () => ${itemAction(n.check)}(item.id));`);
+          set.push('prop(box, "checked", item.done);');
+        }
+        row.push('const label = el("span", node);');
+        set.push("text(label, item.text);");
+        if (n.remove) {
+          row.push(`on(el("button", node, ${attrs({ "data-role": str(n.remove) })}, ${str(n.removeText)}), "click", () => ${itemAction(n.remove)}(item.id));`);
+        }
+        row.push(`return { node, set(item) { ${set.join(" ")} } };`);
+        void tail;
+        build.push(`const ${l} = list(el("${n.tag}", ${parent}), () => s.${f.name}, (item) => item.id, (item) => {`,
+          ...row.map((r) => "  " + r), "});");
+        bindings.push({ code: l, own: [f.name], cross: [], name: l });
+        return;
+      }
+      case "when": {
+        const g = id("g");
+        const v = id("v");
+        build.push(`const ${g} = el("${n.tag}", null);`);
+        for (const c of n.children) node(c, g);
+        build.push(`const ${v} = when(${parent}, () => ${g});`);
+        bind((deps) => `() => ${v}(${exprCode(n.cond, deps)})`);
+        return;
+      }
+      case "group": {
+        const g = id("g");
+        build.push(`const ${g} = el("${n.tag}", ${parent});`);
+        for (const c of n.children) node(c, g);
+        return;
+      }
+    }
+    throw new Error(`unknown view node ${n.el}`);
+  }
+
+  for (const n of w.view) node(n, "root");
+
+  // The bindings: those reading one field of this widget and nothing else are written inline in
+  // that field's group; the others are named and listed in each group they belong to.
+  let named = 0;
+  for (const b of bindings) {
+    if (!b.name && !(b.own.length === 1 && b.cross.length === 0)) b.name = "u" + ++named;
+  }
+  const namedLines = bindings.filter((b) => b.name && !/^ls\d+$/.test(b.name)).map((b) => `const ${b.name} = ${b.code};`);
+  const groups = new Map();
+  for (const b of bindings) for (const f of b.own) groups.set(f, [...(groups.get(f) || []), b.name || b.code]);
+  groupFields = new Set(groups.keys());
+  const groupLines = [...groups].flatMap(([f, items]) => {
+    const flat = `const on${cap(f)} = [${items.join(", ")}];`;
+    return flat.length <= 100 ? [flat] : [`const on${cap(f)} = [`, ...items.map((i) => "  " + i + ","), "];"];
+  });
+  const alone = bindings.filter((b) => b.own.length === 0).map((b) => b.name);
+  const crossPushes = bindings.flatMap((b) => b.cross.map((c) => `R.${c}.push(${b.name});`));
+
+  // External arms.
+  const arms = [];
+  const tickFields = w.fields.filter((f) => f.tick);
+  if (tickFields.length) {
+    const body = tickFields.flatMap((f) => [
+      `if (s.${f.tickWhen}) {`,
+      `  const value = Math.min(${f.max}, s.${f.name} + ${f.tick});`,
+      `  if (value !== s.${f.name}) {`,
+      `    s.${f.name} = value;`,
+      ...sched([f.name]).map((l) => "    " + l),
+      "  }",
+      "}",
+    ]);
+    arms.push(["// The external arm: tick.", "tick() {", ...body.map((l) => "  " + l), "},"]);
+  }
+  const feed = w.fields.find((f) => f.feed);
+  if (feed) {
+    arms.push(["// The external arm: notify(item).", "notify(item) {", `  s.${feed.name}.push(item);`, `  ${lists[feed.name]}.add(item);`,
+      ...sched([feed.name]).map((l) => "  " + l), "},"]);
+  }
+
+  const handlerLines = actions.map((a) => a());
+  const readIds = [...crossIds];
+  const own = Object.keys(reads[w.id] ? Object.fromEntries([...reads[w.id]].map((f) => [f, 1])) : {});
+  const watched = own.map((f) => `R.${w.id}.${f}`);
+
+  const all = [...groups.keys()].map((f) => "on" + cap(f)).concat(alone);
+  const body = [
+    "const s = model." + w.id + ";",
+    ...readIds.map((x) => `const ${x} = model.${x};`),
+    ...consts,
+    `const root = section(parent, ${str(w.id)}, ${str(w.label)});`,
+    ...build,
+    "",
+    ...(namedLines.length ? ["// Bindings reading several fields, or other widgets."] : []),
+    ...namedLines,
+    "// The bindings, grouped by the field they read.",
+    ...groupLines,
+    ...(crossPushes.length ? ["", "// Register with the widgets this one reads.", ...crossPushes] : []),
+    ...(handlerLines.length ? ["", "// The arms of update, as actions."] : []),
+    ...handlerLines.flat(),
+    "",
+    `const all = [${all.join(", ")}];`,
+    ...(all.length ? ["schedule(all);"] : []),
+    "return {",
+    `  load: loader(s, ${watched.length ? `[all, ${watched.join(", ")}]` : "all"}),`,
+    ...arms.flat().map((l) => "  " + l),
+    "};",
+  ];
+  const text = body.map((l) => (l ? "  " + l : l)).join("\n");
+
+  const rt = ["el", "text", "prop", "on", "when", "list", "schedule"].filter((n) => new RegExp(`\\b${n}\\(`).test(text) || n === "el");
+  const wi = ["section", "loader", "nextId", "options"].filter((n) => new RegExp(`\\b${n}\\(`).test(text));
+  return `import { ${rt.join(", ")} } from "../runtime.js";
+import { ${wi.join(", ")} } from "./widget.js";
+
+export function ${w.id}(parent, model, R) {
+${text}
+}
+`;
+}
+
+// ---------------------------------------------------------------------------------------------
+// The app: init, the widgets in page order, and the external arms of update.
+
+function appFile(spec, reads) {
+  const ticking = spec.widgets.filter((w) => w.fields.some((f) => f.tick));
+  const cases = [`      case "serverSet":
+        views[msg.widget].load(msg.state);
+        break;`];
+  if (ticking.length) {
+    cases.push(`      case "tick":
+${ticking.map((w) => `        views.${w.id}.tick();`).join("\n")}
+        break;`);
+  }
+  if (spec.widgets.some((w) => w.fields.some((f) => f.feed))) {
+    cases.push(`      case "notify":
+        views[msg.widget].notify(msg.item);
+        break;`);
+  }
+  cases.push(`      case "snapshot":
+        for (const id in msg.state.widgets) views[id].load(msg.state.widgets[id]);
+        break;`);
+
+  const readers = {};
+  for (const [wid, fs] of Object.entries(reads)) readers[wid] = Object.fromEntries([...fs].map((f) => [f, []]));
+  const imports = [`import { el, flush, cancel } from "./runtime.js";`,
+    ...spec.widgets.map((w) => `import { ${w.id} } from "./widgets/${w.id}.js";`)];
+
+  return `${imports.join("\n")}
+
+// The initial model (TEA's \`init\`), fresh for every mount.
+function init() {
+  return ${literal(spec.initialState, "  ")};
+}
+
+export function start(root) {
+  const model = init().widgets;
+  const board = el("div", root, { "data-role": "dashboard" });
+  // For each field another widget reads, the bindings reading it: the widget schedules them
+  // when it writes the field.
+  const R = ${literal(readers, "  ")};
+  // Every widget in page order; each returns its handle: \`load\` for serverSet and snapshot, and
+  // its external arms.
+  const views = {
+${spec.widgets.map((w) => `    ${w.id}: ${w.id}(board, model, R),`).join("\n")}
+  };
+  flush();
+
+  // The arms of update still reached by a message: external events.
+  function receive(msg) {
+    switch (msg.type) {
+${cases.join("\n")}
+    }
+  }
+
+  function stop() {
+    cancel();
+    board.remove();
+  }
+
+  return { receive, stop };
+}
+`;
+}
+
+export function emit(spec) {
+  // The fields other widgets read.
+  const reads = {};
+  for (const w of spec.widgets) {
+    const out = [];
+    crossReads(w.view, out);
+    for (const [wid, f] of out) (reads[wid] ||= new Set()).add(f);
+  }
+  const files = {
+    ...templateFiles({ name: "unique-components", title: "Unique components" }),
+    "src/app.js": appFile(spec, reads),
+    "src/widgets/widget.js": WIDGET_FILE,
+  };
+  for (const w of spec.widgets) files[`src/widgets/${w.id}.js`] = widgetFile(w, reads);
+  return {
+    files,
+    style: {
+      track: "prototype: no framework implements this strategy",
+      components: "one module per widget, each written out from its own description; DOM built once with createElement; conditional sections built detached and attached by when",
+      messages: "erased for DOM events: each update arm is inlined into the action its control calls, which writes the widget's fields in place",
+      updates: "each action schedules the per-field binding groups of the fields it writes (known at compile time); one microtask flush",
+      derived: "cross-widget reads register their bindings at mount in R.<widget>.<field>, only for fields some widget reads; the writing action schedules them",
+      lists: "keyed: add, remove and toggle patch their rows; other edits replace the array and reconcile by key with Solid 2's reconcileArrays",
+      externalEvents: "receive(msg): serverSet and snapshot replace a widget's state (a copy) and run all its bindings and its readers; tick and notify call the widgets' external arms",
+      build: "Vite with no framework plugin, production defaults, hidden source maps",
+    },
+  };
+}
