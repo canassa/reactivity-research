@@ -14,11 +14,13 @@
 // reference `update` and `render` are generic interpreters over the descriptions;
 // implementations must not be (README, "The component is its own code").
 //
+// The form is one flat sequence of field units, with no sections, fieldsets or other groups
+// around them, so nothing in the spec marks a boundary an update strategy could stop at.
+//
 // Prefix stability: for one seed, field unit i (its fields, messages and view nodes) is the same
 // at every size. Unit i is drawn from its own random stream and may only look back at earlier
-// units; the layout (sections and groups of units) is drawn from streams that do not depend on
-// the size; a node that reads several units belongs to the latest of them (a group summary
-// belongs to the group's last unit), so growing N only appends.
+// units; a node that reads several units belongs to the latest of them, so growing N only
+// appends.
 
 export const scenario = "big-component";
 
@@ -88,23 +90,18 @@ export function rng(...parts) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// Word pools. A field's name is its group's noun followed by a word (`billingOrders`): camelCase
+// Word pools. A field's name is its unit's noun followed by a word (`billingOrders`): camelCase
 // identifiers valid in every target language, unique in the component.
 
 const ADJECTIVES = ["Team", "Office", "Studio", "Warehouse", "Fleet", "Library", "Clinic", "Campus",
   "Workshop", "Store", "Project", "Regional", "Family", "Club", "Market", "Bakery", "Gallery", "Depot"];
 const PAGES = ["settings", "preferences", "setup", "configuration", "options", "profile"];
 
-// Sections (the top-level blocks of the form) and groups (the fieldsets inside them).
-const SECTIONS = ["Account", "Notifications", "Delivery", "Payments", "Privacy", "Workspace",
-  "Calendar", "Devices", "Reports", "Integrations", "Appearance", "Security", "Billing",
-  "Members", "Storage", "Support", "Travel", "Inventory", "Schedules", "Accessibility"];
 const NOUNS = ["billing", "shipping", "contact", "profile", "account", "privacy", "alerts",
   "display", "audio", "network", "storage", "backup", "payment", "invoice", "team", "project",
   "calendar", "travel", "booking", "delivery", "support", "security", "reports", "sync",
   "theme", "language", "keyboard", "printer", "camera", "garden", "kitchen", "office",
   "studio", "fleet", "depot", "harbor", "clinic", "pantry", "lobby", "archive"];
-const GROUP_WORDS = ["details", "options", "settings", "preferences", "limits", "defaults", "rules"];
 
 const NAMES = {
   int: ["visits", "orders", "tickets", "cups", "boxes", "laps", "pages", "calls", "seats", "score",
@@ -115,7 +112,6 @@ const NAMES = {
     "enabled", "expanded", "shared", "verified", "hidden", "flagged", "synced", "booked", "signed",
     "approved", "silent"],
   gate: ["running", "ticking", "live", "active", "started", "counting"],
-  custom: ["custom", "override", "separate", "extra", "manual", "advanced"],
   text: ["title", "nickname", "code", "note", "city", "tag", "email", "handle", "motto", "caption",
     "author", "street", "topic", "comment", "subject", "venue", "remark", "phrase", "greeting", "slogan"],
   draft: ["draft", "entry", "proposal", "sketch", "jot", "memo"],
@@ -174,50 +170,13 @@ export const FORCED = [
                  //         section over unit 3's bool
 ];
 
-// How far back (in units) a unit's cross-field bindings may look. It bounds the number of
-// bindings that read any one field, whatever N.
-export const WINDOW = 6;
-
-// ---------------------------------------------------------------------------------------------
-// Layout: sections of groups of units. Section s and group g are drawn from their own streams,
-// in order, so they are the same at every size; a size only decides how many exist.
-
-export function layout(seed, n) {
-  const sections = [];
-  const groups = [];
-  const usedNouns = new Set();
-  const usedTitles = new Set();
-  let unit = 0;
-  for (let s = 0; unit < n; s++) {
-    const rs = rng("section", seed, s);
-    let title = rs.pick(SECTIONS);
-    for (let k = 2; usedTitles.has(title); k++) title = `${title.replace(/ \d+$/, "")} ${k}`;
-    usedTitles.add(title);
-    const sec = { index: s, title, groupCount: rs.weighted([[2, 35], [3, 40], [4, 25]]), summary: rs.chance(0.6), groups: [] };
-    sections.push(sec);
-    for (let k = 0; k < sec.groupCount && unit < n; k++) {
-      const g = groups.length;
-      const rg = rng("group", seed, g);
-      const size = rg.weighted([[2, 20], [3, 35], [4, 30], [5, 15]]);
-      const free = NOUNS.filter((x) => !usedNouns.has(x));
-      let noun = free.length ? rg.pick(free) : rg.pick(NOUNS);
-      for (let j = 2; usedNouns.has(noun); j++) noun = `${noun.replace(/\d+$/, "")}${j}`;
-      usedNouns.add(noun);
-      const group = {
-        index: g, section: s, start: unit, end: unit + size, noun,
-        title: `${cap(noun.replace(/\d+$/, ""))} ${rg.pick(GROUP_WORDS)}`,
-        titleTag: rg.pick(["em", "strong", "span"]),
-        // A gated group: its first unit is a bool whose checkbox shows the rest of the group.
-        gated: unit >= FORCED.length && size >= 3 && rg.chance(0.3),
-        summary: rg.chance(0.5),
-      };
-      groups.push(group);
-      sec.groups.push(group);
-      unit += size;
-    }
-  }
-  return { sections, groups };
-}
+// Which earlier fields a unit's cross-field bindings may read or write: mostly those of the last
+// few units (RECENT), plus a few drawn from anywhere before (FAR), skipping any field that the
+// bindings of later units already read READ_CAP times. The cap, not a distance, bounds the number
+// of bindings reading one field, whatever N; a dependency may reach back to the first unit.
+const RECENT = 6;
+const FAR = 4;
+const READ_CAP = 3;
 
 // ---------------------------------------------------------------------------------------------
 // Generation
@@ -225,22 +184,17 @@ export function layout(seed, n) {
 export function generate(rawOptions) {
   const options = normalizeOptions(rawOptions);
   const { size, seed } = options;
-  const lay = layout(seed, size);
-  const groupOf = (i) => lay.groups.find((g) => i >= g.start && i < g.end);
 
-  // The component: its fields, messages and units, built unit by unit.
-  const W = { fields: [], messages: [], used: new Set(), words: new Map(), unitOf: new Map(), gates: new Set(), units: [] };
-  for (let i = 0; i < size; i++) {
-    const g = groupOf(i);
-    const role = i < FORCED.length ? FORCED[i] : g.gated && i === g.start ? "gate" : null;
-    W.units.push(buildUnit(W, rng("unit", seed, i), i, g, role));
-  }
+  // The component: its fields, messages and units, built unit by unit. `reads` counts, per
+  // field, the binding sites of later units that read it.
+  const W = { fields: [], messages: [], used: new Set(), words: new Map(), unitOf: new Map(), reads: new Map(), units: [] };
+  for (let i = 0; i < size; i++) W.units.push(buildUnit(W, rng("unit", seed, i), i, FORCED[i] ?? null));
 
   const rh = rng("component", seed);
   const token = token4(rh);
   const big = {
     id: "w1", kind: "form", token, label: `${rh.pick(ADJECTIVES)} ${rh.pick(PAGES)} ${token}`,
-    fields: W.fields.map(cleanField), messages: W.messages, view: assemble(W, lay, size),
+    fields: W.fields.map(cleanField), messages: W.messages, view: W.units.flatMap((u) => u.items.map((it) => it.node)),
   };
   const companion = buildCompanion(rng("companion", seed), W, big);
   const widgets = [big, companion];
@@ -262,59 +216,6 @@ const structuredCloneish = (v) => (Array.isArray(v) ? v.map((x) => ({ ...x })) :
 function cleanField(f) {
   const { draftFor, ...rest } = f;
   return rest;
-}
-
-// The view of the component: one group per section (its title, its groups, maybe a summary),
-// one fieldset per group (its title, its units, maybe a summary), units in order.
-function assemble(W, lay, n) {
-  const unitNodes = (i) => W.units[i].items.map((it) => it.node);
-  return lay.sections.map((sec) => {
-    const children = [{ el: "text", tag: "strong", parts: [sec.title] }];
-    for (const g of sec.groups) {
-      const kids = [{ el: "text", tag: g.titleTag, parts: [g.title] }];
-      const units = [];
-      for (let i = g.start; i < Math.min(g.end, n); i++) units.push(i);
-      if (g.gated) {
-        kids.push(...unitNodes(units[0]));
-        const rest = units.slice(1).flatMap(unitNodes);
-        if (rest.length) kids.push({ el: "when", tag: "div", cond: ["f", W.units[units[0]].main.name], children: rest });
-      } else kids.push(...units.flatMap(unitNodes));
-      if (g.summary && g.end <= n) kids.push(groupSummary(W, g));
-      children.push({ el: "group", tag: "fieldset", children: kids });
-    }
-    if (sec.summary) {
-      const s = sectionSummary(W, sec, n);
-      if (s) children.push(s);
-    }
-    return { el: "group", tag: "div", children };
-  });
-}
-
-// "n of m set": one term per unit of the group, by its main field.
-function groupSummary(W, g) {
-  const terms = [];
-  for (let i = g.start; i < g.end; i++) {
-    const f = W.units[i].main;
-    const F = ["f", f.name];
-    const cond = {
-      int: () => [">", F, ["k", f.min]], bool: () => F, text: () => [">", ["len", F], ["k", 0]],
-      enum: () => ["!=", F, ["k", f.options[0]]], list: () => [">", ["count", F], ["k", 0]],
-    }[f.type]();
-    terms.push(["if", cond, ["k", 1], ["k", 0]]);
-  }
-  return { el: "text", tag: "small", parts: [terms.slice(1).reduce((acc, t) => ["+", acc, t], terms[0]), ` of ${terms.length} set`] };
-}
-
-// The sum of the section's first three int fields (time-driven ones included), at the end of
-// the section. It belongs to the unit of the third: it appears as soon as that unit exists, and
-// a section with fewer than three ints has none.
-function sectionSummary(W, sec, n) {
-  const ints = [];
-  for (const g of sec.groups) {
-    for (let i = g.start; i < Math.min(g.end, n) && ints.length < 3; i++) if (W.units[i].main.type === "int") ints.push(W.units[i].main);
-  }
-  if (ints.length < 3) return null;
-  return { el: "text", tag: "p", parts: [`${sec.title} total: `, ["+", ["+", ["f", ints[0].name], ["f", ints[1].name]], ["f", ints[2].name]]] };
 }
 
 // The unit builder: names, fields, messages and chunks of view items for unit i. An item is
@@ -379,9 +280,9 @@ export function messageWrites(m) {
 // One unit: its main field (and the draft of a list or the gate of a time-driven int), its
 // controls and displays, then the bindings that tie it to earlier units: a combined message, a
 // disabled state or a validation reading an earlier field, a derived text, a conditional section.
-function buildUnit(W, r, i, group, role) {
-  const b = makeBuilder(W, r, i, group.noun);
-  const forced = role && role !== "gate";
+function buildUnit(W, r, i, role) {
+  const b = makeBuilder(W, r, i, r.pick(NOUNS));
+  const forced = !!role;
   const before = W.fields.length;
 
   switch (role) {
@@ -394,7 +295,6 @@ function buildUnit(W, r, i, group, role) {
     case "numberInput": GEN.int(b, { numberInput: true }); break;
     case "tick": tickField(b); break;
     case "dependent": GEN.int(b, { required: true }); break;
-    case "gate": GEN.bool(b, { gate: true }); break;
     default: {
       const t = r.weighted([["int", 30], ["bool", 20], ["text", 20], ["enum", 15], ["list", 6], ["tick", 2]]);
       if (t === "tick") tickField(b);
@@ -402,28 +302,57 @@ function buildUnit(W, r, i, group, role) {
     }
   }
   const main = W.fields[before];
-  if (role === "gate") W.gates.add(main.name);
+  const own = new Set(W.fields.slice(before).map((f) => f.name));
 
-  // Earlier fields this unit's bindings may read or write: those of the previous WINDOW units.
-  const earlier = W.fields.slice(0, before).filter((f) => W.unitOf.get(f.name) >= i - WINDOW);
+  // Earlier fields this unit's bindings may read or write (see RECENT, FAR, READ_CAP).
+  const open = W.fields.slice(0, before).filter((f) => (W.reads.get(f.name) ?? 0) < READ_CAP);
+  const recent = open.filter((f) => W.unitOf.get(f.name) >= i - RECENT);
+  const far = new Set(r.sample(open.filter((f) => W.unitOf.get(f.name) < i - RECENT), FAR));
+  const earlier = open.filter((f) => far.has(f) || recent.includes(f));
 
   if (role === "dependent") dependent(b, W, main);
-  if (!forced && role !== "gate") {
-    if (r.chance(0.12)) combined(b, main, earlier.filter((f) => isPlain(f) && !W.gates.has(f.name)));
+  if (!forced) {
+    if (r.chance(0.12)) combined(b, main, earlier.filter(isPlain));
     if (r.chance(0.15)) crossDisabled(b, earlier);
     if (main.type === "text" && r.chance(0.4)) crossValidation(b, main, earlier);
   }
-  if (r.chance(0.35)) derived(b, main, earlier);
+  if (r.chance(0.5)) derived(b, main, earlier);
 
   // Order: the forced chunks first, the others shuffled.
   const req = b.chunks.filter((c) => c[0]?.required);
   let items = [...req, ...r.shuffle(b.chunks.filter((c) => !c[0]?.required))].flat();
-  if (!forced && role !== "gate" && r.chance(0.2)) items = unitWhen(b, items, earlier);
+  if (!forced && r.chance(0.2)) items = unitWhen(b, items, earlier);
+  // Sometimes the unit's own nodes sit in a wrapper of their own (it never holds another unit).
   if (items.length >= 2 && r.chance(0.25)) {
     items = [{ node: { el: "group", tag: r.pick(["div", "div", "header", "footer"]), children: items.map((it) => it.node) },
       writes: new Set(items.flatMap((it) => [...it.writes])), required: items.some((it) => it.required) }];
   }
+  for (const it of items) {
+    for (const name of readSites(it.node)) if (!own.has(name)) W.reads.set(name, (W.reads.get(name) ?? 0) + 1);
+  }
   return { main, items };
+}
+
+// The fields read by each binding site of a node, once per site (recursively): text parts and
+// button texts, disabled states, conditions and validations.
+function readSites(node) {
+  const out = [];
+  const site = (e) => out.push(...exprFields(e));
+  const visit = (n) => {
+    for (const p of [...(n.parts || []), ...(n.text || [])]) if (typeof p !== "string") site(p);
+    if (n.disabled) site(n.disabled);
+    if (n.cond) site(n.cond);
+    if (n.invalid) site(n.invalid.when);
+    for (const c of n.children || []) visit(c);
+  };
+  visit(node);
+  return out;
+}
+
+function exprFields(e, out = new Set()) {
+  if (e[0] === "f") out.add(e[1]);
+  else if (e[0] !== "k" && e[0] !== "w") for (const x of e.slice(1)) if (Array.isArray(x)) exprFields(x, out);
+  return out;
 }
 
 const isPlain = (f) => f.type !== "list" && !f.draftFor;
@@ -485,10 +414,10 @@ const GEN = {
 
   bool(b, opts) {
     const r = b.r;
-    const name = b.name(opts.gate ? NAMES.custom : NAMES.bool);
-    const f = b.field({ name, type: "bool", initial: opts.gate ? false : r.chance(0.4) });
-    const kind = opts.gate ? "check" : opts.toggle ? r.pick(["check", "toggle"]) : r.weighted([["check", 45], ["toggle", 35], ["pair", 20]]);
-    b.chunk(boolControl(b, name, kind, r.chance(0.5)), { required: !!(opts.toggle || opts.gate) });
+    const name = b.name(NAMES.bool);
+    const f = b.field({ name, type: "bool", initial: r.chance(0.4) });
+    const kind = opts.toggle ? r.pick(["check", "toggle"]) : r.weighted([["check", 45], ["toggle", 35], ["pair", 20]]);
+    b.chunk(boolControl(b, name, kind, r.chance(0.5)), { required: !!opts.toggle });
     return f;
   },
 
@@ -682,7 +611,7 @@ function dependent(b, W, main) {
   const r = b.r;
   const number = W.units[6].main, flag = W.units[3].main;
   b.chunk([{ el: "text", tag: "p", parts: [r.pick(["Total: ", "Sum: ", "Together: "]), ["+", ["f", main.name], ["f", number.name]]] }], { required: true });
-  b.chunk([{ el: "when", tag: r.pick(["div", "section", "aside"]), cond: r.chance(0.5) ? ["f", flag.name] : ["not", ["f", flag.name]],
+  b.chunk([{ el: "when", tag: r.pick(["div", "div", "aside"]), cond: r.chance(0.5) ? ["f", flag.name] : ["not", ["f", flag.name]],
     children: [{ el: "text", tag: "p", parts: [r.pick(SENTENCES)] }, intText(b, main.name, ["f", main.name])] }]);
 }
 
@@ -816,7 +745,7 @@ function unitWhen(b, items, earlier) {
   while (len < max && start + len < items.length && ok(items[start + len])) len++;
   const children = items.slice(start, start + len).map((it) => it.node);
   if (r.chance(0.3)) children.push({ el: "text", tag: "p", parts: [r.pick(SENTENCES)] });
-  const node = { el: "when", tag: r.pick(["div", "div", "section", "aside"]), cond, children };
+  const node = { el: "when", tag: r.pick(["div", "div", "div", "aside"]), cond, children };
   const writes = new Set(items.slice(start, start + len).flatMap((it) => [...it.writes]));
   return [...items.slice(0, start), { node, writes, required: false }, ...items.slice(start + len)];
 }
