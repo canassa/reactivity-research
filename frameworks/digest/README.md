@@ -1012,3 +1012,61 @@ point, since it does not stay local; it is the size of the flat version.
 
 Style choices are in the emitter's `style`. `runs.json` has no `digest` entry for derived-graph
 (a `$comment`, as for big-component) and lists it under `$bench.also`, timed for reference only.
+||||||| parent of 174ef6f (📝 document digest's routed-app lifetime and log the session)
+
+## routed-app
+
+`scenarios/routed-app/digest.js` writes N pages behind a shell, with `runtime-routed.js` as the
+runtime. **It passes `./rr check`, locality included** (sizes 1, 4, 16 and 64, seeds 1-3, 0
+mismatches, 0 focus losses, 0 keyed replacements, nothing left after dispose). Every local action
+costs the same number of calls from N=16 to N=256 (1.00x).
+
+**Lifetime.** A page is a function. Calling it mounts the page: its state is the function's local
+variables (so it starts fresh on each mount and is gone with it), its template becomes a node, its
+bindings run once as they are registered, and its timer and feed subscription are registered as
+cleanups. Its tab panels and its modal are functions inside it, mounted the same way, with their own
+fields as locals. A *component* (shell, page, tab panel, modal, menu) is one binding list with its
+root node and its cleanups:
+
+- `widget()` makes the list and records it among the mounted components;
+- `end(b)` removes its node, empties the list, and runs its cleanups: leave every set it joined,
+  clear its `setInterval`, drop the feed subscription;
+- navigation ends every mounted component but the shell and calls the next page's function. The
+  hidden pages' code is in the bundle and nothing of them is built.
+
+**Global state.** Each global field some component reads has a `Set` of the binding lists that read
+it. A component joins the sets of the fields its bindings read when it mounts and leaves them when
+it ends, so a set holds only mounted lists. A handler or external event that writes a field digests
+its handler's own list and that field's set (`up`), once each: this is `dep` of the other digest
+runtimes, made at mount instead of at build time and undone at unmount. A field nobody reads has no
+set (`online` is dropped from apps where no page reads it). The page's own fields get a set of their
+own (`Ps`) only when its tabs or modal read or write them, and only those fields' writes digest it.
+
+**Events.** One delegated click and input listener on the app element calls the target's handler,
+then digests the list the control belongs to plus whatever `up` added. Links, nav buttons, menu
+entries and tab buttons share one handler each, which reads the target's `data-key`. `pagePush`
+reaches the page shown through the subscription it registered, which the page's cleanup drops.
+
+**Sizes** (`./rr measure`, brotli, seeds 1-3, adapter excluded, not committed): N=1 1,869 to 1,948 B;
+N=16 7,531 to 8,485; N=64 20,364 to 23,028; N=256 61,469 to 63,986. Fit over all sizes: 3,823 B +
+237.6 B per page (R² 0.990). The runtime is 774 to 854 B at N=1 and 1,099 to 1,103 B from N=8; a page
+is about the size of two dashboard widgets.
+
+**Work** (`./rr work`, seed 1, calls, N=16 to N=256): a page event 23 (add to an int, type a
+character), `serverSet` of a global the page does not read 7 and of one it reads 26, `notify` 23,
+`pagePush` to a page not shown 3 and to the page shown 38, navigation 77 to 234 (the page's size, not
+N), a tab switch 92 and 129, a clock tick 25, the modal opened 57 and closed 10, the global snapshot
+53, dispose 16, mount of the shell and p1 99. All 1.00x. Only opening the menu, which lists every
+page, grows (42 to 282, one call per page), and is global by nature.
+
+**Honest limits.**
+- The lifetime machinery (`widget`'s list and cleanups, `join`, `end`, `leave`, `every`, `feed`) is
+  in the runtime's 1.1 kB, and the sets add one `join(...)` and one `up(...)` per component that
+  reads or writes a global: those are the "unjoin on unmount" bytes.
+- The first run of a binding happens at registration, so a list item's bindings take over the
+  runtime's `B`, `E` and `P` for a moment (`list` saves and restores them).
+- A modal opened while open is rebuilt (fresh state, a new node), where the reference keeps its
+  node. The script never does it.
+- `aria-current`, `aria-expanded` and `aria-selected` are written through the DOM's ARIA
+  reflection properties (`ariaCurrent`, `ariaExpanded`, `ariaSelected`), which every current
+  browser has.
