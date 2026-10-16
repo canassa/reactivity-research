@@ -27,11 +27,16 @@ export function templateFiles({ name, title }) {
   };
 }
 
+// A template file only some scenarios include (big-component's `words.js`).
+export function templateFile(file) {
+  return fs.readFileSync(path.join(HERE, "template", file), "utf8");
+}
+
 // Which bucket a source-map source belongs to: the shared runtime counts as runtime, like a
 // framework's library code.
 export function classify(source) {
   if (source.includes("/node_modules/") || source.startsWith("\0") || source.includes("vite/")) return "runtime";
-  if (/(^|\/)src\/runtime\.js$/.test(source)) return "runtime";
+  if (/(^|\/)src\/(runtime|words)\.js$/.test(source)) return "runtime";
   if (/(^|\/)src\/adapter\.js$/.test(source)) return "adapter";
   return "app";
 }
