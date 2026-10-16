@@ -507,6 +507,16 @@ const itemsName = (w) => `${camelCase(w.label)}Items`;
 // The text function of a summary, as source, indented by `indent`.
 function summaryText(spec, w, indent) {
   const sources = w.sources.map((id) => byId(spec, id));
+  // A breakdown shows each term and their total: its terms are named; any other text uses each
+  // term once, inline.
+  if (w.formula !== "breakdown") {
+    const terms = sources.map((src) => metricExpr(src, `w.${src.id}`, itemsName(src)));
+    const decimal = sources.map((src) => src.kind === "amount");
+    const total = decimal.some(Boolean) ? `formatNumber(${terms.join(" + ")})` : terms.join(" + ");
+    const text = w.formula === "sum" ? `${tplText(w.prefix)}: \${${total}}`
+      : sources.map((src, i) => PHRASES[src.kind](decimal[i] ? `\${formatNumber(${terms[i]})}` : `\${${terms[i]}}`, src)).join("; ");
+    return `(w) => \`${text}\``;
+  }
   const names = [];
   const lines = sources.map((src) => {
     let name = camelCase(src.label);
