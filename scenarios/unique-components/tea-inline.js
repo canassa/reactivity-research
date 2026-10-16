@@ -165,7 +165,7 @@ function widgetFile(w, reads) {
     const args = [];
     for (const f of new Set(fields)) {
       if (groupFields.has(f)) args.push("on" + cap(f));
-      if (reads[w.id]?.has(f)) args.push(`R.${w.id}.${f}`);
+      if (reads[w.id]?.has(f)) args.push(`R[widget].${f}`);
     }
     return args.length ? [`schedule(${args.join(", ")});`] : [];
   };
@@ -431,15 +431,15 @@ function widgetFile(w, reads) {
   const handlerLines = actions.map((a) => a());
   const readIds = [...crossIds];
   const own = Object.keys(reads[w.id] ? Object.fromEntries([...reads[w.id]].map((f) => [f, 1])) : {});
-  const watched = own.map((f) => `R.${w.id}.${f}`);
+  const watched = own.map((f) => `R[widget].${f}`);
 
   const all = [...groups.keys()].map((f) => "on" + cap(f)).concat(alone);
   const body = [
-    "const s = model." + w.id + ";",
+    "const s = model[widget];",
     ...readIds.map((x) => `const ${x} = model.${x};`),
     ...consts,
     "// The DOM, built once from its markup; the elements the code refers to, in document order.",
-    `const [${Array.from(refs, (r) => r || "").join(", ")}] = section(parent, ${str(w.id)}, ${str(html)});`,
+    `const [${Array.from(refs, (r) => r || "").join(", ")}] = section(parent, widget, ${str(html)});`,
     ...build,
     "",
     ...(namedLines.length ? ["// Bindings reading several fields, or other widgets."] : []),
@@ -462,7 +462,7 @@ function widgetFile(w, reads) {
   return `import { ${rt.join(", ")} } from "../runtime.js";
 import { ${wi.join(", ")} } from "./widget.js";
 
-export function ${w.id}(parent, model, R) {
+export function ${w.id}(parent, model, R, widget) {
 ${text}
 }
 `;
@@ -511,7 +511,7 @@ export function start(root) {
   // Every widget in page order; each returns its handle: \`load\` for serverSet and snapshot, and
   // its external arms.
   const views = {
-${spec.widgets.map((w) => `    ${w.id}: ${w.id}(board, model, R),`).join("\n")}
+${spec.widgets.map((w) => `    ${w.id}: ${w.id}(board, model, R, "${w.id}"),`).join("\n")}
   };
   flush();
 
