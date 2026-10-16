@@ -13,9 +13,9 @@ making more calls than before, and no size growing for a gain elsewhere.
 | shared-components before | 1100 | 3700 | 5378 | 10135 | 2367 + 32.6/w | 3529 + 26.1/w |
 | shared-components after | 1096 | 3620 | 5139 | 9316 | 2329 + 29.7/w | 3456 + 23.3/w |
 | unique-components before | 1546 | 6739 | 18324 | 56332 | 2893 + 214.6/w | 4663 + 204.6/w |
-| unique-components after | 1517 | 6519 | 17640 | 54060 | 2839 + 206.0/w | 4556 + 196.3/w |
+| unique-components after | 1515 | 6493 | 17394 | 53212 | 2840 + 202.5/w | 4568 + 192.8/w |
 
-Every size of both scenarios is smaller (−8.1% and −4.0% at N=256). Work (`./rr work`, sizes
+Every size of both scenarios is smaller (−8.1% and −5.5% at N=256). Work (`./rr work`, sizes
 16–256, seed 1): no record went up; total calls 7869 → 7854 (shared) and 12893 → 12888 (unique),
 one call less per item toggle, remove or dismiss.
 
@@ -23,8 +23,10 @@ one call less per item toggle, remove or dismiss.
 
 - **Widgets numbered by position.** Ids are `w1…wN` in page order, so the compiler numbers them:
   shared rows no longer spell an id (−6% at N=256); the unique initial model is an array by number
-  (no `wN:` key per widget) and the app mounts widgets with one `map` over the widget functions
-  (−1,052 B and −488 B at N=256). Done naively (a hole and `slice(1)` everywhere) it cost 10 B at
+  (no `wN:` key per widget) and the app mounts widgets with one `map` (−1,052 B and −488 B at
+  N=256). Then each widget module pushes its function onto a shared array `W` when imported, so
+  the bundle neither names nor lists widgets (−848 B, with `section` no longer returning the
+  section itself and the initial model a literal in `start`). Done naively (a hole and `slice(1)` everywhere) it cost 10 B at
   N=1; each version kept had to be tuned until no size grew (handing shared factories their slice
   and counting rows in a `for…of`; building the unique dashboard div from markup, which drops `el`
   from small apps).
@@ -50,6 +52,8 @@ one call less per item toggle, remove or dismiss.
 - A flush queued with `queueMicrotask` from the pending set's size (tea-local's idea): −79 B summed
   in shared but +1,100 B at N=256 in unique, only because dropping one top-level variable shifted
   every minified runtime name by one letter. Keeping the names fixed made it noise.
+- The widget's mount context (dashboard, model, readers) as module variables set at mount, so a
+  widget takes only its number: mixed.
 - Shared state passed positionally (no init object per row), filter items as pairs, `null` rows as
   holes: mixed or larger.
 
