@@ -347,3 +347,50 @@ once, on its detached nodes: the runtime's pending set is private, and `routes.j
 `runtime.js` (it would change every scenario's output). It is wasted work bounded by one page's
 bindings, never a leak: nothing outside the unit keeps it. Rows of a page-local list keep the
 runtime's `drop` method unused (removals reconcile), which costs its few bytes in this scenario.
+
+## derived-graph
+
+`../../scenarios/derived-graph/tea-inline.js` writes a sheet of N formulas over inputs and a table of
+items, with two additive files, `template/graph.js` (the formulas' scheduler, counted as runtime)
+and `template/sheet.js` (formatters, collection helpers, the typed-number handler and the item PRNG,
+counted as app code), plus `rows.js` for the items table. The other scenarios' output is
+byte-identical.
+
+**Derived values: compile-time memoization with an equality cut-off.** The compiler has the whole
+graph, so each formula is a node, `const calcTax = node(() => { const x = …; if (x === tax) return;
+tax = x; …displays…; queue(readers); paint(multi-cell displays); })`. A node runs at most once per
+flush: `queue` keeps the pending nodes sorted by rank (their creation order, which is a topological
+order because a formula reads only earlier cells), then the displays that read several cells run
+once, after every formula. A hub is therefore computed once per change, not once per reader, and a
+formula reading both ends of a diamond runs after both. The alternative, recomputing a formula
+inside each binding that shows it, would compute `tax` 24 times and re-sum 2,000 items per reader
+when `total` is inlined, and it spells the formula's chain at every read; memoization spends one
+variable and one node per formula. The reader lists are written into the writer's code at build
+time, so nothing registers at mount.
+
+**Unchanged cut-off: yes.** A formula whose value is the same queues no reader and paints nothing
+(a list or a group compares its items in order). The cut-off input that leaves its bool unchanged
+costs 10 calls at every N, and the flip costs 21: `toggleCell` runs only when the bool changes. A
+top-k list always repaints its keyed list (an item in it may have changed in place) but cuts off
+its readers.
+
+**Displays.** A display that reads one cell is part of that cell's code (no function, no
+subscription); when two or more show the cell, its formatted text is made once. A display that
+reads several cells is a function each of its cells collects. All elements are `E[n]`, the place in
+one static HTML string (labels and options left out).
+
+**Inputs** are one action each in a table `P` by name: the control, external events and a snapshot
+(applied exactly like the initial state) all call it. **Item edits** write the item in place and
+queue the formulas that read the field written (`byQty`, `byActive`) or, for a change to the set
+of items, every formula that reads the items or a field of them (`byItems`). No aggregate is
+incremental: each affected formula re-reads the items.
+
+**Locality.** Flat: median 44 calls for the closed chain input, 10 and 21 for the cut-off, 7 for a
+note, 14 for the toggle, at N=16 and at 256 (ratio 1.00 for every local action). Global actions
+grow by nature: the hub raise 2,157 → 56,177 calls (N=16 → 256, 2,000 rows), a quantity 32,395 →
+257,015. Rows (N=64, 1,000 → 10,000): flat for the chain, cut-off, toggle and note; proportional
+for the filter select (1,221 → 12,048), threshold (6,503 → 83,414) and markup (7,004 → 70,004);
+the hub raise is not flat (9,011 → 86,205): `tax` is computed once, but every aggregate that reads
+it re-sums the items.
+
+**Size.** See `notes/2026-10-17-derived-graph-tea-inline.md`.
