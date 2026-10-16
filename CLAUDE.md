@@ -201,6 +201,10 @@ notes/                 a short log of each working session
   and never relaxes it.
 - **`scenarios/<scenario>/spec.js`** generates the app spec for that scenario;
   **`scenarios/<scenario>/<framework>.js`** is the emitter that writes it in that framework.
+  Code that several emitters of one scenario share (for example one source written for two
+  platforms of the same language) goes in **`scenarios/<scenario>/shared/`**: it is not an emitter,
+  and it is part of every measurement's inputs hash, so a change to it remeasures the emitters
+  that use it.
 - **`frameworks/<name>/`** holds what every scenario shares for one framework, so a per-scenario
   emitter contains only what is specific to its scenario. If per-scenario emitters start
   repeating each other, move the shared building blocks (a list, a form, a widget) here.
