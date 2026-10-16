@@ -10,9 +10,11 @@ Shared by every Elm emitter (`scenarios/*/elm.js`).
 - **Minifier:** `uglify-js`, pinned likewise, with the two passes from the Elm guide's
   [asset size page](https://guide.elm-lang.org/optimization/asset_size.html) (still its
   recommendation in 2026).
+- **elm-format:** 0.8.8 (the latest), a dev dependency used only for the check below.
 - **Elm packages:** pinned with exact versions in `template/elm.json`, which every generated
-  app gets: the latest release of each (elm/core 1.0.5, browser 1.0.2, html 1.0.1, json 1.1.4,
-  regex 1.0.0; indirect time 1.0.0, url 1.0.0, virtual-dom 1.0.5), checked against
+  app gets (an emitter drops a direct dependency its app does not import): the latest release
+  of each (elm/core 1.0.5, browser 1.0.2, html 1.0.1, json 1.1.4, regex 1.0.0; indirect time
+  1.0.0, url 1.0.0, virtual-dom 1.0.5), checked against
   `https://package.elm-lang.org/packages/elm/<name>/releases.json`. Their `elm.json` ranges
   (`0.19.0 <= v < 0.20.0`) accept 0.19.3.
 
@@ -41,3 +43,15 @@ composes it through both passes (see the comment at the top of `framework.js`).
 
 Kernel code that uglify-js inlines into the app's functions (for example a tuple's `{a:…,b:…}`)
 keeps its kernel source, so a few dozen compressed bytes that grow with the app count as runtime.
+
+## Formatting check (not part of the build)
+
+`elm-format` is pinned as a dev dependency only to check that the emitters write what
+elm-format would. Elm projects run it in the editor or CI, not in the build, so the build does
+not use it:
+
+```sh
+cd generated/dashboard/n16-s1/elm && ../../../../frameworks/elm/node_modules/.bin/elm-format --validate src
+```
+
+It prints `[]` when every file already matches.
