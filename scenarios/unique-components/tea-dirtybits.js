@@ -233,7 +233,7 @@ function widgetModule(w) {
   // reads it); the app reducer calls the arm of the message's tag.
   const armFn = (a, ind) => {
     const body = a.lines.join("\n");
-    const args = /\bmsg\b/.test(body) ? "(s, msg)" : "(s)";
+    const args = "(s, msg)";
     if (a.lines.length === 1 && body.startsWith("return ")) return `${args} => ${body.slice(7, -1)}`;
     return `${args} => {\n${body.split("\n").map((l) => ind + "  " + l).join("\n")}\n${ind}}`;
   };
