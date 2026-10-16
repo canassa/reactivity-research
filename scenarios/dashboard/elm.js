@@ -1,7 +1,10 @@
-// The dashboard in Elm 0.19.
+// The dashboard in Elm 0.19 (built with 0.19.3, see frameworks/elm/).
 //
 // Style (recorded in every generated app's rr.json), following the Elm guide and common
-// practice:
+// practice. Every generated module is laid out exactly as elm-format 0.8.8 would lay it out,
+// and passes elm-review's NoUnused, Simplify and elm-review-common rules: a module exposes,
+// and elm.json lists, only what the app uses (`Ui.ariaFlag`, `Toggles.count`, `Todo.left`,
+// `Filter.matches`, the rule and format helpers and elm/regex are there only when used).
 // - The Elm Architecture with `Browser.element`: one `Model` record holding every widget's
 //   state (one field per widget), one `update`, one `view`. Summaries keep no state: their line
 //   is computed from the model in `view`.
@@ -24,7 +27,11 @@
 // - External events arrive through one incoming port, `events : (Value -> msg) -> Sub msg`,
 //   decoded with `Json.Decode` into the app's own messages: `serverSet` into the widget's
 //   `Replaced` message, `notify` into the feed's `Notified`, `tick` into `Tick`, `snapshot` into
-//   `GotSnapshot` with a whole new `Model`.
+//   `GotSnapshot` with a whole new `Model`. The snapshot's `Model` is decoded with a local
+//   `andMap` pipeline (it has more fields than `Decode.map8` takes), the widgets' small
+//   records with `Decode.mapN`; no decoding package is added for that.
+// - No `Html.Lazy`: the guide presents it as an optimization for expensive views, and these
+//   views are small.
 // - Production build: `elm make --optimize`, then the guide's two uglify-js passes.
 
 import { templateFiles } from "../../frameworks/elm/framework.js";
@@ -45,6 +52,11 @@ const MODULE = {
 
 export function elmString(s) {
   return '"' + String(s).replace(/[\\"\n\r\t]/g, (c) => ({ "\\": "\\\\", '"': '\\"', "\n": "\\n", "\r": "\\r", "\t": "\\t" })[c]) + '"';
+}
+
+// A module's exposing list in elm-format's order (it sorts them).
+function exposing(names) {
+  return [...names].sort().join(", ");
 }
 
 // An Elm expression for plain data (records, lists, strings, numbers, booleans), laid out the
@@ -70,7 +82,14 @@ export function elmValue(value, indent = "") {
 // ---------------------------------------------------------------------------------------------
 // The shared module and one module per widget kind
 
-const UI = `module Ui exposing (ariaFlag, dataKey, dataRole, widget)
+// What every widget's view shares. `widget` and `dataRole` are used by every app. `dataKey` is
+// used by `widget` itself, and exposed only when a kind module imports it; `ariaFlag` (tabs,
+// panel, rating) is written only when one of those is in the app. `used` is what the app's
+// kind modules import from `Ui`. (An unused export is what elm-review's NoUnused.Exports
+// reports, and an unused declaration NoUnused.Variables.)
+function uiModule(used) {
+  const exposed = exposing(["dataRole", "widget", ...["dataKey", "ariaFlag"].filter((n) => used.has(n))]);
+  return `module Ui exposing (${exposed})
 
 {-| What every widget's view shares: the section with its heading, and the attributes the
 dashboard's markup uses.
@@ -94,7 +113,7 @@ dataRole =
 dataKey : String -> Attribute msg
 dataKey =
     attribute "data-key"
-
+${used.has("ariaFlag") ? `
 
 ariaFlag : String -> Bool -> Attribute msg
 ariaFlag name on =
@@ -105,7 +124,8 @@ ariaFlag name on =
          else
             "false"
         )
-`;
+` : ""}`;
+}
 
 const KIND_MODULES = {
   counter: `module Widget.Counter exposing (Config, Model, Msg(..), decoder, update, view)
@@ -287,7 +307,7 @@ matching source message =
         else
             Just message`);
     }
-    return `module Widget.Field exposing (Config, Model, Msg(..), decoder, ${exposed.sort().join(", ")}, update, view)
+    return `module Widget.Field exposing (${exposing(["Config", "Model", "Msg(..)", "decoder", "update", "view", ...exposed])})
 
 import Html exposing (Html, input, p, text)
 import Html.Attributes exposing (placeholder, type_, value)
@@ -401,14 +421,15 @@ update msg model =
             let
                 trimmed =
                     String.trim model.draft
-
-                nextId =
-                    1 + List.foldl (\\item highest -> max item.id highest) 0 model.items
             in
             if String.isEmpty trimmed then
                 model
 
             else
+                let
+                    nextId =
+                        1 + List.foldl (\\item highest -> max item.id highest) 0 model.items
+                in
                 { items = model.items ++ [ Item nextId trimmed False ], draft = "" }
 
         Toggle id ->
@@ -716,7 +737,7 @@ percent decimals amount =
 unit name decimals amount =
     fixed decimals amount ++ " " ++ name`);
     }
-    return `module Widget.Amount exposing (Config, Model, Msg(..), ${exposed.sort().join(", ")}, decoder, update, view)
+    return `module Widget.Amount exposing (${exposing(["Config", "Model", "Msg(..)", "decoder", "update", "view", ...exposed])})
 
 import Html exposing (Html, input, output, text)
 import Html.Attributes exposing (type_, value)
@@ -1270,7 +1291,8 @@ function summaryFunction(spec, w, names) {
     if (typeof p === "string" && typeof merged[merged.length - 1] === "string") merged[merged.length - 1] += p;
     else merged.push(p);
   }
-  const line = merged.map((p) => (typeof p === "string" ? elmString(p) : /\s/.test(p.e) ? `(${p.e})` : p.e));
+  // Every expression is a function application, which binds tighter than ++: no parentheses.
+  const line = merged.map((p) => (typeof p === "string" ? elmString(p) : p.e));
   const n = names[w.id];
   return `${n.line} : Model -> String
 ${n.line} model =
@@ -1389,7 +1411,7 @@ ${cases.join("\n\n")}`);
                         Decode.field "widget" Decode.string
                             |> Decode.andThen (\\id -> Decode.field "entry" (notification id))`);
   eventCases.push(`                    "snapshot" ->
-                        Decode.map GotSnapshot (Decode.field "state" (Decode.field "widgets" modelDecoder))`);
+                        Decode.map GotSnapshot (Decode.at [ "state", "widgets" ] modelDecoder)`);
   eventCases.push(`                    _ ->
                         Decode.fail ("unknown event: " ++ kind)`);
   const serverCases = stateful.map((w) => `        ${elmString(w.id)} ->
@@ -1467,7 +1489,8 @@ formatNumber number =
     String.fromFloat (toFloat (round (number * 100)) / 100)`);
     }
   }
-  return out.join("\n\n\n") + "\n";
+  // Declarations are two blank lines apart; elm-format puts three before a section comment.
+  return out.map((d) => (d.startsWith("-- ") ? "\n" + d : d)).join("\n\n\n") + "\n";
 }
 
 // A declaration's body: on the next line, indented.
@@ -1481,16 +1504,32 @@ function fieldValue(v, indent) {
   return e.startsWith("\n") ? e : " " + e;
 }
 
+// The function a summary calls to read a widget of these kinds. Its module uses it in its own
+// view, and exposes it only when a summary of the app reads a widget of that kind.
+const SUMMARY_READS = { toggles: "count", todo: "left", filter: "matches" };
+
+// elm.json with only the direct dependencies the app imports: elm/regex only for a pattern
+// rule (an unused dependency is what elm-review's NoUnused.Dependencies reports).
+function elmJson(template, spec) {
+  const json = JSON.parse(template);
+  if (!spec.widgets.some((w) => w.kind === "field" && w.rule.type === "pattern")) delete json.dependencies.direct["elm/regex"];
+  return JSON.stringify(json, null, 4) + "\n";
+}
+
 export function emit(spec) {
-  const files = {
-    ...templateFiles({ title: "Dashboard" }),
-    "src/Main.elm": mainModule(spec),
-    "src/Ui.elm": UI,
-  };
+  const template = templateFiles({ title: "Dashboard" });
+  const files = { ...template, "elm.json": elmJson(template["elm.json"], spec), "src/Main.elm": mainModule(spec) };
+  const read = new Set(spec.widgets.filter((w) => w.kind === "summary")
+    .flatMap((w) => w.sources.map((id) => spec.widgets.find((x) => x.id === id).kind)));
+  const uiUsed = new Set();
   for (const kind of new Set(spec.widgets.map((w) => w.kind))) {
     const m = KIND_MODULES[kind];
-    files[`src/Widget/${MODULE[kind]}.elm`] = typeof m === "function" ? m(spec) : m;
+    let source = typeof m === "function" ? m(spec) : m;
+    if (SUMMARY_READS[kind] && !read.has(kind)) source = source.replace(`, ${SUMMARY_READS[kind]},`, ",");
+    for (const name of /^import Ui exposing \((.*)\)$/m.exec(source)?.[1].split(", ") ?? []) uiUsed.add(name);
+    files[`src/Widget/${MODULE[kind]}.elm`] = source;
   }
+  files["src/Ui.elm"] = uiModule(uiUsed);
   return {
     files,
     style: {
@@ -1502,6 +1541,7 @@ export function emit(spec) {
       conditionals: "an optional last child",
       derived: "computed in view (summary lines, todo left, filter matches)",
       events: "onInput for text inputs and the select, onClick for buttons and checkboxes, a number-only input decoder for the amount",
+      formatting: "as elm-format 0.8.8 writes it; clean under elm-review's NoUnused, Simplify and elm-review-common rules (exposing lists and elm.json dependencies limited to what the app uses)",
       build: "elm make --optimize, then uglify-js compress (pure_funcs) and mangle passes, as the Elm guide recommends",
     },
   };
