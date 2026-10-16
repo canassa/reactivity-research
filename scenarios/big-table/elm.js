@@ -18,7 +18,7 @@
 //   A table's initial rows are built at start-up by the same function.
 // - Rows: `Html.Keyed.node "tbody"` with `( String.fromInt row.id, lazy2 viewRow selected row )`
 //   (`lazy` where the table has no select), as the js-framework-benchmark entry does; the rows
-//   of an Array are walked with `Array.toList` and `List.map`.
+//   of an Array are walked with one `Array.foldr` (`viewRowHelp`), as there.
 // - `Html.Lazy` also on each table: `Html.map GotTableN (lazy TableN.view model.tableN)`, so an
 //   event in one table does not diff the others' rows (a table's model is unchanged, by
 //   reference, while another table changes).
@@ -454,6 +454,14 @@ viewKeyedRow selected row =
 viewKeyedRow row =
     ( String.fromInt row.id, lazy viewRow row )`;
 
+  const viewRowHelp = hasSelect
+    ? `viewRowHelp : Maybe Int -> Row -> List ( String, Html Msg ) -> List ( String, Html Msg )
+viewRowHelp selected row rest =
+    viewKeyedRow selected row :: rest`
+    : `viewRowHelp : Row -> List ( String, Html Msg ) -> List ( String, Html Msg )
+viewRowHelp row rest =
+    viewKeyedRow row :: rest`;
+
   // The table.
   const buttons = t.ops.map((o) => {
     used.events.add("onClick");
@@ -464,8 +472,8 @@ viewKeyedRow row =
     : [];
   used.keyed = true;
   const rowsExpr = hasSelect
-    ? `Keyed.node "tbody" [] (List.map (viewKeyedRow model.selected) (Array.toList model.rows))`
-    : `Keyed.node "tbody" [] (List.map viewKeyedRow (Array.toList model.rows))`;
+    ? `Keyed.node "tbody" [] (Array.foldr (viewRowHelp model.selected) [] model.rows)`
+    : `Keyed.node "tbody" [] (Array.foldr viewRowHelp [] model.rows)`;
   const body = el(H("section"), [`${bare("dataKey")} ${elmString(t.id)}`, role("table")], [
     el(H("h2"), [], [raw(text(elmString(t.title)))]),
     el(H("div"), [], buttons),
@@ -537,6 +545,7 @@ ${data.map((c) => `        ${elmString(c.name)} ->\n            Decode.map ${ser
     update,
     newRow,
     view,
+    viewRowHelp,
     viewKeyedRow,
     viewRow,
     rowDecoder,
