@@ -2,19 +2,19 @@
 // ideal compiler would emit from a TEA source of the dashboard, with local message routing.
 //
 // Style (recorded in every generated app's rr.json):
-// - One module per widget kind: its message tags, its reducer `update(model, tag, value)` and its
-//   factory `kind(parent, heading, ...config, model)`, shared by every widget of that kind.
-//   Each widget is one call of its kind's factory with its own config as positional arguments
-//   (label, limits, items, rules as functions, formats, summary formula) and its initial model.
-//   A reducer that reads the config (the counter's limits) is declared in the factory.
-// - A factory builds the widget's DOM once (createElement calls), wires its DOM events to its
-//   own instance's `send`, and declares one `patch` function: the binding list, where every
-//   write is skipped when its value did not change.
+// - One module per widget kind: its message tags and its factory
+//   `kind(parent, heading, ...config, model)`, shared by every widget of that kind. Each widget
+//   is one call of its kind's factory with its own config as positional arguments (label,
+//   limits, items, rules as functions, formats, summary formula) and its initial model.
+// - A factory declares one `patch` arrow first (the binding list, where every write is skipped
+//   when its value did not change; it runs after mount), then its instance with the kind's
+//   reducer as a table of arms by message tag, `(model, value) => …` each, then builds the
+//   widget's DOM once (createElement calls) and wires its DOM events to its instance's `send`.
 // - A message is sent as its constructor's tag and its argument, if any: `send(tag, value)`.
 // - `send` runs the kind's reducer on the instance's model (held in a closure) and schedules
 //   that instance's patch in a microtask. No global dispatch, dirty bits or dependency graph.
-// - The widget frame registers each instance by widget id; nothing else keeps it (a factory
-//   returns nothing).
+// - The widget frame registers each instance by widget id, numbering widgets in page order
+//   (w1, w2, …); nothing else keeps it (a factory returns nothing).
 // - Summaries watch the instances they read (named by id): a change to one schedules the
 //   summary's patch, which recomputes its line from the sources' current models.
 // - External events: `serverSet` and `snapshot` replace instance models (`set`); `tick` and
@@ -575,7 +575,7 @@ export function emit(spec) {
     files,
     style: {
       components: "one module per widget kind (message tags, reducer, DOM factory), configured per widget",
-      state: "each instance's model in its own closure; send(msg) runs the kind's reducer and schedules that instance's binding list",
+      state: "each instance's model in its own closure; send(tag, value) runs the kind's reducer arm for that tag and schedules that instance's binding list",
       updates: "one patch function per instance, every DOM write skipped when unchanged; batched in a microtask",
       crossWidget: "summaries watch the instances they read and recompute when one changes",
       externalEvents: "serverSet/snapshot replace instance models; tick and notify are messages to clock and feed instances",

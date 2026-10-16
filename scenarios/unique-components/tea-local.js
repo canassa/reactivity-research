@@ -3,22 +3,22 @@
 // when every widget is its own component type.
 //
 // Style (recorded in every generated app's rr.json):
-// - One module per widget (`src/widgets/w3.js`): its own initial model, its own `update`
-//   reducer (one `case` per message, written out from the message's kind and ops) and its own
+// - One module per widget (`src/widgets/w3.js`): its own initial model, its own reducer (a
+//   table of arms, one per message, written out from the message's kind and ops) and its own
 //   factory `w3(parent)`. Nothing is shared between widgets except generic helpers: the
 //   runtime's DOM, instance and keyed-list helpers, and `widgets/frame.js` (the widget frame and
-//   registry, conditional placement, next item id, subscriptions).
-// - The factory builds the widget's DOM once from its own static template (the markup as one
-//   string, its elements addressed by document order; a list row has a template of its own),
-//   wires each control to a message for its own instance, and declares one `patch` function:
-//   the binding list, one write per binding (derived texts compiled to template literals and
-//   operators), each skipped when its value did not change.
+//   registry, list rows, conditional placement, next item id, subscriptions).
+// - The factory declares one `patch` arrow first (the binding list, one write per binding,
+//   derived texts compiled to template literals and operators, each skipped when its value did
+//   not change; it runs after mount), then its instance, then builds the widget's DOM once from
+//   its own static template (the markup as one string, its elements addressed by document order;
+//   a list row has a template of its own), its controls wired to messages for its own instance.
 // - The model lives in the instance's closure; `send` runs the widget's reducer and schedules
 //   that instance's patch in a microtask. No global dispatch, dirty bits or dependency graph.
-// - The widget frame registers each instance by widget id (`widgets`), for the external events
-//   that name a widget and for readers: a cross-widget read takes the earlier widget's instance
-//   from it, reads its model in `patch` and watches it, so its patch is scheduled when the
-//   source changes.
+// - The widget frame registers each instance by widget id (`widgets`), numbering widgets in page
+//   order (w1, w2, …), for the external events that name a widget and for readers: a
+//   cross-widget read takes the earlier widget's instance from it, reads its model in `patch`
+//   and watches it, so its patch is scheduled when the source changes.
 // - External events: `serverSet` and `snapshot` replace instance models (`set`); `notify` is a
 //   method of widgets with a feed (a message to that instance). A widget with a time-driven int
 //   is a subscription, as in Elm's `subscriptions`: while a gate is on it puts its `tick` into
@@ -28,12 +28,13 @@
 //   is in the template; while hidden, an empty text node holds its place, which it takes back
 //   when shown.
 // - A message is sent as its constructor's tag and its argument, if any: `send(tag, value)`, and
-//   the reducer is `update(model, tag, value)` (a switch on the tag).
-// - Events, as Elm's `onClick msg` and `onInput Tag`: the factory gives `widget()` one message
-//   tag per control of its template, in document order, which the runtime's `wire` attaches: a
-//   button or checkbox sends its message when clicked, a text input, select or number input
-//   sends its tag with its value on input. A list row wires its own controls the same way, with
-//   the item's id as the argument.
+//   the reducer is a jump table: `update[tag](model, value)` runs that constructor's arm.
+// - Events, as Elm's `onClick msg` and `onInput Tag`: messages are numbered so that the
+//   template's controls take tags 0, 1, 2, … in document order, then each list row's controls;
+//   the runtime's `wire` attaches them by position: a button or checkbox sends its message when
+//   clicked, a text input, select or number input sends its tag with its value on input. A list
+//   row wires its own controls the same way, from its first tag, with the item's id as the
+//   argument.
 // - A number input sends its value as a number; its reducer case takes only an integer within
 //   [min, max] (anything else leaves the model unchanged, so nothing is patched), and it is
 //   written through `valueAsNumber`, so a typed "007" is not rewritten.
@@ -522,15 +523,15 @@ ${timed ? "      running.clear();\n" : ""}      widgets.clear();
   return {
     files,
     style: {
-      components: "one module per widget: its initial model, its own reducer (one case per message, written out from its ops) and its own factory; only generic helpers are shared",
-      state: "each instance's model in its own closure; send(tag, value) runs the widget's reducer and schedules that instance's binding list",
+      components: "one module per widget: its initial model, its own reducer (a table of arms by message tag, written out from its ops) and its own factory; only generic helpers are shared",
+      state: "each instance's model in its own closure; send(tag, value) runs the widget's reducer arm for that tag and schedules that instance's binding list",
       updates: "one patch function per instance, every DOM write skipped when unchanged; derived texts compiled to template literals; batched in a microtask",
-      crossWidget: "a reader takes the earlier widgets it reads from the frame's registry, reads their models in patch and watches them",
+      crossWidget: "a reader takes the earlier widgets it reads from the frame's registry (widgets numbered w1, w2, … in page order), reads their models in patch and watches them",
       externalEvents: "serverSet/snapshot replace instance models; notify is a message to a feed widget; tick calls the widgets of a shared running set, each subscribing while its gate is on",
       lists: "runtime keyed list by item.id: patch changed rows, one forward placement pass when order or membership changes",
-      dom: "one static template per widget (trailing end tags left out), elements addressed by document order; one template per list row, cloned per new item",
+      dom: "one static template per widget (trailing end tags left out), inserted with its section by insertAdjacentHTML, elements addressed by document order; one template per list row, cloned per new item, its elements an array",
       conditionals: "node in the template; while hidden, an empty text node holds its place",
-      events: "one entry per control of the template, in document order, attached by the runtime's wire: a button or checkbox sends its message on click (a list row's with the item id), a text input, select or number input its tag with its value on input; messages are sent as send(tag, value); number inputs send valueAsNumber and the reducer takes integers within range only",
+      events: "messages numbered so the template's controls take tags 0, 1, 2, … in document order (then each row's controls), attached by position by the runtime's wire: a button or checkbox sends its message on click (a list row's with the item id), a text input, select or number input its tag with its value on input; messages are sent as send(tag, value); number inputs send valueAsNumber and the reducer takes integers within range only",
       build: "Vite production build, no framework plugin, hidden source maps",
     },
   };

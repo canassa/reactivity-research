@@ -35,25 +35,22 @@ What tea-local emits, once per widget **kind** (every counter shares it):
 ```js
 // type Msg = Inc | Dec | Reset                 (Inc is tag 0, Dec tag 1, Reset tag 2)
 
-export function counter(parent, id, heading, step, min, max, start, model) {
-  const self = instance(model, update, patch);       // the model lives in this closure
-  const root = widget(parent, id, heading, "counter", self); // DOM built once; registered by id
+export function counter(parent, heading, step, min, max, start, model) {
+  const patch = () => {                               // this instance's binding list (it runs
+    const m = self.m;                                 // after mount, so it can come first)
+    setText(value, m.value);                          // skipped if the text is unchanged
+    setProp(dec, "disabled", m.value <= min);         // skipped if already equal
+  };
+  const self = instance(model, [                      // the model lives in this closure
+    (model, value) => ({ value: Math.min(max, model.value + step) }), // the reducer: one
+    (model, value) => ({ value: Math.max(min, model.value - step) }), // branch of `case msg of`
+    (model, value) => ({ value: start }),                             // per constructor, by tag
+  ], patch);
+  const root = widget(parent, heading, "counter", self); // DOM built once; registered as w1, w2, …
   const value = element(root, "output", null, " ");  // a dynamic text: a placeholder node
   const dec = element(root, "button", null, "-");
   on(dec, "click", () => self.send(1));               // Dec, to this instance only
   // …
-  function patch() {                                  // this instance's binding list
-    const m = self.m;
-    setText(value, m.value);                          // skipped if the text is unchanged
-    setProp(dec, "disabled", m.value <= min);         // skipped if already equal
-  }
-  function update(model, tag) {                       // the reducer, kept as written
-    switch (tag) {
-      case 0: return { value: Math.min(max, model.value + step) };
-      case 1: return { value: Math.max(min, model.value - step) };
-      // …
-    }
-  }
 }                                                     // instance() scheduled the first patch
 ```
 
@@ -62,7 +59,7 @@ A message is sent as its constructor's tag and its argument, if any (`send(1)`,
 tiny and lives in the runtime:
 
 ```js
-send: (tag, value) => set(update(self.m, tag, value)),
+send: (tag, value) => set(update[tag](self.m, value)),
 set(next) { if (next !== self.m) { self.m = next; schedule(patch); /* + watchers */ } },
 ```
 
@@ -70,18 +67,27 @@ set(next) { if (next !== self.m) { self.m = next; schedule(patch); /* + watchers
 patch scheduled after the last flush), so several messages cost one patch. There are no dirty
 bits, no dependency tracking, and no comparison of anything except the final DOM values.
 
-Each widget is one call with its id, heading, config fields (positional, in its kind's order)
+**The reducer is a jump table.** `case msg of` compiles to an array with one function per
+constructor, indexed by its tag, each with the same signature `(model, value)`: the reducer
+and its arms are kept as written, and `send` runs exactly the arm of the message (one call,
+as the switch was). The table is the instance's second argument, next to the initial model.
+
+Each widget is one call with its heading, config fields (positional, in its kind's order)
 and initial model; the widget frame keeps the instance in a registry by id, so the app keeps
-nothing:
+nothing. Widget ids are `w1`, `w2`, … in page order (the emitter checks it), so the frame
+takes the next one from its registry's size (emptied on dispose) and the app does not spell
+them (tea-inline numbers its widgets the same way):
 
 ```js
-counter(main, "w1", "Design tickets", 5, 0, 20, 0, { value: 0 });
+counter(main, "Design tickets", 5, 0, 20, 0, { value: 0 });
 ```
 
 ## Lists, summaries and external events
 
-**Keyed lists** (`todo`, `filter`, `feed`) use the runtime's `list(parent, row)`, keyed by
-`item.id` (which it writes as the row's `data-key`). Each patch walks the new items by key. A
+**Keyed lists** (`todo`, `filter`, `feed`) use the runtime's `list(parent, build, patch)`,
+keyed by `item.id` (which it writes as the row's `data-key`). A row is an array of its
+elements, the row's node first, built by `build(item)`; `patch(row, item)` is the row's
+binding list, so no `{ node, patch }` object per row. Each patch walks the new items by key. A
 row whose item object changed is patched in place, and a new key builds a detached row. If the
 sequence of rows changed (an add, a remove, filtering, a reorder), the rows that left are
 removed and one forward pass places the rest: a node already in place stays, any other is
@@ -98,7 +104,7 @@ current models (a term read once is written in place; a breakdown, which shows e
 their total, names them):
 
 ```js
-summary(main, "w8", "…", (m3, m6) => `Total: ${m3.value + m6.value}`, ["w3", "w6"]);
+summary(main, "…", (m3, m6) => `Total: ${m3.value + m6.value}`, ["w3", "w6"]);
 ```
 
 **External events** go from the adapter's `dispatch` to `App.receive`, which routes them:
@@ -130,30 +136,38 @@ sits on a node inside it, and the app has no timers or global listeners.
 
 `scenarios/unique-components/tea-local.js` runs the same strategy when every widget is its own
 component type. Nothing is shared per kind, so each widget gets its own module: a factory with
-its initial model (in its `instance` call), its own reducer with one `case` per message (written
-out from the message's kind and ops, never interpreted, declared inside the factory), its own
-static template and `patch` (derived texts become template literals). The template is the
-widget's markup as one string (trailing end tags left out, as Solid's compiler does); `widget()`
-puts it in the section and returns its elements in document order, which the factory addresses
-as `e[3]` (indexes compress better than names, measured). Only generic helpers are shared: this
-runtime and a small `widgets/frame.js` (the widget frame and its registry, conditional
-content, next item id, subscriptions).
+its initial model and its own reducer table in its `instance` call (one arm per message,
+written out from the message's kind and ops, never interpreted), its own static template and
+`patch` (derived texts become template literals; a cycled enum's next option is a chain of
+comparisons over its options, as tea-inline compiles it). The template is the widget's markup
+as one string (trailing end tags left out, as Solid's compiler does); `widget()` inserts it
+with its section in one `insertAdjacentHTML` (the app's dashboard comes from markup too, so
+unique apps ship no `element()`) and returns its elements in document order, which the
+factory addresses as `e[3]` (indexes compress better than names, measured). Only generic
+helpers are shared: this runtime and a small `widgets/frame.js` (the widget frame and its
+registry, list rows, conditional content, next item id, subscriptions).
 
-- **Events, as Elm's `onClick msg` and `onInput Tag`:** the factory gives `widget()` one message
-  tag per control of its template, in document order (`widget(parent, "w6", html, self, 0, 2, 1)`),
-  and the runtime's `wire` attaches them: a button or checkbox sends its message when clicked, a
-  text input, select or number input sends its tag with its value on input. A list row wires its
-  own controls the same way, with the item's id as the argument (`wire(li, self, [0, 1], item.id)`).
-  One listener per control and one `send` per event, as before; what goes is the
-  per-element `onSend(e[5], self, [3])` call and its index. A number input sends its
+- **Events, as Elm's `onClick msg` and `onInput Tag`:** a compiler chooses its constructor
+  tags, so the controls of the widget's template take tags 0, 1, 2, … in document order, then
+  each list row's controls the next ones, then the other messages (Tick, Notify). The runtime's
+  `wire(root, self, first, id)` attaches them by position from `first`: a button or checkbox
+  sends its message when clicked, a text input, select or number input sends its tag with its
+  value on input; a list row passes its item's id as the argument. No tag list is written per
+  widget or row. One listener per control and one `send` per event. A number input sends its
   `valueAsNumber`; its reducer case takes it only as an integer within [min, max] (anything else
   returns the same model, so nothing is patched), and it is written through `valueAsNumber`.
 - **Conditional content** (`when`, validation errors) is in the template; `place(node, shown)`
   swaps it with an empty text node of its own while hidden, so it needs neither its parent nor
   its later siblings to find its way back.
-- **The frame registers every instance by id**: the app calls each factory without keeping
-  what it returns, and a cross-widget reader takes the earlier widget's instance from the
-  registry (`const w3 = widgets.get("w3")`), reads its model in `patch` and watches it.
+- **List rows:** `list(e[9], row(html, self, first), (r, item) => …)`: the frame's `row`
+  parses the row's template once and, per new item, clones it, wires its controls from `first`
+  with the item's id and returns its elements (`wire` returns them); the third argument is the
+  row's binding list over `r[1]`, `r[2]`.
+- **The frame registers every instance by id**, numbering widgets in page order (`w1`, `w2`,
+  …, checked by the emitter): the app calls each factory without keeping what it returns, and a
+  cross-widget reader takes the earlier widget's instance from the registry
+  (`const w3 = widgets.get("w3")`) right after its `patch`, watches it and reads its model in
+  `patch`.
 - A time-driven int is a subscription, like Elm's `subscriptions`: while its gate is on, the
   widget's `tick` is in a shared `running` set, and the app's `tick` event calls only those.
   Otherwise `tick` would cost one call per widget and fail the locality check. An app routes
