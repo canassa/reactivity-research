@@ -128,10 +128,10 @@ export function instance(model, update, patch) {
 
 export function list(parent, build, patch) {
   let rows = new Map();
-  let nodes = [];
   return (items) => {
     const next = new Map();
-    const order = [];
+    // The rows in place, the last placement pass's order: `parent` holds nothing else.
+    const nodes = parent.childNodes;
     let moved = items.length !== nodes.length;
     for (const item of items) {
       let r = rows.get(item.id);
@@ -142,18 +142,16 @@ export function list(parent, build, patch) {
       // A new row has no item yet, so it is patched too.
       if (r.item !== item) patch(r, (r.item = item));
       rows.delete(item.id);
+      moved ||= r[0] !== nodes[next.size];
       next.set(item.id, r);
-      moved ||= r[0] !== nodes[order.length];
-      order.push(r[0]);
     }
     if (moved) {
       // The rows left in `rows` are gone. The others are put in order: a node already in
       // place stays, any other is moved (or inserted) before the first node not yet placed.
       for (const r of rows.values()) r[0].remove();
       let at = parent.firstChild;
-      for (const node of order) node === at ? (at = at.nextSibling) : parent.insertBefore(node, at);
+      for (const [node] of next.values()) node === at ? (at = at.nextSibling) : parent.insertBefore(node, at);
     }
     rows = next;
-    nodes = order;
   };
 }
