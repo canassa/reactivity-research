@@ -238,3 +238,13 @@ An emitter returns `{ files, style }` like any other (see `scenarios/shared-comp
     and the external events. Fit over N >= 16: 8,434 B + 55.2 B/widget.
 
   The style is recorded in the emitter's header and in every app's `rr.json`.
+
+- **unique-components** and **big-component** (`scenarios/*/marko.js`, both through
+  `widgets.js`): each widget is its own tag and **all state is in the root template**. A layout
+  with state in each tag and the root calling the returned API (`<widget/w1>`, `w1.set(…)` in the
+  root's `<return>`ed function) does not compile correctly in 6.4.6: the function is emitted at
+  module level with an undefined `$scope`, and a `<const>` collecting the tag variables holds the
+  hoisting getters, not the values. The big-component form is written in the root template
+  itself by default (`--form inline`); a separate tag only adds a `:=` binding per field (+25%
+  at N=256). `--layout object` (one `<let>` per widget) is 3.5% smaller on unique-components and
+  8% larger on big-component, so one `<let>` per field is the default.
