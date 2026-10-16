@@ -101,8 +101,9 @@ function handler(m, fields) {
     }
     case "check": return `(t) => ${L} = t.checked`;
     case "select": return `(t) => ${L} = t.value`;
-    case "item": return m.op === "remove" ? `(t, k) => ${L} = ${L}.filter((i) => i.id != k)`
-      : `(t, k) => ${L}.find((i) => i.id == k).done = t.checked`;
+    // An item control's handler is created with its item and reads `r.i`, the item's current
+    // value (the very object in the list).
+    case "item": return m.op === "remove" ? `() => ${L} = ${L}.filter((i) => i != r.i)` : `(t) => r.i.done = t.checked`;
   }
   throw new Error(`digest: unknown message kind ${m.kind}`);
 }
@@ -124,7 +125,10 @@ function widgetCode(w, init) {
   const reads = new Set();
   const binds = [];
   let n = 1; // the next element's index in the template (0 is the heading)
-  const ref = (i) => `e[${i}]`;
+  const ref = (i) => i;
+  // The handlers of the template's controls (buttons, inputs, selects), in document order.
+  const ctl = [];
+  const on = (msg) => ctl.push(`${handler(msgs[msg], fields)}, // ${msg}`);
 
   // A node as template HTML; its bindings go to `binds`, in document order.
   const view = (v) => {
@@ -137,6 +141,7 @@ function widgetCode(w, init) {
       case "button": {
         const i = n++, p = parts(v.text, reads);
         if (p.code) binds.push(`text(${ref(i)}, () => ${p.code});`);
+        on(v.msg);
         if (v.disabled) binds.push(`bind(${ref(i)}, "disabled", () => ${expr(v.disabled, reads)});`);
         return `<button data-role=${v.msg}>${p.html}</button>`;
       }
@@ -144,6 +149,7 @@ function widgetCode(w, init) {
         const f = fields[msgs[v.msg].field];
         if (v.label) n++;
         const i = n++;
+        on(v.msg);
         binds.push(`bind(${ref(i)}, "value", () => s.${f.name});`);
         let html = f.type === "int" ? `<input type=number data-role=${v.msg}>`
           : `<input type=text data-role=${v.msg}${v.placeholder ? ` placeholder="${esc(v.placeholder)}"` : ""}>`;
@@ -157,6 +163,7 @@ function widgetCode(w, init) {
       case "check": {
         n++;
         const i = n++;
+        on(v.msg);
         binds.push(`bind(${ref(i)}, "checked", () => s.${msgs[v.msg].field});`);
         return `<label><input type=checkbox data-role=${v.msg}>${esc(v.label)}</label>`;
       }
@@ -165,23 +172,30 @@ function widgetCode(w, init) {
         if (v.label) n++;
         const i = n++;
         n += f.options.length;
+        on(v.msg);
         binds.push(`bind(${ref(i)}, "value", () => s.${f.name});`);
         const html = `<select data-role=${v.msg}>${f.options.map((o) => `<option value="${esc(o)}">${esc(o)}</option>`).join("")}</select>`;
         return v.label ? `<label>${esc(v.label)}${html}</label>` : html;
       }
       case "list": {
         const i = n++;
-        // The item's elements, as the names the item's bindings use.
-        const kids = [];
+        // The item's bindings refer to its elements by position, and the handlers of its
+        // controls (checkbox, remove button) are returned in document order.
         let item = "";
-        if (v.check) { kids.push("c"); item += `<input type=checkbox data-role=${v.check}>`; }
-        kids.push("t");
+        const inner = [], hs = [];
+        if (v.check) {
+          item += `<input type=checkbox data-role=${v.check}>`;
+          inner.push(`bind(0, "checked", () => r.i.done)`);
+          hs.push(handler(msgs[v.check], fields));
+        }
+        inner.push(`text(${v.check ? 1 : 0}, () => r.i.text)`);
         item += "<span></span>";
-        if (v.remove) item += `<button data-role=${v.remove}>${esc(v.removeText)}</button>`;
-        const inner = [];
-        if (v.check) inner.push(`bind(c, "checked", () => r.i.done);`);
-        inner.push(`text(t, () => r.i.text);`);
-        binds.push(`list(${ref(i)}, () => s.${v.field}, "${v.field}Item", \`${tpl(item)}\`, (r, [${kids.join(", ")}]) => { ${inner.join(" ")} });`);
+        if (v.remove) {
+          item += `<button data-role=${v.remove}>${esc(v.removeText)}</button>`;
+          hs.push(handler(msgs[v.remove], fields));
+        }
+        if (hs.length) inner.push(`[${hs.join(", ")}]`);
+        binds.push(`list(${ref(i)}, () => s.${v.field}, "${v.field}Item", \`${tpl(item)}\`, (r) => (${inner.join(", ")}));`);
         return `<${v.tag}></${v.tag}>`;
       }
       case "when": {
@@ -199,10 +213,10 @@ function widgetCode(w, init) {
 
   const html = `<h2>${esc(w.label)}</h2>` + w.view.map(view).join("");
   const state = `{ ${w.fields.map((f) => `${f.name}: ${initial(f, init[f.name])}`).join(", ")} }`;
-  const handlers = w.messages.map((m) => `    ${m.name}: ${handler(m, fields)},`).join("\n");
+  const handlers = ctl.map((h) => `    ${h}`).join("\n");
 
   const body = [`  const s = ${state};`,
-    `  ${binds.length ? "const e = " : ""}widget(\`${tpl(html)}\`, s, {\n${handlers}\n  });`,
+    `  widget(\`${tpl(html)}\`, s, [\n${handlers}\n  ]);`,
     ...binds.map((b) => "  " + b)];
   for (const f of w.fields) {
     if (f.tick) body.push(`  T.push(() => s.${f.tickWhen} && (s.${f.name} = Math.min(${f.max}, s.${f.name} + ${f.tick}), up("${w.id}")));`);
