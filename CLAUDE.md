@@ -280,6 +280,9 @@ seeds and options; a list of option values measures each as a variant), then ser
   - **where the bytes go:** runtime/library code against app code (and HTML) per framework, at
     each size, stacked;
   - the **ratio to vanilla** at each size;
+- one tab per scenario, plus a **comparison across scenarios**: per framework, the slope (fitted the
+  same way in every scenario) and the N=1 baseline side by side; a framework keeps its colour on
+  every tab;
 - every chart says which results run, versions and generator options it comes from.
 
 ## Working here
