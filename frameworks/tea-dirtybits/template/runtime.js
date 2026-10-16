@@ -18,15 +18,15 @@ export let dirty = {};
 export let send;
 
 export function program(root, model, update, view) {
-  let pending = null;
+  let pending;
   dirty = {};
   send = (msg) => {
     model = update(model, msg);
     pending ||= Promise.resolve().then(() => {
       const d = dirty;
       dirty = {};
-      pending = null;
-      if (patch) patch(model, d);
+      pending = 0;
+      patch?.(model, d);
     });
   };
   let patch = view(root, model);

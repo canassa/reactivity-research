@@ -80,7 +80,7 @@ const WIDGET_FILE = `import { html } from "../runtime.js";
 // A widget's <section> with its heading and the kind's static markup \`inner\`: every element, in
 // document order.
 export function section(parent, id, label, kind, inner) {
-  const t = html(\`<section data-role=widget-\${kind}><h2></h2>\${inner}</section>\`, parent);
+  const t = html(\`<section data-role=widget-\${kind}><h2></h2>\${inner}\`, parent);
   t[0].dataset.key = id;
   t[1].textContent = label;
   return t;
