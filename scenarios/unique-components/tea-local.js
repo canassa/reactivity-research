@@ -22,8 +22,8 @@
 //   the shared `running` set (the app's `tick` event calls only those), and its reducer has its
 //   own Tick message. So `tick` costs the running widgets, not the number of widgets.
 // - Keyed lists through the runtime's `list`. Conditional content (`when`, validation errors)
-//   is in the template, detached while hidden and placed before its next attached sibling
-//   while shown.
+//   is in the template; while hidden, an empty text node holds its place, which it takes back
+//   when shown.
 // - A message is sent as its constructor's tag and its argument, if any: `send(tag, value)`, and
 //   the reducer is `update(model, tag, value)` (a switch on the tag).
 // - Events, as Elm's `onClick msg` and `onInput Tag`: the factory gives `widget()` one message
@@ -102,15 +102,10 @@ const attrs = (a) => Object.entries(a).map(([k, v]) => ` ${k}=${attr(v)}`).join(
 // are left out (as Solid's compiler does).
 const trim = (html) => html.replace(/(<\/\w+>)+$/, "");
 
-function compileView(w, nodes, parent, cx) {
+function compileView(w, nodes, cx) {
   const tops = nodes.map((n) => compileNode(w, n, cx)); // per node: [{ v, cond? }]
-  // Conditional tops are placed in patch, before the next attached sibling.
-  tops.forEach((group, i) => {
-    const later = tops.slice(i + 1).flat().map((t) => t.v);
-    for (const t of group) {
-      if (t.cond) cx.patch.push(`place(${[parent, t.v, t.cond, ...later].join(", ")});`);
-    }
-  });
+  // Conditional tops are shown or hidden in patch, keeping their place.
+  for (const t of tops.flat()) if (t.cond) cx.patch.push(`place(${t.v}, ${t.cond});`);
 }
 
 function compileNode(w, n, cx) {
@@ -238,7 +233,7 @@ function compileNode(w, n, cx) {
     }
     case "when": case "group": {
       const v = open(n.tag);
-      compileView(w, n.children, v, cx);
+      compileView(w, n.children, cx);
       close(n.tag);
       return n.el === "when" ? [{ v, cond: expr(n.cond, cx, true) }] : [{ v }];
     }
@@ -326,7 +321,7 @@ function widgetFile(spec, w) {
     create: [], patch: [], wire: [], templates: [], html: "", index: 2, own: false, sources: new Set(), options: new Set(), counts: {},
     name(prefix) { this.counts[prefix] = (this.counts[prefix] ?? 0) + 1; return prefix + this.counts[prefix]; },
   };
-  compileView(w, w.view, "e[0]", cx);
+  compileView(w, w.view, cx);
 
   const timed = w.fields.filter((f) => f.tick);
   const feed = w.fields.find((f) => f.feed);
@@ -410,11 +405,11 @@ export function widget(parent, id, html, self, ...tags) {
   return [section, ...section.querySelectorAll("*")];
 }
 
-// Attach \`node\` to \`parent\` before the first of \`after\` that is attached there (appended if
-// none), or detach it: conditional content keeps its place among its siblings.
-export function place(parent, node, shown, ...after) {
-  if (!shown) node.remove();
-  else if (!node.parentNode) parent.insertBefore(node, after.find((n) => n.parentNode === parent) ?? null);
+// Conditional content, built in the template: while hidden, an empty text node holds its place
+// (and takes it back when shown), so its siblings are never touched.
+export function place(node, shown) {
+  if (!shown) node.replaceWith((node.mark ??= new Text()));
+  else node.mark?.replaceWith(node);
 }
 
 export const nextId = (items) => items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
@@ -494,7 +489,7 @@ ${timed ? "      running.clear();\n" : ""}      main.remove();
       externalEvents: "serverSet/snapshot replace instance models; notify is a message to a feed widget; tick calls the widgets of a shared running set, each subscribing while its gate is on",
       lists: "runtime keyed list by item.id: patch changed rows, one forward placement pass when order or membership changes",
       dom: "one static template per widget (trailing end tags left out), elements addressed by document order; one template per list row, cloned per new item",
-      conditionals: "node in the template, detached while hidden, placed before its next attached sibling while shown",
+      conditionals: "node in the template; while hidden, an empty text node holds its place",
       events: "one entry per control of the template, in document order, attached by the runtime's wire: a button or checkbox sends its message on click (a list row's with the item id), a text input, select or number input its tag with its value on input; messages are sent as send(tag, value); number inputs send valueAsNumber and the reducer takes integers within range only",
       build: "Vite production build, no framework plugin, hidden source maps",
     },
