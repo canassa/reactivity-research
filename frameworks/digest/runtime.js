@@ -79,12 +79,12 @@ export const list = (i, items, html, make, p = N[i], map = new Map(), w = B) =>
 // The id of the widget being created.
 export let id;
 
-// Create the widget's section: its heading and `html`, with `set`, the setter of its whole
+// Create the widget's section: its heading (`label`, spliced into the HTML: the emitter checks
+// that it needs no escaping) and `html`, with `set`, the setter of its whole
 // state, and `h`, the handlers of its controls in document order. Returns the widget's binding
 // list, which the bindings created next fill.
 export const widget = (kind, label, html, set, ...h) => {
-  const x = el("section", "<h2></h2>" + html);
-  x.firstChild.textContent = label;
+  const x = el("section", `<h2>${label}</h2>` + html);
   x.dataset.key = id;
   x.dataset.role = "widget-" + kind;
   on(x, h, (W[id] = B = []));
@@ -117,8 +117,10 @@ export const app = (defs, receive) => ({
     defs.forEach(([f, ...c], i) => {
       id = "w" + (i + 1);
       E[id] = f(...c);
+      // The first digest of the widget: its own bindings, and a summary's line (which its
+      // sources, created before it, did not have yet).
+      run(W[id]);
     });
-    for (const k in W) run(W[k]);
     D.addEventListener("click", onEvent);
     D.addEventListener("input", onEvent);
     root.append(D);

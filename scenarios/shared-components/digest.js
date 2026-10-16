@@ -281,6 +281,9 @@ function appFile(spec) {
 
   const rows = spec.widgets.map((w) => {
     const s = spec.initialState.widgets[w.id];
+    // The label is spliced into the heading's HTML and read as text by summaries: one string
+    // serves both only while it needs no escaping.
+    if (html(w.label) !== lit(w.label)) throw new Error(`digest expects labels without HTML special characters: ${w.label}`);
     return `  [${[w.kind, lit(w.label), ...KINDS[w.kind].row(w, s)].join(", ")}],`;
   });
 
