@@ -4,8 +4,8 @@
 // Style (recorded in every generated app's rr.json):
 // - One module per widget kind (src/widgets/<kind>.js), configured per widget by its row
 //   (kind, initial state, label, the kind's parameters by position): its reducer
-//   `update(row, s, msg)`, whose arms mark dirty bits for the fields they write, and its DOM
-//   factory `view(parent, row, id)`, which builds the DOM once from a static template and
+//   `(row, s, msg) => s`, whose arms mark dirty bits for the fields they write, and its DOM
+//   factory `(parent, row, id) => patch` (exported as the pair `kind`), which builds the DOM once from a static template and
 //   returns a static `patch(s, dirty)` that runs only the bindings whose bits are set.
 // - One app module (src/app.js): the widget rows (the initial model comes from them), the app reducer
 //   (routes user messages and external events to the widgets' reducers and files their bits
@@ -66,7 +66,7 @@ const METRIC_BIT = {
 // ---------------------------------------------------------------------------------------------
 // The widget kinds: one module each, shared by every instance of the kind. Each module lists its
 // dirty bits and message tags (numbers, as Elm --optimize tags constructors; external events
-// keep their names) and exports `kind`, its reducer and DOM factory.
+// keep their names) and exports `kind`, the pair [reducer, DOM factory].
 
 const WIDGET_FILE = `import { html } from "../runtime.js";
 
@@ -86,39 +86,39 @@ import { section } from "./widget.js";
 
 // Dirty bits: value 1. Message tags: inc 0, dec 1, reset 2.
 
-function update([, , , step, min, max, start], s, msg) {
-  switch (msg.type) {
-    case 0:
-      mark(1);
-      return { value: Math.min(max, s.value + step) };
-    case 1:
-      mark(1);
-      return { value: Math.max(min, s.value - step) };
-    case 2:
-      mark(1);
-      return { value: start };
-  }
-  return s;
-}
-
-function view(parent, [, , label, step, min, max], id) {
-  const [, , value, dec, inc, reset] = section(parent, id, label, "counter",
-    "<output data-role=value></output><button data-role=dec></button><button data-role=inc></button><button data-role=reset>Reset");
-  dec.textContent = "-" + step;
-  inc.textContent = "+" + step;
-  onClick(dec, id, 1);
-  onClick(inc, id, 0);
-  onClick(reset, id, 2);
-  return (s, d) => {
-    if (d & 1) {
-      setText(value, s.value);
-      prop(dec, "disabled", s.value <= min);
-      prop(inc, "disabled", s.value >= max);
+// The kind: its reducer and its DOM factory.
+export const kind = [
+  ([, , , step, min, max, start], s, msg) => {
+    switch (msg.type) {
+      case 0:
+        mark(1);
+        return { value: Math.min(max, s.value + step) };
+      case 1:
+        mark(1);
+        return { value: Math.max(min, s.value - step) };
+      case 2:
+        mark(1);
+        return { value: start };
     }
-  };
-}
-
-export const kind = { update, view };
+    return s;
+  },
+  (parent, [, , label, step, min, max], id) => {
+    const [, , value, dec, inc, reset] = section(parent, id, label, "counter",
+      "<output data-role=value></output><button data-role=dec></button><button data-role=inc></button><button data-role=reset>Reset");
+    dec.textContent = "-" + step;
+    inc.textContent = "+" + step;
+    onClick(dec, id, 1);
+    onClick(inc, id, 0);
+    onClick(reset, id, 2);
+    return (s, d) => {
+      if (d & 1) {
+        setText(value, s.value);
+        prop(dec, "disabled", s.value <= min);
+        prop(inc, "disabled", s.value >= max);
+      }
+    };
+  },
+];
 `,
 
   toggles: `import { mark, html, setText, prop, onCheck } from "../runtime.js";
@@ -126,33 +126,33 @@ import { section } from "./widget.js";
 
 // Dirty bits: on 1. Message tags: toggle 0 (id: the toggle's index).
 
-function update(c, s, msg) {
-  switch (msg.type) {
-    case 0:
-      mark(1);
-      return { on: s.on.map((on, i) => (i === msg.id ? !on : on)) };
-  }
-  return s;
-}
-
-function view(parent, [, , label, items], id) {
-  const t = section(parent, id, label, "toggles", "<ul></ul><p data-role=count>");
-  const boxes = items.map((name, i) => {
-    const [, , box] = html("<li><label><input type=checkbox data-role=toggle>", t[2]);
-    box.dataset.key = i;
-    box.after(name);
-    onCheck(box, id, 0, i);
-    return box;
-  });
-  return (s, d) => {
-    if (d & 1) {
-      boxes.forEach((box, i) => prop(box, "checked", s.on[i]));
-      setText(t[3], s.on.filter(Boolean).length + " of " + items.length + " on");
+// The kind: its reducer and its DOM factory.
+export const kind = [
+  (c, s, msg) => {
+    switch (msg.type) {
+      case 0:
+        mark(1);
+        return { on: s.on.map((on, i) => (i === msg.id ? !on : on)) };
     }
-  };
-}
-
-export const kind = { update, view };
+    return s;
+  },
+  (parent, [, , label, items], id) => {
+    const t = section(parent, id, label, "toggles", "<ul></ul><p data-role=count>");
+    const boxes = items.map((name, i) => {
+      const [, , box] = html("<li><label><input type=checkbox data-role=toggle>", t[2]);
+      box.dataset.key = i;
+      box.after(name);
+      onCheck(box, id, 0, i);
+      return box;
+    });
+    return (s, d) => {
+      if (d & 1) {
+        boxes.forEach((box, i) => prop(box, "checked", s.on[i]));
+        setText(t[3], s.on.filter(Boolean).length + " of " + items.length + " on");
+      }
+    };
+  },
+];
 `,
 
   field: `import { mark, prop, onInput, branch } from "../runtime.js";
@@ -160,30 +160,30 @@ import { section } from "./widget.js";
 
 // Dirty bits: text 1. Message tags: edit 0.
 
-function update(c, s, msg) {
-  switch (msg.type) {
-    case 0:
-      mark(1);
-      return { text: msg.value };
-  }
-  return s;
-}
-
-function view(parent, [, , label, placeholder, valid, message], id) {
-  const [, , input, p] = section(parent, id, label, "field", "<input type=text data-role=input><p data-role=error>");
-  input.placeholder = placeholder;
-  p.textContent = message;
-  onInput(input, id, 0);
-  const error = branch(p);
-  return (s, d) => {
-    if (d & 1) {
-      prop(input, "value", s.text);
-      error(!valid(s.text));
+// The kind: its reducer and its DOM factory.
+export const kind = [
+  (c, s, msg) => {
+    switch (msg.type) {
+      case 0:
+        mark(1);
+        return { text: msg.value };
     }
-  };
-}
-
-export const kind = { update, view };
+    return s;
+  },
+  (parent, [, , label, placeholder, valid, message], id) => {
+    const [, , input, p] = section(parent, id, label, "field", "<input type=text data-role=input><p data-role=error>");
+    input.placeholder = placeholder;
+    p.textContent = message;
+    onInput(input, id, 0);
+    const error = branch(p);
+    return (s, d) => {
+      if (d & 1) {
+        prop(input, "value", s.text);
+        error(!valid(s.text));
+      }
+    };
+  },
+];
 `,
 
   todo: `import { mark, html, setText, prop, onClick, onCheck, onInput, list } from "../runtime.js";
@@ -191,56 +191,56 @@ import { section } from "./widget.js";
 
 // Dirty bits: items 1, draft 2. Message tags: editDraft 0, add 1, toggle 2, remove 3.
 
-function update(c, s, msg) {
-  switch (msg.type) {
-    case 0:
-      mark(2);
-      return { ...s, draft: msg.value };
-    case 1: {
-      const text = s.draft.trim();
-      if (text === "") return s;
-      mark(3);
-      const id = s.items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
-      return { items: [...s.items, { id, text, done: false }], draft: "" };
+// The kind: its reducer and its DOM factory.
+export const kind = [
+  (c, s, msg) => {
+    switch (msg.type) {
+      case 0:
+        mark(2);
+        return { ...s, draft: msg.value };
+      case 1: {
+        const text = s.draft.trim();
+        if (text === "") return s;
+        mark(3);
+        const id = s.items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
+        return { items: [...s.items, { id, text, done: false }], draft: "" };
+      }
+      case 2:
+        mark(1);
+        return { ...s, items: s.items.map((item) => (item.id === msg.id ? { ...item, done: !item.done } : item)) };
+      case 3:
+        mark(1);
+        return { ...s, items: s.items.filter((item) => item.id !== msg.id) };
     }
-    case 2:
-      mark(1);
-      return { ...s, items: s.items.map((item) => (item.id === msg.id ? { ...item, done: !item.done } : item)) };
-    case 3:
-      mark(1);
-      return { ...s, items: s.items.filter((item) => item.id !== msg.id) };
-  }
-  return s;
-}
-
-function view(parent, [, , label, placeholder, addText, removeText], id) {
-  const [, , draft, add, ul, left] = section(parent, id, label, "todo",
-    "<input type=text data-role=draft><button data-role=add></button><ul></ul><p data-role=left>");
-  draft.placeholder = placeholder;
-  add.textContent = addText;
-  onInput(draft, id, 0);
-  onClick(add, id, 1);
-  const items = list(ul, (item) => {
-    const [li, box, label, remove] = html("<li><input type=checkbox data-role=toggle><span></span><button data-role=remove>");
-    li.dataset.key = item.id;
-    remove.textContent = removeText;
-    onCheck(box, id, 2, item.id);
-    onClick(remove, id, 3, item.id);
-    return [li, (item) => {
-      prop(box, "checked", item.done);
-      setText(label, item.text);
-    }];
-  });
-  return (s, d) => {
-    if (d & 2) prop(draft, "value", s.draft);
-    if (d & 1) {
-      items(s.items);
-      setText(left, s.items.filter((item) => !item.done).length + " left");
-    }
-  };
-}
-
-export const kind = { update, view };
+    return s;
+  },
+  (parent, [, , label, placeholder, addText, removeText], id) => {
+    const [, , draft, add, ul, left] = section(parent, id, label, "todo",
+      "<input type=text data-role=draft><button data-role=add></button><ul></ul><p data-role=left>");
+    draft.placeholder = placeholder;
+    add.textContent = addText;
+    onInput(draft, id, 0);
+    onClick(add, id, 1);
+    const items = list(ul, (item) => {
+      const [li, box, label, remove] = html("<li><input type=checkbox data-role=toggle><span></span><button data-role=remove>");
+      li.dataset.key = item.id;
+      remove.textContent = removeText;
+      onCheck(box, id, 2, item.id);
+      onClick(remove, id, 3, item.id);
+      return [li, (item) => {
+        prop(box, "checked", item.done);
+        setText(label, item.text);
+      }];
+    });
+    return (s, d) => {
+      if (d & 2) prop(draft, "value", s.draft);
+      if (d & 1) {
+        items(s.items);
+        setText(left, s.items.filter((item) => !item.done).length + " left");
+      }
+    };
+  },
+];
 `,
 
   tabs: `import { mark, html, setText, prop, onClick } from "../runtime.js";
@@ -248,33 +248,33 @@ import { section } from "./widget.js";
 
 // Dirty bits: active 1. Message tags: select 0 (id: the tab's index).
 
-function update(c, s, msg) {
-  switch (msg.type) {
-    case 0:
-      mark(1);
-      return { active: msg.id };
-  }
-  return s;
-}
-
-function view(parent, [, , label, tabs], id) {
-  const t = section(parent, id, label, "tabs", "<div role=tablist></div><p data-role=tab-content role=tabpanel>");
-  const buttons = tabs.map((tab, i) => {
-    const [button] = html("<button data-role=tab role=tab>", t[2]);
-    button.dataset.key = i;
-    button.textContent = tab.title;
-    onClick(button, id, 0, i);
-    return button;
-  });
-  return (s, d) => {
-    if (d & 1) {
-      buttons.forEach((tab, i) => prop(tab, "ariaSelected", String(i === s.active)));
-      setText(t[3], tabs[s.active].content);
+// The kind: its reducer and its DOM factory.
+export const kind = [
+  (c, s, msg) => {
+    switch (msg.type) {
+      case 0:
+        mark(1);
+        return { active: msg.id };
     }
-  };
-}
-
-export const kind = { update, view };
+    return s;
+  },
+  (parent, [, , label, tabs], id) => {
+    const t = section(parent, id, label, "tabs", "<div role=tablist></div><p data-role=tab-content role=tabpanel>");
+    const buttons = tabs.map((tab, i) => {
+      const [button] = html("<button data-role=tab role=tab>", t[2]);
+      button.dataset.key = i;
+      button.textContent = tab.title;
+      onClick(button, id, 0, i);
+      return button;
+    });
+    return (s, d) => {
+      if (d & 1) {
+        buttons.forEach((tab, i) => prop(tab, "ariaSelected", String(i === s.active)));
+        setText(t[3], tabs[s.active].content);
+      }
+    };
+  },
+];
 `,
 
   panel: `import { mark, setText, prop, onClick, branch } from "../runtime.js";
@@ -282,30 +282,30 @@ import { section } from "./widget.js";
 
 // Dirty bits: open 1. Message tags: toggle 0.
 
-function update(c, s, msg) {
-  switch (msg.type) {
-    case 0:
-      mark(1);
-      return { open: !s.open };
-  }
-  return s;
-}
-
-function view(parent, [, , label, showText, hideText, body], id) {
-  const [, , toggle, p] = section(parent, id, label, "panel", "<button data-role=toggle></button><p data-role=body>");
-  p.textContent = body;
-  onClick(toggle, id, 0);
-  const shown = branch(p);
-  return (s, d) => {
-    if (d & 1) {
-      prop(toggle, "ariaExpanded", String(s.open));
-      setText(toggle, s.open ? hideText : showText);
-      shown(s.open);
+// The kind: its reducer and its DOM factory.
+export const kind = [
+  (c, s, msg) => {
+    switch (msg.type) {
+      case 0:
+        mark(1);
+        return { open: !s.open };
     }
-  };
-}
-
-export const kind = { update, view };
+    return s;
+  },
+  (parent, [, , label, showText, hideText, body], id) => {
+    const [, , toggle, p] = section(parent, id, label, "panel", "<button data-role=toggle></button><p data-role=body>");
+    p.textContent = body;
+    onClick(toggle, id, 0);
+    const shown = branch(p);
+    return (s, d) => {
+      if (d & 1) {
+        prop(toggle, "ariaExpanded", String(s.open));
+        setText(toggle, s.open ? hideText : showText);
+        shown(s.open);
+      }
+    };
+  },
+];
 `,
 
   choice: `import { mark, html, prop, onInput, branch } from "../runtime.js";
@@ -313,40 +313,40 @@ import { section } from "./widget.js";
 
 // Dirty bits: option 1, extra 2. Message tags: choose 0, editExtra 1.
 
-function update(c, s, msg) {
-  switch (msg.type) {
-    case 0:
-      mark(1);
-      return { ...s, option: msg.value };
-    case 1:
-      mark(2);
-      return { ...s, extra: msg.value };
-  }
-  return s;
-}
-
-function view(parent, [, , label, options, extraFor, extraPlaceholder], id) {
-  const [, , select, input] = section(parent, id, label, "choice", "<select data-role=select></select><input type=text data-role=extra>");
-  for (const option of options) {
-    const [o] = html("<option>", select);
-    o.value = option.value;
-    o.textContent = option.label;
-  }
-  input.placeholder = extraPlaceholder;
-  onInput(select, id, 0);
-  onInput(input, id, 1);
-  const extra = branch(input);
-  return (s, d) => {
-    if (d & 1) prop(select, "value", s.option);
-    if (d & 3) {
-      const show = extraFor.includes(s.option);
-      extra(show);
-      if (show) prop(input, "value", s.extra);
+// The kind: its reducer and its DOM factory.
+export const kind = [
+  (c, s, msg) => {
+    switch (msg.type) {
+      case 0:
+        mark(1);
+        return { ...s, option: msg.value };
+      case 1:
+        mark(2);
+        return { ...s, extra: msg.value };
     }
-  };
-}
-
-export const kind = { update, view };
+    return s;
+  },
+  (parent, [, , label, options, extraFor, extraPlaceholder], id) => {
+    const [, , select, input] = section(parent, id, label, "choice", "<select data-role=select></select><input type=text data-role=extra>");
+    for (const option of options) {
+      const [o] = html("<option>", select);
+      o.value = option.value;
+      o.textContent = option.label;
+    }
+    input.placeholder = extraPlaceholder;
+    onInput(select, id, 0);
+    onInput(input, id, 1);
+    const extra = branch(input);
+    return (s, d) => {
+      if (d & 1) prop(select, "value", s.option);
+      if (d & 3) {
+        const show = extraFor.includes(s.option);
+        extra(show);
+        if (show) prop(input, "value", s.extra);
+      }
+    };
+  },
+];
 `,
 
   amount: `import { mark, send, setText, prop } from "../runtime.js";
@@ -354,31 +354,31 @@ import { section } from "./widget.js";
 
 // Dirty bits: value 1. Message tags: set 0.
 
-function update(c, s, msg) {
-  switch (msg.type) {
-    case 0:
-      mark(1);
-      return { value: msg.value };
-  }
-  return s;
-}
-
-function view(parent, [, , label, format], id) {
-  const [, , input, formatted] = section(parent, id, label, "amount", "<input type=number data-role=input><output data-role=formatted>");
-  // Only a valid number becomes a message; anything else stays in the input as typed.
-  input.addEventListener("input", () => {
-    const value = input.valueAsNumber;
-    if (!Number.isNaN(value)) send({ widget: id, type: 0, value });
-  });
-  return (s, d) => {
-    if (d & 1) {
-      prop(input, "value", String(s.value));
-      setText(formatted, format(s.value));
+// The kind: its reducer and its DOM factory.
+export const kind = [
+  (c, s, msg) => {
+    switch (msg.type) {
+      case 0:
+        mark(1);
+        return { value: msg.value };
     }
-  };
-}
-
-export const kind = { update, view };
+    return s;
+  },
+  (parent, [, , label, format], id) => {
+    const [, , input, formatted] = section(parent, id, label, "amount", "<input type=number data-role=input><output data-role=formatted>");
+    // Only a valid number becomes a message; anything else stays in the input as typed.
+    input.addEventListener("input", () => {
+      const value = input.valueAsNumber;
+      if (!Number.isNaN(value)) send({ widget: id, type: 0, value });
+    });
+    return (s, d) => {
+      if (d & 1) {
+        prop(input, "value", String(s.value));
+        setText(formatted, format(s.value));
+      }
+    };
+  },
+];
 `,
 
   filter: `import { mark, html, setText, prop, onInput, list } from "../runtime.js";
@@ -386,40 +386,41 @@ import { section } from "./widget.js";
 
 // Dirty bits: query 1. Message tags: edit 0.
 
-function update(c, s, msg) {
-  switch (msg.type) {
-    case 0:
-      mark(1);
-      return { query: msg.value };
-  }
-  return s;
-}
 
 export function matches(items, query) {
   const q = query.toLowerCase();
   return items.filter((item) => item.text.toLowerCase().includes(q));
 }
 
-function view(parent, [, , label, items, placeholder], id) {
-  const [, , input, ul, count] = section(parent, id, label, "filter", "<input type=text data-role=query><ul></ul><p data-role=matches>");
-  input.placeholder = placeholder;
-  onInput(input, id, 0);
-  const rows = list(ul, (item) => {
-    const [li] = html("<li>");
-    li.dataset.key = item.id;
-    return [li, (item) => setText(li, item.text)];
-  });
-  return (s, d) => {
-    if (d & 1) {
-      prop(input, "value", s.query);
-      const shown = matches(items, s.query);
-      rows(shown);
-      setText(count, shown.length + " matches");
+// The kind: its reducer and its DOM factory.
+export const kind = [
+  (c, s, msg) => {
+    switch (msg.type) {
+      case 0:
+        mark(1);
+        return { query: msg.value };
     }
-  };
-}
-
-export const kind = { update, view };
+    return s;
+  },
+  (parent, [, , label, items, placeholder], id) => {
+    const [, , input, ul, count] = section(parent, id, label, "filter", "<input type=text data-role=query><ul></ul><p data-role=matches>");
+    input.placeholder = placeholder;
+    onInput(input, id, 0);
+    const rows = list(ul, (item) => {
+      const [li] = html("<li>");
+      li.dataset.key = item.id;
+      return [li, (item) => setText(li, item.text)];
+    });
+    return (s, d) => {
+      if (d & 1) {
+        prop(input, "value", s.query);
+        const shown = matches(items, s.query);
+        rows(shown);
+        setText(count, shown.length + " matches");
+      }
+    };
+  },
+];
 `,
 
   rating: `import { mark, html, setText, prop, onClick } from "../runtime.js";
@@ -427,36 +428,36 @@ import { section } from "./widget.js";
 
 // Dirty bits: stars 1. Message tags: rate 0 (id: the star's number).
 
-function update(c, s, msg) {
-  switch (msg.type) {
-    case 0:
-      mark(1);
-      return { stars: msg.id };
-  }
-  return s;
-}
-
-function view(parent, [, , label, stars, labels], id) {
-  const t = section(parent, id, label, "rating", "<div></div><p data-role=rating-label>");
-  const buttons = [];
-  for (let n = 1; n <= stars; n++) {
-    const [button] = html("<button data-role=star>", t[2]);
-    button.dataset.key = n;
-    onClick(button, id, 0, n);
-    buttons.push(button);
-  }
-  return (s, d) => {
-    if (d & 1) {
-      buttons.forEach((button, i) => {
-        prop(button, "ariaPressed", String(i < s.stars));
-        setText(button, i < s.stars ? "★" : "☆");
-      });
-      setText(t[3], labels[s.stars]);
+// The kind: its reducer and its DOM factory.
+export const kind = [
+  (c, s, msg) => {
+    switch (msg.type) {
+      case 0:
+        mark(1);
+        return { stars: msg.id };
     }
-  };
-}
-
-export const kind = { update, view };
+    return s;
+  },
+  (parent, [, , label, stars, labels], id) => {
+    const t = section(parent, id, label, "rating", "<div></div><p data-role=rating-label>");
+    const buttons = [];
+    for (let n = 1; n <= stars; n++) {
+      const [button] = html("<button data-role=star>", t[2]);
+      button.dataset.key = n;
+      onClick(button, id, 0, n);
+      buttons.push(button);
+    }
+    return (s, d) => {
+      if (d & 1) {
+        buttons.forEach((button, i) => {
+          prop(button, "ariaPressed", String(i < s.stars));
+          setText(button, i < s.stars ? "★" : "☆");
+        });
+        setText(t[3], labels[s.stars]);
+      }
+    };
+  },
+];
 `,
 
   feed: `import { mark, html, setText, onClick, branch, list } from "../runtime.js";
@@ -464,38 +465,38 @@ import { section } from "./widget.js";
 
 // Dirty bits: entries 1. Message tags: dismiss 0; \`notify\` is an external event.
 
-function update(c, s, msg) {
-  switch (msg.type) {
-    case 0:
-      mark(1);
-      return { entries: s.entries.filter((entry) => entry.id !== msg.id) };
-    case "notify":
-      mark(1);
-      return { entries: [...s.entries, msg.entry] };
-  }
-  return s;
-}
-
-function view(parent, [, , label, emptyText, dismissText], id) {
-  const [, , ul, p] = section(parent, id, label, "feed", "<ul></ul><p data-role=empty>");
-  p.textContent = emptyText;
-  const entries = list(ul, (entry) => {
-    const [li, label, dismiss] = html("<li><span></span><button data-role=dismiss>");
-    li.dataset.key = entry.id;
-    dismiss.textContent = dismissText;
-    onClick(dismiss, id, 0, entry.id);
-    return [li, (entry) => setText(label, entry.text)];
-  });
-  const empty = branch(p);
-  return (s, d) => {
-    if (d & 1) {
-      entries(s.entries);
-      empty(s.entries.length === 0);
+// The kind: its reducer and its DOM factory.
+export const kind = [
+  (c, s, msg) => {
+    switch (msg.type) {
+      case 0:
+        mark(1);
+        return { entries: s.entries.filter((entry) => entry.id !== msg.id) };
+      case "notify":
+        mark(1);
+        return { entries: [...s.entries, msg.entry] };
     }
-  };
-}
-
-export const kind = { update, view };
+    return s;
+  },
+  (parent, [, , label, emptyText, dismissText], id) => {
+    const [, , ul, p] = section(parent, id, label, "feed", "<ul></ul><p data-role=empty>");
+    p.textContent = emptyText;
+    const entries = list(ul, (entry) => {
+      const [li, label, dismiss] = html("<li><span></span><button data-role=dismiss>");
+      li.dataset.key = entry.id;
+      dismiss.textContent = dismissText;
+      onClick(dismiss, id, 0, entry.id);
+      return [li, (entry) => setText(label, entry.text)];
+    });
+    const empty = branch(p);
+    return (s, d) => {
+      if (d & 1) {
+        entries(s.entries);
+        empty(s.entries.length === 0);
+      }
+    };
+  },
+];
 `,
 
   clock: `import { mark, setText, prop, onClick } from "../runtime.js";
@@ -504,62 +505,65 @@ import { section } from "./widget.js";
 // Dirty bits: seconds 1, running 2. Message tags: start 0, stop 1, reset 2; \`tick\` is an
 // external event.
 
-function update(c, s, msg) {
-  switch (msg.type) {
-    case 0:
-      mark(2);
-      return { ...s, running: true };
-    case 1:
-      mark(2);
-      return { ...s, running: false };
-    case 2:
-      mark(3);
-      return { seconds: 0, running: false };
-    case "tick":
-      if (!s.running) return s;
-      mark(1);
-      return { ...s, seconds: s.seconds + 1 };
-  }
-  return s;
-}
 
 function formatTime(seconds) {
   const s = seconds % 60;
   return Math.floor(seconds / 60) + ":" + (s < 10 ? "0" : "") + s;
 }
 
-function view(parent, [, , label, startText, stopText, resetText], id) {
-  const [, , time, start, stop, reset] = section(parent, id, label, "clock",
-    "<output data-role=time></output><button data-role=start></button><button data-role=stop></button><button data-role=reset>");
-  start.textContent = startText;
-  stop.textContent = stopText;
-  reset.textContent = resetText;
-  onClick(start, id, 0);
-  onClick(stop, id, 1);
-  onClick(reset, id, 2);
-  return (s, d) => {
-    if (d & 1) setText(time, formatTime(s.seconds));
-    if (d & 2) {
-      prop(start, "disabled", s.running);
-      prop(stop, "disabled", !s.running);
+// The kind: its reducer and its DOM factory.
+export const kind = [
+  (c, s, msg) => {
+    switch (msg.type) {
+      case 0:
+        mark(2);
+        return { ...s, running: true };
+      case 1:
+        mark(2);
+        return { ...s, running: false };
+      case 2:
+        mark(3);
+        return { seconds: 0, running: false };
+      case "tick":
+        if (!s.running) return s;
+        mark(1);
+        return { ...s, seconds: s.seconds + 1 };
     }
-  };
-}
-
-export const kind = { update, view };
+    return s;
+  },
+  (parent, [, , label, startText, stopText, resetText], id) => {
+    const [, , time, start, stop, reset] = section(parent, id, label, "clock",
+      "<output data-role=time></output><button data-role=start></button><button data-role=stop></button><button data-role=reset>");
+    start.textContent = startText;
+    stop.textContent = stopText;
+    reset.textContent = resetText;
+    onClick(start, id, 0);
+    onClick(stop, id, 1);
+    onClick(reset, id, 2);
+    return (s, d) => {
+      if (d & 1) setText(time, formatTime(s.seconds));
+      if (d & 2) {
+        prop(start, "disabled", s.running);
+        prop(stop, "disabled", !s.running);
+      }
+    };
+  },
+];
 `,
 
   summary: `import { setText } from "../runtime.js";
 import { section } from "./widget.js";
 
-// A summary has no state of its own: \`text(widgets)\` derives its line from other widgets,
-// and the app's patch calls it again only when a field it reads is dirty.
-function view(parent, [, , label, text], id) {
-  const [, , line] = section(parent, id, label, "summary", "<p data-role=summary>");
-  return (widgets) => setText(line, text(widgets));
-}
-
-export const kind = { view };
+// The kind: no reducer, and its DOM factory. A summary has no state of its own:
+// \`text(widgets)\` derives its line from other widgets, and the app's patch calls it
+// again only when a field it reads is dirty.
+export const kind = [
+  0,
+  (parent, [, , label, text], id) => {
+    const [, , line] = section(parent, id, label, "summary", "<p data-role=summary>");
+    return (widgets) => setText(line, text(widgets));
+  },
+];
 
 // Round to at most two decimals for display.
 export function num(n) {
@@ -701,7 +705,7 @@ function set(model, id, s, bits) {
 function route(model, id, msg) {
   const row = WIDGETS[id];
   const s = model.widgets[id];
-  const next = row[0].update(row, s, msg);
+  const next = row[0][0](row, s, msg);
   const bits = take();
   return next === s ? model : set(model, id, next, bits);
 }
@@ -728,7 +732,7 @@ export function view(root, model) {
   // A summary's state is the whole model: it derives its line from other widgets.
   for (const id in WIDGETS) {
     const row = WIDGETS[id];
-    (patches[id] = row[0].view(dash, row, id))(row[1] ? w[id] : w, -1);
+    (patches[id] = row[0][1](dash, row, id))(row[1] ? w[id] : w, -1);
   }
   return (model, dirty) => {
     const w = model.widgets;
