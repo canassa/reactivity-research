@@ -126,7 +126,7 @@ const KINDS = {
   widget("tabs", l, \`<div role=tablist>\${titles.map((t, i) => \`<button role=tab data-role=tab data-key=\${i}>\${t}</button>\`).join("")}</div><p role=tabpanel data-role=tab-content></p>\`,
     titles.map((t, i) => () => active = i), // tab
     (v) => ({ active } = v));
-  titles.forEach((t, i) => bind(2 + i, "ariaSelected", () => "" + (i == active)));
+  titles.forEach((t, i) => bind(2 + i, "ariaSelected", () => i == active));
   text(2 + titles.length, () => texts[active]);`,
     row: (w, s) => [arr(w.tabs.map((t) => t.title), html), arr(w.tabs.map((t) => t.content)), lit(s.active)],
   },
@@ -137,7 +137,7 @@ const KINDS = {
   widget("panel", l, \`<button data-role=toggle></button><p data-role=body>\${body}</p>\`, [
     () => open = !open, // toggle
   ], (v) => ({ open } = v));
-  bind(1, "ariaExpanded", () => "" + !!open);
+  bind(1, "ariaExpanded", () => !!open);
   text(1, () => (open ? hi : sh));
   show(2, () => open);`,
     row: (w, s) => [lit(w.showText), lit(w.hideText), html(w.body), bit(s.open)],
@@ -165,7 +165,7 @@ const KINDS = {
   widget("amount", l, "<input type=number data-role=input><output data-role=formatted></output>", [
     (t) => { t.value && (value = +t.value); }, // input
   ], (v) => ({ value } = v));
-  bind(1, "value", () => "" + value);
+  bind(1, "value", () => value);
   text(2, () => pre + value.toFixed(d) + suf);`,
     metric: `{ m: () => value, p: (n) => l + ": " + n }`,
     row: (w, s) => {
@@ -202,7 +202,7 @@ const KINDS = {
     stars.map((_, i) => () => n = i + 1), // star
     (v) => ({ stars: n } = v));
   stars.forEach((_, i) => {
-    bind(2 + i, "ariaPressed", () => "" + (i < n));
+    bind(2 + i, "ariaPressed", () => i < n);
     bind(2 + i, "textContent", () => (i < n ? "★" : "☆"));
   });
   text(2 + stars.length, () => labels[n]);`,
