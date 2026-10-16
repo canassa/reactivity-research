@@ -37,7 +37,7 @@ export function templateFiles({ name, title, extra = [] }) {
 // ships whatever it contains; everything the emitter writes is app code.
 export function classify(source) {
   if (source.includes("/node_modules/") || source.startsWith("\0") || source.includes("vite/")) return "runtime";
-  if (/(^|\/)src\/(runtime|rows|routes)\.js$/.test(source)) return "runtime";
+  if (/(^|\/)src\/(runtime|rows|routes|graph)\.js$/.test(source)) return "runtime";
   if (/(^|\/)src\/adapter\.js$/.test(source)) return "adapter";
   return "app";
 }
