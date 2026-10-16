@@ -223,6 +223,7 @@ scenario README).
 ./rr plots    dashboard                          # build the plots page from results/, serve it through cloudflared
 ./rr report                                      # measure every run in runs.json that changed, then serve the plots
 ./rr check    dashboard solid                    # quick aid: run the script on one small build in headless Chrome
+./rr hub                                         # one long-lived address for the plots and every app
 ```
 
 **`./rr serve`** is for a person to see that a generated app really works:
@@ -234,6 +235,13 @@ scenario README).
 - `--local` serves without the tunnel; `Ctrl-C` stops both the server and the tunnel;
 - several frameworks can be served side by side (`./rr serve dashboard solid,vue,react`), one
   page per framework from the same spec, so they can be compared by eye.
+
+**`./rr hub`** serves everything at one address that stays the same while it runs: an index, the
+plots (`/plots/`, rebuilt from `results/` on each load) and every app (`/apps/<scenario>/n<N>-s<S>/`,
+side by side, or `/<framework>/` for one). Apps build on first open and rebuild when their
+generator, framework or options changed. A small front process holds the port and the single
+cloudflared tunnel and restarts the server behind it whenever `harness/`, `scenarios/` or
+`frameworks/` change, so code changes never need a new URL. `--local` skips the tunnel.
 
 **`./rr check`** builds one small app per framework (by default the scenario's quick-check size, seed 1),
 serves it with the panel and runs the whole interaction script in headless Chrome, reporting per step
