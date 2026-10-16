@@ -157,26 +157,23 @@ const FACTORIES = {
     const node = el("li", null, { "data-key": item.id });
     const box = el("input", node, { type: "checkbox", "data-role": "toggle" });
     const label = el("span", node);
-    // The arms of update for this row's item: toggle(id), remove(id). The row keeps its item
-    // current (the list hands it the item of its id).
+    // The row's binding: the list hands it the item of its id, so the row keeps its item current.
+    const set = (next = item) => {
+      prop(box, "checked", (item = next).done);
+      text(label, item.text);
+    };
+    // The arms of update for this row's item: toggle(id), which schedules the row's binding,
+    // and remove(id).
     on(box, "change", () => {
       item.done = !item.done;
-      items.patch(item);
-      schedule(onItems);
+      schedule(set, onItems);
     });
     on(el("button", node, { "data-role": "remove" }, removeText), "click", () => {
       s.items.splice(s.items.indexOf(item), 1);
       items.drop(item.id);
       schedule(onItems);
     });
-    return {
-      node,
-      set(next) {
-        item = next;
-        prop(box, "checked", item.done);
-        text(label, item.text);
-      },
-    };
+    return { node, set };
   });
   const left = el("p", root, { "data-role": "left" });
 

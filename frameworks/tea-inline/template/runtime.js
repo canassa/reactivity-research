@@ -75,10 +75,11 @@ export function when(node) {
 // Keyed lists
 
 // A keyed list (by \`item.id\`) owning every child of \`parent\`. \`items()\` reads the array from
-// the model; \`row(item)\` builds a row once and returns \`{ node, set(item) }\`.
+// the model; \`row(item)\` builds a row once and returns \`{ node, set(item) }\`, \`set\` being the
+// row's binding (an action that edits an item in place schedules its row's \`set\` itself).
 //
-// The list is itself a binding. Actions that edit the array in place record what they did
-// (\`add\`, \`drop\`, \`patch\`), and the flush applies just those rows. When the array itself was
+// The list is itself a binding. Actions that add or remove items in place record it (\`add\`,
+// \`drop\`), and the flush applies just those rows. When the array itself was
 // replaced (a server push, a snapshot, a derived list), the flush falls back to a full keyed
 // reconcile: rows are reused by id, the rows of ids that left are removed, and one forward pass
 // puts the rest in order: a row already in place stays, any other is moved before the first row
@@ -130,6 +131,5 @@ export function list(parent, items, row) {
     rows.get(k).node.remove();
     rows.delete(k);
   });
-  binding.patch = (item) => edit(() => rows.get(item.id).set(item));
   return binding;
 }

@@ -160,8 +160,7 @@ function widgetFile(w, reads) {
   const attrs = (o) => `{ ${Object.entries(o).map(([k, v]) => `${/^\w+$/.test(k) ? k : str(k)}: ${v}`).join(", ")} }`;
 
   // The scheduling call of an action writing \`fields\`.
-  const sched = (fields) => {
-    const args = [];
+  const sched = (fields, args = []) => {
     for (const f of new Set(fields)) {
       if (groupFields.has(f)) args.push("on" + cap(f));
     }
@@ -238,17 +237,16 @@ function widgetFile(w, reads) {
   }
 
   // The action of an item control (toggle or remove), inlined into the row's handler, which
-  // knows its item's id; written once the binding groups are known (see `itemBodies`).
+  // knows its item; written once the binding groups are known (see `itemBodies`). A toggle
+  // writes its item's `done`, so it schedules the row's own binding (`set`) with the field's
+  // group.
   const itemBodies = {};
   function itemAction(name) {
     const m = message(name);
     itemBodies[name] = () => {
       const v = `s.${m.field}`;
-      const lv = lists[m.field];
-      const body = m.op === "toggle"
-        ? ["item.done = !item.done;", `${lv}.patch(item);`]
-        : [`${v}.splice(${v}.indexOf(item), 1);`, `${lv}.drop(item.id);`];
-      return [...body, ...sched([m.field])];
+      if (m.op === "toggle") return ["item.done = !item.done;", ...sched([m.field], ["set"])];
+      return [`${v}.splice(${v}.indexOf(item), 1);`, `${lists[m.field]}.drop(item.id);`, ...sched([m.field])];
     };
     return `@@${name}@@`;
   }
@@ -351,17 +349,18 @@ function widgetFile(w, reads) {
         const set = [];
         if (n.check) {
           row.push(`const box = el("input", node, ${attrs({ type: str("checkbox"), "data-role": str(n.check) })});`);
-          row.push(`on(box, "change", () => {`, itemAction(n.check), "});");
           set.push('prop(box, "checked", item.done);');
         }
         row.push('const label = el("span", node);');
         set.push("text(label, item.text);");
+        // The row's binding: the list hands it the item of its id, so the row keeps its item
+        // current for its controls' arms; a toggle schedules it as is.
+        row.push(`const set = (next = item) => { item = next; ${set.join(" ")} };`);
+        if (n.check) row.push(`on(box, "change", () => {`, itemAction(n.check), "});");
         if (n.remove) {
           row.push(`on(el("button", node, ${attrs({ "data-role": str(n.remove) })}, ${str(n.removeText)}), "click", () => {`, itemAction(n.remove), "});");
         }
-        // A row with controls keeps its item current (the list hands it the item of its id), for
-        // their arms.
-        row.push(`return { node, set(next) { item = next; ${set.join(" ")} } };`);
+        row.push("return { node, set };");
         build.push(`const ${l} = list(${u}, () => s.${f.name}, (item) => {`,
           ...row.map((r) => "  " + r), "});");
         bindings.push({ code: l, own: [f.name], cross: [], name: l });
