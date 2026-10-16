@@ -47,7 +47,7 @@ const WIDGET_FILE = `import { schedule } from "../runtime.js";
 // document order.
 export function section(parent, i, html) {
   parent.insertAdjacentHTML("beforeend", \`<section data-key=w\${i} data-role=widget>\${html}</section>\`);
-  return parent.lastChild.querySelectorAll("*");
+  return parent.lastChild.querySelectorAll(":not(h2,label,option)");
 }
 
 // Schedule every binding of a widget for its first render, and return its handle: its load for
@@ -258,7 +258,7 @@ function widgetFile(w, reads) {
   const refs = [];
   const open = (tag, a = {}, name) => {
     if (name) refs[count] = name;
-    count++;
+    if (!["h2", "label", "option"].includes(tag)) count++;
     html += `<${tag}${Object.entries(a).map(([k, v]) => ` ${k}=${attrValue(String(v))}`).join("")}>`;
   };
   const close = (tag) => (html += `</${tag}>`);
