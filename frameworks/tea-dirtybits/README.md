@@ -374,3 +374,50 @@ shape, the reference's id rule and the message of a link are app code, `src/mode
   another unit's fields (a TypeError) or created a ghost modal. Tested by firing both events in one
   task: navigate then click the old page, tab switch then click the old panel, modal close then
   type, navigate then a clock tick, deepLink p2 then p1, tab A to B to A, modal close then open.
+
+## derived-graph
+
+The emitter for `derived-graph` (`scenarios/derived-graph/tea-dirtybits.js`) keeps the strategy for
+a sheet of N formulas over inputs and a table of items, whose cells read each other. What it adds:
+`template/graph.js` (the dirty-bit sweep, the numbered-message events, the top-k and group lists,
+and the items table, which is big-table's keyed grid trimmed to this scenario), included only here
+and counted as runtime. The formulas, displays, formats and collection helpers are generated from
+the spec and count as app.
+
+- **A bit per cell.** Every formula, display and input control is a cell, numbered (`g`) so each
+  comes after the cells it reads: a unit's controls, its formula, its displays. The dirty set is
+  an array of 31-bit words (bit `g % 31` of word `g / 31`), as in big-component. Cell `g` is a
+  closure in one table, built once with the DOM, so the number is its position and nothing is
+  named per cell.
+- **Arms mark readers.** A control sends a numbered message and its arm returns the new state with
+  the input changed (`set`). The bits it marks are the compile-time numbers of the cells that read
+  that input (`IN[name]`: the formulas, displays and controls reading it), so no pass finds
+  readers at run time. `serverInputs` goes through the same `set` per named input.
+- **A flush is one ascending sweep.** `sweep` takes the lowest set bit of each word in turn and
+  runs that cell with the model. Marks only point to higher cells (a reader is always after its
+  source), so one pass settles the graph and no cell runs twice.
+- **A derived value is computed once and stored.** A formula is a module-level `let` plus its cell
+  function: recompute from the model and the stored values of the cells it reads, compare with the
+  stored value and, only when it differs, mark its readers (`touch([…])`, written out per formula).
+  Its readers read the variable. A display reads the variables it shows and writes a guarded text.
+- **The unchanged-value case.** A formula whose value did not change marks nothing, so its readers
+  do not run (the cut-off input's bool, a count that stays). Numbers, booleans and words compare by
+  `!==`; a filtered list compares its items by identity (an edit of an item outside the list leaves
+  its readers alone); a top-k list and a group sum are taken as changed every time they are
+  recomputed (their displays then rewrite equal texts, guarded), as comparing them would need the
+  displayed keys too.
+- **Items are data with compile-time bits too.** The emitter knows which fields each formula reads
+  (an item expression's `i.qty`), so an edit of a quantity marks the formulas that read quantities
+  (`M_QTY`), the active flag marks those that read it (`M_ACTIVE`), a note marks none, and load,
+  add, remove and `serverItems` mark every formula that reads the items (`M_ITEMS`). A formula
+  that is a list holds item objects, so it is also refreshed by the fields its readers read
+  through it (otherwise they would read stale items). Aggregates recompute in full (no incremental
+  sums), so an item edit costs O(rows) per aggregate that reads the field.
+- **The table is big-table's.** One cloned template per row, patched by column bits (quantity,
+  active, note, markup); the markup is a bit every row tests; add, remove and edits patch the rows
+  they touched; load, `serverItems` and the snapshot reconcile the keyed rows. Events are delegated.
+- **Honest limits.** `sweep` walks the dirty words up to the highest one marked, so an event costs
+  O(N/31) loop steps (no calls) beside its cells; the numbers of the cells are global to the sheet
+  (adding a unit shifts nothing, since units are appended). The analysis is easy because the
+  formulas are a closed vocabulary, as with tea-inline (critique, weakness 1). `serverItems` marks
+  every formula over the items even when only a price changed.
