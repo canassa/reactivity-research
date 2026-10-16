@@ -8,14 +8,18 @@
 //   tick function.
 // - Nothing about a widget is kept as data for a generic routine: no op tables, no view trees,
 //   no descriptors. Deleting a widget's function deletes its behaviour. The only data in a
-//   widget are its initial values (state literal) and its texts (the template).
+//   widget are its initial values and its texts (the template).
 // - The runtime (frameworks/digest/runtime-unique.js) is generic: a section built from a
 //   template, bind/text/show, a keyed-list reconciler, one delegated click/input listener, and
 //   small handler helpers (clamp, next option, add an item).
 // - Locality: an event runs only its widget's bindings. A widget that reads others subscribes
 //   its binding list to theirs (`dep`, a compile-time fact), external events digest only the
 //   widgets they name, and a tick digests only the fields whose gate is on.
-// - Nodes are found by their position in the template (`text(3, …)`), resolved once at creation;
+// - State is plain variables: a field only its widget uses is a local of the widget's function,
+//   a field another widget reads a module variable, a feed list a field of the widget's record
+//   (`notify` pushes into it by name). External replacements go through the widget's setter.
+// - Nodes are found by their position in the template, each binding's as a distance from the
+//   previous binding's (`text(3, …)`), resolved once at creation;
 //   handlers are given to the controls (buttons, inputs, selects) in document order.
 // - Code only where it is used: the receive branches (`tick`, `notify`) exist only if some
 //   widget has a time-driven field or a feed list.
@@ -122,7 +126,7 @@ function handler(m, fields) {
   throw new Error(`digest: unknown message kind ${m.kind}`);
 }
 
-// The state literal: values as they are; a list's items as texts or [text, done] pairs when
+// A field's initial value: as it is; a list's items as texts or [text, done] pairs when
 // their ids are 1, 2, …
 function initial(f, v) {
   if (f.type !== "list") return lit(v);
@@ -318,9 +322,9 @@ export function emit(spec) {
     },
     style: {
       approach: "compiled dirty checking, per widget: an event re-runs the bindings of the widget it touched (and of the widgets reading it), writing a DOM property only when its value changed",
-      components: "one function per widget, written out in full from that widget's description (state literal, template, handlers, bindings, tick); no shared per-kind factories, no data rows, no interpreter",
-      state: "plain mutable objects, one per widget; external replacements are deep-copied into them",
-      templates: "one static HTML string per widget (texts escaped at build time); nodes are found by their position in the template, once",
+      components: "one function per widget, written out in full from that widget's description (state, template, handlers, setter, bindings, tick); no shared per-kind factories, no data rows, no interpreter",
+      state: "plain mutable variables: locals of the widget's function, module variables for the fields other widgets read, a record for feed lists; external replacements are deep-copied and assigned through the widget's setter",
+      templates: "one static HTML string per widget (texts escaped at build time); nodes are found by their position in the template (a distance from the previous binding's), once",
       handlers: "one arrow function per control, given to the controls in document order, compiled from the message's ops; small generic helpers (clamp, next option, add an item)",
       lists: "keyed by id, reconciled in place by the runtime; item template and item bindings are the widget's own code",
       conditionals: "a binding that swaps one node with an empty text node",

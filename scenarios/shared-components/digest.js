@@ -330,7 +330,7 @@ export function emit(spec) {
     style: {
       approach: "compiled dirty checking, per widget: an event re-runs the bindings of the widget it touched (and of the summaries reading it), writing a DOM property only when its value changed",
       components: "one factory per widget kind present in the app; one data row per instance",
-      state: "plain mutable objects, one per widget; external replacements merge into them",
+      state: "plain mutable variables of the kind's factory, one set per widget; external replacements go through a setter the factory hands the runtime; a feed's entries sit on a record notify pushes into",
       templates: "HTML strings with the instance's constants (escaped at build time), parsed once per widget or list item",
       lists: "keyed by id, reconciled in place by the runtime",
       conditionals: "a binding that swaps one node with an empty text node",
