@@ -80,7 +80,7 @@ function parts(ps, reads) {
   return { html: "", code };
 }
 
-// One op of a click message as code: an expression (`e`) or a statement (`s`).
+// One op of a click message as code: an expression (`e`; `t` when it uses the parameter `t`).
 function op(o, fields) {
   const [kind, name] = o;
   const f = fields[name];
@@ -93,8 +93,10 @@ function op(o, fields) {
     case "toggle": return { e: `${L} = !${L}` };
     case "reset": return { e: `${L} = ${lit(f.initial)}` };
     case "cycle": return { e: `${L} = nx(${lit(f.options)}, ${L})` };
-    case "push": return { s: `{ const t = ${F(o[2])}.trim(); if (t) add(${L}${f.checkable ? ", t, false" : ", t"}), ${F(o[2])} = ""; }` };
-    case "pushText": return { e: `add(${L}, ${lit(o[2])}${f.checkable ? ", false" : ""})` };
+    // The trimmed draft goes in `t`, the handler's parameter: a click handler has no use for the
+    // element it is given.
+    case "push": return { e: `(t = ${F(o[2])}.trim()) && (add(${L}, t), ${F(o[2])} = "")`, t: 1 };
+    case "pushText": return { e: `add(${L}, ${lit(o[2])})` };
     case "pop": return { e: `${L}.pop()` };
     case "shift": return { e: `${L}.shift()` };
     case "clear": return { e: `${L} = []` };
@@ -109,10 +111,7 @@ function handler(m, fields) {
   switch (m.kind) {
     case "click": {
       const ops = m.ops.map((o) => op(o, fields));
-      if (ops.every((o) => o.e)) return `() => ${ops.length === 1 ? ops[0].e : `(${ops.map((o) => o.e).join(", ")})`}`;
-      // A single statement is the handler's body as it is.
-      if (ops.length === 1) return `() => ${ops[0].s}`;
-      return `() => { ${ops.map((o) => o.s ?? o.e + ";").join(" ")} }`;
+      return `${ops.some((o) => o.t) ? "(t)" : "()"} => ${ops.length === 1 ? ops[0].e : `(${ops.map((o) => o.e).join(", ")})`}`;
     }
     case "input": {
       // A number input sends only an integer within the field's range (the README's rule).
