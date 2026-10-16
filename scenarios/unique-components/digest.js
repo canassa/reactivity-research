@@ -126,7 +126,15 @@ function widgetCode(w, init) {
   const reads = new Set();
   const binds = [];
   let n = 1; // the next element's index in the template (0 is the heading)
-  const ref = (i) => i;
+  // Bindings name their element by its distance from the previous binding's: they are made in
+  // document order.
+  let at = 0;
+  const ref = (i) => {
+    if (i < at) throw new Error("digest: bindings out of document order");
+    const d = i - at;
+    at = i;
+    return d;
+  };
   // The handlers of the template's controls (buttons, inputs, selects), in document order.
   const ctl = [];
   const on = (msg) => ctl.push(`${handler(msgs[msg], fields)}, // ${msg}`);

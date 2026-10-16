@@ -13,6 +13,7 @@
 let B; // the bindings being collected: the widget's, or one list item's while it is created
 let E; // the elements of the template being created (a widget's, or one list item's), by position
 let D; // the dashboard element
+let P; // the position of the element the last binding was made on (bindings come in document order)
 let id;
 
 // By widget id: the state (S) and the bindings (W). T: the time-driven fields' tick functions.
@@ -37,18 +38,21 @@ const on = (n, h, i = 0) => {
   for (const c of n.querySelectorAll("button,input,select")) c.h = h[i++];
 };
 
-// Write `E[i][k] = f()` whenever f() changes.
-export const bind = (i, k, f, last, n = E[i]) => B.push(() => last !== (last = f()) && (n[k] = last));
-export const text = (i, f) => bind(i, "textContent", f);
+// Write `n[k] = f()` whenever f() changes. A binding names its element `n` by its distance `d`
+// from the previous binding's element: a template's bindings are made in document order.
+export const bind = (d, k, f, last, n = E[(P += d)]) => B.push(() => last !== (last = f()) && (n[k] = last));
+export const text = (d, f) => bind(d, "textContent", f);
 
-// Keep element `i` in its place only while f() holds; a hidden node leaves an empty text node.
-export const show = (i, f, last, n = E[i], c = new Text()) =>
+// Keep element `n` (`d` as for bind) in its place only while f() holds; a hidden node leaves an
+// empty text node.
+export const show = (d, f, last, n = E[(P += d)], c = new Text()) =>
   B.push(() => last !== (last = !!f()) && (last ? c.replaceWith(n) : n.replaceWith(c)));
 
-// A keyed list in element `i`: `items()` gives the current items (each with an `id`). An item is
-// an `<li data-key data-role=role>` made from `html`; `make(r)` registers its bindings, which
-// read `r.i`, the item's current value, and returns the handlers of the item's controls.
-export const list = (i, items, role, html, make, p = E[i], map = new Map()) =>
+// A keyed list in element `p` (`d` as for bind): `items()` gives the current items (each with
+// an `id`). An item is an `<li data-key data-role=role>` made from `html`; `make(r)` registers
+// its bindings, which read `r.i`, the item's current value, and returns the handlers of the
+// item's controls.
+export const list = (d, items, role, html, make, p = E[(P += d)], map = new Map()) =>
   B.push(() => {
     const old = map;
     map = new Map();
@@ -62,6 +66,7 @@ export const list = (i, items, role, html, make, p = E[i], map = new Map()) =>
         r.n.dataset.key = i.id;
         r.n.dataset.role = role;
         E = r.n.children;
+        P = 0;
         on(r.n, make(r));
       }
       r.i = i;
@@ -94,6 +99,7 @@ export const widget = (html, s, h) => {
   S[id] = s;
   W[id] = x.b = B = [];
   E = x.querySelectorAll("*");
+  P = 0;
 };
 
 // This widget's bindings also run after the given widgets change.
