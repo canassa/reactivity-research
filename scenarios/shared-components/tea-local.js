@@ -81,6 +81,12 @@ export function counter(parent, id, heading, step, min, max, start, model) {
     (model, value) => ({ value: Math.max(min, model.value - step) }),
     (model, value) => ({ value: start }),
   ];
+  const patch = () => {
+    const m = self.m;
+    setText(value, m.value);
+    setProp(dec, "disabled", m.value <= min);
+    setProp(inc, "disabled", m.value >= max);
+  };
   const self = instance(model, update, patch);
   const root = widget(parent, id, heading, "counter", self);
   const value = element(root, "output", { "data-role": "value" }, " ");
@@ -90,13 +96,6 @@ export function counter(parent, id, heading, step, min, max, start, model) {
   on(dec, "click", () => self.send(1));
   on(inc, "click", () => self.send(0));
   on(reset, "click", () => self.send(2));
-
-  function patch() {
-    const m = self.m;
-    setText(value, m.value);
-    setProp(dec, "disabled", m.value <= min);
-    setProp(inc, "disabled", m.value >= max);
-  }
 }
 `,
 
@@ -105,6 +104,11 @@ export function counter(parent, id, heading, step, min, max, start, model) {
 const update = [(model, value) => ({ on: model.on.map((on, i) => (i === value ? !on : on)) })];
 
 export function toggles(parent, id, heading, items, model) {
+  const patch = () => {
+    const m = self.m;
+    boxes.forEach((box, i) => setProp(box, "checked", m.on[i]));
+    setText(count, \`\${m.on.filter(Boolean).length} of \${items.length} on\`);
+  };
   const self = instance(model, update, patch);
   const root = widget(parent, id, heading, "toggles", self);
   const ul = element(root, "ul");
@@ -116,12 +120,6 @@ export function toggles(parent, id, heading, items, model) {
     return box;
   });
   const count = element(root, "p", { "data-role": "count" }, " ");
-
-  function patch() {
-    const m = self.m;
-    boxes.forEach((box, i) => setProp(box, "checked", m.on[i]));
-    setText(count, \`\${m.on.filter(Boolean).length} of \${items.length} on\`);
-  }
 }
 `,
 
@@ -130,19 +128,18 @@ export function toggles(parent, id, heading, items, model) {
 const update = [(model, value) => ({ text: value })];
 
 export function field(parent, id, heading, placeholder, validate, model) {
-  const self = instance(model, update, patch);
-  const root = widget(parent, id, heading, "field", self);
-  const input = element(root, "input", { type: "text", "data-role": "input", placeholder: placeholder });
-  on(input, "input", () => self.send(0, input.value));
-  const error = element(null, "p", { "data-role": "error" }, " ");
-
-  function patch() {
+  const patch = () => {
     const m = self.m;
     const problem = validate(m.text);
     setProp(input, "value", m.text);
     if (problem) setText(error, problem);
     show(root, error, problem);
-  }
+  };
+  const self = instance(model, update, patch);
+  const root = widget(parent, id, heading, "field", self);
+  const input = element(root, "input", { type: "text", "data-role": "input", placeholder: placeholder });
+  on(input, "input", () => self.send(0, input.value));
+  const error = element(null, "p", { "data-role": "error" }, " ");
 }
 `,
 
@@ -161,6 +158,12 @@ const update = [
 ];
 
 export function todo(parent, id, heading, placeholder, addText, removeText, model) {
+  const patch = () => {
+    const m = self.m;
+    setProp(draft, "value", m.draft);
+    items(m.items);
+    setText(left, \`\${m.items.filter((item) => !item.done).length} left\`);
+  };
   const self = instance(model, update, patch);
   const root = widget(parent, id, heading, "todo", self);
   const draft = element(root, "input", { type: "text", "data-role": "draft", placeholder: placeholder });
@@ -180,13 +183,6 @@ export function todo(parent, id, heading, placeholder, addText, removeText, mode
     setText(row[2], item.text);
   });
   const left = element(root, "p", { "data-role": "left" }, " ");
-
-  function patch() {
-    const m = self.m;
-    setProp(draft, "value", m.draft);
-    items(m.items);
-    setText(left, \`\${m.items.filter((item) => !item.done).length} left\`);
-  }
 }
 `,
 
@@ -195,6 +191,11 @@ export function todo(parent, id, heading, placeholder, addText, removeText, mode
 const update = [(model, value) => ({ active: value })];
 
 export function tabs(parent, id, heading, tabs, model) {
+  const patch = () => {
+    const m = self.m;
+    buttons.forEach((button, i) => setProp(button, "ariaSelected", \`\${i === m.active}\`));
+    setText(content, tabs[m.active].content);
+  };
   const self = instance(model, update, patch);
   const root = widget(parent, id, heading, "tabs", self);
   const tablist = element(root, "div", { role: "tablist" });
@@ -204,12 +205,6 @@ export function tabs(parent, id, heading, tabs, model) {
     return button;
   });
   const content = element(root, "p", { role: "tabpanel", "data-role": "tab-content" }, " ");
-
-  function patch() {
-    const m = self.m;
-    buttons.forEach((button, i) => setProp(button, "ariaSelected", \`\${i === m.active}\`));
-    setText(content, tabs[m.active].content);
-  }
 }
 `,
 
@@ -218,18 +213,17 @@ export function tabs(parent, id, heading, tabs, model) {
 const update = [(model, value) => ({ open: !model.open })];
 
 export function panel(parent, id, heading, showText, hideText, body, model) {
+  const patch = () => {
+    const m = self.m;
+    setProp(toggle, "ariaExpanded", \`\${m.open}\`);
+    setText(toggle, m.open ? hideText : showText);
+    show(root, text, m.open);
+  };
   const self = instance(model, update, patch);
   const root = widget(parent, id, heading, "panel", self);
   const toggle = element(root, "button", { "data-role": "toggle" }, " ");
   on(toggle, "click", () => self.send(0));
   const text = element(null, "p", { "data-role": "body" }, body);
-
-  function patch() {
-    const m = self.m;
-    setProp(toggle, "ariaExpanded", \`\${m.open}\`);
-    setText(toggle, m.open ? hideText : showText);
-    show(root, text, m.open);
-  }
 }
 `,
 
@@ -241,6 +235,12 @@ const update = [
 ];
 
 export function choice(parent, id, heading, options, extraFor, extraPlaceholder, model) {
+  const patch = () => {
+    const m = self.m;
+    setProp(select, "value", m.option);
+    setProp(extra, "value", m.extra);
+    show(root, extra, extraFor.includes(m.option));
+  };
   const self = instance(model, update, patch);
   const root = widget(parent, id, heading, "choice", self);
   const select = element(root, "select", { "data-role": "select" });
@@ -248,13 +248,6 @@ export function choice(parent, id, heading, options, extraFor, extraPlaceholder,
   on(select, "change", () => self.send(0, select.value));
   const extra = element(null, "input", { type: "text", "data-role": "extra", placeholder: extraPlaceholder });
   on(extra, "input", () => self.send(1, extra.value));
-
-  function patch() {
-    const m = self.m;
-    setProp(select, "value", m.option);
-    setProp(extra, "value", m.extra);
-    show(root, extra, extraFor.includes(m.option));
-  }
 }
 `,
 
@@ -263,6 +256,11 @@ export function choice(parent, id, heading, options, extraFor, extraPlaceholder,
 const update = [(model, value) => ({ value: value })];
 
 export function amount(parent, id, heading, format, model) {
+  const patch = () => {
+    const m = self.m;
+    if (input.valueAsNumber !== m.value) input.value = m.value;
+    setText(formatted, format(m.value));
+  };
   const self = instance(model, update, patch);
   const root = widget(parent, id, heading, "amount", self);
   const input = element(root, "input", { type: "number", "data-role": "input" });
@@ -272,12 +270,6 @@ export function amount(parent, id, heading, format, model) {
     if (!Number.isNaN(value)) self.send(0, value);
   });
   const formatted = element(root, "output", { "data-role": "formatted" }, " ");
-
-  function patch() {
-    const m = self.m;
-    if (input.valueAsNumber !== m.value) input.value = m.value;
-    setText(formatted, format(m.value));
-  }
 }
 `,
 
@@ -286,6 +278,14 @@ export function amount(parent, id, heading, format, model) {
 const update = [(model, value) => ({ query: value })];
 
 export function filter(parent, id, heading, items, placeholder, model) {
+  const patch = () => {
+    const m = self.m;
+    const query = m.query.toLowerCase();
+    const matches = items.filter((item) => item.text.toLowerCase().includes(query));
+    setProp(input, "value", m.query);
+    shown(matches);
+    setText(count, \`\${matches.length} matches\`);
+  };
   const self = instance(model, update, patch);
   const root = widget(parent, id, heading, "filter", self);
   const input = element(root, "input", { type: "text", "data-role": "query", placeholder: placeholder });
@@ -293,15 +293,6 @@ export function filter(parent, id, heading, items, placeholder, model) {
   // The items are fixed per widget, so a row never changes once built.
   const shown = list(element(root, "ul"), (item) => [element(null, "li", null, item.text)], () => {});
   const count = element(root, "p", { "data-role": "matches" }, " ");
-
-  function patch() {
-    const m = self.m;
-    const query = m.query.toLowerCase();
-    const matches = items.filter((item) => item.text.toLowerCase().includes(query));
-    setProp(input, "value", m.query);
-    shown(matches);
-    setText(count, \`\${matches.length} matches\`);
-  }
 }
 `,
 
@@ -310,6 +301,14 @@ export function filter(parent, id, heading, items, placeholder, model) {
 const update = [(model, value) => ({ stars: value })];
 
 export function rating(parent, id, heading, stars, labels, model) {
+  const patch = () => {
+    const m = self.m;
+    buttons.forEach((button, i) => {
+      setProp(button, "ariaPressed", \`\${i < m.stars}\`);
+      setText(button, i < m.stars ? "★" : "☆");
+    });
+    setText(label, labels[m.stars]);
+  };
   const self = instance(model, update, patch);
   const root = widget(parent, id, heading, "rating", self);
   const row = element(root, "div");
@@ -320,15 +319,6 @@ export function rating(parent, id, heading, stars, labels, model) {
     on(button, "click", () => self.send(0, n));
   }
   const label = element(root, "p", { "data-role": "rating-label" }, " ");
-
-  function patch() {
-    const m = self.m;
-    buttons.forEach((button, i) => {
-      setProp(button, "ariaPressed", \`\${i < m.stars}\`);
-      setText(button, i < m.stars ? "★" : "☆");
-    });
-    setText(label, labels[m.stars]);
-  }
 }
 `,
 
@@ -342,6 +332,11 @@ const update = [
 ];
 
 export function feed(parent, id, heading, emptyText, dismissText, model) {
+  const patch = () => {
+    const m = self.m;
+    entries(m.entries);
+    show(root, empty, m.entries.length === 0);
+  };
   const self = instance(model, update, patch);
   const root = widget(parent, id, heading, "feed", self);
   const entries = list(element(root, "ul"), (entry) => {
@@ -351,12 +346,6 @@ export function feed(parent, id, heading, emptyText, dismissText, model) {
     return [li, label];
   }, (row, next) => setText(row[1], next.text));
   const empty = element(null, "p", { "data-role": "empty" }, emptyText);
-
-  function patch() {
-    const m = self.m;
-    entries(m.entries);
-    show(root, empty, m.entries.length === 0);
-  }
 }
 `,
 
@@ -376,6 +365,12 @@ function formatTime(seconds) {
 }
 
 export function clock(parent, id, heading, startText, stopText, resetText, model) {
+  const patch = () => {
+    const m = self.m;
+    setText(time, formatTime(m.seconds));
+    setProp(start, "disabled", m.running);
+    setProp(stop, "disabled", !m.running);
+  };
   const self = instance(model, update, patch);
   const root = widget(parent, id, heading, "clock", self);
   const time = element(root, "output", { "data-role": "time" }, " ");
@@ -385,13 +380,6 @@ export function clock(parent, id, heading, startText, stopText, resetText, model
   on(start, "click", () => self.send(0));
   on(stop, "click", () => self.send(1));
   on(reset, "click", () => self.send(2));
-
-  function patch() {
-    const m = self.m;
-    setText(time, formatTime(m.seconds));
-    setProp(start, "disabled", m.running);
-    setProp(stop, "disabled", !m.running);
-  }
 }
 `,
 
