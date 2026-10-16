@@ -309,6 +309,59 @@
   }
 
   let cpuEvent = "";   // "" = the median of the local events
+  let cpuMetric = "script";   // the per-test table's metric: "script" (µs) or "total" (ms)
+  // js-framework-benchmark's CPU weights (webdriver-ts-results Common.ts), by the big-table bench
+  // test that stands for each of its nine benchmarks (01 run1k … 09 clear1k_x8).
+  const JFB_WEIGHTS = {
+    "create 1000 rows": 0.64280248137063, "replace 1000 rows": 0.5607178150466176,
+    "update every 10th row of 10000": 0.5643800750716564, "select row 3": 0.1925635870170522,
+    "swap rows": 0.13200612879341714, "remove the 4th row": 0.5277091212292658,
+    "create 10000 rows": 0.5644449600965534, "append 1000 rows to 10000": 0.5508359820582848,
+    "09 clear 10000 rows": 0.4225836631419211,
+  };
+  // One row per test, one column per framework: the median and its factor over the fastest, coloured
+  // from green (fastest) to red (twice as slow or worse), as js-framework-benchmark's table does.
+  function perTestTable(summary, names0, metric) {
+    // Columns from fastest to slowest by the headline geometric mean, as js-framework-benchmark
+    // orders its table: its weighted mean where its tests are present, else the local one.
+    let names = names0;
+    {
+      const v = (n, h) => summary.events.find((e) => e.variant === n && e.half === h)?.[metric]?.median;
+      const hs = [...new Set(summary.events.map((e) => e.half))];
+      const jfb = hs.filter((h) => JFB_WEIGHTS[h]);
+      const use = jfb.length ? jfb : [...new Set(summary.events.filter((e) => e.scope === "local").map((e) => e.half))];
+      const score = (n) => { let sum = 0, W = 0; for (const h of use) { const x = v(n, h); const best = Math.min(...names0.map((m) => v(m, h)).filter((y) => y != null)); if (x == null) continue; const w = JFB_WEIGHTS[h] || 1; sum += w * Math.log(x / best); W += w; } return W ? sum / W : Infinity; };
+      names = names0.slice().sort((x, y) => score(x) - score(y));
+    }
+    const val = (n, h) => summary.events.find((e) => e.variant === n && e.half === h)?.[metric]?.median;
+    const tests = [...new Map(summary.events.map((e) => [e.half, e.scope])).entries()];
+    const fmtV = metric === "script" ? (x) => (x >= 1000 ? fmt(Math.round(x)) : x >= 10 ? x.toFixed(0) : x.toFixed(1)) : (x) => x.toFixed(x >= 100 ? 0 : 1);
+    const shade = (f) => `hsla(${Math.round(120 * (1 - Math.min(1, Math.log2(f))))}, 70%, 45%, 0.28)`;
+    const cell = (x, best) => x == null ? el("td", { text: "—" }) : el("td", { style: `background:${shade(x / best)}`, title: `${(x / best).toFixed(2)}× the fastest` },
+      fmtV(x), el("span", { class: "factor", text: ` (${(x / best).toFixed(2)})` }));
+    const rows = tests.map(([h, scope]) => {
+      const xs = names.map((n) => val(n, h)), best = Math.min(...xs.filter((x) => x != null));
+      return el("tr", {}, el("th", { text: h + (scope === "global" ? " *" : "") + (JFB_WEIGHTS[h] ? " ◆" : "") }), ...xs.map((x) => cell(x, best)));
+    });
+    // Geometric means of the factors: js-framework-benchmark's weighted one over its nine tests, where
+    // they are present, and an unweighted one over every local test.
+    const geo = (pick) => {
+      const ts = tests.filter(([h, scope]) => pick(h, scope));
+      if (!ts.length) return null;
+      const bests = ts.map(([h]) => Math.min(...names.map((n) => val(n, h)).filter((x) => x != null)));
+      return names.map((n) => {
+        let sum = 0, W = 0;
+        ts.forEach(([h], i) => { const x = val(n, h); if (x == null) return; const w = JFB_WEIGHTS[h] && pick === jfbPick ? JFB_WEIGHTS[h] : 1; sum += w * Math.log(x / bests[i]); W += w; });
+        return W ? Math.exp(sum / W) : null;
+      });
+    };
+    const jfbPick = (h) => !!JFB_WEIGHTS[h];
+    const geoRow = (label, g) => g && el("tr", { class: "geo" }, el("th", { text: label }), ...g.map((f) => f == null ? el("td", { text: "—" }) : el("td", { style: `background:${shade(f)}`, text: f.toFixed(2) })));
+    const gj = geo(jfbPick), gl = geo((h, scope) => scope === "local");
+    return el("div", { class: "scroll" }, el("table", { class: "pertest" },
+      el("thead", {}, el("tr", {}, el("th", { text: "test" }), ...names.map((n) => el("th", { text: n })))),
+      el("tbody", {}, rows, gj && tests.some(([h]) => JFB_WEIGHTS[h]) ? geoRow("js-framework-benchmark weighted geometric mean ◆", gj) : null, geoRow("geometric mean, local tests (unweighted)", gl))));
+  }
   function cpuCard(sc) {
     const c = sc.cpu;
     if (!c) return card("CPU time", null, el("p", { class: "note", text: "No CPU results for this scenario yet. Run ./rr bench " + sc.name + " all --remote azathoth: it times one event and the startup of one app per framework from Chrome traces, and this card appears here." }), sc.variants);
@@ -346,6 +399,12 @@
       el("div", { class: "controls" }, el("label", {}, "event ", select)),
       el("div", { class: "chart" }, bars({ items: evItems, unit: "µs", yFmt: us })),
       details("Table", table(["variant", "event", "script µs (median)", "IQR", "95% CI of the median", "n", "total ms (median)"], rowsAll)),
+      el("h4", { text: "Per test" }),
+      el("p", { class: "note", text: "The median of every test for every framework, and in brackets its factor over the fastest framework on that test (1.00 = fastest), coloured from green to red at 2× and beyond, as js-framework-benchmark's results table shows them. ◆ marks the tests that stand for js-framework-benchmark's nine; their geometric mean uses its weights. * marks global tests. Script time is the stable measure; total time (to the paint, rasterised in software in headless Chrome) moved by up to 10% between runs of unchanged code." }),
+      el("div", { class: "controls" }, el("label", {}, "metric ", el("select", { onchange: (e) => { cpuMetric = e.target.value; render(); } },
+        el("option", { value: "script", text: "script (µs)", ...(cpuMetric === "script" ? { selected: "" } : {}) }),
+        el("option", { value: "total", text: "total, input to paint (ms)", ...(cpuMetric === "total" ? { selected: "" } : {}) })))),
+      perTestTable(summary, names, cpuMetric),
       el("h4", { text: "Startup: navigation to the first paint after mount" }),
       el("div", { class: "chart" }, bars({ items: startItems, unit: "ms", yFmt: (t) => t.toFixed(t >= 10 ? 0 : 1) })),
       el("h4", { text: "JS heap after mount, after a forced garbage collection" }),
