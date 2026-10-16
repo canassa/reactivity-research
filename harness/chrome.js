@@ -19,12 +19,13 @@ export function findChrome() {
   throw new Error(`no Chrome or Chromium found (tried ${CANDIDATES.join(", ")}); set CHROME=/path/to/chrome`);
 }
 
-export async function launch() {
+// `args`: extra Chrome command-line flags, e.g. ["--js-flags=--no-turbofan"].
+export async function launch({ args = [] } = {}) {
   const bin = findChrome();
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), "rr-chrome-"));
   const child = spawn(bin, [
     "--headless=new", "--remote-debugging-port=0", `--user-data-dir=${profile}`,
-    "--no-first-run", "--no-default-browser-check", "--disable-extensions", "--window-size=1400,1000", "about:blank",
+    "--no-first-run", "--no-default-browser-check", "--disable-extensions", "--window-size=1400,1000", ...args, "about:blank",
   ], { stdio: ["ignore", "ignore", "pipe"] });
   const wsUrl = await new Promise((resolve, reject) => {
     let err = "";
@@ -55,7 +56,7 @@ export async function launch() {
     ws.send(JSON.stringify({ id: i, method, params, ...(sessionId ? { sessionId } : {}) }));
   });
 
-  // Open a page; returns { evaluate(expr), errors, close() }.
+  // Open a page; returns { evaluate(expr), cdp(method, params), waitFor, errors, close() }.
   async function open(url) {
     const { targetId } = await send("Target.createTarget", { url: "about:blank" });
     const { sessionId } = await send("Target.attachToTarget", { targetId, flatten: true });
@@ -76,6 +77,8 @@ export async function launch() {
     };
     return {
       evaluate,
+      // Any DevTools protocol command on this page, e.g. cdp("Profiler.enable").
+      cdp: (method, params = {}) => send(method, params, sessionId),
       errors,
       async waitFor(expression, timeout = 15000) {
         const t0 = Date.now();

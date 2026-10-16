@@ -63,10 +63,15 @@ export async function prepareServe(scenario, emitters, scenarioOptions, emitterO
     apps.set(variantName(emitter, opts), out.built.outDir);
     if (!quiet) console.log(`built ${path.relative(ROOT, out.built.outDir)}`);
   }
+  return { spec, variants: [...apps.keys()], handler: serveHandler(scenario, spec, apps) };
+}
+
+// The request handler for built apps (variant name → dist directory) of one spec.
+export function serveHandler(scenario, spec, apps) {
   const specJson = JSON.stringify(spec);
   const variants = [...apps.keys()];
 
-  const handler = (req, res) => {
+  return (req, res) => {
     const url = new URL(req.url, "http://x");
     const parts = decodeURIComponent(url.pathname).split("/").filter(Boolean);
     if (parts.length === 0) {
@@ -95,7 +100,6 @@ export async function prepareServe(scenario, emitters, scenarioOptions, emitterO
     if (rel === "index.html") return send(res, 200, injectPanel(fs.readFileSync(file, "utf8")), TYPES[".html"]);
     return sendFile(res, file);
   };
-  return { spec, variants, handler };
 }
 
 export async function serveCommand(rest) {
