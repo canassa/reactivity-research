@@ -1,0 +1,11762 @@
+[
+ {
+  "variant": "beni-direct",
+  "size": 16,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 425,
+  "blocks": 430,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    425,
+    425
+   ],
+   "blocks": [
+    430,
+    430
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 16,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 375,
+  "blocks": 382,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    375,
+    375
+   ],
+   "blocks": [
+    382,
+    382
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 16,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 372,
+  "blocks": 377,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    372,
+    372
+   ],
+   "blocks": [
+    377,
+    377
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 16,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 463,
+  "blocks": 483,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    463,
+    463
+   ],
+   "blocks": [
+    483,
+    483
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 16,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 416,
+  "blocks": 438,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    416,
+    416
+   ],
+   "blocks": [
+    438,
+    438
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 16,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 447,
+  "blocks": 463,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    447,
+    447
+   ],
+   "blocks": [
+    463,
+    463
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 16,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 365,
+  "blocks": 372,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    365,
+    365
+   ],
+   "blocks": [
+    372,
+    372
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 16,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 438,
+  "blocks": 443,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    438,
+    438
+   ],
+   "blocks": [
+    443,
+    443
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 16,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 379,
+  "blocks": 384,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    379,
+    379
+   ],
+   "blocks": [
+    384,
+    384
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 556,
+  "blocks": 559,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    556,
+    556
+   ],
+   "blocks": [
+    559,
+    559
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 426,
+  "blocks": 441,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    426,
+    426
+   ],
+   "blocks": [
+    441,
+    441
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 466,
+  "blocks": 484,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    466,
+    466
+   ],
+   "blocks": [
+    484,
+    484
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 938,
+  "blocks": 1162,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    938,
+    938
+   ],
+   "blocks": [
+    1162,
+    1162
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 842,
+  "blocks": 1030,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    842,
+    842
+   ],
+   "blocks": [
+    1030,
+    1030
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 16,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 133,
+  "blocks": 153,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    133,
+    133
+   ],
+   "blocks": [
+    153,
+    153
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 16,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 139,
+  "blocks": 170,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    139,
+    139
+   ],
+   "blocks": [
+    170,
+    170
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 16,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 138,
+  "blocks": 163,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    138,
+    138
+   ],
+   "blocks": [
+    163,
+    163
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 16,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 193,
+  "blocks": 240,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    193,
+    193
+   ],
+   "blocks": [
+    240,
+    240
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 16,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 175,
+  "blocks": 228,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    175,
+    175
+   ],
+   "blocks": [
+    228,
+    228
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 16,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 144,
+  "blocks": 176,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    144,
+    144
+   ],
+   "blocks": [
+    176,
+    176
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 16,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 131,
+  "blocks": 155,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    131,
+    131
+   ],
+   "blocks": [
+    155,
+    155
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 16,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 143,
+  "blocks": 168,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    143,
+    143
+   ],
+   "blocks": [
+    168,
+    168
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 16,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 134,
+  "blocks": 166,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    134,
+    134
+   ],
+   "blocks": [
+    166,
+    166
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 161,
+  "blocks": 164,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    161,
+    161
+   ],
+   "blocks": [
+    164,
+    164
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 149,
+  "blocks": 157,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    149,
+    149
+   ],
+   "blocks": [
+    157,
+    157
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 182,
+  "blocks": 200,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    182,
+    182
+   ],
+   "blocks": [
+    200,
+    200
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 477,
+  "blocks": 720,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    477,
+    477
+   ],
+   "blocks": [
+    720,
+    720
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 411,
+  "blocks": 616,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    411,
+    411
+   ],
+   "blocks": [
+    616,
+    616
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 181,
+  "blocks": 181,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    181,
+    181
+   ],
+   "blocks": [
+    181,
+    181
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 181,
+  "blocks": 181,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    181,
+    181
+   ],
+   "blocks": [
+    181,
+    181
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 181,
+  "blocks": 181,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    181,
+    181
+   ],
+   "blocks": [
+    181,
+    181
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 199,
+  "blocks": 199,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    199,
+    199
+   ],
+   "blocks": [
+    199,
+    199
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 186,
+  "blocks": 186,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    186,
+    186
+   ],
+   "blocks": [
+    186,
+    186
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 181,
+  "blocks": 181,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    181,
+    181
+   ],
+   "blocks": [
+    181,
+    181
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 182,
+  "blocks": 182,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    182,
+    182
+   ],
+   "blocks": [
+    182,
+    182
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 181,
+  "blocks": 181,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    181,
+    181
+   ],
+   "blocks": [
+    181,
+    181
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 181,
+  "blocks": 181,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    181,
+    181
+   ],
+   "blocks": [
+    181,
+    181
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 183,
+  "blocks": 185,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    183,
+    183
+   ],
+   "blocks": [
+    185,
+    185
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 22,
+  "blocks": 22,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    22,
+    22
+   ],
+   "blocks": [
+    22,
+    22
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 189,
+  "blocks": 189,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    189,
+    189
+   ],
+   "blocks": [
+    189,
+    189
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 238,
+  "blocks": 240,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    238,
+    238
+   ],
+   "blocks": [
+    240,
+    240
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 219,
+  "blocks": 219,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    219,
+    219
+   ],
+   "blocks": [
+    219,
+    219
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 16,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 3261,
+  "blocks": 3466,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3261,
+    3261
+   ],
+   "blocks": [
+    3466,
+    3466
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 16,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 3248,
+  "blocks": 3451,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3248,
+    3248
+   ],
+   "blocks": [
+    3451,
+    3451
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 16,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 3244,
+  "blocks": 3447,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3244,
+    3244
+   ],
+   "blocks": [
+    3447,
+    3447
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 16,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 3389,
+  "blocks": 3600,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3389,
+    3389
+   ],
+   "blocks": [
+    3600,
+    3600
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 16,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 3288,
+  "blocks": 3509,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3288,
+    3288
+   ],
+   "blocks": [
+    3509,
+    3509
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 16,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 3247,
+  "blocks": 3451,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3247,
+    3247
+   ],
+   "blocks": [
+    3451,
+    3451
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 16,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 3232,
+  "blocks": 3436,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3232,
+    3232
+   ],
+   "blocks": [
+    3436,
+    3436
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 16,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 3252,
+  "blocks": 3456,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3252,
+    3252
+   ],
+   "blocks": [
+    3456,
+    3456
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 16,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 3223,
+  "blocks": 3427,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3223,
+    3223
+   ],
+   "blocks": [
+    3427,
+    3427
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 3256,
+  "blocks": 3463,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3256,
+    3256
+   ],
+   "blocks": [
+    3463,
+    3463
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 3293,
+  "blocks": 3477,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3293,
+    3293
+   ],
+   "blocks": [
+    3477,
+    3477
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 3364,
+  "blocks": 3572,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3364,
+    3364
+   ],
+   "blocks": [
+    3572,
+    3572
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 4427,
+  "blocks": 4662,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4427,
+    4427
+   ],
+   "blocks": [
+    4662,
+    4662
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 4403,
+  "blocks": 4619,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4403,
+    4403
+   ],
+   "blocks": [
+    4619,
+    4619
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 152,
+  "blocks": 239,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    152,
+    152
+   ],
+   "blocks": [
+    239,
+    239
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 67,
+  "blocks": 110,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    67,
+    67
+   ],
+   "blocks": [
+    110,
+    110
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 49,
+  "blocks": 79,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    49,
+    49
+   ],
+   "blocks": [
+    79,
+    79
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 517,
+  "blocks": 694,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    517,
+    517
+   ],
+   "blocks": [
+    694,
+    694
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 418,
+  "blocks": 533,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    418,
+    418
+   ],
+   "blocks": [
+    533,
+    533
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 163,
+  "blocks": 291,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    163,
+    163
+   ],
+   "blocks": [
+    291,
+    291
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 70,
+  "blocks": 109,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    70,
+    70
+   ],
+   "blocks": [
+    109,
+    109
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 125,
+  "blocks": 206,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    125,
+    125
+   ],
+   "blocks": [
+    206,
+    206
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 100,
+  "blocks": 188,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    100,
+    100
+   ],
+   "blocks": [
+    188,
+    188
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 186,
+  "blocks": 218,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    186,
+    186
+   ],
+   "blocks": [
+    218,
+    218
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 164,
+  "blocks": 301,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    164,
+    164
+   ],
+   "blocks": [
+    301,
+    301
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 261,
+  "blocks": 326,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    261,
+    261
+   ],
+   "blocks": [
+    326,
+    326
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 2332,
+  "blocks": 4358,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2332,
+    2332
+   ],
+   "blocks": [
+    4358,
+    4358
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 2198,
+  "blocks": 3870,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2198,
+    2198
+   ],
+   "blocks": [
+    3870,
+    3870
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 16,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 19,
+  "blocks": 21,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    19,
+    19
+   ],
+   "blocks": [
+    21,
+    21
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 16,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 14,
+  "blocks": 14,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    14,
+    14
+   ],
+   "blocks": [
+    14,
+    14
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 16,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 12,
+  "blocks": 12,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12,
+    12
+   ],
+   "blocks": [
+    12,
+    12
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 16,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 38,
+  "blocks": 38,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    38,
+    38
+   ],
+   "blocks": [
+    38,
+    38
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 16,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 28,
+  "blocks": 28,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    28,
+    28
+   ],
+   "blocks": [
+    28,
+    28
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 16,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 16,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 13,
+  "blocks": 13,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    13,
+    13
+   ],
+   "blocks": [
+    13,
+    13
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 16,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 16,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 12,
+  "blocks": 12,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12,
+    12
+   ],
+   "blocks": [
+    12,
+    12
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 18,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    18,
+    18
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 17,
+  "blocks": 17,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17,
+    17
+   ],
+   "blocks": [
+    17,
+    17
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 19,
+  "blocks": 19,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    19,
+    19
+   ],
+   "blocks": [
+    19,
+    19
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 135,
+  "blocks": 139,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    135,
+    135
+   ],
+   "blocks": [
+    139,
+    139
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 130,
+  "blocks": 132,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    130,
+    130
+   ],
+   "blocks": [
+    132,
+    132
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 16,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 18,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    18,
+    18
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 16,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 10,
+  "blocks": 10,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10,
+    10
+   ],
+   "blocks": [
+    10,
+    10
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 16,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 6,
+  "blocks": 6,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    6,
+    6
+   ],
+   "blocks": [
+    6,
+    6
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 16,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 42,
+  "blocks": 42,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    42,
+    42
+   ],
+   "blocks": [
+    42,
+    42
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 16,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 23,
+  "blocks": 23,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    23,
+    23
+   ],
+   "blocks": [
+    23,
+    23
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 16,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 16,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 8,
+  "blocks": 8,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8,
+    8
+   ],
+   "blocks": [
+    8,
+    8
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 16,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 16,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 6,
+  "blocks": 6,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    6,
+    6
+   ],
+   "blocks": [
+    6,
+    6
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 22,
+  "blocks": 22,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    22,
+    22
+   ],
+   "blocks": [
+    22,
+    22
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 22,
+  "blocks": 22,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    22,
+    22
+   ],
+   "blocks": [
+    22,
+    22
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 198,
+  "blocks": 200,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    198,
+    198
+   ],
+   "blocks": [
+    200,
+    200
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 188,
+  "blocks": 188,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    188,
+    188
+   ],
+   "blocks": [
+    188,
+    188
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 38,
+  "blocks": 42,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    38,
+    38
+   ],
+   "blocks": [
+    42,
+    42
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 14,
+  "blocks": 14,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    14,
+    14
+   ],
+   "blocks": [
+    14,
+    14
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 24,
+  "blocks": 24,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    24,
+    24
+   ],
+   "blocks": [
+    24,
+    24
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 36,
+  "blocks": 36,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    36,
+    36
+   ],
+   "blocks": [
+    36,
+    36
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 29,
+  "blocks": 29,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29,
+    29
+   ],
+   "blocks": [
+    29,
+    29
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 37,
+  "blocks": 41,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    37,
+    37
+   ],
+   "blocks": [
+    41,
+    41
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 10,
+  "blocks": 10,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10,
+    10
+   ],
+   "blocks": [
+    10,
+    10
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 29,
+  "blocks": 31,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29,
+    29
+   ],
+   "blocks": [
+    31,
+    31
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 29,
+  "blocks": 31,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29,
+    29
+   ],
+   "blocks": [
+    31,
+    31
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 31,
+  "blocks": 33,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    31,
+    31
+   ],
+   "blocks": [
+    33,
+    33
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 15,
+  "blocks": 15,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    15,
+    15
+   ],
+   "blocks": [
+    15,
+    15
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 20,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    20,
+    20
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 232,
+  "blocks": 268,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    232,
+    232
+   ],
+   "blocks": [
+    268,
+    268
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 230,
+  "blocks": 266,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    230,
+    230
+   ],
+   "blocks": [
+    266,
+    266
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 32,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 670,
+  "blocks": 675,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    670,
+    670
+   ],
+   "blocks": [
+    675,
+    675
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 32,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 620,
+  "blocks": 627,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    620,
+    620
+   ],
+   "blocks": [
+    627,
+    627
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 32,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 617,
+  "blocks": 622,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    617,
+    617
+   ],
+   "blocks": [
+    622,
+    622
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 32,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 708,
+  "blocks": 728,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    708,
+    708
+   ],
+   "blocks": [
+    728,
+    728
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 32,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 661,
+  "blocks": 683,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    661,
+    661
+   ],
+   "blocks": [
+    683,
+    683
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 32,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 692,
+  "blocks": 713,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    692,
+    692
+   ],
+   "blocks": [
+    713,
+    713
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 32,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 610,
+  "blocks": 617,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    610,
+    610
+   ],
+   "blocks": [
+    617,
+    617
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 32,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 683,
+  "blocks": 688,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    683,
+    683
+   ],
+   "blocks": [
+    688,
+    688
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 32,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 624,
+  "blocks": 629,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    624,
+    624
+   ],
+   "blocks": [
+    629,
+    629
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 848,
+  "blocks": 851,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    848,
+    848
+   ],
+   "blocks": [
+    851,
+    851
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 608,
+  "blocks": 628,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    608,
+    608
+   ],
+   "blocks": [
+    628,
+    628
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 671,
+  "blocks": 689,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    671,
+    671
+   ],
+   "blocks": [
+    689,
+    689
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 1273,
+  "blocks": 1560,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1273,
+    1273
+   ],
+   "blocks": [
+    1560,
+    1560
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 1146,
+  "blocks": 1384,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1146,
+    1146
+   ],
+   "blocks": [
+    1384,
+    1384
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 32,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 157,
+  "blocks": 177,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    157,
+    157
+   ],
+   "blocks": [
+    177,
+    177
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 32,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 163,
+  "blocks": 194,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    163,
+    163
+   ],
+   "blocks": [
+    194,
+    194
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 32,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 162,
+  "blocks": 187,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    162,
+    162
+   ],
+   "blocks": [
+    187,
+    187
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 32,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 217,
+  "blocks": 269,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    217,
+    217
+   ],
+   "blocks": [
+    269,
+    269
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 32,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 199,
+  "blocks": 257,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    199,
+    199
+   ],
+   "blocks": [
+    257,
+    257
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 32,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 168,
+  "blocks": 205,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    168,
+    168
+   ],
+   "blocks": [
+    205,
+    205
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 32,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 155,
+  "blocks": 179,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    155,
+    155
+   ],
+   "blocks": [
+    179,
+    179
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 32,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 167,
+  "blocks": 192,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    167,
+    167
+   ],
+   "blocks": [
+    192,
+    192
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 32,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 158,
+  "blocks": 195,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    158,
+    158
+   ],
+   "blocks": [
+    195,
+    195
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 185,
+  "blocks": 188,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    185,
+    185
+   ],
+   "blocks": [
+    188,
+    188
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 149,
+  "blocks": 157,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    149,
+    149
+   ],
+   "blocks": [
+    157,
+    157
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 206,
+  "blocks": 224,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    206,
+    206
+   ],
+   "blocks": [
+    224,
+    224
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 580,
+  "blocks": 894,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    580,
+    580
+   ],
+   "blocks": [
+    894,
+    894
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 505,
+  "blocks": 768,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    505,
+    505
+   ],
+   "blocks": [
+    768,
+    768
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 261,
+  "blocks": 261,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    261,
+    261
+   ],
+   "blocks": [
+    261,
+    261
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 261,
+  "blocks": 261,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    261,
+    261
+   ],
+   "blocks": [
+    261,
+    261
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 261,
+  "blocks": 261,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    261,
+    261
+   ],
+   "blocks": [
+    261,
+    261
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 279,
+  "blocks": 279,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    279,
+    279
+   ],
+   "blocks": [
+    279,
+    279
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 266,
+  "blocks": 266,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    266,
+    266
+   ],
+   "blocks": [
+    266,
+    266
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 261,
+  "blocks": 261,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    261,
+    261
+   ],
+   "blocks": [
+    261,
+    261
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 262,
+  "blocks": 262,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    262,
+    262
+   ],
+   "blocks": [
+    262,
+    262
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 261,
+  "blocks": 261,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    261,
+    261
+   ],
+   "blocks": [
+    261,
+    261
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 261,
+  "blocks": 261,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    261,
+    261
+   ],
+   "blocks": [
+    261,
+    261
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 263,
+  "blocks": 265,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    263,
+    263
+   ],
+   "blocks": [
+    265,
+    265
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 22,
+  "blocks": 22,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    22,
+    22
+   ],
+   "blocks": [
+    22,
+    22
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 269,
+  "blocks": 269,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    269,
+    269
+   ],
+   "blocks": [
+    269,
+    269
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 326,
+  "blocks": 328,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    326,
+    326
+   ],
+   "blocks": [
+    328,
+    328
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 307,
+  "blocks": 307,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    307,
+    307
+   ],
+   "blocks": [
+    307,
+    307
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 32,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 4806,
+  "blocks": 5117,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4806,
+    4806
+   ],
+   "blocks": [
+    5117,
+    5117
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 32,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 4798,
+  "blocks": 5108,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4798,
+    4798
+   ],
+   "blocks": [
+    5108,
+    5108
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 32,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 4794,
+  "blocks": 5104,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4794,
+    4794
+   ],
+   "blocks": [
+    5104,
+    5104
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 32,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 4939,
+  "blocks": 5257,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4939,
+    4939
+   ],
+   "blocks": [
+    5257,
+    5257
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 32,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 4838,
+  "blocks": 5162,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4838,
+    4838
+   ],
+   "blocks": [
+    5162,
+    5162
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 32,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 4797,
+  "blocks": 5108,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4797,
+    4797
+   ],
+   "blocks": [
+    5108,
+    5108
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 32,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 4782,
+  "blocks": 5093,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4782,
+    4782
+   ],
+   "blocks": [
+    5093,
+    5093
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 32,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 4802,
+  "blocks": 5112,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4802,
+    4802
+   ],
+   "blocks": [
+    5112,
+    5112
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 32,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 4773,
+  "blocks": 5084,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4773,
+    4773
+   ],
+   "blocks": [
+    5084,
+    5084
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 4806,
+  "blocks": 5120,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4806,
+    4806
+   ],
+   "blocks": [
+    5120,
+    5120
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 4843,
+  "blocks": 5118,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4843,
+    4843
+   ],
+   "blocks": [
+    5118,
+    5118
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 4914,
+  "blocks": 5229,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4914,
+    4914
+   ],
+   "blocks": [
+    5229,
+    5229
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 6393,
+  "blocks": 6729,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    6393,
+    6393
+   ],
+   "blocks": [
+    6729,
+    6729
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 6341,
+  "blocks": 6653,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    6341,
+    6341
+   ],
+   "blocks": [
+    6653,
+    6653
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 152,
+  "blocks": 239,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    152,
+    152
+   ],
+   "blocks": [
+    239,
+    239
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 67,
+  "blocks": 110,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    67,
+    67
+   ],
+   "blocks": [
+    110,
+    110
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 49,
+  "blocks": 79,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    49,
+    49
+   ],
+   "blocks": [
+    79,
+    79
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 515,
+  "blocks": 692,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    515,
+    515
+   ],
+   "blocks": [
+    692,
+    692
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 418,
+  "blocks": 533,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    418,
+    418
+   ],
+   "blocks": [
+    533,
+    533
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 163,
+  "blocks": 291,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    163,
+    163
+   ],
+   "blocks": [
+    291,
+    291
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 70,
+  "blocks": 109,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    70,
+    70
+   ],
+   "blocks": [
+    109,
+    109
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 125,
+  "blocks": 206,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    125,
+    125
+   ],
+   "blocks": [
+    206,
+    206
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 100,
+  "blocks": 188,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    100,
+    100
+   ],
+   "blocks": [
+    188,
+    188
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 186,
+  "blocks": 218,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    186,
+    186
+   ],
+   "blocks": [
+    218,
+    218
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 164,
+  "blocks": 301,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    164,
+    164
+   ],
+   "blocks": [
+    301,
+    301
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 260,
+  "blocks": 325,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    260,
+    260
+   ],
+   "blocks": [
+    325,
+    325
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 3252,
+  "blocks": 6354,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3252,
+    3252
+   ],
+   "blocks": [
+    6354,
+    6354
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 2899,
+  "blocks": 5253,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2899,
+    2899
+   ],
+   "blocks": [
+    5253,
+    5253
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 32,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 19,
+  "blocks": 21,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    19,
+    19
+   ],
+   "blocks": [
+    21,
+    21
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 32,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 14,
+  "blocks": 14,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    14,
+    14
+   ],
+   "blocks": [
+    14,
+    14
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 32,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 12,
+  "blocks": 12,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12,
+    12
+   ],
+   "blocks": [
+    12,
+    12
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 32,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 38,
+  "blocks": 38,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    38,
+    38
+   ],
+   "blocks": [
+    38,
+    38
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 32,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 28,
+  "blocks": 28,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    28,
+    28
+   ],
+   "blocks": [
+    28,
+    28
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 32,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 32,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 13,
+  "blocks": 13,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    13,
+    13
+   ],
+   "blocks": [
+    13,
+    13
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 32,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 32,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 12,
+  "blocks": 12,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12,
+    12
+   ],
+   "blocks": [
+    12,
+    12
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 18,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    18,
+    18
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 17,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17,
+    17
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 19,
+  "blocks": 19,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    19,
+    19
+   ],
+   "blocks": [
+    19,
+    19
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 189,
+  "blocks": 200,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    189,
+    189
+   ],
+   "blocks": [
+    200,
+    200
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 182,
+  "blocks": 187,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    182,
+    182
+   ],
+   "blocks": [
+    187,
+    187
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 32,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 18,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    18,
+    18
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 32,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 10,
+  "blocks": 10,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10,
+    10
+   ],
+   "blocks": [
+    10,
+    10
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 32,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 6,
+  "blocks": 6,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    6,
+    6
+   ],
+   "blocks": [
+    6,
+    6
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 32,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 42,
+  "blocks": 42,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    42,
+    42
+   ],
+   "blocks": [
+    42,
+    42
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 32,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 23,
+  "blocks": 23,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    23,
+    23
+   ],
+   "blocks": [
+    23,
+    23
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 32,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 32,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 8,
+  "blocks": 8,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8,
+    8
+   ],
+   "blocks": [
+    8,
+    8
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 32,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 32,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 6,
+  "blocks": 6,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    6,
+    6
+   ],
+   "blocks": [
+    6,
+    6
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 22,
+  "blocks": 22,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    22,
+    22
+   ],
+   "blocks": [
+    22,
+    22
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 22,
+  "blocks": 22,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    22,
+    22
+   ],
+   "blocks": [
+    22,
+    22
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 283,
+  "blocks": 285,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    283,
+    283
+   ],
+   "blocks": [
+    285,
+    285
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 273,
+  "blocks": 273,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    273,
+    273
+   ],
+   "blocks": [
+    273,
+    273
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 38,
+  "blocks": 42,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    38,
+    38
+   ],
+   "blocks": [
+    42,
+    42
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 14,
+  "blocks": 14,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    14,
+    14
+   ],
+   "blocks": [
+    14,
+    14
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 24,
+  "blocks": 24,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    24,
+    24
+   ],
+   "blocks": [
+    24,
+    24
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 36,
+  "blocks": 36,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    36,
+    36
+   ],
+   "blocks": [
+    36,
+    36
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 29,
+  "blocks": 29,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29,
+    29
+   ],
+   "blocks": [
+    29,
+    29
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 37,
+  "blocks": 41,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    37,
+    37
+   ],
+   "blocks": [
+    41,
+    41
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 10,
+  "blocks": 10,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10,
+    10
+   ],
+   "blocks": [
+    10,
+    10
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 29,
+  "blocks": 31,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29,
+    29
+   ],
+   "blocks": [
+    31,
+    31
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 29,
+  "blocks": 31,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29,
+    29
+   ],
+   "blocks": [
+    31,
+    31
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 31,
+  "blocks": 33,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    31,
+    31
+   ],
+   "blocks": [
+    33,
+    33
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 15,
+  "blocks": 15,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    15,
+    15
+   ],
+   "blocks": [
+    15,
+    15
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 20,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    20,
+    20
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 367,
+  "blocks": 429,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    367,
+    367
+   ],
+   "blocks": [
+    429,
+    429
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 365,
+  "blocks": 427,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    365,
+    365
+   ],
+   "blocks": [
+    427,
+    427
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 64,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 1166,
+  "blocks": 1171,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1166,
+    1166
+   ],
+   "blocks": [
+    1171,
+    1171
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 64,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 1116,
+  "blocks": 1123,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1116,
+    1116
+   ],
+   "blocks": [
+    1123,
+    1123
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 64,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 1113,
+  "blocks": 1118,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1113,
+    1113
+   ],
+   "blocks": [
+    1118,
+    1118
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 64,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 1229,
+  "blocks": 1249,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1229,
+    1229
+   ],
+   "blocks": [
+    1249,
+    1249
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 64,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 1182,
+  "blocks": 1204,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1182,
+    1182
+   ],
+   "blocks": [
+    1204,
+    1204
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 64,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 1188,
+  "blocks": 1219,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1188,
+    1188
+   ],
+   "blocks": [
+    1219,
+    1219
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 64,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 1106,
+  "blocks": 1113,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1106,
+    1106
+   ],
+   "blocks": [
+    1113,
+    1113
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 64,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 1179,
+  "blocks": 1184,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1179,
+    1179
+   ],
+   "blocks": [
+    1184,
+    1184
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 64,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 1123,
+  "blocks": 1128,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1123,
+    1123
+   ],
+   "blocks": [
+    1128,
+    1128
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 1570,
+  "blocks": 1573,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1570,
+    1570
+   ],
+   "blocks": [
+    1573,
+    1573
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 1095,
+  "blocks": 1129,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1095,
+    1095
+   ],
+   "blocks": [
+    1129,
+    1129
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 1209,
+  "blocks": 1227,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1209,
+    1209
+   ],
+   "blocks": [
+    1227,
+    1227
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 2028,
+  "blocks": 2419,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2028,
+    2028
+   ],
+   "blocks": [
+    2419,
+    2419
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 1903,
+  "blocks": 2199,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1903,
+    1903
+   ],
+   "blocks": [
+    2199,
+    2199
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 64,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 210,
+  "blocks": 230,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    210,
+    210
+   ],
+   "blocks": [
+    230,
+    230
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 64,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 216,
+  "blocks": 247,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    216,
+    216
+   ],
+   "blocks": [
+    247,
+    247
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 64,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 215,
+  "blocks": 240,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    215,
+    215
+   ],
+   "blocks": [
+    240,
+    240
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 64,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 273,
+  "blocks": 336,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    273,
+    273
+   ],
+   "blocks": [
+    336,
+    336
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 64,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 255,
+  "blocks": 324,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    255,
+    255
+   ],
+   "blocks": [
+    324,
+    324
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 64,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 221,
+  "blocks": 268,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    221,
+    221
+   ],
+   "blocks": [
+    268,
+    268
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 64,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 208,
+  "blocks": 232,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    208,
+    208
+   ],
+   "blocks": [
+    232,
+    232
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 64,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 220,
+  "blocks": 245,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    220,
+    220
+   ],
+   "blocks": [
+    245,
+    245
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 64,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 212,
+  "blocks": 259,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    212,
+    212
+   ],
+   "blocks": [
+    259,
+    259
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 238,
+  "blocks": 241,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    238,
+    238
+   ],
+   "blocks": [
+    241,
+    241
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 149,
+  "blocks": 157,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    149,
+    149
+   ],
+   "blocks": [
+    157,
+    157
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 259,
+  "blocks": 277,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    259,
+    259
+   ],
+   "blocks": [
+    277,
+    277
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 821,
+  "blocks": 1260,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    821,
+    821
+   ],
+   "blocks": [
+    1260,
+    1260
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 735,
+  "blocks": 1078,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    735,
+    735
+   ],
+   "blocks": [
+    1078,
+    1078
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 425,
+  "blocks": 425,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    425,
+    425
+   ],
+   "blocks": [
+    425,
+    425
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 425,
+  "blocks": 425,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    425,
+    425
+   ],
+   "blocks": [
+    425,
+    425
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 425,
+  "blocks": 425,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    425,
+    425
+   ],
+   "blocks": [
+    425,
+    425
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 443,
+  "blocks": 443,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    443,
+    443
+   ],
+   "blocks": [
+    443,
+    443
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 430,
+  "blocks": 430,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    430,
+    430
+   ],
+   "blocks": [
+    430,
+    430
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 425,
+  "blocks": 425,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    425,
+    425
+   ],
+   "blocks": [
+    425,
+    425
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 426,
+  "blocks": 426,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    426,
+    426
+   ],
+   "blocks": [
+    426,
+    426
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 425,
+  "blocks": 425,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    425,
+    425
+   ],
+   "blocks": [
+    425,
+    425
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 425,
+  "blocks": 425,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    425,
+    425
+   ],
+   "blocks": [
+    425,
+    425
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 428,
+  "blocks": 431,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    428,
+    428
+   ],
+   "blocks": [
+    431,
+    431
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 22,
+  "blocks": 22,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    22,
+    22
+   ],
+   "blocks": [
+    22,
+    22
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 433,
+  "blocks": 433,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    433,
+    433
+   ],
+   "blocks": [
+    433,
+    433
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 502,
+  "blocks": 504,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    502,
+    502
+   ],
+   "blocks": [
+    504,
+    504
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 483,
+  "blocks": 483,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    483,
+    483
+   ],
+   "blocks": [
+    483,
+    483
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 64,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 8824,
+  "blocks": 9400,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8824,
+    8824
+   ],
+   "blocks": [
+    9400,
+    9400
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 64,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 8816,
+  "blocks": 9391,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8816,
+    8816
+   ],
+   "blocks": [
+    9391,
+    9391
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 64,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 8812,
+  "blocks": 9387,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8812,
+    8812
+   ],
+   "blocks": [
+    9387,
+    9387
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 64,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 8959,
+  "blocks": 9542,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8959,
+    8959
+   ],
+   "blocks": [
+    9542,
+    9542
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 64,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 8856,
+  "blocks": 9449,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8856,
+    8856
+   ],
+   "blocks": [
+    9449,
+    9449
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 64,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 8815,
+  "blocks": 9391,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8815,
+    8815
+   ],
+   "blocks": [
+    9391,
+    9391
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 64,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 8800,
+  "blocks": 9376,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8800,
+    8800
+   ],
+   "blocks": [
+    9376,
+    9376
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 64,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 8820,
+  "blocks": 9395,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8820,
+    8820
+   ],
+   "blocks": [
+    9395,
+    9395
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 64,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 8799,
+  "blocks": 9375,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8799,
+    8799
+   ],
+   "blocks": [
+    9375,
+    9375
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 8824,
+  "blocks": 9404,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8824,
+    8824
+   ],
+   "blocks": [
+    9404,
+    9404
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 8861,
+  "blocks": 9368,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8861,
+    8861
+   ],
+   "blocks": [
+    9368,
+    9368
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 8932,
+  "blocks": 9512,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8932,
+    8932
+   ],
+   "blocks": [
+    9512,
+    9512
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 11174,
+  "blocks": 11747,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    11174,
+    11174
+   ],
+   "blocks": [
+    11747,
+    11747
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 11168,
+  "blocks": 11712,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    11168,
+    11168
+   ],
+   "blocks": [
+    11712,
+    11712
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 152,
+  "blocks": 239,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    152,
+    152
+   ],
+   "blocks": [
+    239,
+    239
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 67,
+  "blocks": 110,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    67,
+    67
+   ],
+   "blocks": [
+    110,
+    110
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 49,
+  "blocks": 79,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    49,
+    49
+   ],
+   "blocks": [
+    79,
+    79
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 541,
+  "blocks": 745,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    541,
+    541
+   ],
+   "blocks": [
+    745,
+    745
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 444,
+  "blocks": 585,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    444,
+    444
+   ],
+   "blocks": [
+    585,
+    585
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 163,
+  "blocks": 291,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    163,
+    163
+   ],
+   "blocks": [
+    291,
+    291
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 70,
+  "blocks": 109,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    70,
+    70
+   ],
+   "blocks": [
+    109,
+    109
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 125,
+  "blocks": 206,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    125,
+    125
+   ],
+   "blocks": [
+    206,
+    206
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 194,
+  "blocks": 322,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    194,
+    194
+   ],
+   "blocks": [
+    322,
+    322
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 200,
+  "blocks": 232,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    200,
+    200
+   ],
+   "blocks": [
+    232,
+    232
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 164,
+  "blocks": 301,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    164,
+    164
+   ],
+   "blocks": [
+    301,
+    301
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 260,
+  "blocks": 325,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    260,
+    260
+   ],
+   "blocks": [
+    325,
+    325
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 5047,
+  "blocks": 10315,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    5047,
+    5047
+   ],
+   "blocks": [
+    10315,
+    10315
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 4727,
+  "blocks": 9033,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4727,
+    4727
+   ],
+   "blocks": [
+    9033,
+    9033
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 64,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 19,
+  "blocks": 21,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    19,
+    19
+   ],
+   "blocks": [
+    21,
+    21
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 64,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 14,
+  "blocks": 14,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    14,
+    14
+   ],
+   "blocks": [
+    14,
+    14
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 64,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 12,
+  "blocks": 12,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12,
+    12
+   ],
+   "blocks": [
+    12,
+    12
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 64,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 41,
+  "blocks": 41,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    41,
+    41
+   ],
+   "blocks": [
+    41,
+    41
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 64,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 31,
+  "blocks": 31,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    31,
+    31
+   ],
+   "blocks": [
+    31,
+    31
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 64,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 64,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 13,
+  "blocks": 13,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    13,
+    13
+   ],
+   "blocks": [
+    13,
+    13
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 64,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 64,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 18,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    18,
+    18
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 17,
+  "blocks": 21,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17,
+    17
+   ],
+   "blocks": [
+    21,
+    21
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 19,
+  "blocks": 19,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    19,
+    19
+   ],
+   "blocks": [
+    19,
+    19
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 315,
+  "blocks": 329,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    315,
+    315
+   ],
+   "blocks": [
+    329,
+    329
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 314,
+  "blocks": 320,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    314,
+    314
+   ],
+   "blocks": [
+    320,
+    320
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 64,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 18,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    18,
+    18
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 64,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 10,
+  "blocks": 10,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10,
+    10
+   ],
+   "blocks": [
+    10,
+    10
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 64,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 6,
+  "blocks": 6,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    6,
+    6
+   ],
+   "blocks": [
+    6,
+    6
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 64,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 44,
+  "blocks": 44,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    44,
+    44
+   ],
+   "blocks": [
+    44,
+    44
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 64,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 25,
+  "blocks": 25,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    25,
+    25
+   ],
+   "blocks": [
+    25,
+    25
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 64,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 64,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 8,
+  "blocks": 8,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8,
+    8
+   ],
+   "blocks": [
+    8,
+    8
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 64,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 64,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 10,
+  "blocks": 10,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10,
+    10
+   ],
+   "blocks": [
+    10,
+    10
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 22,
+  "blocks": 22,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    22,
+    22
+   ],
+   "blocks": [
+    22,
+    22
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 22,
+  "blocks": 22,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    22,
+    22
+   ],
+   "blocks": [
+    22,
+    22
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 450,
+  "blocks": 452,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    450,
+    450
+   ],
+   "blocks": [
+    452,
+    452
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 440,
+  "blocks": 440,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    440,
+    440
+   ],
+   "blocks": [
+    440,
+    440
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 38,
+  "blocks": 42,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    38,
+    38
+   ],
+   "blocks": [
+    42,
+    42
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 14,
+  "blocks": 14,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    14,
+    14
+   ],
+   "blocks": [
+    14,
+    14
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 29,
+  "blocks": 31,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29,
+    29
+   ],
+   "blocks": [
+    31,
+    31
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 41,
+  "blocks": 43,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    41,
+    41
+   ],
+   "blocks": [
+    43,
+    43
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 34,
+  "blocks": 36,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    34,
+    34
+   ],
+   "blocks": [
+    36,
+    36
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 37,
+  "blocks": 41,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    37,
+    37
+   ],
+   "blocks": [
+    41,
+    41
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 10,
+  "blocks": 10,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10,
+    10
+   ],
+   "blocks": [
+    10,
+    10
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 29,
+  "blocks": 31,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29,
+    29
+   ],
+   "blocks": [
+    31,
+    31
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 37,
+  "blocks": 41,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    37,
+    37
+   ],
+   "blocks": [
+    41,
+    41
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 39,
+  "blocks": 43,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    39,
+    39
+   ],
+   "blocks": [
+    43,
+    43
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 15,
+  "blocks": 15,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    15,
+    15
+   ],
+   "blocks": [
+    15,
+    15
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 20,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    20,
+    20
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 650,
+  "blocks": 769,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    650,
+    650
+   ],
+   "blocks": [
+    769,
+    769
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 648,
+  "blocks": 764,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    648,
+    648
+   ],
+   "blocks": [
+    764,
+    764
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 128,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 2097,
+  "blocks": 2102,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2097,
+    2097
+   ],
+   "blocks": [
+    2102,
+    2102
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 128,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 2089,
+  "blocks": 2138,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2089,
+    2089
+   ],
+   "blocks": [
+    2138,
+    2138
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 128,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 2044,
+  "blocks": 2049,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2044,
+    2044
+   ],
+   "blocks": [
+    2049,
+    2049
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 128,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 2160,
+  "blocks": 2180,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2160,
+    2160
+   ],
+   "blocks": [
+    2180,
+    2180
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 128,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 2113,
+  "blocks": 2135,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2113,
+    2113
+   ],
+   "blocks": [
+    2135,
+    2135
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 128,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 2119,
+  "blocks": 2168,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2119,
+    2119
+   ],
+   "blocks": [
+    2168,
+    2168
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 128,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 2037,
+  "blocks": 2044,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2037,
+    2037
+   ],
+   "blocks": [
+    2044,
+    2044
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 128,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 2110,
+  "blocks": 2115,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2110,
+    2110
+   ],
+   "blocks": [
+    2115,
+    2115
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 128,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 2054,
+  "blocks": 2059,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2054,
+    2054
+   ],
+   "blocks": [
+    2059,
+    2059
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 2941,
+  "blocks": 2944,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2941,
+    2941
+   ],
+   "blocks": [
+    2944,
+    2944
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 1994,
+  "blocks": 2052,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1994,
+    1994
+   ],
+   "blocks": [
+    2052,
+    2052
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 2201,
+  "blocks": 2219,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2201,
+    2201
+   ],
+   "blocks": [
+    2219,
+    2219
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 3611,
+  "blocks": 4266,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3611,
+    3611
+   ],
+   "blocks": [
+    4266,
+    4266
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 3501,
+  "blocks": 4028,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3501,
+    3501
+   ],
+   "blocks": [
+    4028,
+    4028
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 128,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 305,
+  "blocks": 325,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    305,
+    305
+   ],
+   "blocks": [
+    325,
+    325
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 128,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 326,
+  "blocks": 402,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    326,
+    326
+   ],
+   "blocks": [
+    402,
+    402
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 128,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 310,
+  "blocks": 335,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    310,
+    310
+   ],
+   "blocks": [
+    335,
+    335
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 128,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 368,
+  "blocks": 449,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    368,
+    368
+   ],
+   "blocks": [
+    449,
+    449
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 128,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 350,
+  "blocks": 437,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    350,
+    350
+   ],
+   "blocks": [
+    437,
+    437
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 128,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 316,
+  "blocks": 381,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    316,
+    316
+   ],
+   "blocks": [
+    381,
+    381
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 128,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 303,
+  "blocks": 327,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    303,
+    303
+   ],
+   "blocks": [
+    327,
+    327
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 128,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 315,
+  "blocks": 340,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    315,
+    315
+   ],
+   "blocks": [
+    340,
+    340
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 128,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 307,
+  "blocks": 372,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    307,
+    307
+   ],
+   "blocks": [
+    372,
+    372
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 333,
+  "blocks": 336,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    333,
+    333
+   ],
+   "blocks": [
+    336,
+    336
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 149,
+  "blocks": 157,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    149,
+    149
+   ],
+   "blocks": [
+    157,
+    157
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 354,
+  "blocks": 372,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    354,
+    354
+   ],
+   "blocks": [
+    372,
+    372
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 1359,
+  "blocks": 2102,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1359,
+    1359
+   ],
+   "blocks": [
+    2102,
+    2102
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 1285,
+  "blocks": 1898,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1285,
+    1285
+   ],
+   "blocks": [
+    1898,
+    1898
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 791,
+  "blocks": 791,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    791,
+    791
+   ],
+   "blocks": [
+    791,
+    791
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 791,
+  "blocks": 791,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    791,
+    791
+   ],
+   "blocks": [
+    791,
+    791
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 791,
+  "blocks": 791,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    791,
+    791
+   ],
+   "blocks": [
+    791,
+    791
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 809,
+  "blocks": 809,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    809,
+    809
+   ],
+   "blocks": [
+    809,
+    809
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 796,
+  "blocks": 796,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    796,
+    796
+   ],
+   "blocks": [
+    796,
+    796
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 791,
+  "blocks": 791,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    791,
+    791
+   ],
+   "blocks": [
+    791,
+    791
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 792,
+  "blocks": 792,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    792,
+    792
+   ],
+   "blocks": [
+    792,
+    792
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 791,
+  "blocks": 791,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    791,
+    791
+   ],
+   "blocks": [
+    791,
+    791
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 791,
+  "blocks": 791,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    791,
+    791
+   ],
+   "blocks": [
+    791,
+    791
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 795,
+  "blocks": 799,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    795,
+    795
+   ],
+   "blocks": [
+    799,
+    799
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 22,
+  "blocks": 22,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    22,
+    22
+   ],
+   "blocks": [
+    22,
+    22
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 799,
+  "blocks": 799,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    799,
+    799
+   ],
+   "blocks": [
+    799,
+    799
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 921,
+  "blocks": 923,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    921,
+    921
+   ],
+   "blocks": [
+    923,
+    923
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 908,
+  "blocks": 908,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    908,
+    908
+   ],
+   "blocks": [
+    908,
+    908
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 128,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 17020,
+  "blocks": 18122,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17020,
+    17020
+   ],
+   "blocks": [
+    18122,
+    18122
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 128,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 17029,
+  "blocks": 18130,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17029,
+    17029
+   ],
+   "blocks": [
+    18130,
+    18130
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 128,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 17034,
+  "blocks": 18138,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17034,
+    17034
+   ],
+   "blocks": [
+    18138,
+    18138
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 128,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 17181,
+  "blocks": 18293,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17181,
+    17181
+   ],
+   "blocks": [
+    18293,
+    18293
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 128,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 17078,
+  "blocks": 18213,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17078,
+    17078
+   ],
+   "blocks": [
+    18213,
+    18213
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 128,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 17037,
+  "blocks": 18142,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17037,
+    17037
+   ],
+   "blocks": [
+    18142,
+    18142
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 128,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 17022,
+  "blocks": 18127,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17022,
+    17022
+   ],
+   "blocks": [
+    18127,
+    18127
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 128,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 17042,
+  "blocks": 18146,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17042,
+    17042
+   ],
+   "blocks": [
+    18146,
+    18146
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 128,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 17021,
+  "blocks": 18126,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17021,
+    17021
+   ],
+   "blocks": [
+    18126,
+    18126
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 17046,
+  "blocks": 18156,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17046,
+    17046
+   ],
+   "blocks": [
+    18156,
+    18156
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 17083,
+  "blocks": 18050,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17083,
+    17083
+   ],
+   "blocks": [
+    18050,
+    18050
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 17154,
+  "blocks": 18263,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17154,
+    17154
+   ],
+   "blocks": [
+    18263,
+    18263
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 21316,
+  "blocks": 22370,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    21316,
+    21316
+   ],
+   "blocks": [
+    22370,
+    22370
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 21449,
+  "blocks": 22489,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    21449,
+    21449
+   ],
+   "blocks": [
+    22489,
+    22489
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 152,
+  "blocks": 239,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    152,
+    152
+   ],
+   "blocks": [
+    239,
+    239
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 128,
+  "blocks": 226,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    128,
+    128
+   ],
+   "blocks": [
+    226,
+    226
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 49,
+  "blocks": 79,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    49,
+    49
+   ],
+   "blocks": [
+    79,
+    79
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 542,
+  "blocks": 746,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    542,
+    542
+   ],
+   "blocks": [
+    746,
+    746
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 444,
+  "blocks": 585,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    444,
+    444
+   ],
+   "blocks": [
+    585,
+    585
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 163,
+  "blocks": 291,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    163,
+    163
+   ],
+   "blocks": [
+    291,
+    291
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 70,
+  "blocks": 109,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    70,
+    70
+   ],
+   "blocks": [
+    109,
+    109
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 125,
+  "blocks": 206,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    125,
+    125
+   ],
+   "blocks": [
+    206,
+    206
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 231,
+  "blocks": 359,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    231,
+    231
+   ],
+   "blocks": [
+    359,
+    359
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 214,
+  "blocks": 246,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    214,
+    214
+   ],
+   "blocks": [
+    246,
+    246
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 164,
+  "blocks": 301,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    164,
+    164
+   ],
+   "blocks": [
+    301,
+    301
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 260,
+  "blocks": 325,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    260,
+    260
+   ],
+   "blocks": [
+    325,
+    325
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 9295,
+  "blocks": 19308,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    9295,
+    9295
+   ],
+   "blocks": [
+    19308,
+    19308
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 8940,
+  "blocks": 17486,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8940,
+    8940
+   ],
+   "blocks": [
+    17486,
+    17486
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 128,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 19,
+  "blocks": 21,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    19,
+    19
+   ],
+   "blocks": [
+    21,
+    21
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 128,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 18,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    18,
+    18
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 128,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 12,
+  "blocks": 12,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12,
+    12
+   ],
+   "blocks": [
+    12,
+    12
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 128,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 41,
+  "blocks": 41,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    41,
+    41
+   ],
+   "blocks": [
+    41,
+    41
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 128,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 31,
+  "blocks": 31,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    31,
+    31
+   ],
+   "blocks": [
+    31,
+    31
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 128,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 128,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 13,
+  "blocks": 13,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    13,
+    13
+   ],
+   "blocks": [
+    13,
+    13
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 128,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 128,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 18,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    18,
+    18
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 17,
+  "blocks": 23,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17,
+    17
+   ],
+   "blocks": [
+    23,
+    23
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 19,
+  "blocks": 19,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    19,
+    19
+   ],
+   "blocks": [
+    19,
+    19
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 613,
+  "blocks": 633,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    613,
+    613
+   ],
+   "blocks": [
+    633,
+    633
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 624,
+  "blocks": 632,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    624,
+    624
+   ],
+   "blocks": [
+    632,
+    632
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 128,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 18,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    18,
+    18
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 128,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 12,
+  "blocks": 12,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12,
+    12
+   ],
+   "blocks": [
+    12,
+    12
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 128,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 6,
+  "blocks": 6,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    6,
+    6
+   ],
+   "blocks": [
+    6,
+    6
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 128,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 44,
+  "blocks": 44,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    44,
+    44
+   ],
+   "blocks": [
+    44,
+    44
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 128,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 25,
+  "blocks": 25,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    25,
+    25
+   ],
+   "blocks": [
+    25,
+    25
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 128,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 128,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 8,
+  "blocks": 8,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8,
+    8
+   ],
+   "blocks": [
+    8,
+    8
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 128,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 128,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 10,
+  "blocks": 10,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10,
+    10
+   ],
+   "blocks": [
+    10,
+    10
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 22,
+  "blocks": 22,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    22,
+    22
+   ],
+   "blocks": [
+    22,
+    22
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 22,
+  "blocks": 22,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    22,
+    22
+   ],
+   "blocks": [
+    22,
+    22
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 843,
+  "blocks": 845,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    843,
+    843
+   ],
+   "blocks": [
+    845,
+    845
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 837,
+  "blocks": 837,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    837,
+    837
+   ],
+   "blocks": [
+    837,
+    837
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 38,
+  "blocks": 42,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    38,
+    38
+   ],
+   "blocks": [
+    42,
+    42
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 29,
+  "blocks": 31,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29,
+    29
+   ],
+   "blocks": [
+    31,
+    31
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 41,
+  "blocks": 43,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    41,
+    41
+   ],
+   "blocks": [
+    43,
+    43
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 34,
+  "blocks": 36,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    34,
+    34
+   ],
+   "blocks": [
+    36,
+    36
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 37,
+  "blocks": 41,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    37,
+    37
+   ],
+   "blocks": [
+    41,
+    41
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 10,
+  "blocks": 10,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10,
+    10
+   ],
+   "blocks": [
+    10,
+    10
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 29,
+  "blocks": 31,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29,
+    29
+   ],
+   "blocks": [
+    31,
+    31
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 37,
+  "blocks": 41,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    37,
+    37
+   ],
+   "blocks": [
+    41,
+    41
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 39,
+  "blocks": 43,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    39,
+    39
+   ],
+   "blocks": [
+    43,
+    43
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 15,
+  "blocks": 15,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    15,
+    15
+   ],
+   "blocks": [
+    15,
+    15
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 20,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    20,
+    20
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 1249,
+  "blocks": 1481,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1249,
+    1249
+   ],
+   "blocks": [
+    1481,
+    1481
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 1251,
+  "blocks": 1479,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1251,
+    1251
+   ],
+   "blocks": [
+    1479,
+    1479
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 256,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 5767,
+  "blocks": 5772,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    5767,
+    5767
+   ],
+   "blocks": [
+    5772,
+    5772
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 256,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 4270,
+  "blocks": 4380,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4270,
+    4270
+   ],
+   "blocks": [
+    4380,
+    4380
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 256,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 4251,
+  "blocks": 4256,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4251,
+    4251
+   ],
+   "blocks": [
+    4256,
+    4256
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 256,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 4321,
+  "blocks": 4341,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4321,
+    4321
+   ],
+   "blocks": [
+    4341,
+    4341
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 256,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 4274,
+  "blocks": 4296,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4274,
+    4274
+   ],
+   "blocks": [
+    4296,
+    4296
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 256,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 4245,
+  "blocks": 4353,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4245,
+    4245
+   ],
+   "blocks": [
+    4353,
+    4353
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 256,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 4232,
+  "blocks": 4239,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4232,
+    4232
+   ],
+   "blocks": [
+    4239,
+    4239
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 256,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 4244,
+  "blocks": 4249,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4244,
+    4244
+   ],
+   "blocks": [
+    4249,
+    4249
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 256,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 4234,
+  "blocks": 4239,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4234,
+    4234
+   ],
+   "blocks": [
+    4239,
+    4239
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 5821,
+  "blocks": 5824,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    5821,
+    5821
+   ],
+   "blocks": [
+    5824,
+    5824
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 3933,
+  "blocks": 4040,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3933,
+    3933
+   ],
+   "blocks": [
+    4040,
+    4040
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 4327,
+  "blocks": 4345,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    4327,
+    4327
+   ],
+   "blocks": [
+    4345,
+    4345
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 7455,
+  "blocks": 9108,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    7455,
+    7455
+   ],
+   "blocks": [
+    9108,
+    9108
+   ]
+  }
+ },
+ {
+  "variant": "beni-direct",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 6949,
+  "blocks": 8073,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    6949,
+    6949
+   ],
+   "blocks": [
+    8073,
+    8073
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 256,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 516,
+  "blocks": 536,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    516,
+    516
+   ],
+   "blocks": [
+    536,
+    536
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 256,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 537,
+  "blocks": 650,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    537,
+    537
+   ],
+   "blocks": [
+    650,
+    650
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 256,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 521,
+  "blocks": 546,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    521,
+    521
+   ],
+   "blocks": [
+    546,
+    546
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 256,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 579,
+  "blocks": 697,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    579,
+    579
+   ],
+   "blocks": [
+    697,
+    697
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 256,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 561,
+  "blocks": 685,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    561,
+    561
+   ],
+   "blocks": [
+    685,
+    685
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 256,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 527,
+  "blocks": 629,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    527,
+    527
+   ],
+   "blocks": [
+    629,
+    629
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 256,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 514,
+  "blocks": 538,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    514,
+    514
+   ],
+   "blocks": [
+    538,
+    538
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 256,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 526,
+  "blocks": 551,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    526,
+    526
+   ],
+   "blocks": [
+    551,
+    551
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 256,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 518,
+  "blocks": 620,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    518,
+    518
+   ],
+   "blocks": [
+    620,
+    620
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 544,
+  "blocks": 547,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    544,
+    544
+   ],
+   "blocks": [
+    547,
+    547
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 149,
+  "blocks": 157,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    149,
+    149
+   ],
+   "blocks": [
+    157,
+    157
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 565,
+  "blocks": 583,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    565,
+    565
+   ],
+   "blocks": [
+    583,
+    583
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 2708,
+  "blocks": 4533,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2708,
+    2708
+   ],
+   "blocks": [
+    4533,
+    4533
+   ]
+  }
+ },
+ {
+  "variant": "beni-tea",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 2395,
+  "blocks": 3688,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2395,
+    2395
+   ],
+   "blocks": [
+    3688,
+    3688
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 1556,
+  "blocks": 1556,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1556,
+    1556
+   ],
+   "blocks": [
+    1556,
+    1556
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 1556,
+  "blocks": 1556,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1556,
+    1556
+   ],
+   "blocks": [
+    1556,
+    1556
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 1556,
+  "blocks": 1556,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1556,
+    1556
+   ],
+   "blocks": [
+    1556,
+    1556
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 1574,
+  "blocks": 1574,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1574,
+    1574
+   ],
+   "blocks": [
+    1574,
+    1574
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 1561,
+  "blocks": 1561,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1561,
+    1561
+   ],
+   "blocks": [
+    1561,
+    1561
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 1556,
+  "blocks": 1556,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1556,
+    1556
+   ],
+   "blocks": [
+    1556,
+    1556
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 1557,
+  "blocks": 1557,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1557,
+    1557
+   ],
+   "blocks": [
+    1557,
+    1557
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 1556,
+  "blocks": 1556,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1556,
+    1556
+   ],
+   "blocks": [
+    1556,
+    1556
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 1556,
+  "blocks": 1556,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1556,
+    1556
+   ],
+   "blocks": [
+    1556,
+    1556
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 1565,
+  "blocks": 1574,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1565,
+    1565
+   ],
+   "blocks": [
+    1574,
+    1574
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 22,
+  "blocks": 22,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    22,
+    22
+   ],
+   "blocks": [
+    22,
+    22
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 1564,
+  "blocks": 1564,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1564,
+    1564
+   ],
+   "blocks": [
+    1564,
+    1564
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 1796,
+  "blocks": 1798,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1796,
+    1796
+   ],
+   "blocks": [
+    1798,
+    1798
+   ]
+  }
+ },
+ {
+  "variant": "digest",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 1795,
+  "blocks": 1795,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1795,
+    1795
+   ],
+   "blocks": [
+    1795,
+    1795
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 256,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 32954,
+  "blocks": 35124,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    32954,
+    32954
+   ],
+   "blocks": [
+    35124,
+    35124
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 256,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 32958,
+  "blocks": 35127,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    32958,
+    32958
+   ],
+   "blocks": [
+    35127,
+    35127
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 256,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 32963,
+  "blocks": 35135,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    32963,
+    32963
+   ],
+   "blocks": [
+    35135,
+    35135
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 256,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 33110,
+  "blocks": 35290,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    33110,
+    33110
+   ],
+   "blocks": [
+    35290,
+    35290
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 256,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 33007,
+  "blocks": 35241,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    33007,
+    33007
+   ],
+   "blocks": [
+    35241,
+    35241
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 256,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 32966,
+  "blocks": 35139,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    32966,
+    32966
+   ],
+   "blocks": [
+    35139,
+    35139
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 256,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 32951,
+  "blocks": 35124,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    32951,
+    32951
+   ],
+   "blocks": [
+    35124,
+    35124
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 256,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 32971,
+  "blocks": 35143,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    32971,
+    32971
+   ],
+   "blocks": [
+    35143,
+    35143
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 256,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 32950,
+  "blocks": 35123,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    32950,
+    32950
+   ],
+   "blocks": [
+    35123,
+    35123
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 32979,
+  "blocks": 35162,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    32979,
+    32979
+   ],
+   "blocks": [
+    35162,
+    35162
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 33012,
+  "blocks": 34906,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    33012,
+    33012
+   ],
+   "blocks": [
+    34906,
+    34906
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 33083,
+  "blocks": 35260,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    33083,
+    33083
+   ],
+   "blocks": [
+    35260,
+    35260
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 41610,
+  "blocks": 43714,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    41610,
+    41610
+   ],
+   "blocks": [
+    43714,
+    43714
+   ]
+  }
+ },
+ {
+  "variant": "elm",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 41990,
+  "blocks": 44087,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    41990,
+    41990
+   ],
+   "blocks": [
+    44087,
+    44087
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 152,
+  "blocks": 239,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    152,
+    152
+   ],
+   "blocks": [
+    239,
+    239
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 128,
+  "blocks": 226,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    128,
+    128
+   ],
+   "blocks": [
+    226,
+    226
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 49,
+  "blocks": 79,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    49,
+    49
+   ],
+   "blocks": [
+    79,
+    79
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 542,
+  "blocks": 746,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    542,
+    542
+   ],
+   "blocks": [
+    746,
+    746
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 444,
+  "blocks": 585,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    444,
+    444
+   ],
+   "blocks": [
+    585,
+    585
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 163,
+  "blocks": 291,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    163,
+    163
+   ],
+   "blocks": [
+    291,
+    291
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 70,
+  "blocks": 109,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    70,
+    70
+   ],
+   "blocks": [
+    109,
+    109
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 125,
+  "blocks": 206,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    125,
+    125
+   ],
+   "blocks": [
+    206,
+    206
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 348,
+  "blocks": 476,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    348,
+    348
+   ],
+   "blocks": [
+    476,
+    476
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 305,
+  "blocks": 350,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    305,
+    305
+   ],
+   "blocks": [
+    350,
+    350
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 164,
+  "blocks": 301,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    164,
+    164
+   ],
+   "blocks": [
+    301,
+    301
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 260,
+  "blocks": 325,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    260,
+    260
+   ],
+   "blocks": [
+    325,
+    325
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 18493,
+  "blocks": 38907,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18493,
+    18493
+   ],
+   "blocks": [
+    38907,
+    38907
+   ]
+  }
+ },
+ {
+  "variant": "solid",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 17309,
+  "blocks": 34803,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17309,
+    17309
+   ],
+   "blocks": [
+    34803,
+    34803
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 256,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 19,
+  "blocks": 21,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    19,
+    19
+   ],
+   "blocks": [
+    21,
+    21
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 256,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 18,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    18,
+    18
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 256,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 12,
+  "blocks": 12,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12,
+    12
+   ],
+   "blocks": [
+    12,
+    12
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 256,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 41,
+  "blocks": 41,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    41,
+    41
+   ],
+   "blocks": [
+    41,
+    41
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 256,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 31,
+  "blocks": 31,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    31,
+    31
+   ],
+   "blocks": [
+    31,
+    31
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 256,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 256,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 13,
+  "blocks": 13,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    13,
+    13
+   ],
+   "blocks": [
+    13,
+    13
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 256,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 256,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 20,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    20,
+    20
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 17,
+  "blocks": 27,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    17,
+    17
+   ],
+   "blocks": [
+    27,
+    27
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 19,
+  "blocks": 19,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    19,
+    19
+   ],
+   "blocks": [
+    19,
+    19
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 1170,
+  "blocks": 1202,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1170,
+    1170
+   ],
+   "blocks": [
+    1202,
+    1202
+   ]
+  }
+ },
+ {
+  "variant": "tea-dirtybits",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 1187,
+  "blocks": 1199,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1187,
+    1187
+   ],
+   "blocks": [
+    1199,
+    1199
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 256,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 18,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    18,
+    18
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 256,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 12,
+  "blocks": 12,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12,
+    12
+   ],
+   "blocks": [
+    12,
+    12
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 256,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 6,
+  "blocks": 6,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    6,
+    6
+   ],
+   "blocks": [
+    6,
+    6
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 256,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 44,
+  "blocks": 44,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    44,
+    44
+   ],
+   "blocks": [
+    44,
+    44
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 256,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 25,
+  "blocks": 25,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    25,
+    25
+   ],
+   "blocks": [
+    25,
+    25
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 256,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 256,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 8,
+  "blocks": 8,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8,
+    8
+   ],
+   "blocks": [
+    8,
+    8
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 256,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 16,
+  "blocks": 16,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16,
+    16
+   ],
+   "blocks": [
+    16,
+    16
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 256,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 10,
+  "blocks": 10,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10,
+    10
+   ],
+   "blocks": [
+    10,
+    10
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 18,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    18,
+    18
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 22,
+  "blocks": 22,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    22,
+    22
+   ],
+   "blocks": [
+    22,
+    22
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 22,
+  "blocks": 22,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    22,
+    22
+   ],
+   "blocks": [
+    22,
+    22
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 1659,
+  "blocks": 1661,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1659,
+    1659
+   ],
+   "blocks": [
+    1661,
+    1661
+   ]
+  }
+ },
+ {
+  "variant": "tea-inline",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 1661,
+  "blocks": 1661,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1661,
+    1661
+   ],
+   "blocks": [
+    1661,
+    1661
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 1,
+  "action": "button: add to an int",
+  "scope": "local",
+  "setup": false,
+  "calls": 38,
+  "blocks": 42,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    38,
+    38
+   ],
+   "blocks": [
+    42,
+    42
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 1,
+  "action": "input: type a character",
+  "scope": "local",
+  "setup": false,
+  "calls": 18,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    18,
+    18
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 1,
+  "action": "list: type in the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 29,
+  "blocks": 31,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29,
+    29
+   ],
+   "blocks": [
+    31,
+    31
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 1,
+  "action": "list: push the draft",
+  "scope": "local",
+  "setup": false,
+  "calls": 41,
+  "blocks": 43,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    41,
+    41
+   ],
+   "blocks": [
+    43,
+    43
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 1,
+  "action": "list: remove an item",
+  "scope": "local",
+  "setup": false,
+  "calls": 34,
+  "blocks": 36,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    34,
+    34
+   ],
+   "blocks": [
+    36,
+    36
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 1,
+  "action": "bool: toggle (a conditional section reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 37,
+  "blocks": 41,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    37,
+    37
+   ],
+   "blocks": [
+    41,
+    41
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 1,
+  "action": "enum: select or cycle",
+  "scope": "local",
+  "setup": false,
+  "calls": 10,
+  "blocks": 10,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10,
+    10
+   ],
+   "blocks": [
+    10,
+    10
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 1,
+  "action": "number: type a digit (a derived value reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 29,
+  "blocks": 31,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29,
+    29
+   ],
+   "blocks": [
+    31,
+    31
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 1,
+  "action": "gate: start a time-driven field",
+  "scope": "local",
+  "setup": true,
+  "calls": 41,
+  "blocks": 46,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    41,
+    41
+   ],
+   "blocks": [
+    46,
+    46
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: tick (one field running)",
+  "scope": "local",
+  "setup": false,
+  "calls": 43,
+  "blocks": 48,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    43,
+    43
+   ],
+   "blocks": [
+    48,
+    48
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverSet the companion",
+  "scope": "local",
+  "setup": false,
+  "calls": 15,
+  "blocks": 15,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    15,
+    15
+   ],
+   "blocks": [
+    15,
+    15
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: notify the feed",
+  "scope": "local",
+  "setup": false,
+  "calls": 20,
+  "blocks": 20,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    20,
+    20
+   ],
+   "blocks": [
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 2460,
+  "blocks": 2922,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2460,
+    2460
+   ],
+   "blocks": [
+    2922,
+    2922
+   ]
+  }
+ },
+ {
+  "variant": "tea-local",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverSet the whole component",
+  "scope": "global",
+  "setup": false,
+  "calls": 2470,
+  "blocks": 2923,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2470,
+    2470
+   ],
+   "blocks": [
+    2923,
+    2923
+   ]
+  }
+ }
+]

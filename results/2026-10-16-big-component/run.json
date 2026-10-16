@@ -1,0 +1,379 @@
+{
+  "scenario": "big-component",
+  "date": "2026-10-16",
+  "sizes": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "scenarioOptions": {},
+  "variants": {
+    "elm": {
+      "emitter": "elm",
+      "framework": "elm",
+      "label": "Elm 0.19.3",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "TEA with Browser.element: Main holds { form, companion }, one update, one view; GotForm / GotCompanion wrap each module's Msg (Html.map)",
+        "components": "one Form module with one flat Model record (a field per state field) and one Msg (a constructor per control), a case branch per message with the ops as record updates; a Companion module; Ui's generic helpers (widget, when, option, nextId, toggleDone, andMap, onNumberInput)",
+        "types": "int Int, bool Bool, text and enum String (options as data in the view and in a case for cycle), list a List of a type alias per list built by its positional constructor",
+        "derived": "computed in view; an if is a let binding of the view function",
+        "viewSplit": "the form is flat: view is Ui.widget … (List.concat [ viewX model, … ]) with a view function per field unit, named after its main field, returning List (Html Msg) and taking the whole form Model (units read earlier fields from anywhere); a unit's wrapper inline",
+        "lazy": "none: the form is one record changing on every message, so lazy on the whole model never hits and per-unit field threading is not what an expert writes",
+        "decoder": "Decode.succeed Model |> Ui.andMap (Decode.field ...) per field beyond Decode.map8",
+        "conditionals": "a view function per conditional section, called as Ui.when condition (viewSection model), which renders an empty text node while the condition fails",
+        "crossReads": "the view takes the Model of each widget it reads, before its own",
+        "lists": "Html.Keyed (Keyed.ul / Keyed.ol) with a viewXItem function per list",
+        "externalEvents": "one incoming port; Json.Decode into the app's messages (serverSet → the widget's Replaced, notify → the feed's Notified, tick → Tick calling each time-driven widget's tick, snapshot → GotSnapshot)",
+        "events": "onInput for text inputs and the select, onClick for buttons and checkboxes, Ui.onNumberInput (an integer in range, else no message) for number inputs",
+        "formatting": "as elm-format 0.8.8 writes it; elm.json lists only the dependencies the app imports",
+        "build": "elm make --optimize, then uglify-js compress (pure_funcs) and mangle passes, as the Elm guide recommends"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "ca710a071547c35c"
+    },
+    "solid": {
+      "emitter": "solid",
+      "framework": "solid",
+      "label": "Solid 1",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "components": "the form is one component (W1) in one file, a handler per message and one JSX tree, plus the companion (W2); no sub-components, no field table",
+        "state": "one createStore for the whole page, shared through a context; widgets use path setters on their slice, produce for click messages; readers read other widgets' slices",
+        "externalEvents": "store.receive(msg); serverSet and snapshot through reconcile(…, { key: 'id' }); tick written out per time-driven int",
+        "lists": "<For>",
+        "conditionals": "<Show> for sections and validation errors",
+        "derived": "plain expressions in the JSX, one fine-grained binding each",
+        "events": "onClick/onInput (delegated), onChange for checkboxes and selects; number inputs send only integers within range",
+        "build": "Vite + vite-plugin-solid, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "764e7153f519046b"
+    },
+    "tea-inline": {
+      "emitter": "tea-inline",
+      "framework": "tea-inline",
+      "label": "TEA inline (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "track": "prototype: no framework implements this strategy",
+        "components": "the form is one module and the companion another, each written out from its own description; DOM built once from one static HTML string, elements referred to by their place in document order (E[n]); conditional sections swapped out by when while hidden; list rows built with createElement",
+        "messages": "erased for DOM events: each update arm is inlined into the action its control calls, which writes the widget's fields in place",
+        "updates": "each action schedules the per-field binding groups of the fields it writes (known at compile time); one microtask flush",
+        "derived": "cross-widget reads register their bindings at mount in R.<widget>.<field>, only for fields some widget reads; the writing action schedules them",
+        "lists": "keyed: add and remove schedule their row's edit, toggle its row's binding; other edits replace the array and reconcile by id in one forward pass",
+        "externalEvents": "receive(msg): serverSet and snapshot replace a widget's state (a copy) and run all its bindings and its readers; tick and notify call the widgets' external arms",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "0a2449c568689e59"
+    },
+    "beni-tea": {
+      "emitter": "beni-tea",
+      "framework": "beni-tea",
+      "label": "beni browser-tea (6a1b567fa)",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "The Elm Architecture: Tea.element, one Model record in Main, one update, one view (markup)",
+        "components": "one module per widget (Model, init, Msg, update, view, replace; tick and notify where it needs them); Main only routes",
+        "routing": "one Msg constructor per widget wrapping its Msg, plus Pushed for host events; Html.map in view",
+        "crossReads": "a widget that reads earlier widgets takes their Models as extra arguments of view",
+        "lists": "keyed For (.id) for every list",
+        "conditional": "if holes with an empty fragment",
+        "derived": "expressions written out in the widget's view (interpolation or markup holes)",
+        "helpers": "Ui: intIn (integer within limits) and shown (number input text), independent of every widget",
+        "externalEvents": "project platform layer Push.onPush (Sub.on over a window event), read with a schema declaration and derived codecs",
+        "inputs": "controlled inputs; an int with a number input keeps its typed text beside its last valid number",
+        "build": "beni build --release --source-maps (beni's own minifier)"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "c59539c6248ea16a"
+    },
+    "beni-direct": {
+      "emitter": "beni-direct",
+      "framework": "beni-direct",
+      "label": "beni browser-direct (6a1b567fa)",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "The Elm Architecture: Tea.element, one Model record in Main, one update, one view (markup)",
+        "components": "one module per widget (Model, init, Msg, update, view, replace; tick and notify where it needs them); Main only routes",
+        "routing": "one Msg constructor per widget wrapping its Msg, plus Pushed for host events; Html.map in view",
+        "crossReads": "a widget that reads earlier widgets takes their Models as extra arguments of view",
+        "lists": "keyed For (.id) for every list",
+        "conditional": "if holes with an empty fragment",
+        "derived": "expressions written out in the widget's view (interpolation or markup holes)",
+        "helpers": "Ui: intIn (integer within limits) and shown (number input text), independent of every widget",
+        "externalEvents": "project platform layer Push.onPush (Sub.on over a window event), read with a schema declaration and derived codecs",
+        "inputs": "controlled inputs; an int with a number input keeps its typed text beside its last valid number",
+        "build": "beni build --release --source-maps (beni's own minifier)"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "c082197bd7f61b79"
+    },
+    "tea-local": {
+      "emitter": "tea-local",
+      "framework": "tea-local",
+      "label": "tea-local (prototype)",
+      "track": "prototype",
+      "emitterOptions": {
+        "grain": "unit"
+      },
+      "style": {
+        "components": "grain unit: the form is split into one instance per field unit (a field with its controls, displays and the bindings it adds), each in its own block of the page function (factory inlined, as it is called once): its slice of the one model, its own reducer (a table of arms by message tag, written out from its ops), template and bindings; the companion is an instance of its own; only generic helpers are shared",
+        "state": "the form's one record is split into slices: each instance owns, in its closure, the fields of its unit; send(tag, value) runs its reducer arm and schedules that instance's binding list",
+        "updates": "one patch function per instance, every DOM write skipped when unchanged; derived texts compiled to template literals; batched in a microtask",
+        "crossUnit": "a binding that reads a field of another unit reads that instance's slice from the frame's registry in patch, and the reader watches the instance (follow); the companion reads the form the same way",
+        "combinedButtons": "a combined button that writes a field of another unit: its own arm for its fields, and a message of its own for the other unit, sent after it (forward)",
+        "externalEvents": "serverSet/snapshot of the form send every instance its Load message (it picks its own fields), the companion's are set; notify sends the feed's unit its Notify message; tick calls the instances of a shared running set, each subscribing while its gate is on",
+        "lists": "runtime keyed list by item.id: patch changed rows, one forward placement pass when order or membership changes",
+        "dom": "one static template per instance (a run of sibling nodes, trailing end tags left out), parsed in a fragment appended to the form, elements addressed by document order; one template per list row, cloned per new item",
+        "conditionals": "node in the template; while hidden, an empty text node holds its place",
+        "events": "tag 0 is Load; the template's controls take tags 1, 2, … in document order (then each row's controls), attached by position by the runtime's wire; messages are sent as send(tag, value); number inputs send valueAsNumber and the reducer takes integers within range only",
+        "build": "Vite production build, no framework plugin, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "2e66158e45a18796"
+    },
+    "tea-dirtybits": {
+      "emitter": "tea-dirtybits",
+      "framework": "tea-dirtybits",
+      "label": "TEA + dirty bits (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "components": "one module per widget (bits, reducer, initial state, DOM factory with a static template whose bound elements are found by data-role, emptiness or a marker), each written from that widget's description; nothing interpreted at runtime",
+        "state": "one immutable TEA model; the app reducer routes messages to the widgets' reducers",
+        "dirtyBits": "words of 31 bits per widget, a field's number being the order the view first reads it; the dirty set is a sparse array of words; arms mark [word, bits, ...] at compile time; the app runs only the patches of the dirty words, so an event costs one word of bindings however big the form is; a group of bindings reading two words is a function each of those patches calls behind a test of both",
+        "updates": "reducers are tables of arms by message tag; each arm returns the compile-time marks and values of the fields it writes, merged into the slice by the app; a static patch per word runs only the bindings whose bits are set, batched in a microtask",
+        "externalEvents": "through the same reducer (send); serverSet and snapshot mark every word of the widgets they replace; tick goes to the time-driven widgets",
+        "crossWidgetReads": "a reader has one bit per field it reads; the app patch sets it when the source's bit is dirty (one line per read)",
+        "lists": "keyed by id: changed rows patched, gone rows removed, misplaced nodes moved in one walk",
+        "conditionals": "branches (src/words.js) built once with the template, swapped for an empty comment while hidden, with their own nested patch testing the same words",
+        "events": "addEventListener on each element; the handler builds a message and sends it",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "ce56ef48fdd8ba79"
+    }
+  },
+  "frameworks": {
+    "elm": {
+      "label": "Elm 0.19.3",
+      "track": "framework",
+      "versions": {
+        "elm (compiler, npm installer)": "0.19.3-0",
+        "@elm_binaries/linux_x64": "0.19.3-0",
+        "uglify-js": "3.19.3",
+        "elm/browser": "1.0.2",
+        "elm/core": "1.0.5",
+        "elm/html": "1.0.1",
+        "elm/json": "1.1.4",
+        "elm/regex": "1.0.0",
+        "elm/time": "1.0.0",
+        "elm/url": "1.0.0",
+        "elm/virtual-dom": "1.0.5"
+      }
+    },
+    "solid": {
+      "label": "Solid 1",
+      "track": "framework",
+      "versions": {
+        "solid-js": "1.9.17",
+        "babel-preset-solid": "1.9.16",
+        "babel-plugin-jsx-dom-expressions": "0.40.11",
+        "@babel/core": "7.29.7",
+        "vite-plugin-solid": "2.11.14",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-inline": {
+      "label": "TEA inline (prototype)",
+      "track": "prototype",
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "beni-tea": {
+      "label": "beni browser-tea (6a1b567fa)",
+      "track": "framework",
+      "versions": {
+        "beni (commit)": "6a1b567fad5410fe80c8bc4e0a1f6733279fd908",
+        "beni version (build id)": "beni 0.1.0-m1 ee040d874c1f0f73e43a0e7ef109007d",
+        "beni binary sha256": "c50cd632b076a5d2c2f75b7ba6a41e0897556d3f2adc20a52a396bfc49632dcc",
+        "zig, node (beni's flake.lock at that commit)": "zig 0.17.0, node 24",
+        "platform": "browser-tea"
+      }
+    },
+    "beni-direct": {
+      "label": "beni browser-direct (6a1b567fa)",
+      "track": "framework",
+      "versions": {
+        "beni (commit)": "6a1b567fad5410fe80c8bc4e0a1f6733279fd908",
+        "beni version (build id)": "beni 0.1.0-m1 ee040d874c1f0f73e43a0e7ef109007d",
+        "beni binary sha256": "c50cd632b076a5d2c2f75b7ba6a41e0897556d3f2adc20a52a396bfc49632dcc",
+        "zig, node (beni's flake.lock at that commit)": "zig 0.17.0, node 24",
+        "platform": "browser-direct"
+      }
+    },
+    "tea-local": {
+      "label": "tea-local (prototype)",
+      "track": "prototype",
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-dirtybits": {
+      "label": "TEA + dirty bits (prototype)",
+      "track": "prototype",
+      "versions": {
+        "tea-dirtybits runtime": "prototype (frameworks/tea-dirtybits/template)",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    }
+  },
+  "versions": {
+    "node": "v26.11.1",
+    "brotli": "1.2.0 (node:zlib)",
+    "platform": "linux 6.12.112 x64",
+    "git": {
+      "commit": "bfc40b4dad8f0cc10e750612aaa68310c5622e16",
+      "dirty": false
+    }
+  },
+  "compression": {
+    "brotli": {
+      "quality": 11,
+      "lgwin": 24,
+      "mode": "generic"
+    },
+    "html": "not minified",
+    "js": "minified by the framework's production build"
+  },
+  "attribution": "source maps: node_modules → runtime; unmapped bundler output → tooling (counted with runtime); the adapter file → adapter (excluded); everything else → app. Brotli split: runtime = brotli(runtime+tooling); app = brotli(app JS) − runtime.",
+  "reused": 0
+}

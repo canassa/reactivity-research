@@ -1,0 +1,108 @@
+{
+  "1": {
+    "beni-direct": {
+      "sizes": [
+        16,
+        64
+      ],
+      "medianRatio": 1,
+      "maxRatio": 4.346190028222013,
+      "worst": "dispatch: tick (one field running)",
+      "medianPerWidget": 0,
+      "callsAtMin": 161,
+      "callsAtMax": 161,
+      "snapshotRatio": 4.402216066481994
+    },
+    "beni-tea": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 2.875,
+      "maxRatio": 3.1016949152542375,
+      "worst": "button: add to an int",
+      "medianPerWidget": 1.0378024193548385,
+      "callsAtMin": 133,
+      "callsAtMax": 397,
+      "snapshotRatio": 16.002224694104562
+    },
+    "digest": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1.273972602739726,
+      "maxRatio": 2.121212121212121,
+      "worst": "dispatch: tick (one field running)",
+      "medianPerWidget": 0.05527553763440859,
+      "callsAtMin": 50,
+      "callsAtMax": 64,
+      "snapshotRatio": 15.190990990990992
+    },
+    "elm": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 16.069037656903767,
+      "maxRatio": 16.229142950073182,
+      "worst": "button: add to an int",
+      "medianPerWidget": 387.72236223118273,
+      "callsAtMin": 6214,
+      "callsAtMax": 99853,
+      "snapshotRatio": 15.69188080588732
+    },
+    "solid": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1,
+      "maxRatio": 3.6486486486486487,
+      "worst": "dispatch: tick (one field running)",
+      "medianPerWidget": 0,
+      "callsAtMin": 113,
+      "callsAtMax": 185,
+      "snapshotRatio": 16.03457577243747
+    },
+    "tea-dirtybits": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1,
+      "maxRatio": 1.1666666666666667,
+      "worst": "dispatch: serverSet one widget",
+      "medianPerWidget": 0,
+      "callsAtMin": 17,
+      "callsAtMax": 18,
+      "snapshotRatio": 16.17511520737327
+    },
+    "tea-inline": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1,
+      "maxRatio": 2.4,
+      "worst": "dispatch: tick (one field running)",
+      "medianPerWidget": 0,
+      "callsAtMin": 10,
+      "callsAtMax": 16,
+      "snapshotRatio": 15.595238095238095
+    },
+    "tea-local": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1.3214285714285714,
+      "maxRatio": 1.48,
+      "worst": "list: type in the draft",
+      "medianPerWidget": 0.03553427419354838,
+      "callsAtMin": 28,
+      "callsAtMax": 37,
+      "snapshotRatio": 15.240601503759398
+    }
+  }
+}
