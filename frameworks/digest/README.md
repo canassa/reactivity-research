@@ -1012,7 +1012,6 @@ point, since it does not stay local; it is the size of the flat version.
 
 Style choices are in the emitter's `style`. `runs.json` has no `digest` entry for derived-graph
 (a `$comment`, as for big-component) and lists it under `$bench.also`, timed for reference only.
-||||||| parent of 174ef6f (📝 document digest's routed-app lifetime and log the session)
 
 ## routed-app
 
