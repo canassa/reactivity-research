@@ -190,24 +190,21 @@ function widgetModule(w) {
     return { guard, when, values, bits: bitList([...values.keys()].map(W)) };
   }
 
-  function write(values, full) {
-    const entries = [...values].map(([f, src]) => (src === f ? f : `${f}: ${src}`));
-    const spread = full ? [] : ["...s"];
-    return `{ ${[...spread, ...entries].join(", ")} }`;
+  function write(values) {
+    return `{ ${[...values].map(([f, src]) => (src === f ? f : `${f}: ${src}`)).join(", ")} }`;
   }
 
-  // Each arm returns the new slice with the bits of the fields it wrote, `[s, bits]`, or nothing
-  // when the slice is unchanged.
+  // Each arm returns the fields it writes with their bits, `[fields, bits]`, or nothing when the
+  // slice is unchanged; the app reducer merges the fields into the slice.
   const arms = [];
   for (const m of messages) {
     const a = arm(m);
-    const full = a.values.size === w.fields.length;
-    arms.push({ key: tag(m.name), name: m.name, lines: [...a.guard, `return ${a.when ? a.when + " && " : ""}[${write(a.values, full)}, ${a.bits}];`] });
+    arms.push({ key: tag(m.name), name: m.name, lines: [...a.guard, `return ${a.when ? a.when + " && " : ""}[${write(a.values)}, ${a.bits}];`] });
   }
   // External events: a feed receives notifications; time-driven fields advance while gated.
   const feed = w.fields.find((f) => f.feed);
   if (feed) {
-    arms.push({ key: "notify", lines: [`return [{ ...s, ${feed.name}: [...s.${feed.name}, msg.item] }, ${own(feed.name)}];`] });
+    arms.push({ key: "notify", lines: [`return [{ ${feed.name}: [...s.${feed.name}, msg.item] }, ${own(feed.name)}];`] });
   }
   const ticks = w.fields.filter((f) => f.tick);
   if (ticks.length === 1) {
@@ -215,17 +212,17 @@ function widgetModule(w) {
     arms.push({ key: "tick", lines: [
       `if (!s.${f.tickWhen}) return;`,
       `const ${f.name} = Math.min(${f.max}, s.${f.name} + ${f.tick});`,
-      `if (${f.name} !== s.${f.name}) return [{ ...s, ${f.name} }, ${own(f.name)}];`,
+      `if (${f.name} !== s.${f.name}) return [{ ${f.name} }, ${own(f.name)}];`,
     ] });
   } else if (ticks.length > 1) {
     const body = ticks.map((f) => `if (s.${f.tickWhen}) {
   const v = Math.min(${f.max}, s.${f.name} + ${f.tick});
   if (v !== s.${f.name}) {
-    next = { ...next, ${f.name}: v };
+    next.${f.name} = v;
     bits |= ${own(f.name)};
   }
 }`);
-    arms.push({ key: "tick", lines: [`let next = s;`, `let bits = 0;`, ...body, `if (bits) return [next, bits];`] });
+    arms.push({ key: "tick", lines: [`const next = {};`, `let bits = 0;`, ...body, `if (bits) return [next, bits];`] });
   }
   // The reducer is compiled to a table of its arms by message tag, as a switch over dense tags
   // compiles to a jump table: an array when every tag is a number, else an object with the
@@ -526,9 +523,11 @@ function set(model, id, s, bits) {
 
 // Run one widget's reducer and file the bits its arm marked under that widget.
 function route(model, id, msg) {
-  const next = WIDGETS[id][1][msg.type](model.widgets[id], msg);
-  // An arm returns its new slice with the bits it marked, or nothing when the slice is unchanged.
-  return next ? set(model, id, ...next) : model;
+  const s = model.widgets[id];
+  const next = WIDGETS[id][1][msg.type](s, msg);
+  // An arm returns the fields it wrote with their bits, or nothing when the slice is unchanged;
+  // the new slice shares the fields it did not write.
+  return next ? set(model, id, { ...s, ...next[0] }, next[1]) : model;
 }
 
 // The app reducer: user messages and most external events go to one widget's reducer.
