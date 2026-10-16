@@ -412,16 +412,15 @@ function widgetFile(spec, w) {
 
 // ---------------------------------------------------------------------------------------------
 
-const FRAME_FILE = `import { element, wire } from "../runtime.js";
+const FRAME_FILE = `import { wire } from "../runtime.js";
 
 // The frame every widget shares: its keyed section, holding the widget's own template (its
 // heading and view), its controls wired to the messages 0, 1, 2, ... (see \`wire\`). Returns the
 // section and the template's elements, in document order.
 export function widget(parent, id, html, self) {
   widgets.set(id, self);
-  const section = element(parent, "section", { "data-key": id, "data-role": "widget" });
-  section.innerHTML = html;
-  return wire(section, self, 0);
+  parent.insertAdjacentHTML("beforeend", \`<section data-key=\${id} data-role=widget>\${html}\`);
+  return wire(parent.lastChild, self, 0);
 }
 
 // Conditional content, built in the template: while hidden, an empty text node holds its place
@@ -478,12 +477,12 @@ export function emit(spec) {
   // Only an app with a time-driven widget has ticks to route, and only one with a feed, notify.
   const timed = spec.widgets.some((w) => w.fields.some((f) => f.tick));
   const feeds = spec.widgets.some((w) => w.fields.some((f) => f.feed));
-  files["src/app.js"] = `import { element } from "./runtime.js";
-import { widgets${timed ? ", running" : ""} } from "./widgets/frame.js";
+  files["src/app.js"] = `import { widgets${timed ? ", running" : ""} } from "./widgets/frame.js";
 ${spec.widgets.map((w) => `import { ${w.id} } from "./widgets/${w.id}.js";`).join("\n")}
 
 export function App(root) {
-  const main = element(root, "div", { "data-role": "dashboard" });
+  root.insertAdjacentHTML("beforeend", "<div data-role=dashboard></div>");
+  const main = root.lastChild;
 ${calls.join("\n")}
 
   return {
