@@ -348,7 +348,7 @@ function widgetFile(spec, w) {
 
   const fn = [];
   fn.push(`export function ${w.id}(parent${sources.map((s) => ", " + s).join("")}) {`);
-  fn.push(`  const self = instance(initial, update, patch);`);
+  fn.push(`  const self = instance(${lit(spec.initialState.widgets[w.id])}, update, patch);`);
   fn.push(`  const e = widget(parent, ${q(w.id)}, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))});`);
   fn.push(...cx.create);
   // Subscribe to the clock while the gate is on, as soon as the model changes (not at the next
@@ -373,7 +373,6 @@ function widgetFile(spec, w) {
     `import { ${used(FRAME).join(", ")} } from "./frame.js";`,
     ``,
     `// ${w.label} (${w.kind})`,
-    `const initial = ${lit(spec.initialState.widgets[w.id])};`,
     ...optionLines,
     ...cx.templates,
     ``,
