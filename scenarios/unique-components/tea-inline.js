@@ -245,8 +245,8 @@ function widgetFile(w, reads) {
       const v = `s.${m.field}`;
       const lv = lists[m.field];
       const body = m.op === "toggle"
-        ? [`const found = ${v}.find((other) => other.id === item.id);`, "found.done = !found.done;", `${lv}.patch(found);`]
-        : [`${v}.splice(${v}.findIndex((other) => other.id === item.id), 1);`, `${lv}.drop(item.id);`];
+        ? ["item.done = !item.done;", `${lv}.patch(item);`]
+        : [`${v}.splice(${v}.indexOf(item), 1);`, `${lv}.drop(item.id);`];
       return [...body, ...sched([m.field])];
     };
     return `@@${name}@@`;
@@ -358,7 +358,9 @@ function widgetFile(w, reads) {
         if (n.remove) {
           row.push(`on(el("button", node, ${attrs({ "data-role": str(n.remove) })}, ${str(n.removeText)}), "click", () => {`, itemAction(n.remove), "});");
         }
-        row.push(`return { node, set(item) { ${set.join(" ")} } };`);
+        // A row with controls keeps its item current (the list hands it the item of its id), for
+        // their arms.
+        row.push(`return { node, set(next) { item = next; ${set.join(" ")} } };`);
         build.push(`const ${l} = list(${u}, () => s.${f.name}, (item) => {`,
           ...row.map((r) => "  " + r), "});");
         bindings.push({ code: l, own: [f.name], cross: [], name: l });

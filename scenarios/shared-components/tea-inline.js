@@ -157,21 +157,22 @@ const FACTORIES = {
     const node = el("li", null, { "data-key": item.id });
     const box = el("input", node, { type: "checkbox", "data-role": "toggle" });
     const label = el("span", node);
-    // The arms of update for this row's item: toggle(id), remove(id).
+    // The arms of update for this row's item: toggle(id), remove(id). The row keeps its item
+    // current (the list hands it the item of its id).
     on(box, "change", () => {
-      const found = s.items.find((other) => other.id === item.id);
-      found.done = !found.done;
-      items.patch(found);
+      item.done = !item.done;
+      items.patch(item);
       schedule(onItems);
     });
     on(el("button", node, { "data-role": "remove" }, removeText), "click", () => {
-      s.items.splice(s.items.findIndex((other) => other.id === item.id), 1);
+      s.items.splice(s.items.indexOf(item), 1);
       items.drop(item.id);
       schedule(onItems);
     });
     return {
       node,
-      set(item) {
+      set(next) {
+        item = next;
         prop(box, "checked", item.done);
         text(label, item.text);
       },
@@ -363,13 +364,19 @@ const FACTORIES = {
   const entries = list(el("ul", root), () => s.entries, (entry) => {
     const node = el("li", null, { "data-key": entry.id });
     const label = el("span", node);
-    // The arm of update for this row's entry: dismiss(id).
+    // The arm of update for this row's entry: dismiss(id). The row keeps its entry current.
     on(el("button", node, { "data-role": "dismiss" }, dismissText), "click", () => {
-      s.entries.splice(s.entries.findIndex((other) => other.id === entry.id), 1);
+      s.entries.splice(s.entries.indexOf(entry), 1);
       entries.drop(entry.id);
       schedule(onEntries);
     });
-    return { node, set: (entry) => text(label, entry.text) };
+    return {
+      node,
+      set(next) {
+        entry = next;
+        text(label, entry.text);
+      },
+    };
   });
   const empty = when(el("p", root, { "data-role": "empty" }, emptyText));
 
