@@ -124,3 +124,23 @@ export function list(parent, row) {
     nodes = order;
   };
 }
+
+// Conditional content among its siblings (unique-components), kept in place by an empty comment.
+// `make()` builds the content detached and returns [node, patch?], where `patch(s, d, w)` is the
+// content's own static patch. The returned `show(on, s, d, w)` adds the content (patching it with
+// every bit), removes it, or, while it stays, runs its patch with the dirty bits `d`.
+export function branch(parent, make) {
+  const anchor = parent.appendChild(document.createComment(""));
+  let node = null;
+  let patch;
+  return (show, s, d, w) => {
+    if (show && !node) {
+      [node, patch] = make();
+      patch?.(s, -1, w);
+      parent.insertBefore(node, anchor);
+    } else if (!show && node) {
+      node.remove();
+      node = null;
+    } else if (node) patch?.(s, d, w);
+  };
+}
