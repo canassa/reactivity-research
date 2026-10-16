@@ -72,12 +72,20 @@ export async function benchCommand(rest) {
   if (args.remote) return remoteBench(args, rest);
   const [which, frameworks] = args._;
   if (!which) throw new Error("usage: ./rr bench <scenario|all> <framework|all|a,b> [options] (./rr help)");
-  const scenarios = which === "all" ? listScenarios().filter((s) => fs.existsSync(benchModule(s))) : which.split(",");
+  const scenarios = which === "all" ? benchable() : which.split(",");
   if (args.out && scenarios.length > 1) throw new Error("--out names one scenario's results directory; bench one scenario at a time with it");
   for (const name of scenarios) await benchScenario(name, frameworks || "all", args);
 }
 
 const benchModule = (scenario) => path.join(ROOT, "harness", "bench", `${scenario}.js`);
+
+// The scenarios `all` benches: those with bench actions and at least one framework in runs.json
+// (or in its "$bench".also), so a scenario whose implementations are not in yet is passed over.
+function benchable() {
+  const config = readConfig();
+  return listScenarios().filter((s) => fs.existsSync(benchModule(s)) &&
+    (Object.keys(config[s] || {}).some((k) => !k.startsWith("$")) || Object.keys(config[s]?.$bench?.also || {}).length > 0));
+}
 
 async function benchScenario(name, which, args) {
   const t0 = performance.now();
@@ -445,7 +453,7 @@ async function remoteBench(args, rest) {
   const origin = git("remote", "get-url", "origin").replace(/^git@([^:]+):/, "https://$1/");
   const [which] = args._;
   if (!which) throw new Error("usage: ./rr bench <scenario|all> <framework|all> --remote HOST");
-  const scenarios = which === "all" ? listScenarios().filter((s) => fs.existsSync(benchModule(s))) : which.split(",");
+  const scenarios = which === "all" ? benchable() : which.split(",");
   const defaults = REMOTES[host] || {};
 
   // The same arguments, less --remote and --out, plus the machine's defaults.

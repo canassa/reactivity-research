@@ -38,6 +38,8 @@ export async function reportCommand(rest) {
         plan.push({ emitter, emitterOptions, sizes: entry.sizes, seeds: entry.seeds });
       }
     }
+    // A scenario with no framework entries yet (only its "$bench" block) has nothing to measure.
+    if (plan.length === 0) { console.log(`${scenarioName}: no frameworks in runs.json yet, skipped`); continue; }
     await measureScenario(scenario, scenarioOptions, plan, { force: !!args.force, onlyIfChanged: true, jobs: Number(args.jobs || defaultJobs()) });
   }
   const plotArgs = [];
