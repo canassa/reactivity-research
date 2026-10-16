@@ -50,3 +50,20 @@ Rows axis, N=16, 1,000 rows against 10,000 rows:
 
 The scans are written the natural way (`indexOf`, `find`, `filter`, `some`), as in the other
 emitters; no scan was reshaped to change what the call counter sees.
+
+## Review fixes (same day)
+
+- **Stale clicks:** remove looks the item up by id (`findIndex`) and returns when it is gone;
+  toggle and bump do the same with `find` and write to the current item. Verified in Chrome: two
+  clicks on one remove in a task remove one row (before, the second removed the last row). The
+  scans are now visible to the call counter (remove 8 -> 12 calls, toggle 10 -> 13, bump 17 ->
+  23, all flat in N and in rows, because the work actions use rows near the start).
+- **Runtime/app split:** `rows.js` keeps only `tpl` and `rows` (runtime). The PRNG, formatters,
+  `state` and `keepSelected` moved to `scenario.js`, classified as app. Total unchanged in
+  substance; split at N=1 runtime 959 -> 853 B, app 1105 -> 1227 B; at N=256 runtime 1180 -> 855 B.
+- **Sizes** (median of 3 seeds): N=1 2227, N=16 6516, N=64 14487, N=256 41634; fit N >= 4:
+  4096 B + 148.6 B per table (R2 0.996). Before: 3472/4071 + 151.8/148.4.
+- **Markup trimming** (dropped end tags, unquoted attributes) saves 0.8%: +110 B at N=64, +335 B
+  at N=256 when written out.
+- Checks, other scenarios (generated `src/` hashes unchanged) and work (N=16..256 flat; rows axis
+  as before apart from the three lookups above) rerun.

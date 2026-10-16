@@ -209,11 +209,14 @@ the form) grow with N, by nature. Size: about 82 B brotli per unit; the runtime 
 ## big-table
 
 `../../scenarios/big-table/tea-inline.js` is the unique-components emitter applied to N data tables,
-each its own module (`src/tables/<id>.js`), with the same strategy and one additive runtime file,
-`template/rows.js` (included only by this scenario, through `templateFiles({ extra: ["rows.js"] })`;
-the other scenarios' output is byte-identical). `rows.js` holds what a table needs whatever its
-columns: the keyed row list, the PRNG step (`next`, `pick`, `between`), the number and date
-formatters, and a table's state (`state`). It is counted as runtime.
+each its own module (`src/tables/<id>.js`), with the same strategy and
+two additive files, `template/rows.js` and `template/scenario.js` (included only by this
+scenario, through `templateFiles({ extra: ["rows.js", "scenario.js"] })`; the other scenarios'
+output is byte-identical). `rows.js` is the generic runtime, counted as runtime: `tpl` (a row
+template, parsed once) and `rows` (the keyed row list). `scenario.js` is what the scenario asks of
+every table, counted as app code like the equivalent in the other implementations: the row
+builder's PRNG step (`next`, `pick`, `between`), the number and date formatters, a table's state
+(`state`, with `nextId` and `rng`) and `keepSelected`.
 
 Style choices: one module per table; the table's markup (heading, toolbar, header, empty body) is
 one static HTML string parsed once, and its buttons and body are `E[n]`; a row is cloned from one
@@ -243,8 +246,35 @@ External events are the same for every table, so they live once in `src/app.js`,
 (`structuredClone`: the message is not ours to edit) and schedule the list or the touched rows;
 `snapshot` assigns each table's state and schedules its list.
 
-Cost in rows: select, toggle, bump and swap touch one or two rows; remove, `serverUpdate` and
-`serverDelete` also scan the array for the item (`indexOf`, `find`, `filter`), as any
-implementation without an index does; `updateEvery`, create, append, clear, sort and
-`serverRows` are proportional to the rows they touch or hold. Nothing is hidden in the counts:
-see `notes/2026-10-16-big-table-tea-inline.md` for the figures.
+Granularity: a row's `set` is a whole-row binding. One write to an item schedules the repaint of all
+of the row's cells, which is coarser than per-field groups; it is bounded by the table's columns
+(2 to 8 cells, each written only if its text changed), never by N or by the rows.
+
+Stale handlers: a row's controls look the item up by id in the current array before they act
+(`findIndex` for remove, `find` for toggle and bump) and do nothing when it is gone, as the
+reference does. A click on a row that a `serverRows`, a snapshot or an earlier remove has
+dropped, before the flush, therefore changes nothing; without the lookup `indexOf` returns -1 and
+`splice(-1, 1)` removes the last row.
+
+Markup: the optional end tags (`</td>`, `</th>`, `</tr>`, `</thead>`) are left out and attribute
+values are unquoted where HTML allows it, as in unique-components. Measured: writing them all out
+costs +110 B at N=64 (+0.8%) and +335 B at N=256 (+0.8%), seed 1.
+
+External events go through one shared switch in `src/app.js` for every table (`serverRows`,
+`serverUpdate`, `serverDelete`, `snapshot`). It moves data (rows, ids, one column name from the
+message) and never reads a table's columns, so it is accepted as consistent with the scenario's
+no-interpreter rule (the same reading as the shared `receive` of unique-components).
+
+Cost in rows, by class (calls from `./rr work`, N=16, 1,000 against 10,000 rows):
+
+- Constant: select (7 to 9 calls), swap (8), clear (6). Select and swap touch one or two rows.
+- Constant calls, a scan of the array in the worst case: toggle (13), bump (23) and remove (10 to
+  12) look the item up by id (`find`, `findIndex`), so they cost O(position of the row); the
+  work actions use rows near the start, which is why the counts do not move. Indexed rows would
+  make them constant; none is kept, as in any implementation without an index.
+- Proportional to the rows they touch: `updateEvery` (rows / k), `serverUpdate` (a `find` per
+  change, O(rows) each).
+- Proportional to the rows the table holds: create, append, clear of many rows, sort,
+  `removeChecked`, `serverRows`, `serverDelete`.
+
+See `notes/2026-10-16-big-table-tea-inline.md` for the figures.

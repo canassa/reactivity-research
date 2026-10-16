@@ -29,8 +29,9 @@
 // Style choices (also in `style` below): one module per table; static markup parsed once and
 // rows cloned from a template; listeners on each row's controls, the item in scope; in-place
 // edits of the rows; sorts, filters and server pushes replace the array and reconcile by id;
-// one microtask flush; PRNG, formatters and the keyed row list from the runtime's rows.js (code
-// independent of any table). Initial rows are built at mount with the table's own row builder.
+// hand-trimmed markup (optional end tags and quotes left out: -0.8% bytes against writing them all
+// out); one microtask flush; the keyed row list from the runtime's rows.js, and the scenario's
+// PRNG, formatters and state helpers from scenario.js (counted as app code). Initial rows are built at mount with the table's own row builder.
 
 import { templateFiles } from "../../frameworks/tea-inline/framework.js";
 
@@ -156,7 +157,7 @@ function tableFile(t, spec) {
         const i = n++;
         cells.push(`<input type=checkbox data-role=${attrValue(c.toggle)}>`);
         paints.push(`prop(${E(i)}, item.${c.name}, "checked");`);
-        events.push(`on(${E(i)}, () => {`, `  item.${c.name} = !item.${c.name};`, "  schedule(set);", "});");
+        events.push(`on(${E(i)}, () => {`, "  const row = s.rows.find((x) => x.id === item.id);", "  if (!row) return;", `  row.${c.name} = !row.${c.name};`, "  schedule(set);", "});");
         use("prop", "on", "schedule");
         break;
       }
@@ -177,7 +178,7 @@ function tableFile(t, spec) {
           n++;
           cells.push(`<${c.element} ${attrs}><span aria-hidden=true>${escText(c.text)}</span></${c.element}>`);
         } else cells.push(`<${c.element} ${attrs}>${escText(c.text)}</${c.element}>`);
-        events.push(`on(${E(a)}, () => {`, "  s.rows.splice(s.rows.indexOf(item), 1);",
+        events.push(`on(${E(a)}, () => {`, "  const at = s.rows.findIndex((x) => x.id === item.id);", "  if (at < 0) return;", "  s.rows.splice(at, 1);",
           ...(hasSelect ? ["  if (s.selected === item.id) s.selected = null;"] : []), `  ${L}.drop(item.id);`, "});");
         use("on");
         break;
@@ -185,7 +186,7 @@ function tableFile(t, spec) {
       case "bump": {
         const b = n++;
         cells.push(`<button data-role=${attrValue(c.role)}>${escText(c.text)}</button>`);
-        events.push(`on(${E(b)}, () => {`, `  item.${c.column} += ${c.delta};`, "  schedule(set);", "});");
+        events.push(`on(${E(b)}, () => {`, "  const row = s.rows.find((x) => x.id === item.id);", "  if (!row) return;", `  row.${c.column} += ${c.delta};`, "  schedule(set);", "});");
         use("on", "schedule");
         break;
       }
@@ -297,10 +298,11 @@ function tableFile(t, spec) {
 
   // ---- Assemble.
   const rtNames = ["text", "prop", "on", "schedule"].filter((x) => used.has(x));
-  const rowNames = new Set(["state", "rows", "tpl"]);
+  const rowNames = new Set(["rows", "tpl"]);
+  const scenarioNames = new Set(["state"]);
   const allText = [...paints, ...events, ...ops, ...fields].join("\n");
   for (const name of ["next", "pick", "between", "group", "money", "percent", "monD", "dMon", "mmDd", "keepSelected"]) {
-    if (new RegExp(`\\b${name}\\(`).test(allText) || (name === "keepSelected" && used.has(name))) rowNames.add(name);
+    if (new RegExp(`\\b${name}\\(`).test(allText) || (name === "keepSelected" && used.has(name))) scenarioNames.add(name);
   }
   const initial = t.initialRows ? [`s.rows = make(${t.initialRows});`] : [];
 
@@ -343,6 +345,7 @@ function tableFile(t, spec) {
 
   return `import { ${rtNames.join(", ")} } from "../runtime.js";
 import { ${[...rowNames].join(", ")} } from "../rows.js";
+import { ${[...scenarioNames].join(", ")} } from "../scenario.js";
 import { W } from "./table.js";
 
 // Table ${t.id}: its markup, and its code over the markup's buttons and body (E), returning its
@@ -358,7 +361,7 @@ ${body}
 
 function appFile(spec) {
   return `import { flush, cancel, schedule } from "./runtime.js";
-import { keepSelected } from "./rows.js";
+import { keepSelected } from "./scenario.js";
 import { W, section } from "./tables/table.js";
 ${spec.tables.map((t) => `import "./tables/${t.id}.js";`).join("\n")}
 
@@ -424,7 +427,7 @@ export function emit(spec) {
   // Tables are numbered in page order (their ids are t1, t2, …).
   if (spec.tables.some((t, i) => t.id !== `t${i + 1}`)) throw new Error("table ids are not t1, t2, … in order");
   const files = {
-    ...templateFiles({ name: "big-table", title: "Big table", extra: ["rows.js"] }),
+    ...templateFiles({ name: "big-table", title: "Big table", extra: ["rows.js", "scenario.js"] }),
     "src/app.js": appFile(spec),
     "src/tables/table.js": HELPER_FILE,
   };
