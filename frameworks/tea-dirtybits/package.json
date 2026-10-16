@@ -1,0 +1,9 @@
+{
+  "name": "rr-framework-tea-dirtybits",
+  "private": true,
+  "type": "module",
+  "description": "Pinned build toolchain for the tea-dirtybits prototype: Vite only, no framework plugin",
+  "dependencies": {
+    "vite": "8.3.4"
+  }
+}
