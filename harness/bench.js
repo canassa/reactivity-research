@@ -36,8 +36,8 @@ import { describe, median } from "./bench/lib/stats.js";
 
 const FLAGS = ["sizes", "seeds", "sessions", "taskset", "chrome", "out", "quick", "aa", "maxLoad", "remote", "wait", "loads", "jobs", "workers", "workerTasksets"];
 const BOOLEANS = ["quick", "aa"];
-export const DEFAULT_SIZES = [16, 64, 256];
-export const DEFAULT_SEEDS = [1, 2];
+export const DEFAULT_SIZES = [64];
+export const DEFAULT_SEEDS = [1];
 
 // The method, in the numbers it uses. --quick is for development: one size, one seed, one
 // session, few reps, no load gating.
