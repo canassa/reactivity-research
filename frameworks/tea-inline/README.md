@@ -162,3 +162,22 @@ referenced elements with an attribute removed at mount (−0.8% at N=256 but +25
 apps). In shared-components, building factories from static markup also lost: the per-widget
 texts then need one assignment each. Expect the slope to be the cost of per-widget DOM
 construction and actions, with no shared factory to amortize it.
+
+## big-component
+
+`../../scenarios/big-component/tea-inline.js` is the unique-components emitter applied to one
+form of about N fields plus the fixed companion, with the same runtime, unchanged (no new runtime
+file was needed). The form is one module: one static HTML string, every message inlined into the
+action of its control, and one binding group per field that lists every binding reading it (a
+binding reading three fields sits in three groups). The companion's three cross-widget reads
+register in `R` as before.
+
+Style choices: one module for the form and one for the companion; static markup parsed once, with
+`E[n]` for the elements; in-place model edits; per-field groups; one microtask flush; list rows
+edited in place by the action that knows the row; no op table or field table (nothing is data
+that a routine interprets).
+
+Locality is flat: calls per local action are the same from N=16 to N=256 (median 12, worst
+ratio 1.00), because an action schedules only the groups of the fields it writes and each field
+is read by at most 6-8 bindings. Only the global events (whole-state `snapshot`, `serverSet` of
+the form) grow with N, by nature. Size: about 82 B brotli per unit; the runtime stays 743 B.
