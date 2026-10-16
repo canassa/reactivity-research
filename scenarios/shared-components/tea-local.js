@@ -72,22 +72,20 @@ import { widget } from "./widget.js";
 
 const KINDS = {
   counter: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
-// type Msg = Inc | Dec | Reset
 
 export function counter(parent, id, heading, step, min, max, start, model) {
-  // The reducer reads the widget's limits, so it closes over them.
-  const update = [
-    (model, value) => ({ value: Math.min(max, model.value + step) }),
-    (model, value) => ({ value: Math.max(min, model.value - step) }),
-    (model, value) => ({ value: start }),
-  ];
   const patch = () => {
     const m = self.m;
     setText(value, m.value);
     setProp(dec, "disabled", m.value <= min);
     setProp(inc, "disabled", m.value >= max);
   };
-  const self = instance(model, update, patch);
+  // type Msg = Inc | Dec | Reset (the reducer reads the widget's limits, so it closes over them)
+  const self = instance(model, [
+    (model, value) => ({ value: Math.min(max, model.value + step) }),
+    (model, value) => ({ value: Math.max(min, model.value - step) }),
+    (model, value) => ({ value: start }),
+  ], patch);
   const root = widget(parent, id, heading, "counter", self);
   const value = element(root, "output", { "data-role": "value" }, " ");
   const dec = element(root, "button", { "data-role": "dec" }, "-" + step);
@@ -100,8 +98,6 @@ export function counter(parent, id, heading, step, min, max, start, model) {
 `,
 
   toggles: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
-// type Msg = Toggle Int
-const update = [(model, value) => ({ on: model.on.map((on, i) => (i === value ? !on : on)) })];
 
 export function toggles(parent, id, heading, items, model) {
   const patch = () => {
@@ -109,7 +105,8 @@ export function toggles(parent, id, heading, items, model) {
     boxes.forEach((box, i) => setProp(box, "checked", m.on[i]));
     setText(count, \`\${m.on.filter(Boolean).length} of \${items.length} on\`);
   };
-  const self = instance(model, update, patch);
+  // type Msg = Toggle Int
+  const self = instance(model, [(model, value) => ({ on: model.on.map((on, i) => (i === value ? !on : on)) })], patch);
   const root = widget(parent, id, heading, "toggles", self);
   const ul = element(root, "ul");
   const boxes = items.map((name, i) => {
@@ -124,8 +121,6 @@ export function toggles(parent, id, heading, items, model) {
 `,
 
   field: `${HEAD(["element", "on", "setText", "setProp", "show", "instance"])}
-// type Msg = Edit String
-const update = [(model, value) => ({ text: value })];
 
 export function field(parent, id, heading, placeholder, validate, model) {
   const patch = () => {
@@ -135,7 +130,8 @@ export function field(parent, id, heading, placeholder, validate, model) {
     if (problem) setText(error, problem);
     show(root, error, problem);
   };
-  const self = instance(model, update, patch);
+  // type Msg = Edit String
+  const self = instance(model, [(model, value) => ({ text: value })], patch);
   const root = widget(parent, id, heading, "field", self);
   const input = element(root, "input", { type: "text", "data-role": "input", placeholder: placeholder });
   on(input, "input", () => self.send(0, input.value));
@@ -144,18 +140,6 @@ export function field(parent, id, heading, placeholder, validate, model) {
 `,
 
   todo: `${HEAD(["element", "on", "setText", "setProp", "instance", "list"])}
-// type Msg = EditDraft String | Add | Toggle Int | Remove Int
-const update = [
-  (model, value) => ({ ...model, draft: value }),
-  (model, value) => {
-    const text = model.draft.trim();
-    if (text === "") return model;
-    const id = model.items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
-    return { items: [...model.items, { id, text, done: false }], draft: "" };
-  },
-  (model, value) => ({ ...model, items: model.items.map((item) => (item.id === value ? { ...item, done: !item.done } : item)) }),
-  (model, value) => ({ ...model, items: model.items.filter((item) => item.id !== value) }),
-];
 
 export function todo(parent, id, heading, placeholder, addText, removeText, model) {
   const patch = () => {
@@ -164,7 +148,18 @@ export function todo(parent, id, heading, placeholder, addText, removeText, mode
     items(m.items);
     setText(left, \`\${m.items.filter((item) => !item.done).length} left\`);
   };
-  const self = instance(model, update, patch);
+  // type Msg = EditDraft String | Add | Toggle Int | Remove Int
+  const self = instance(model, [
+    (model, value) => ({ ...model, draft: value }),
+    (model, value) => {
+      const text = model.draft.trim();
+      if (text === "") return model;
+      const id = model.items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
+      return { items: [...model.items, { id, text, done: false }], draft: "" };
+    },
+    (model, value) => ({ ...model, items: model.items.map((item) => (item.id === value ? { ...item, done: !item.done } : item)) }),
+    (model, value) => ({ ...model, items: model.items.filter((item) => item.id !== value) }),
+  ], patch);
   const root = widget(parent, id, heading, "todo", self);
   const draft = element(root, "input", { type: "text", "data-role": "draft", placeholder: placeholder });
   on(draft, "input", () => self.send(0, draft.value));
@@ -187,8 +182,6 @@ export function todo(parent, id, heading, placeholder, addText, removeText, mode
 `,
 
   tabs: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
-// type Msg = Select Int
-const update = [(model, value) => ({ active: value })];
 
 export function tabs(parent, id, heading, tabs, model) {
   const patch = () => {
@@ -196,7 +189,8 @@ export function tabs(parent, id, heading, tabs, model) {
     buttons.forEach((button, i) => setProp(button, "ariaSelected", \`\${i === m.active}\`));
     setText(content, tabs[m.active].content);
   };
-  const self = instance(model, update, patch);
+  // type Msg = Select Int
+  const self = instance(model, [(model, value) => ({ active: value })], patch);
   const root = widget(parent, id, heading, "tabs", self);
   const tablist = element(root, "div", { role: "tablist" });
   const buttons = tabs.map((tab, i) => {
@@ -209,8 +203,6 @@ export function tabs(parent, id, heading, tabs, model) {
 `,
 
   panel: `${HEAD(["element", "on", "setText", "show", "setProp", "instance"])}
-// type Msg = Toggle
-const update = [(model, value) => ({ open: !model.open })];
 
 export function panel(parent, id, heading, showText, hideText, body, model) {
   const patch = () => {
@@ -219,7 +211,8 @@ export function panel(parent, id, heading, showText, hideText, body, model) {
     setText(toggle, m.open ? hideText : showText);
     show(root, text, m.open);
   };
-  const self = instance(model, update, patch);
+  // type Msg = Toggle
+  const self = instance(model, [(model, value) => ({ open: !model.open })], patch);
   const root = widget(parent, id, heading, "panel", self);
   const toggle = element(root, "button", { "data-role": "toggle" }, " ");
   on(toggle, "click", () => self.send(0));
@@ -228,11 +221,6 @@ export function panel(parent, id, heading, showText, hideText, body, model) {
 `,
 
   choice: `${HEAD(["element", "on", "setProp", "show", "instance"])}
-// type Msg = Choose String | EditExtra String
-const update = [
-  (model, value) => ({ ...model, option: value }),
-  (model, value) => ({ ...model, extra: value }),
-];
 
 export function choice(parent, id, heading, options, extraFor, extraPlaceholder, model) {
   const patch = () => {
@@ -241,7 +229,11 @@ export function choice(parent, id, heading, options, extraFor, extraPlaceholder,
     setProp(extra, "value", m.extra);
     show(root, extra, extraFor.includes(m.option));
   };
-  const self = instance(model, update, patch);
+  // type Msg = Choose String | EditExtra String
+  const self = instance(model, [
+    (model, value) => ({ ...model, option: value }),
+    (model, value) => ({ ...model, extra: value }),
+  ], patch);
   const root = widget(parent, id, heading, "choice", self);
   const select = element(root, "select", { "data-role": "select" });
   for (const option of options) element(select, "option", { value: option.value }, option.label);
@@ -252,8 +244,6 @@ export function choice(parent, id, heading, options, extraFor, extraPlaceholder,
 `,
 
   amount: `${HEAD(["element", "on", "setText", "instance"])}
-// type Msg = Set Float
-const update = [(model, value) => ({ value: value })];
 
 export function amount(parent, id, heading, format, model) {
   const patch = () => {
@@ -261,7 +251,8 @@ export function amount(parent, id, heading, format, model) {
     if (input.valueAsNumber !== m.value) input.value = m.value;
     setText(formatted, format(m.value));
   };
-  const self = instance(model, update, patch);
+  // type Msg = Set Float
+  const self = instance(model, [(model, value) => ({ value: value })], patch);
   const root = widget(parent, id, heading, "amount", self);
   const input = element(root, "input", { type: "number", "data-role": "input" });
   // Only a valid number is a message; anything else stays in the input, unsent.
@@ -274,8 +265,6 @@ export function amount(parent, id, heading, format, model) {
 `,
 
   filter: `${HEAD(["element", "on", "setText", "setProp", "instance", "list"])}
-// type Msg = Edit String
-const update = [(model, value) => ({ query: value })];
 
 export function filter(parent, id, heading, items, placeholder, model) {
   const patch = () => {
@@ -286,7 +275,8 @@ export function filter(parent, id, heading, items, placeholder, model) {
     shown(matches);
     setText(count, \`\${matches.length} matches\`);
   };
-  const self = instance(model, update, patch);
+  // type Msg = Edit String
+  const self = instance(model, [(model, value) => ({ query: value })], patch);
   const root = widget(parent, id, heading, "filter", self);
   const input = element(root, "input", { type: "text", "data-role": "query", placeholder: placeholder });
   on(input, "input", () => self.send(0, input.value));
@@ -297,8 +287,6 @@ export function filter(parent, id, heading, items, placeholder, model) {
 `,
 
   rating: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
-// type Msg = Rate Int
-const update = [(model, value) => ({ stars: value })];
 
 export function rating(parent, id, heading, stars, labels, model) {
   const patch = () => {
@@ -309,7 +297,8 @@ export function rating(parent, id, heading, stars, labels, model) {
     });
     setText(label, labels[m.stars]);
   };
-  const self = instance(model, update, patch);
+  // type Msg = Rate Int
+  const self = instance(model, [(model, value) => ({ stars: value })], patch);
   const root = widget(parent, id, heading, "rating", self);
   const row = element(root, "div");
   const buttons = [];
@@ -323,13 +312,7 @@ export function rating(parent, id, heading, stars, labels, model) {
 `,
 
   feed: `${HEAD(["element", "on", "setText", "show", "instance", "list"])}
-// type Msg = Dismiss Int | Notify Entry
 export const notify = 1; // the tag of Notify, sent by the app
-
-const update = [
-  (model, value) => ({ entries: model.entries.filter((entry) => entry.id !== value) }),
-  (model, value) => ({ entries: [...model.entries, value] }),
-];
 
 export function feed(parent, id, heading, emptyText, dismissText, model) {
   const patch = () => {
@@ -337,7 +320,11 @@ export function feed(parent, id, heading, emptyText, dismissText, model) {
     entries(m.entries);
     show(root, empty, m.entries.length === 0);
   };
-  const self = instance(model, update, patch);
+  // type Msg = Dismiss Int | Notify Entry
+  const self = instance(model, [
+    (model, value) => ({ entries: model.entries.filter((entry) => entry.id !== value) }),
+    (model, value) => ({ entries: [...model.entries, value] }),
+  ], patch);
   const root = widget(parent, id, heading, "feed", self);
   const entries = list(element(root, "ul"), (entry) => {
     const li = element(null, "li");
@@ -350,15 +337,7 @@ export function feed(parent, id, heading, emptyText, dismissText, model) {
 `,
 
   clock: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
-// type Msg = Start | Stop | Reset | Tick
 export const tick = 3; // the tag of Tick, sent by the app
-
-const update = [
-  (model, value) => ({ ...model, running: true }),
-  (model, value) => ({ ...model, running: false }),
-  (model, value) => ({ seconds: 0, running: false }),
-  (model, value) => (model.running ? { ...model, seconds: model.seconds + 1 } : model),
-];
 
 function formatTime(seconds) {
   return \`\${Math.floor(seconds / 60)}:\${String(seconds % 60).padStart(2, "0")}\`;
@@ -371,7 +350,13 @@ export function clock(parent, id, heading, startText, stopText, resetText, model
     setProp(start, "disabled", m.running);
     setProp(stop, "disabled", !m.running);
   };
-  const self = instance(model, update, patch);
+  // type Msg = Start | Stop | Reset | Tick
+  const self = instance(model, [
+    (model, value) => ({ ...model, running: true }),
+    (model, value) => ({ ...model, running: false }),
+    (model, value) => ({ seconds: 0, running: false }),
+    (model, value) => (model.running ? { ...model, seconds: model.seconds + 1 } : model),
+  ], patch);
   const root = widget(parent, id, heading, "clock", self);
   const time = element(root, "output", { "data-role": "time" }, " ");
   const start = element(root, "button", { "data-role": "start" }, startText);
