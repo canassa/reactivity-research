@@ -14,3 +14,14 @@ js-framework-benchmark's keyed/solid (textContent cells, id captured once).
   touches only two rows in the DOM. This is the idiom of the official entry, so it is kept.
   Swap, remove and toggle grow the same way for another reason: store updaters (`filter`, a row
   filter path) are O(rows).
+
+## Review fixes
+
+- `textContent` now only in table 1 (the js-framework-benchmark app); tables 2 to N use JSX
+  children, as an expert writes them. Slope over N >= 4: 233.0 to 225.7 B per table.
+- The Solid adapter no longer imports `DelegatedEvents` (a 22-string Set the app never uses). On
+  dispose it keeps the names in Solid's own `_$DX_DELEGATE` set, clears, and re-registers those
+  on the next mount. Runtime bytes at N=64 s1 (brotli, runtime / total):
+  shared 11,655 total before, 11,555 after (runtime 6,415); unique 26,031 to 25,951 (6,535);
+  big-component 14,675 to 14,564 (6,530); big-table (both fixes) 26,459 to 25,489 (6,532, from
+  6,626). Committed results of the other scenarios are stale until `./rr report`.
