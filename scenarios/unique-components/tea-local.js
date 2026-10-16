@@ -380,16 +380,15 @@ function widgetFile(spec, w) {
   const fn = [];
   fn.push(`export function ${w.id}(parent) {`);
   for (const s of sources) fn.push(`  const ${s} = widgets.get(${q(s)});`);
-  fn.push(`  // type Msg = ${msgNames.join(" | ")}`);
-  // The reducer, one function per message, indexed by its tag.
-  fn.push(`  const update = [`, ...cases.map((c) => `    ${c.replace(/\n/g, "\n    ")},`), `  ];`);
   // The binding list (it runs after mount, once `self` and `e` are set).
   fn.push(`  const patch = () => {`);
   if (cx.own) fn.push(`    const m = self.m;`);
   for (const s of sources) fn.push(`    const m${s.slice(1)} = ${s}.m;`);
   fn.push(...cx.patch.map((l) => "    " + l));
   fn.push(`  };`);
-  fn.push(`  const self = instance(${lit(spec.initialState.widgets[w.id])}, update, patch);`);
+  // The model, and the reducer: one function per message, indexed by its tag.
+  fn.push(`  // type Msg = ${msgNames.join(" | ")}`);
+  fn.push(`  const self = instance(${lit(spec.initialState.widgets[w.id])}, [`, ...cases.map((c) => `    ${c.replace(/\n/g, "\n    ")},`), `  ], patch);`);
   cx.wire.forEach((t, i) => { if (t !== i) throw new Error(`${w.id}: control tags out of order`); });
   fn.push(`  const e = widget(parent, ${q(w.id)}, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))}, self);`);
   fn.push(...cx.create);
