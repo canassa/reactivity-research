@@ -29,3 +29,27 @@
 - Lifetime costs very little in dirty bits: `slot` is about 20 lines and the pages need no
   subscription code, because a patch only exists while its page is mounted.
 - A page costs about twice a `unique-components` widget (366 against about 175 B), as the README expects.
+
+## Review fixes (same-task events)
+
+A review found that units are removed only at the microtask patch, so until then their handlers can
+still send, and reached through `dispatch` as well as through input. The "real input cannot do it"
+claim in the first README section was wrong and is deleted. Cases found: a tab switch then a click
+on the old panel (an arm ran on another panel's fields: TypeError); a modal closed then typed in (a
+ghost modal) or confirmed (a read of null); a navigation then a click on the old page, or a timer
+tick (an arm of another page, or `undefined(...)`); deepLink p2 then p1 before settled (the slot key
+did not change, so the DOM kept the old p1's edited fields while the model held the initial ones);
+tab A to B to A and a modal closed then opened in one task (same).
+
+- **Ownership guards, at compile time:** a page message carries the page id (`widget`, the runtime's
+  own event shape) and the reducer drops it unless it is the route; tab arms and ticks test
+  `m.page.tab === "t1"`, modal arms test `m.page.modal`.
+- **Generation keys:** `gen` (navigation), the page's `t` (tab selected) and `o` (modal opened) are the
+  keys of the slots, so re-entry before the patch builds the unit again.
+- **Attribution:** `routes.js` keeps only `slot` and a `program` wrapper; the model setters, `nextId`
+  and `go` moved to `src/model.js` (app code); events use the runtime's `onClick`, `onInput`,
+  `onInt` with the page id as the widget.
+- **Adapter:** `view` returns `[patch, stop]`; the adapter is the standard one with its import
+  pointed at `./routes`, whose `program` runs the stop on dispose. `routes-adapter.js` is gone.
+- **Tests:** the seven same-task cases above pass (a script firing the events in one task, comparing
+  with the same flow without the stale event, and checking no page error and no timer left).

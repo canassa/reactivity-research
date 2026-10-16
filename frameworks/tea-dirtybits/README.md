@@ -335,8 +335,10 @@ The emitter for `routed-app` (`scenarios/routed-app/tea-dirtybits.js`) keeps the
 **lifetime**: only the shell and the page shown (with its open tab and modal) are built, and
 anything left is disposed. The critique's weakness 2 (`notes/2026-10-16-tea-inline-critique.md`) was
 that a component built eagerly stays subscribed for ever; here a page is a unit that mounts and
-unmounts. What it adds, in a new `template/routes.js` (counted as runtime, included only here, with
-its own adapter `routes-adapter.js` whose dispose first calls the app's `stop`):
+unmounts. What it adds is a new `template/routes.js` (counted as runtime, included only here): the
+generic `slot`, and a `program` that wraps the runtime's loop so that `dispose` runs the stop which
+`view` returns (the adapter is the standard one, importing `program` from `./routes`). The model's
+shape, the reference's id rule and the message of a link are app code, `src/model.js`.
 
 - **A page is a unit.** `src/pages/<id>.js` registers `[mount, reducer, initial local state]`. `mount()`
   builds the page from one static template and returns `[root, patch, stop]`. The model has the
@@ -360,6 +362,15 @@ its own adapter `routes-adapter.js` whose dispose first calls the app's `stop`):
   local state (`putModal`, `putTab`). `pagePush` is a named arm and reaches only the page shown.
 - **Menu.** A static template of every page's entry, parsed when the menu opens and removed when it
   closes or on navigation: the one O(N) part, which the locality check marks global.
-- **Known limit:** two events in one task aimed at a unit that the first removed (a click on a tab
-  panel's control after a click that switched tabs, before the microtask patch) would run the old
-  panel's arm on the new panel's fields. Real input cannot do it (a patch runs between events).
+- **Same-task events (stale handlers).** A unit is removed at the microtask patch, so until then its
+  handlers can still send. Two guards, both decided at compile time: (1) *ownership* - every message
+  of a page carries its page id (`widget`, the runtime's event shape) and the app reducer drops one
+  whose id is not the route; tab arms and ticks test `m.page.tab === "t1"`, modal arms test
+  `m.page.modal`, like matching on `(msg, model.page)` in Elm; (2) *generation keys* - a counter
+  in the model (`gen` for navigation, the page's `t` for a tab selected, `o` for a modal opened)
+  is the key of the unit's slot, so leaving and re-entering a unit before the patch (deepLink p2 then
+  p1, tab A to B to A, modal closed then opened) still builds it again with fresh state. Without
+  (2) the DOM kept the old fields while the model had the initial ones; without (1) an arm ran on
+  another unit's fields (a TypeError) or created a ghost modal. Tested by firing both events in one
+  task: navigate then click the old page, tab switch then click the old panel, modal close then
+  type, navigate then a clock tick, deepLink p2 then p1, tab A to B to A, modal close then open.

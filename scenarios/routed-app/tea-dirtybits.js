@@ -4,9 +4,10 @@
 // for an app of pages, where only the shell and the page shown exist. Style (recorded in every
 // generated app's rr.json):
 // - Real messages and reducers. The model is the reference's shape, `{ route, menu, global, page }`,
-//   where `page` is the shown page's local state `{ fields, tab, panel, modal }`. A message is
-//   `{ type, id?, value? }` (a tag number, or a name for an external event); the app reducer
-//   sends it to the arm of the page shown. An arm returns `[bits, model]`: the compile-time dirty
+//   where `page` is the shown page's local state `{ fields, tab, panel, modal }` (plus counters, below).
+//   A page's message is `{ widget: <page id>, type: <tag>, id?, value? }` and an external event has
+//   a name as its type; the app reducer drops a page message whose page is not the route, and sends
+//   the others to the arm of the page shown. An arm returns `[bits, model]`: the compile-time dirty
 //   bits of what it wrote, and the new model.
 // - ONE dirty word per event, `dirty.a`: bits 0 to 5 are the six global fields (the same numbers
 //   in every page), the next are the shown page's own fields, then its tab bit, then the fields of
@@ -26,6 +27,10 @@
 //   the page shown (with its open tab and modal) ever have nodes, listeners or timers.
 // - A time-driven field starts one `setInterval` when its unit mounts, which sends a tick message
 //   to the page's reducer; the unit's `stop` clears it.
+// - Stale handlers: a unit is removed at the microtask patch, so until then its handlers can still
+//   send. The page id in the message and the arms' ownership tests (the tab is still t1, the modal
+//   is open) drop them, and a generation number in the model (`gen`; the page's `t` and `o`) is the
+//   key of each slot, so a unit left and entered again before the patch is built again.
 // - Each page is its own code, written from its description alone: nothing is interpreted.
 
 import { templateFiles, templateFile, trimTemplate } from "../../frameworks/tea-dirtybits/framework.js";
@@ -43,7 +48,35 @@ const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" };
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ESC[c]);
 
 // Which module a helper comes from.
-const FROM_ROUTES = new Set(["go", "slot", "tap", "typed", "typedInt", "nextId", "setF", "setP", "setM", "setG", "putModal", "putTab"]);
+const FROM_MODEL = new Set(["go", "nextId", "setF", "setP", "setM", "setG", "putModal", "openModal", "putTab"]);
+
+// The model's shape and the reference's rules the reducers share: app code.
+const MODEL_FILE = `import { send } from "./runtime.js";
+
+// A link or a nav button: navigate to a page.
+export function go(n, route) {
+  const msg = { type: "navigate", route };
+  n.addEventListener("click", () => send(msg));
+}
+
+// A new item's id: one more than the largest.
+export function nextId(items) {
+  return items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
+}
+
+// The model with the page's fields, the tab panel's, the modal's or the global state changed.
+export const setF = (m, f) => ({ ...m, page: { ...m.page, fields: { ...m.page.fields, ...f } } });
+export const setP = (m, f) => ({ ...m, page: { ...m.page, panel: { ...m.page.panel, ...f } } });
+export const setM = (m, f) => ({ ...m, page: { ...m.page, modal: { ...m.page.modal, ...f } } });
+export const setG = (m, f) => ({ ...m, global: { ...m.global, ...f } });
+
+// The modal closed, or opened with its initial fields; another tab selected, with its panel's.
+// Opening and selecting count up (the page's \`o\` and \`t\`), which is the key of the unit's slot, so
+// a unit left and entered again in one task is built again.
+export const putModal = (m, modal) => ({ ...m, page: { ...m.page, modal } });
+export const openModal = (m, modal) => ({ ...m, page: { ...m.page, modal, o: m.page.o + 1 } });
+export const putTab = (m, tab, panel) => ({ ...m, page: { ...m.page, tab, panel, t: m.page.t + 1 } });
+`;
 
 const PAGE_FILE = `// Every page, by id: [mount, reducer, initial local state] (each module adds its own when the
 // app imports it).
@@ -199,13 +232,16 @@ function pageModule(spec, page, GB) {
       }
       return bits;
     };
+    // The arm runs only for the unit it belongs to: a handler of a panel or a modal that has gone
+    // (and not been replaced yet by the patch) must not touch the state of what is mounted now.
+    const own = c.kind === "tab" ? `m.page.tab === ${J(c.comp.id)}` : c.kind === "modal" ? "m.page.modal" : "";
     switch (m.kind) {
       case "open":
-        use("putModal");
-        return { bits: 0, lines: [`return [0, putModal(m, modalInit)];`] };
+        use("openModal");
+        return { bits: 0, lines: [`return [0, openModal(m, modalInit)];`] };
       case "close":
         use("putModal");
-        return { bits: 0, lines: [`return [0, putModal(m, null)];`] };
+        return { bits: 0, lines: [`return ${own} && [0, putModal(m, null)];`] };
       case "input": case "select": set(m.field, "msg.value"); break;
       case "check": set(m.field, `!${R(m.field)}`); break;
       case "item": {
@@ -270,7 +306,10 @@ function pageModule(spec, page, GB) {
       use("putModal");
       model = `putModal(${model}, null)`;
     }
-    return { bits, lines: [...guard, `return ${when ? when + " && " : ""}[${bits}, ${model}];`] };
+    const out = (cond) => `return ${cond ? cond + " && " : ""}[${bits}, ${model}];`;
+    // A guard line that reads state comes after the ownership test.
+    if (guard.length) return { bits, lines: [...(own ? [`if (!(${own})) return;`] : []), ...guard, out(when)] };
+    return { bits, lines: [out([own, when].filter(Boolean).join(" && "))] };
   }
 
   const arms = [];
@@ -283,6 +322,7 @@ function pageModule(spec, page, GB) {
       const f = c.comp.fields.find((x) => x.every);
       use(c.set);
       arms.push({ key: i, name, lines: [
+        ...(c.kind === "tab" ? [`if (m.page.tab !== ${J(c.comp.id)}) return;`] : []),
         `const ${f.name} = Math.min(${f.max}, ${c.path}.${f.name} + ${f.by});`,
         `if (${f.name} !== ${c.path}.${f.name}) return [${bitOf(c, ["f", f.name])}, ${c.set}(m, { ${f.name} })];`,
       ] });
@@ -382,7 +422,7 @@ function pageModule(spec, page, GB) {
           break;
         }
         case "button": {
-          use("tap");
+          use("onClick");
           const deps = new Set();
           const t = textOf(c, n.text, deps);
           const e = el("button", `data-role=${n.msg}`, t.stat ? [esc(t.stat)] : []);
@@ -395,7 +435,7 @@ function pageModule(spec, page, GB) {
             use("setDisabled");
             bind(sc, d, `setDisabled(${ref(e)}, ${ex(c, n.disabled, d)});`);
           }
-          u.wires.push(`tap(${ref(e)}, ${tag(n.msg)});`);
+          u.wires.push(`onClick(${ref(e)}, P, ${tag(n.msg)});`);
           kids.push(e);
           break;
         }
@@ -407,9 +447,9 @@ function pageModule(spec, page, GB) {
           break;
         }
         case "open": {
-          use("tap");
+          use("onClick");
           const e = el("button", `data-role=${n.msg}`, [esc(n.text)]);
-          u.wires.push(`tap(${ref(e)}, ${tag(n.msg)});`);
+          u.wires.push(`onClick(${ref(e)}, P, ${tag(n.msg)});`);
           kids.push(e);
           break;
         }
@@ -419,14 +459,14 @@ function pageModule(spec, page, GB) {
           const bit = bitOf(c, m.field);
           let i;
           if (f.type === "int") {
-            use("typedInt", "setNumber");
+            use("onInt", "setNumber");
             i = el("input", `type=number data-role=${n.msg}`, []);
-            u.wires.push(`typedInt(${ref(i)}, ${tag(n.msg)}, ${f.min}, ${f.max});`);
+            u.wires.push(`onInt(${ref(i)}, P, ${tag(n.msg)}, ${f.min}, ${f.max});`);
             bind(sc, new Set([bit]), `setNumber(${ref(i)}, ${ex(c, m.field, new Set())});`);
           } else {
-            use("typed", "setValue");
+            use("onInput", "setValue");
             i = el("input", `type=text data-role=${n.msg}${n.placeholder ? ` placeholder="${esc(n.placeholder)}"` : ""}`, []);
-            u.wires.push(`typed(${ref(i)}, ${tag(n.msg)});`);
+            u.wires.push(`onInput(${ref(i)}, P, ${tag(n.msg)});`);
             bind(sc, new Set([bit]), `setValue(${ref(i)}, ${ex(c, m.field, new Set())});`);
           }
           kids.push(n.label ? el("label", "", [esc(n.label), i]) : i);
@@ -442,20 +482,20 @@ function pageModule(spec, page, GB) {
           break;
         }
         case "check": {
-          use("tap", "setChecked");
+          use("onCheck", "setChecked");
           const m = c.comp.messages.find((x) => x.name === n.msg);
           const i = el("input", `type=checkbox data-role=${n.msg}`, []);
           kids.push(el("label", "", [i, esc(n.label)]));
-          u.wires.push(`tap(${ref(i)}, ${tag(n.msg)});`);
+          u.wires.push(`onCheck(${ref(i)}, P, ${tag(n.msg)});`);
           bind(sc, new Set([bitOf(c, m.field)]), `setChecked(${ref(i)}, ${ex(c, m.field, new Set())});`);
           break;
         }
         case "select": {
-          use("typed", "setValue");
+          use("onInput", "setValue");
           const m = c.comp.messages.find((x) => x.name === n.msg);
           const s = el("select", `data-role=${n.msg}`, fieldDesc(c, m.field).options.map((o) => el("option", `value="${esc(o)}"`, [esc(o)])));
           kids.push(n.label ? el("label", "", [esc(n.label), s]) : s);
-          u.wires.push(`typed(${ref(s)}, ${tag(n.msg)});`);
+          u.wires.push(`onInput(${ref(s)}, P, ${tag(n.msg)});`);
           bind(sc, new Set([bitOf(c, m.field)]), `setValue(${ref(s)}, ${ex(c, m.field, new Set())});`);
           break;
         }
@@ -474,12 +514,12 @@ function pageModule(spec, page, GB) {
           const R = (e) => resolve(ref(e), map, "r");
           const lines = [`const ${l} = list(${ref(ul)}, (item) => {`, `  const r = template(${J(trimTemplate(ser(row)))});`];
           if (n.check) {
-            use("tap", "setChecked");
-            lines.push(`  tap(${R(box)}, ${tag(n.check)}, item.id);`);
+            use("onCheck", "setChecked");
+            lines.push(`  onCheck(${R(box)}, P, ${tag(n.check)}, item.id);`);
           }
           if (n.remove) {
-            use("tap");
-            lines.push(`  tap(${R(remove)}, ${tag(n.remove)}, item.id);`);
+            use("onClick");
+            lines.push(`  onClick(${R(remove)}, P, ${tag(n.remove)}, item.id);`);
           }
           if (n.check) {
             lines.push(`  return [r[0], (item) => {`, `    setChecked(${R(box)}, item.done);`, `    setText(${R(label)}, item.text);`, `  }];`);
@@ -517,13 +557,13 @@ function pageModule(spec, page, GB) {
           use("slot", "prop");
           const bar = el("nav", "data-role=tabs", tabs.map((t) => {
             const b = el("button", `data-key=${t.id} data-role=tab`, [esc(t.label)]);
-            use("tap");
-            u.wires.push(`tap(${ref(b)}, ${tag("$tab")}, ${J(t.id)});`);
+            use("onClick");
+            u.wires.push(`onClick(${ref(b)}, P, ${tag("$tab")}, ${J(t.id)});`);
             bind(sc, new Set([TAB]), `prop(${ref(b)}, "ariaSelected", "" + (m.page.tab === ${J(t.id)}));`);
             return b;
           }));
           kids.push(bar);
-          L(`const tabSlot = slot((n) => ${ref(bar)}.after(n), (k) => tabMounts[k]());`);
+          L(`const tabSlot = slot((n) => ${ref(bar)}.after(n), (k, m) => tabMounts[m.page.tab]());`);
           break;
         }
         default: throw new Error(`unknown view node ${n.el}`);
@@ -549,13 +589,13 @@ function pageModule(spec, page, GB) {
     if (c.kind === "page" && modal) {
       use("slot");
       u.out.push(`const modalSlot = slot((n) => ${ref(root)}.append(n), modalMount);`);
-      tail.push(`modalSlot(m.page.modal !== null, m.page.modal, d, m);`);
+      tail.push(`modalSlot(m.page.modal && m.page.o, m.page.modal, d, m);`);
     }
-    if (c.kind === "page" && tabs.length) tail.unshift(`tabSlot(m.page.tab, m.page.panel, d, m);`);
+    if (c.kind === "page" && tabs.length) tail.unshift(`tabSlot(m.page.tab && m.page.t, m.page.panel, d, m);`);
     const live = c.comp.fields.find((f) => f.every);
     if (live) {
       use("send");
-      lines.push(`const timer = setInterval(() => send({ type: ${tag(c.kind === "tab" ? `$tick:${c.comp.id}` : "$tick")} }), ${live.every});`);
+      lines.push(`const timer = setInterval(() => send({ widget: P, type: ${tag(c.kind === "tab" ? `$tick:${c.comp.id}` : "$tick")} }), ${live.every});`);
       stops.push("clearInterval(timer)");
     }
     if (c.kind === "page" && tabs.length) stops.push("tabSlot.stop()");
@@ -591,11 +631,13 @@ ${[...patch, ...tail.map((l) => "    " + l)].join("\n")}
     ...(tabs.length ? [`tab ${TAB}`] : []),
     ...comps.filter((c) => c.kind !== "page").flatMap((c) => c.order.map((n) => `${c.comp.id ?? "modal"}.${n} ${c.bit[n]}`)),
   ];
-  const init = `{ fields: ${literal(initOf(page), "  ")}, tab: ${tabs.length ? J(tabs[0].id) : "null"}, panel: ${tabs.length ? "panels." + tabs[0].id : "null"}, modal: null }`;
-  const rt = [...helpers].filter((h) => !FROM_ROUTES.has(h)).sort();
-  const rts = [...helpers].filter((h) => FROM_ROUTES.has(h)).sort();
+  const init = `{ fields: ${literal(initOf(page), "  ")}, tab: ${tabs.length ? J(tabs[0].id) : "null"}, panel: ${tabs.length ? "panels." + tabs[0].id : "null"}, modal: null${tabs.length ? ", t: 1" : ""}${modal ? ", o: 0" : ""} }`;
+  const rt = [...helpers].filter((h) => !FROM_MODEL.has(h) && h !== "slot").sort();
+  const rts = [...helpers].filter((h) => FROM_MODEL.has(h)).sort();
   const file = `import { ${rt.join(", ")} } from "../runtime.js";
-${rts.length ? `import { ${rts.join(", ")} } from "../routes.js";\n` : ""}import { PAGES } from "./page.js";
+${helpers.has("slot") ? `import { slot } from "../routes.js";\n` : ""}${rts.length ? `import { ${rts.join(", ")} } from "../model.js";\n` : ""}import { PAGES } from "./page.js";
+
+const P = ${J(page.id)};
 
 // Dirty bits: ${bitsDoc.join(", ")}.
 // Message tags: ${order.map((n, i) => `${n} ${i}`).join(", ")}.
@@ -638,8 +680,9 @@ function appFile(spec, GB) {
   const gbits = Object.fromEntries(spec.global.filter((f) => ["user", "currency", "balance", "online"].includes(f.name)).map((f) => [f.name, GB[f.name]]));
   const all = (1 << spec.global.length) - 1;
 
-  return `import { dirty, prop, setText, template } from "./runtime.js";
-import { go, setG, slot, tap } from "./routes.js";
+  return `import { dirty, onClick, prop, setText, template } from "./runtime.js";
+import { slot } from "./routes.js";
+import { go, setG } from "./model.js";
 import { PAGES } from "./pages/page.js";
 // Every page: each module adds its own [mount, reducer, initial local state].
 ${spec.pages.map((p) => `import "./pages/${p.id}.js";`).join("\n")}
@@ -651,10 +694,10 @@ const menuMount = () => {
   return [t[0]];
 };
 
-// The initial model: the shell's state, the global state, and the first page's local state. No
+// The initial model: the shell's state, the generation number of the page, the global state, and the first page's local state. No
 // other page is built or initialised.
 export function init() {
-  return { route: ${J(first)}, menu: false, global: ${literal(global, "  ")}, page: PAGES.${first}[2] };
+  return { route: ${J(first)}, menu: false, global: ${literal(global, "  ")}, gen: 1, page: PAGES.${first}[2] };
 }
 
 // The bits of the global fields a server may set (the same numbers in every page).
@@ -680,7 +723,7 @@ export function update(m, msg) {
         return { ...m, menu: false };
       }
       dirty.n |= 3;
-      return { ...m, route: msg.route, menu: false, page: PAGES[msg.route][2] };
+      return { ...m, route: msg.route, menu: false, gen: m.gen + 1, page: PAGES[msg.route][2] };
     case "menu":
       dirty.n |= 2;
       return { ...m, menu: !m.menu };
@@ -697,7 +740,9 @@ export function update(m, msg) {
       // The page's subscription lives with the page: a push to another page is dropped.
       return msg.page === m.route ? route(m, msg) : m;
   }
-  return route(m, msg);
+  // A page's own message names the page it was built for: one from a page that has been left (and
+  // not yet removed by the patch) is dropped.
+  return msg.widget === m.route ? route(m, msg) : m;
 }
 
 let page, menu;
@@ -708,9 +753,11 @@ export function view(root, m) {
   const t = template(${J(trimTemplate(ser(app)))}, root);
   const pins = [${pins.map(T).join(", ")}];
   pins.forEach((b) => go(b, b.dataset.key));
-  tap(${T(menuBtn)}, "menu");
-  menu = slot((n) => ${T(header)}.after(n), () => menuMount());
-  page = slot((n) => ${T(app)}.append(n), (k) => PAGES[k][0]());
+  onClick(${T(menuBtn)}, 0, "menu");
+  menu = slot((n) => ${T(header)}.after(n), menuMount);
+  // The page's key is a generation number, so leaving a page and coming back before the patch
+  // runs still builds it again.
+  page = slot((n) => ${T(app)}.append(n), (k, m) => PAGES[m.route][0]());
   const patch = (m, d) => {
     const a = d.a;
     const g = m.global;
@@ -720,15 +767,11 @@ export function view(root, m) {
     if (d.n & 1) pins.forEach((b) => prop(b, "ariaCurrent", m.route === b.dataset.key ? "page" : null));
     if (d.n & 2) prop(${T(menuBtn)}, "ariaExpanded", "" + m.menu);
     menu(m.menu, 0, 0, m);
-    page(m.route, m.page.fields, a, m);
+    page(m.gen, m.page.fields, a, m);
   };
   patch(m, { a: -1, n: -1 });
-  return patch;
-}
-
-// Stops what is mounted: the page shown (its timers and its tab's).
-export function stop() {
-  page.stop();
+  // The stop runs when the app is disposed: the page shown (its timers and its tab's).
+  return [patch, page.stop];
 }
 `;
 }
@@ -742,7 +785,8 @@ export function emit(spec) {
   const GB = Object.fromEntries(spec.global.map((f, i) => [f.name, 1 << i]));
   const files = {
     ...templateFiles({ name: "routed-app", title: "Routed app" }),
-    "src/adapter.js": templateFile("routes-adapter.js"),
+    "src/adapter.js": templateFile("adapter.js").replace('"./runtime"', '"./routes"'),
+    "src/model.js": MODEL_FILE,
     "src/routes.js": templateFile("routes.js"),
     "src/pages/page.js": PAGE_FILE,
   };
