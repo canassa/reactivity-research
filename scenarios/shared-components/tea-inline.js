@@ -101,7 +101,7 @@ const FACTORIES = {
     schedule(onValue);
   });
 
-  return { load: loader(s, onValue) };
+  return loader(s, onValue);
 }`,
   },
 
@@ -125,7 +125,7 @@ const FACTORIES = {
   const count = el("p", root, { "data-role": "count" });
   const onCount = [() => text(count, \`\${s.on.filter(Boolean).length} of \${items.length} on\`), readers[id]];
 
-  return { load: loader(s, [boxes, onCount]) };
+  return loader(s, [boxes, onCount]);
 }`,
   },
 
@@ -144,7 +144,7 @@ const FACTORIES = {
     schedule(onText);
   });
 
-  return { load: loader(s, onText) };
+  return loader(s, onText);
 }`,
   },
 
@@ -197,7 +197,7 @@ const FACTORIES = {
     schedule(onDraft, onItems);
   });
 
-  return { load: loader(s, [onDraft, items, onItems]) };
+  return loader(s, [onDraft, items, onItems]);
 }`,
   },
 
@@ -219,7 +219,7 @@ const FACTORIES = {
   const content = el("p", root, { role: "tabpanel", "data-role": "tab-content" });
   onActive.push(() => text(content, tabs[s.active][1]));
 
-  return { load: loader(s, onActive) };
+  return loader(s, onActive);
 }`,
   },
 
@@ -244,7 +244,7 @@ const FACTORIES = {
     schedule(onOpen);
   });
 
-  return { load: loader(s, onOpen) };
+  return loader(s, onOpen);
 }`,
   },
 
@@ -276,7 +276,7 @@ const FACTORIES = {
     schedule(onOption);
   });
 
-  return { load: loader(s, onOption) };
+  return loader(s, onOption);
 }`,
   },
 
@@ -297,7 +297,7 @@ const FACTORIES = {
     schedule(onValue);
   });
 
-  return { load: loader(s, onValue) };
+  return loader(s, onValue);
 }`,
   },
 
@@ -325,7 +325,7 @@ const FACTORIES = {
     schedule(onQuery);
   });
 
-  return { load: loader(s, onQuery) };
+  return loader(s, onQuery);
 }`,
   },
 
@@ -351,7 +351,7 @@ const FACTORIES = {
   const label = el("p", root, { "data-role": "rating-label" });
   onStars.push(() => text(label, labels[s.stars]), readers[id]);
 
-  return { load: loader(s, onStars) };
+  return loader(s, onStars);
 }`,
   },
 
@@ -380,15 +380,14 @@ const FACTORIES = {
 
   const onEntries = [() => empty(s.entries.length === 0), readers[id]];
 
-  return {
-    load: loader(s, [entries, onEntries]),
+  return loader(s, [entries, onEntries], {
     // The external arm: notify(entry).
     notify(entry) {
       s.entries.push(entry);
       entries.add(entry);
       schedule(onEntries);
     },
-  };
+  });
 }`,
   },
 
@@ -421,15 +420,14 @@ export function clock(parent, s, readers, id, heading, startText, stopText, rese
     schedule(onSeconds, onRunning);
   });
 
-  return {
-    load: loader(s, [onSeconds, onRunning]),
+  return loader(s, [onSeconds, onRunning], {
     // The external arm: tick.
     tick() {
       if (!s.running) return;
       s.seconds++;
       schedule(onSeconds);
     },
-  };
+  });
 }`,
   },
 
@@ -457,14 +455,15 @@ export function section(parent, id, label, kind) {
   return root;
 }
 
-// Schedule every binding of a widget for its first render, and return its \`load\` for serverSet
-// and snapshot: replace the widget's state and run every binding again.
-export const loader = (s, all) => (
+// Schedule every binding of a widget for its first render, and return its handle: its load for
+// serverSet and snapshot (replace the widget's state and run every binding again), carrying its
+// external arms.
+export const loader = (s, all, arms) => (
   schedule(all),
-  (next) => {
+  Object.assign((next) => {
     Object.assign(s, next);
     schedule(all);
-  }
+  }, arms)
 );
 `;
 
@@ -573,7 +572,7 @@ function formatNumber(n) {
 
   const clocks = spec.widgets.filter((w) => w.kind === "clock");
   const cases = [`      case "serverSet":
-        views[msg.widget].load(msg.state);
+        views[msg.widget](msg.state);
         break;`];
   if (clocks.length) {
     cases.push(`      case "tick":
@@ -586,7 +585,7 @@ ${clocks.map((w) => `        views.${w.id}.tick();`).join("\n")}
         break;`);
   }
   cases.push(`      case "snapshot":
-        for (const id in msg.state.widgets) views[id].load(msg.state.widgets[id]);
+        for (const id in msg.state.widgets) views[id](msg.state.widgets[id]);
         break;`);
 
   const imports = [`import { el, flush, cancel } from "./runtime.js";`,
@@ -608,7 +607,7 @@ export function start(root) {
   // For each widget a summary reads, the summaries' bindings: the widget schedules them when it
   // writes a field they read.
   const readers = ${literal(readers, "  ")};
-  // Each widget's handle: \`load\` for serverSet and snapshot, and its external arms.
+  // Each widget's handle: its load for serverSet and snapshot, carrying its external arms.
   const views = {};
   let n = 0;
   for (const [factory, init, ...config] of WIDGETS) {
