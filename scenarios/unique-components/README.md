@@ -209,7 +209,10 @@ Generated from the app, the same for every framework:
 2. for each widget, each message exercised 1 to 2 times: inputs first (typing character by
    character), then selects, checkboxes, buttons and item controls; a second pass retries
    controls a conditional section hid. A step is only generated when its control is rendered
-   and enabled in the reference at that moment, so about 95% of messages are exercised;
+   and enabled in the reference at that moment, so about 95% of messages are exercised. A
+   number input first gets two invalid values, one above its max and one that is not an
+   integer: no message may be sent, and those steps do not compare the input's displayed
+   value (it keeps the typed text);
 3. `serverSet` on 3 widgets, the gates of up to two time-driven fields turned on, 3 `tick`s,
    2 `notify`s;
 4. a reorder through `snapshot`;

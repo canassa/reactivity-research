@@ -118,7 +118,9 @@ On top of the global contract:
   does not (empty, a lone `-`, …) no message is sent: the state keeps its last valid value, the
   formatted output keeps showing it, and the input keeps what the user typed, with focus and
   caret; it is not reset to the stored value. Until the input holds a number again, its displayed
-  value is exempt from "same page". The interaction script never leaves it in that state.
+  value is exempt from "same page". The interaction script clears it once, in the first round
+  (no message may be sent, and that step does not compare the input's displayed value), then
+  types a valid number again.
 
 ## Parameters
 

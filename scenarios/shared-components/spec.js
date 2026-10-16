@@ -912,9 +912,15 @@ const ACT = {
     if (round === "first") choose(w.options.find((o) => !w.extraFor.includes(o.value)).value);
   },
   amount(w, ctx, r, round) {
-    // Append digits to the current value, so the number input never goes through "".
-    const from = String(ctx.state.widgets[w.id].value);
+    // In the first round the input is first cleared, which must send no message and keep the
+    // empty input (`exemptValue`: its displayed value is not compared on that step); then digits
+    // are typed from scratch. Later rounds append digits to the current value.
+    let from = String(ctx.state.widgets[w.id].value);
     const to = from + String(r.int(0, 9)) + (round === "first" ? String(r.int(0, 9)) : "");
+    if (round === "first") {
+      ctx.push({ do: "type", label: `${w.id} clear the input (invalid: no message)`, target: T(w.id, "input"), value: "", exemptValue: true });
+      from = "";
+    }
     typeInto(ctx, w, T(w.id, "input"), from, to, (t) => ({ widget: w.id, type: "set", value: Number(t) }));
   },
   filter(w, ctx, r) {

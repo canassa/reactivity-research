@@ -1252,10 +1252,17 @@ function typeInto(ctx, w, sel, from, to, makeMsg) {
   }
 }
 
-// A number input only ever holds valid in-range integers in the script: a digit is appended
-// while the result stays in range; otherwise the content is replaced by a single digit (which
-// is in range: number-input fields have min <= 0 and max >= 20).
+// In the first round, a number input first gets two invalid values, which must send no message
+// and keep the typed text (`exemptValue`: the input's displayed value is not compared on those
+// steps): one above the field's max, and one that is not an integer. Then valid in-range
+// integers: a digit is appended while the result stays in range; otherwise the content is
+// replaced by a single digit (in range: number-input fields have min <= 0 and max >= 20).
 function typeNumber(ctx, w, m, f, sel, r, round) {
+  if (round === "first") {
+    for (const value of [String(f.max + 1), "1.5"]) {
+      ctx.push({ do: "type", label: `${w.id} type "${value}" (invalid: no message)`, target: sel, value, exemptValue: true });
+    }
+  }
   const n = round === "first" ? 2 : 1;
   for (let k = 0; k < n; k++) {
     const cur = String(ctx.state.widgets[w.id][f.name]);
