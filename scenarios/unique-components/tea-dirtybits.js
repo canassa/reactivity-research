@@ -199,12 +199,12 @@ function widgetModule(w) {
   const arms = [];
   for (const m of messages) {
     const a = arm(m);
-    arms.push({ key: tag(m.name), name: m.name, lines: [...a.guard, `return ${a.when ? a.when + " && " : ""}[${write(a.values)}, ${a.bits}];`] });
+    arms.push({ key: tag(m.name), name: m.name, lines: [...a.guard, `return ${a.when ? a.when + " && " : ""}[${a.bits}, ${write(a.values)}];`] });
   }
   // External events: a feed receives notifications; time-driven fields advance while gated.
   const feed = w.fields.find((f) => f.feed);
   if (feed) {
-    arms.push({ key: "notify", lines: [`return [{ ${feed.name}: [...s.${feed.name}, msg.item] }, ${own(feed.name)}];`] });
+    arms.push({ key: "notify", lines: [`return [${own(feed.name)}, { ${feed.name}: [...s.${feed.name}, msg.item] }];`] });
   }
   const ticks = w.fields.filter((f) => f.tick);
   if (ticks.length === 1) {
@@ -212,7 +212,7 @@ function widgetModule(w) {
     arms.push({ key: "tick", lines: [
       `if (!s.${f.tickWhen}) return;`,
       `const ${f.name} = Math.min(${f.max}, s.${f.name} + ${f.tick});`,
-      `if (${f.name} !== s.${f.name}) return [{ ${f.name} }, ${own(f.name)}];`,
+      `if (${f.name} !== s.${f.name}) return [${own(f.name)}, { ${f.name} }];`,
     ] });
   } else if (ticks.length > 1) {
     const body = ticks.map((f) => `if (s.${f.tickWhen}) {
@@ -222,7 +222,7 @@ function widgetModule(w) {
     bits |= ${own(f.name)};
   }
 }`);
-    arms.push({ key: "tick", lines: [`const next = {};`, `let bits = 0;`, ...body, `if (bits) return [next, bits];`] });
+    arms.push({ key: "tick", lines: [`const next = {};`, `let bits = 0;`, ...body, `if (bits) return [bits, next];`] });
   }
   // The reducer is compiled to a table of its arms by message tag, as a switch over dense tags
   // compiles to a jump table: an array when every tag is a number, else an object with the
@@ -527,7 +527,7 @@ function route(model, id, msg) {
   const next = WIDGETS[id][1][msg.type](s, msg);
   // An arm returns the fields it wrote with their bits, or nothing when the slice is unchanged;
   // the new slice shares the fields it did not write.
-  return next ? set(model, id, { ...s, ...next[0] }, next[1]) : model;
+  return next ? set(model, id, { ...s, ...next[1] }, next[0]) : model;
 }
 
 // The app reducer: user messages and most external events go to one widget's reducer.
