@@ -2,20 +2,23 @@
 //
 // The emitter plays the compiler of a TEA app: it writes what partial evaluation of the
 // reducer would produce, with messages erased.
-// - One factory per widget kind (src/widgets/<kind>.js), configured per widget (label,
-//   limits, items, rules, formats, summary sources). The factory builds the DOM once and
+// - One factory per widget kind (src/widgets/<kind>.js), called with each widget's own
+//   arguments (label, limits, items, rules, formats, summary sources). The factory builds the DOM once and
 //   defines the kind's bindings, grouped by the model field they read.
 // - Every `case` arm of the kind's `update` becomes an action: a DOM event calls it directly,
 //   it writes the fields that arm changes and schedules exactly the bindings that read them,
 //   plus the summaries reading that widget (`readers[id]`) when it writes a field they read.
-// - The app is a table of (factory, config) in page order. The model is the TEA model,
-//   `{ widgets: { [id]: state } }`, made by `init()` on each mount; each factory takes its slice
-//   by id and edits it in place (the compiler proved it unshared).
+// - The app is a table of rows (factory, id, initial state, label, the kind's arguments) in page
+//   order, the arguments passed positionally. The model is TEA's model, `{ [id]: state }`, made
+//   on each mount from a copy of every row's initial state (TEA's `init`, split per widget);
+//   each factory takes its slice by id and edits it in place (the compiler proved it unshared).
 // - External events stay messages: `receive(msg)` is the part of `update` still reached by a
 //   message (serverSet, tick, notify, snapshot), routed to the widget's own arms.
 
 import { templateFiles } from "../../frameworks/tea-inline/framework.js";
 import { literal, tplText, camelCase } from "../../frameworks/shared/jsx.js";
+
+const str = JSON.stringify;
 
 export const framework = "tea-inline";
 
@@ -64,33 +67,33 @@ const VALUES = {
 const FACTORIES = {
   counter: {
     uses: ["el", "text", "prop", "on", "schedule"],
-    code: `export function counter(parent, model, c, readers) {
-  const s = model[c.id];
-  const root = section(parent, c, "counter");
+    code: `export function counter(parent, model, readers, id, heading, step, min, max, start) {
+  const s = model[id];
+  const root = section(parent, id, heading, "counter");
   const value = el("output", root, { "data-role": "value" });
-  const decButton = el("button", root, { "data-role": "dec" }, "-" + c.step);
-  const incButton = el("button", root, { "data-role": "inc" }, "+" + c.step);
+  const decButton = el("button", root, { "data-role": "dec" }, "-" + step);
+  const incButton = el("button", root, { "data-role": "inc" }, "+" + step);
   const resetButton = el("button", root, { "data-role": "reset" }, "Reset");
 
   // The bindings reading \`value\`.
   const onValue = [
     () => text(value, s.value),
-    () => prop(decButton, "disabled", s.value <= c.min),
-    () => prop(incButton, "disabled", s.value >= c.max),
-    readers[c.id],
+    () => prop(decButton, "disabled", s.value <= min),
+    () => prop(incButton, "disabled", s.value >= max),
+    readers[id],
   ];
 
   // The arms of update: dec, inc, reset.
   on(decButton, "click", () => {
-    s.value = Math.max(c.min, s.value - c.step);
+    s.value = Math.max(min, s.value - step);
     schedule(onValue);
   });
   on(incButton, "click", () => {
-    s.value = Math.min(c.max, s.value + c.step);
+    s.value = Math.min(max, s.value + step);
     schedule(onValue);
   });
   on(resetButton, "click", () => {
-    s.value = c.start;
+    s.value = start;
     schedule(onValue);
   });
 
@@ -101,12 +104,12 @@ const FACTORIES = {
 
   toggles: {
     uses: ["el", "text", "prop", "on", "schedule"],
-    code: `export function toggles(parent, model, c, readers) {
-  const s = model[c.id];
-  const root = section(parent, c, "toggles");
+    code: `export function toggles(parent, model, readers, id, heading, items) {
+  const s = model[id];
+  const root = section(parent, id, heading, "toggles");
   const ul = el("ul", root);
   // One binding per checkbox, each reading its own \`on[i]\`.
-  const boxes = c.items.map((name, i) => {
+  const boxes = items.map((name, i) => {
     const label = el("label", el("li", ul));
     const box = el("input", label, { type: "checkbox", "data-role": "toggle", "data-key": i });
     label.append(name);
@@ -114,7 +117,7 @@ const FACTORIES = {
     return () => prop(box, "checked", s.on[i]);
   });
   const count = el("p", root, { "data-role": "count" });
-  const onCount = [() => text(count, \`\${s.on.filter(Boolean).length} of \${c.items.length} on\`), readers[c.id]];
+  const onCount = [() => text(count, \`\${s.on.filter(Boolean).length} of \${items.length} on\`), readers[id]];
 
   // The arm of update: toggle(i) writes \`on[i]\`.
   const toggle = (i) => {
@@ -129,13 +132,13 @@ const FACTORIES = {
 
   field: {
     uses: ["el", "prop", "on", "when", "schedule"],
-    code: `export function field(parent, model, c, readers) {
-  const s = model[c.id];
-  const root = section(parent, c, "field");
-  const input = el("input", root, { type: "text", "data-role": "input", placeholder: c.placeholder });
-  const error = when(el("p", root, { "data-role": "error" }, c.message));
+    code: `export function field(parent, model, readers, id, heading, placeholder, message, invalid) {
+  const s = model[id];
+  const root = section(parent, id, heading, "field");
+  const input = el("input", root, { type: "text", "data-role": "input", placeholder: placeholder });
+  const error = when(el("p", root, { "data-role": "error" }, message));
 
-  const onText = [() => prop(input, "value", s.text), () => error(c.invalid(s.text))];
+  const onText = [() => prop(input, "value", s.text), () => error(invalid(s.text))];
 
   // The arm of update: edit(text).
   on(input, "input", () => {
@@ -150,17 +153,17 @@ const FACTORIES = {
 
   todo: {
     uses: ["el", "text", "prop", "on", "list", "schedule"],
-    code: `export function todo(parent, model, c, readers) {
-  const s = model[c.id];
-  const root = section(parent, c, "todo");
-  const draft = el("input", root, { type: "text", "data-role": "draft", placeholder: c.placeholder });
-  const addButton = el("button", root, { "data-role": "add" }, c.addText);
+    code: `export function todo(parent, model, readers, id, heading, placeholder, addText, removeText) {
+  const s = model[id];
+  const root = section(parent, id, heading, "todo");
+  const draft = el("input", root, { type: "text", "data-role": "draft", placeholder: placeholder });
+  const addButton = el("button", root, { "data-role": "add" }, addText);
   const items = list(el("ul", root), () => s.items, (item) => item.id, (item) => {
     const node = el("li", null, { "data-key": item.id });
     const box = el("input", node, { type: "checkbox", "data-role": "toggle" });
     const label = el("span", node);
     on(box, "change", () => toggle(item.id));
-    on(el("button", node, { "data-role": "remove" }, c.removeText), "click", () => remove(item.id));
+    on(el("button", node, { "data-role": "remove" }, removeText), "click", () => remove(item.id));
     return {
       node,
       set(item) {
@@ -172,7 +175,7 @@ const FACTORIES = {
   const left = el("p", root, { "data-role": "left" });
 
   const onDraft = () => prop(draft, "value", s.draft);
-  const onItems = [() => text(left, \`\${s.items.filter((item) => !item.done).length} left\`), readers[c.id]];
+  const onItems = [() => text(left, \`\${s.items.filter((item) => !item.done).length} left\`), readers[id]];
 
   // The arms of update: editDraft, add, toggle(id), remove(id). The list edits tell the list
   // which rows changed.
@@ -208,12 +211,12 @@ const FACTORIES = {
 
   tabs: {
     uses: ["el", "text", "attr", "on", "schedule"],
-    code: `export function tabs(parent, model, c, readers) {
-  const s = model[c.id];
-  const root = section(parent, c, "tabs");
+    code: `export function tabs(parent, model, readers, id, heading, tabs) {
+  const s = model[id];
+  const root = section(parent, id, heading, "tabs");
   const bar = el("div", root, { role: "tablist" });
   // Every tab button and the content read \`active\`.
-  const onActive = c.tabs.map((tab, i) => {
+  const onActive = tabs.map((tab, i) => {
     const button = el("button", bar, { role: "tab", "data-role": "tab", "data-key": i }, tab.title);
     // The arm of update: select(i).
     on(button, "click", () => {
@@ -223,7 +226,7 @@ const FACTORIES = {
     return () => attr(button, "aria-selected", String(s.active === i));
   });
   const content = el("p", root, { role: "tabpanel", "data-role": "tab-content" });
-  onActive.push(() => text(content, c.tabs[s.active].content));
+  onActive.push(() => text(content, tabs[s.active].content));
 
   schedule(onActive);
   return { load: loader(s, onActive) };
@@ -232,16 +235,16 @@ const FACTORIES = {
 
   panel: {
     uses: ["el", "text", "attr", "on", "when", "schedule"],
-    code: `export function panel(parent, model, c, readers) {
-  const s = model[c.id];
-  const root = section(parent, c, "panel");
+    code: `export function panel(parent, model, readers, id, heading, showText, hideText, bodyText) {
+  const s = model[id];
+  const root = section(parent, id, heading, "panel");
   const button = el("button", root, { "data-role": "toggle" });
-  const body = when(el("p", root, { "data-role": "body" }, c.body));
+  const body = when(el("p", root, { "data-role": "body" }, bodyText));
 
   const onOpen = [
     () => {
       attr(button, "aria-expanded", String(s.open));
-      text(button, s.open ? c.hideText : c.showText);
+      text(button, s.open ? hideText : showText);
     },
     () => body(s.open),
   ];
@@ -259,12 +262,12 @@ const FACTORIES = {
 
   choice: {
     uses: ["el", "prop", "on", "when", "schedule"],
-    code: `export function choice(parent, model, c, readers) {
-  const s = model[c.id];
-  const root = section(parent, c, "choice");
+    code: `export function choice(parent, model, readers, id, heading, options, extraFor, extraPlaceholder) {
+  const s = model[id];
+  const root = section(parent, id, heading, "choice");
   const select = el("select", root, { "data-role": "select" });
-  for (const option of c.options) el("option", select, { value: option.value }, option.label);
-  const input = el("input", root, { type: "text", "data-role": "extra", placeholder: c.extraPlaceholder });
+  for (const option of options) el("option", select, { value: option.value }, option.label);
+  const input = el("input", root, { type: "text", "data-role": "extra", placeholder: extraPlaceholder });
   const extra = when(input);
   // The arm of update: editExtra(text).
   on(input, "input", () => {
@@ -274,7 +277,7 @@ const FACTORIES = {
 
   // The extra input reads \`option\` (whether it is shown) and \`extra\`.
   const onExtra = () => {
-    const shown = c.extraFor.includes(s.option);
+    const shown = extraFor.includes(s.option);
     extra(shown);
     if (shown) prop(input, "value", s.extra);
   };
@@ -293,13 +296,13 @@ const FACTORIES = {
 
   amount: {
     uses: ["el", "text", "prop", "on", "schedule"],
-    code: `export function amount(parent, model, c, readers) {
-  const s = model[c.id];
-  const root = section(parent, c, "amount");
+    code: `export function amount(parent, model, readers, id, heading, format) {
+  const s = model[id];
+  const root = section(parent, id, heading, "amount");
   const input = el("input", root, { type: "number", "data-role": "input" });
   const output = el("output", root, { "data-role": "formatted" });
 
-  const onValue = [() => prop(input, "value", String(s.value)), () => text(output, c.format(s.value)), readers[c.id]];
+  const onValue = [() => prop(input, "value", String(s.value)), () => text(output, format(s.value)), readers[id]];
 
   // The arm of update: set(n), sent only while the input holds a number.
   on(input, "input", () => {
@@ -316,13 +319,13 @@ const FACTORIES = {
 
   filter: {
     uses: ["el", "text", "prop", "on", "list", "schedule"],
-    code: `export function filter(parent, model, c, readers) {
-  const s = model[c.id];
-  const root = section(parent, c, "filter");
-  const query = el("input", root, { type: "text", "data-role": "query", placeholder: c.placeholder });
+    code: `export function filter(parent, model, readers, id, heading, pool, placeholder) {
+  const s = model[id];
+  const root = section(parent, id, heading, "filter");
+  const query = el("input", root, { type: "text", "data-role": "query", placeholder: placeholder });
   const shown = () => {
     const q = s.query.toLowerCase();
-    return c.items.filter((item) => item.text.toLowerCase().includes(q));
+    return pool.filter((item) => item.text.toLowerCase().includes(q));
   };
   // A derived list: a new array on every change, so the list reconciles it by key.
   const items = list(el("ul", root), shown, (item) => item.id, (item) => ({
@@ -331,7 +334,7 @@ const FACTORIES = {
   }));
   const matches = el("p", root, { "data-role": "matches" });
 
-  const onQuery = [() => prop(query, "value", s.query), items, () => text(matches, \`\${shown().length} matches\`), readers[c.id]];
+  const onQuery = [() => prop(query, "value", s.query), items, () => text(matches, \`\${shown().length} matches\`), readers[id]];
 
   // The arm of update: edit(query).
   on(query, "input", () => {
@@ -346,12 +349,12 @@ const FACTORIES = {
 
   rating: {
     uses: ["el", "text", "attr", "on", "schedule"],
-    code: `export function rating(parent, model, c, readers) {
-  const s = model[c.id];
-  const root = section(parent, c, "rating");
+    code: `export function rating(parent, model, readers, id, heading, stars, labels) {
+  const s = model[id];
+  const root = section(parent, id, heading, "rating");
   const row = el("div", root);
   // Every star and the label read \`stars\`.
-  const onStars = Array.from({ length: c.stars }, (_, i) => {
+  const onStars = Array.from({ length: stars }, (_, i) => {
     const n = i + 1;
     const button = el("button", row, { "data-role": "star", "data-key": n });
     // The arm of update: rate(n).
@@ -365,7 +368,7 @@ const FACTORIES = {
     };
   });
   const label = el("p", root, { "data-role": "rating-label" });
-  onStars.push(() => text(label, c.labels[s.stars]), readers[c.id]);
+  onStars.push(() => text(label, labels[s.stars]), readers[id]);
 
   schedule(onStars);
   return { load: loader(s, onStars) };
@@ -374,18 +377,18 @@ const FACTORIES = {
 
   feed: {
     uses: ["el", "text", "on", "when", "list", "schedule"],
-    code: `export function feed(parent, model, c, readers) {
-  const s = model[c.id];
-  const root = section(parent, c, "feed");
+    code: `export function feed(parent, model, readers, id, heading, emptyText, dismissText) {
+  const s = model[id];
+  const root = section(parent, id, heading, "feed");
   const entries = list(el("ul", root), () => s.entries, (entry) => entry.id, (entry) => {
     const node = el("li", null, { "data-key": entry.id });
     const label = el("span", node);
-    on(el("button", node, { "data-role": "dismiss" }, c.dismissText), "click", () => dismiss(entry.id));
+    on(el("button", node, { "data-role": "dismiss" }, dismissText), "click", () => dismiss(entry.id));
     return { node, set: (entry) => text(label, entry.text) };
   });
-  const empty = when(el("p", root, { "data-role": "empty" }, c.emptyText));
+  const empty = when(el("p", root, { "data-role": "empty" }, emptyText));
 
-  const onEntries = [() => empty(s.entries.length === 0), readers[c.id]];
+  const onEntries = [() => empty(s.entries.length === 0), readers[id]];
 
   // The arm of update: dismiss(id).
   const dismiss = (id) => {
@@ -411,15 +414,15 @@ const FACTORIES = {
     uses: ["el", "text", "prop", "on", "schedule"],
     code: `const formatTime = (seconds) => \`\${Math.floor(seconds / 60)}:\${String(seconds % 60).padStart(2, "0")}\`;
 
-export function clock(parent, model, c, readers) {
-  const s = model[c.id];
-  const root = section(parent, c, "clock");
+export function clock(parent, model, readers, id, heading, startText, stopText, resetText) {
+  const s = model[id];
+  const root = section(parent, id, heading, "clock");
   const time = el("output", root, { "data-role": "time" });
-  const startButton = el("button", root, { "data-role": "start" }, c.startText);
-  const stopButton = el("button", root, { "data-role": "stop" }, c.stopText);
-  const resetButton = el("button", root, { "data-role": "reset" }, c.resetText);
+  const startButton = el("button", root, { "data-role": "start" }, startText);
+  const stopButton = el("button", root, { "data-role": "stop" }, stopText);
+  const resetButton = el("button", root, { "data-role": "reset" }, resetText);
 
-  const onSeconds = [() => text(time, formatTime(s.seconds)), readers[c.id]];
+  const onSeconds = [() => text(time, formatTime(s.seconds)), readers[id]];
   const onRunning = [() => prop(startButton, "disabled", s.running), () => prop(stopButton, "disabled", !s.running)];
 
   // The arms of update: start, stop, reset.
@@ -453,13 +456,13 @@ export function clock(parent, model, c, readers) {
   summary: {
     uses: ["el", "text", "schedule"],
     widget: ["section"],
-    code: `// A derived line: \`c.text(model)\` reads other widgets' state. It adds itself to the
+    code: `// A derived line: \`describe(model)\` reads other widgets' state. It adds itself to the
 // \`readers\` of each source, which schedule it when they write a field it reads.
-export function summary(parent, model, c, readers) {
-  const root = section(parent, c, "summary");
+export function summary(parent, model, readers, id, heading, reads, describe) {
+  const root = section(parent, id, heading, "summary");
   const line = el("p", root, { "data-role": "summary" });
-  const show = () => text(line, c.text(model));
-  for (const id of c.reads) readers[id].push(show);
+  const show = () => text(line, describe(model));
+  for (const source of reads) readers[source].push(show);
   schedule(show);
 }`,
   },
@@ -468,9 +471,9 @@ export function summary(parent, model, c, readers) {
 const WIDGET_FILE = `import { el, schedule } from "../runtime.js";
 
 // The section every widget renders into: its key, its kind and its heading.
-export function section(parent, c, kind) {
-  const root = el("section", parent, { "data-key": c.id, "data-role": "widget-" + kind });
-  el("h2", root, null, c.label);
+export function section(parent, id, label, kind) {
+  const root = el("section", parent, { "data-key": id, "data-role": "widget-" + kind });
+  el("h2", root, null, label);
   return root;
 }
 
@@ -562,18 +565,16 @@ function formatNumber(n) {
 
   const table = spec.widgets.map((w) => {
     const ind = "    ";
-    const config = [`id: "${w.id}"`, `label: ${JSON.stringify(w.label)}`];
+    const config = [w.kind, str(w.id), w.kind === "summary" ? "null" : literal(spec.initialState.widgets[w.id], ind), str(w.label)];
     for (const name of PARAMS[w.kind]) {
-      if (FUNCTIONS[name]) config.push(`${name}: ${FUNCTIONS[name](w)}`);
-      else if (VALUES[name]) config.push(`${name}: ${literal(VALUES[name](w), ind)}`);
-      else if (w.kind === "filter" && name === "items" && read.has(w.id)) config.push(`items: ${itemsName(w)}`);
-      else config.push(`${name}: ${literal(w[name], ind)}`);
+      if (FUNCTIONS[name]) config.push(FUNCTIONS[name](w));
+      else if (VALUES[name]) config.push(literal(VALUES[name](w), ind));
+      else if (w.kind === "filter" && name === "items" && read.has(w.id)) config.push(itemsName(w));
+      else config.push(literal(w[name], ind));
     }
-    if (w.kind === "summary") {
-      config.push(`reads: ${literal(w.sources)}`);
-      config.push(`text: ${summaryText(spec, w, ind)}`);
-    }
-    return `  [${w.kind}, {\n${config.map((c) => ind + c + ",").join("\n")}\n  }],`;
+    if (w.kind === "summary") config.push(literal(w.sources), summaryText(spec, w, ind));
+    const flat = `  [${config.join(", ")}],`;
+    return flat.length <= 100 && !flat.includes("\n") ? flat : `  [\n${config.map((c) => ind + c + ",").join("\n")}\n  ],`;
   });
 
   const clocks = spec.widgets.filter((w) => w.kind === "clock");
@@ -600,25 +601,25 @@ ${clocks.map((w) => `        views.${w.id}.tick();`).join("\n")}
 
   return `${imports.join("\n")}
 ${consts.length ? "\n" + consts.join("\n\n") + "\n" : ""}
-// The initial model (TEA's \`init\`), fresh for every mount.
-function init() {
-  return ${literal(spec.initialState, "  ")};
-}
-
-// The page: every widget in order, as its kind's factory and the widget's own config.
+// The page: every widget in order, as its kind's factory, its id, its initial state (its slice
+// of TEA's \`init\`, copied on every mount; none for a summary), its label, and the arguments of
+// its kind (limits, items, rules, formats, summary sources).
 const WIDGETS = [
 ${table.join("\n")}
 ];
 
 export function start(root) {
-  const model = init().widgets;
+  const model = {};
   const board = el("div", root, { "data-role": "dashboard" });
   // For each widget a summary reads, the summaries' bindings: the widget schedules them when it
   // writes a field they read.
   const readers = ${literal(readers, "  ")};
   // Each widget's handle: \`load\` for serverSet and snapshot, and its external arms.
   const views = {};
-  for (const [factory, c] of WIDGETS) views[c.id] = factory(board, model, c, readers);
+  for (const [factory, id, init, ...config] of WIDGETS) {
+    if (init) model[id] = structuredClone(init);
+    views[id] = factory(board, model, readers, id, ...config);
+  }
   flush();
 
   // The arms of update still reached by a message: external events.
