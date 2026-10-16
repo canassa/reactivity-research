@@ -230,6 +230,7 @@ scenario README).
 ./rr plots    shared-components                          # build the plots page from results/, serve it through cloudflared
 ./rr report                                      # measure every run in runs.json that changed, then serve the plots
 ./rr check    shared-components solid                    # quick aid: run the script on one small build in headless Chrome
+./rr bench    shared-components all                      # CPU time of one event and of startup against N
 ./rr hub                                         # one long-lived address for the plots and every app
 ```
 
@@ -259,6 +260,17 @@ local action costs (as `./rr work` counts them) may grow at most 8× when the ap
 prototype cannot buy bytes with work that grows with the whole page (re-evaluating every binding
 after every event, polling, recomputing everything). Real frameworks are measured as they ship and
 are not held to it; `./rr work` reports their locality. `--no-locality` skips the check.
+
+**`./rr bench`** measures CPU time, beside size: how long one event takes, and whether it grows with
+the app. Every `./rr work` action, made repeatable as a do/undo pair, runs many times on one page as
+real input through the DevTools protocol, each rep timed out of a Chrome trace with
+js-framework-benchmark's rule (input to the commit; `script` µs is the primary figure), unthrottled,
+until the median's 95% interval is within ±3% (10–40 reps); plus startup and heap over fresh loads.
+Only builds that pass `./rr check`'s script check are timed. Sessions are fresh browsers with the
+framework order reversed, the load is recorded and enforced (`--max-load`), sizes and seeds come from
+`runs.json`'s `"$bench"` block, and results go to `results/cpu/`. `--quick` is for development,
+`--aa` benchmarks each app twice under two names, and `--remote HOST` runs it on a quiet machine at
+the pushed commit and copies the results back. The method is in `harness/bench/README.md`.
 
 **`./rr report`** runs the predefined measurements in **`runs.json`** (per scenario, per emitter: sizes,
 seeds and options; a list of option values measures each as a variant), then serves the plots:
