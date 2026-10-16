@@ -208,28 +208,18 @@ function compileNode(w, n, cx) {
       const u = open(n.tag);
       close(n.tag);
       const l = cx.name("l");
-      // The row's own template, parsed once and cloned for each new item.
+      // The row's own template (parsed once, cloned for each new item, its controls wired from
+      // its first message tag), then its binding list over the row's elements.
       const row = `<li${attrs({ "data-role": n.field + "Item" })}>`
         + (n.check ? `<input${attrs({ type: "checkbox", "data-role": n.check })}>` : "")
         + "<span> </span>"
         + (n.remove ? `<button${attrs({ "data-role": n.remove })}>${esc(n.removeText)}</button>` : "")
         + "</li>";
-      const r = cx.name("row");
-      cx.templates.push(`const ${r} = template(${q(trim(row))});`);
-      const kids = [n.check && "box", "label"].filter(Boolean);
       const tags = [n.check, n.remove].filter(Boolean).map(tag);
-      create(`const ${l} = list(${u}, (item) => {`);
-      create(`  const li = ${r}();`);
-      create(`  const [${kids.join(", ")}] = li.children;`);
       tags.forEach((t, i) => { if (t !== tags[0] + i) throw new Error(`${w.id}: row tags not consecutive`); });
-      create(`  wire(li, self, ${tags[0] ?? 0}, item.id);`);
-      create(`  return {`);
-      create(`    node: li,`);
-      create(`    patch(item) {`);
-      if (n.check) create(`      setProp(box, "checked", item.done);`);
-      create(`      setText(label, item.text);`);
-      create(`    },`);
-      create(`  };`);
+      create(`const ${l} = list(${u}, row(${q(trim(row))}, self, ${tags[0] ?? 0}), (r, item) => {`);
+      if (n.check) create(`  setProp(r[1], "checked", item.done);`);
+      create(`  setText(r[${n.check ? 2 : 1}], item.text);`);
       create(`});`);
       cx.patch.push(`${l}(m.${n.field});`);
       cx.own = true;
@@ -316,8 +306,8 @@ function reducerCase(w, m, i, cx) {
 // ---------------------------------------------------------------------------------------------
 // One widget module.
 
-const RUNTIME = ["wire", "setText", "setProp", "instance", "list", "template"];
-const FRAME = ["widget", "widgets", "place", "nextId", "subscribe"];
+const RUNTIME = ["setText", "setProp", "instance", "list"];
+const FRAME = ["widget", "widgets", "row", "place", "nextId", "subscribe"];
 
 // Returns { code, sources }: the module, and the earlier widgets its factory takes.
 // Message tags are the compiler's to choose: the controls of the widget's template take 0, 1,
@@ -429,8 +419,7 @@ export function widget(parent, id, html, self) {
   widgets.set(id, self);
   const section = element(parent, "section", { "data-key": id, "data-role": "widget" });
   section.innerHTML = html;
-  wire(section, self, 0);
-  return [section, ...section.querySelectorAll("*")];
+  return wire(section, self, 0);
 }
 
 // Conditional content, built in the template: while hidden, an empty text node holds its place
@@ -442,6 +431,15 @@ export function place(node, shown) {
 
 // The instances by widget id, for the external events that name a widget and for readers.
 export const widgets = new Map();
+
+// A list row from its template (parsed once): each new row is a clone, its controls wired to
+// the messages \`first\`, … with the item's id (see \`wire\`). Returns its elements, in document
+// order (the row first).
+export function row(html, self, first) {
+  const t = document.createElement("template");
+  t.innerHTML = html;
+  return (item) => wire(t.content.firstChild.cloneNode(true), self, first, item.id);
+}
 
 export const nextId = (items) => items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
 

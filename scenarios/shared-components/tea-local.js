@@ -174,6 +174,7 @@ export function todo(parent, id, heading, placeholder, addText, removeText, mode
   const draft = element(root, "input", { type: "text", "data-role": "draft", placeholder: placeholder });
   on(draft, "input", () => self.send(0, draft.value));
   on(element(root, "button", { "data-role": "add" }, addText), "click", () => self.send(1));
+  // A row: its elements, then its binding list (an item keeps its id, the row's key).
   const items = list(element(root, "ul"), (item) => {
     const li = element(null, "li");
     const box = element(li, "input", { type: "checkbox", "data-role": "toggle" });
@@ -181,14 +182,10 @@ export function todo(parent, id, heading, placeholder, addText, removeText, mode
     const remove = element(li, "button", { "data-role": "remove" }, removeText);
     on(box, "change", () => self.send(2, item.id));
     on(remove, "click", () => self.send(3, item.id));
-    return {
-      node: li,
-      patch(next) {
-        item = next;
-        setProp(box, "checked", item.done);
-        setText(label, item.text);
-      },
-    };
+    return [li, box, label];
+  }, (row, item) => {
+    setProp(row[1], "checked", item.done);
+    setText(row[2], item.text);
   });
   const left = element(root, "p", { "data-role": "left" }, " ");
 
@@ -312,10 +309,7 @@ export function filter(parent, id, heading, items, placeholder, model) {
   const input = element(root, "input", { type: "text", "data-role": "query", placeholder: placeholder });
   on(input, "input", () => self.send(0, input.value));
   // The items are fixed per widget, so a row never changes once built.
-  const shown = list(element(root, "ul"), (item) => ({
-    node: element(null, "li", null, item.text),
-    patch() {},
-  }));
+  const shown = list(element(root, "ul"), (item) => [element(null, "li", null, item.text)], () => {});
   const count = element(root, "p", { "data-role": "matches" }, " ");
 
   function patch() {
@@ -376,8 +370,8 @@ export function feed(parent, id, heading, emptyText, dismissText, model) {
     const li = element(null, "li");
     const label = element(li, "span", null, " ");
     on(element(li, "button", { "data-role": "dismiss" }, dismissText), "click", () => self.send(0, entry.id));
-    return { node: li, patch: (next) => setText(label, next.text) };
-  });
+    return [li, label];
+  }, (row, next) => setText(row[1], next.text));
   const empty = element(null, "p", { "data-role": "empty" }, emptyText);
 
   function patch() {

@@ -57,6 +57,7 @@ const clicked = "button,[type=checkbox]";
 // messages that way). A button or checkbox sends its message when clicked, with `id` as its
 // argument (a list row's item id, or none); a text input, select or number input sends its value
 // on input, a number input as a number (the reducer takes it only if it is an integer in range).
+// Returns the view's elements in document order, `root` first (how the view addresses them).
 export function wire(root, self, first, id) {
   for (const node of root.querySelectorAll(controls)) {
     const tag = first++;
@@ -65,6 +66,7 @@ export function wire(root, self, first, id) {
       self.send(tag, click ? id : node.type === "number" ? node.valueAsNumber : node.value),
     );
   }
+  return [root, ...root.querySelectorAll("*")];
 }
 
 // A dynamic text is the only child of `node`: a text node (a placeholder in the template).
@@ -111,14 +113,15 @@ export function instance(model, update, patch) {
 
 // ---------------------------------------------------------------------------------------------
 // A keyed list owning every child of `parent`, keyed by `item.id` (written as the row's
-// `data-key`). `row(item)` builds a detached row `{ node, patch(item) }`. Rows whose item
-// changed are patched in place; when the sequence of rows changed (adds, removes, filtering,
-// reorders), one forward pass moves the nodes: a node already in place stays, any other is
-// inserted before the first node not yet placed. That keeps the unchanged nodes still for an
-// insertion, a removal, a filter or a reversed run; its worst case is a rotation, which moves
-// every node but one.
+// `data-key`). `build(item)` builds a detached row: its elements, the row's node first;
+// `patch(row, item)` writes an item into them (the row's binding list). Rows whose item changed
+// are patched in place; when the sequence of rows changed (adds, removes, filtering, reorders),
+// one forward pass moves the nodes: a node already in place stays, any other is inserted before
+// the first node not yet placed. That keeps the unchanged nodes still for an insertion, a
+// removal, a filter or a reversed run; its worst case is a rotation, which moves every node but
+// one.
 
-export function list(parent, row) {
+export function list(parent, build, patch) {
   let rows = new Map();
   let nodes = [];
   return (items) => {
@@ -128,22 +131,22 @@ export function list(parent, row) {
     for (const item of items) {
       let r = rows.get(item.id);
       if (!r) {
-        r = row(item);
-        r.node.dataset.key = item.id;
-        r.patch(item);
+        r = build(item);
+        r[0].dataset.key = item.id;
+        patch(r, item);
       } else {
         rows.delete(item.id);
-        if (r.item !== item) r.patch(item);
+        if (r.item !== item) patch(r, item);
       }
       r.item = item;
       next.set(item.id, r);
-      moved ||= r.node !== nodes[order.length];
-      order.push(r.node);
+      moved ||= r[0] !== nodes[order.length];
+      order.push(r[0]);
     }
     if (moved) {
       // The rows left in `rows` are gone. The others are put in order: a node already in
       // place stays, any other is moved (or inserted) before the first node not yet placed.
-      for (const r of rows.values()) r.node.remove();
+      for (const r of rows.values()) r[0].remove();
       let at = parent.firstChild;
       for (const node of order) node === at ? (at = at.nextSibling) : parent.insertBefore(node, at);
     }
