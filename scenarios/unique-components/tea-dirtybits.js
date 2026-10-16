@@ -7,9 +7,10 @@
 //   `update(s, msg)` with one arm per message (the ops written out as code, each arm marking the
 //   bits of the fields it writes), its initial state, and its DOM factory `view(parent, id)`,
 //   which builds the DOM once from one static template (nodes found by position) and returns a
-//   static `patch(s, d, w)` that runs only the bindings whose bits are set. The module's
-//   default export is the triple [initial state, reducer, view], as Elm --optimize keeps a
-//   program's parts unnamed. Bits and message tags are numbers. No tables of ops or view
+//   static `patch(s, d, w)` that runs only the bindings whose bits are set. The module adds
+//   the triple [initial state, reducer, view] under its id to the registry in widget.js when
+//   the app imports it (in page order), so no binding is named per widget. Bits and message
+//   tags are numbers. No tables of ops or view
 //   trees: nothing is interpreted at runtime.
 // - Conditional sections are `branch`es with their own nested patch, built once with the
 //   template and swapped for an empty comment while hidden.
@@ -34,7 +35,10 @@ const OPS = { "==": "===", "!=": "!==", "<": "<", "<=": "<=", ">": ">", ">=": ">
 const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" };
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ESC[c]);
 
-const WIDGET_FILE = `// A new item's id: one more than the largest.
+const WIDGET_FILE = `// Every widget, by id, in page order (each module adds its own when the app imports it).
+export const WIDGETS = {};
+
+// A new item's id: one more than the largest.
 export function nextId(items) {
   return items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
 }
@@ -421,12 +425,13 @@ function widgetModule(w) {
   helpers.add("html");
   const imports = [...helpers].sort().filter((h) => h !== "nextId");
   const file = `import { ${imports.join(", ")} } from "../runtime.js";
-${helpers.has("nextId") ? `import { nextId } from "./widget.js";\n` : ""}
+import { ${helpers.has("nextId") ? "WIDGETS, nextId" : "WIDGETS"} } from "./widget.js";
+
 // Dirty bits: ${bits.join(", ")}.
 // Message tags: ${tags.join(", ")}.
 ${opts.length ? opts.join("\n") + "\n" : ""}
 // The widget: its initial state, its reducer and its DOM factory.
-export default [
+WIDGETS.${w.id} = [
   ${literal(Object.fromEntries(w.fields.map((f) => [f.name, f.initial])), "  ")},
 
   (s, msg) => {
@@ -455,7 +460,7 @@ ${indent(patch)}
 
 function appFile(spec, mods) {
   const ids = spec.widgets.map((w) => w.id);
-  const imports = ids.map((id) => `import ${id} from "./widgets/${id}.js";`);
+  const imports = ids.map((id) => `import "./widgets/${id}.js";`);
   // A tick reaches only the time-driven widgets whose gate is on (checked inline, so a tick costs
   // one reducer call per running widget, not per time-driven one).
   const ticks = spec.widgets.filter((w) => w.fields.some((f) => f.tick)).map((w) => {
@@ -471,12 +476,9 @@ function appFile(spec, mods) {
     }
   }
   return `import { take, touch, html } from "./runtime.js";
+import { WIDGETS } from "./widgets/widget.js";
+// Every widget in page order: each module adds its own [initial state, reducer, view].
 ${imports.join("\n")}
-
-// Every widget in page order: each module is that widget's own [initial state, reducer, view].
-const WIDGETS = {
-${ids.map((id) => `  ${id},`).join("\n")}
-};
 
 // The initial model: one slice per widget, from its module.
 export function init() {
