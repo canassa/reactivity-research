@@ -10,9 +10,7 @@
 //   frame, conditional placement, next item id, subscriptions).
 // - The factory builds the widget's DOM once from its own static template (the markup as one
 //   string, its elements addressed by document order; a list row has a template of its own),
-//   wires each DOM event to a message for its own instance (`onSend(node, self, [tag])`, Elm's
-//   `onClick msg`; `onValue(node, self, tag)`, Elm's `onInput Tag`), and declares one `patch`
-//   function: the binding list, one write per binding (derived texts compiled to template
+//   wires each control to a message for its own instance, and declares one `patch` function: the binding list, one write per binding (derived texts compiled to template
 //   literals and operators), each skipped when its value did not change.
 // - The model lives in the instance's closure; `send` runs the widget's reducer and schedules
 //   that instance's patch in a microtask. No global dispatch, dirty bits or dependency graph.
@@ -26,8 +24,14 @@
 // - Keyed lists through the runtime's `list`. Conditional content (`when`, validation errors)
 //   is in the template, detached while hidden and placed before its next attached sibling
 //   while shown.
-// - Number inputs send only integers within [min, max], and are written through
-//   `valueAsNumber`, so a typed "007" is not rewritten.
+// - Events, as Elm's `onClick msg` and `onInput Tag`: the factory gives `widget()` one entry per
+//   control of its template, in document order, which the runtime's `wire` attaches: a button
+//   or checkbox sends its constant message (`[3]`) when clicked, a text input, select or number
+//   input sends `[tag, value]` on input. A list row wires its own controls the same way, with
+//   messages that carry the item's id.
+// - A number input sends its value as a number; its reducer case takes only an integer within
+//   [min, max] (anything else leaves the model unchanged, so nothing is patched), and it is
+//   written through `valueAsNumber`, so a typed "007" is not rewritten.
 
 import { templateFiles } from "../../frameworks/tea-local/framework.js";
 
@@ -146,7 +150,7 @@ function compileNode(w, n, cx) {
       const v = open("button", { "data-role": n.msg });
       content(v, n.text);
       close("button");
-      create(`onSend(${v}, self, [${tag(n.msg)}]);`);
+      cx.wire.push(`[${tag(n.msg)}]`);
       if (n.disabled) cx.patch.push(`setProp(${v}, "disabled", ${expr(n.disabled, cx, true)});`);
       return [{ v }];
     }
@@ -158,10 +162,10 @@ function compileNode(w, n, cx) {
         const v = open("input", number ? { type: "number", "data-role": n.msg }
           : { type: "text", "data-role": n.msg, ...(n.placeholder ? { placeholder: n.placeholder } : {}) });
         if (number) {
-          create(`onInt(${v}, self, ${tag(n.msg)}, ${f.min}, ${f.max});`);
+          cx.wire.push(tag(n.msg));
           cx.patch.push(`setProp(${v}, "valueAsNumber", m.${f.name});`);
         } else {
-          create(`onValue(${v}, self, ${tag(n.msg)});`);
+          cx.wire.push(tag(n.msg));
           cx.patch.push(`setProp(${v}, "value", m.${f.name});`);
         }
         return v;
@@ -179,7 +183,7 @@ function compileNode(w, n, cx) {
       const v = open("input", { type: "checkbox", "data-role": n.msg });
       cx.html += esc(n.label);
       close("label");
-      create(`onSend(${v}, self, [${tag(n.msg)}], "change");`);
+      cx.wire.push(`[${tag(n.msg)}]`);
       cx.patch.push(`setProp(${v}, "checked", m.${msgOf(n.msg).field});`);
       cx.own = true;
       return [{ v: l }];
@@ -195,7 +199,7 @@ function compileNode(w, n, cx) {
           close("option");
         }
         close("select");
-        create(`onValue(${v}, self, ${tag(n.msg)}, "change");`);
+        cx.wire.push(tag(n.msg));
         cx.patch.push(`setProp(${v}, "value", m.${f.name});`);
         return v;
       });
@@ -212,12 +216,12 @@ function compileNode(w, n, cx) {
         + "</li>";
       const r = cx.name("row");
       cx.templates.push(`const ${r} = template(${q(trim(row))});`);
-      const kids = [n.check && "box", "label", n.remove && "del"].filter(Boolean);
+      const kids = [n.check && "box", "label"].filter(Boolean);
+      const events = [n.check && `[${tag(n.check)}, item.id]`, n.remove && `[${tag(n.remove)}, item.id]`].filter(Boolean);
       create(`const ${l} = list(${u}, (item) => {`);
       create(`  const li = ${r}();`);
       create(`  const [${kids.join(", ")}] = li.children;`);
-      if (n.check) create(`  onSend(box, self, [${tag(n.check)}, item.id], "change");`);
-      if (n.remove) create(`  onSend(del, self, [${tag(n.remove)}, item.id]);`);
+      create(`  wire(li, self, [${events.join(", ")}]);`);
       create(`  return {`);
       create(`    node: li,`);
       create(`    patch(item) {`);
@@ -277,7 +281,12 @@ function pushStep(w, op, s) {
 function reducerCase(w, m, i, cx) {
   const head = `    case ${i}:`;
   switch (m.kind) {
-    case "input": case "select": return `${head} return { ...m, ${m.field}: msg[1] };`;
+    case "input": case "select": {
+      // A number input sends its value as a number; only an integer in range is taken.
+      const f = w.fields.find((x) => x.name === m.field);
+      if (f.type === "int") return `${head} return Number.isInteger(msg[1]) && msg[1] >= ${f.min} && msg[1] <= ${f.max} ? { ...m, ${m.field}: msg[1] } : m;`;
+      return `${head} return { ...m, ${m.field}: msg[1] };`;
+    }
     case "check": return `${head} return { ...m, ${m.field}: !m.${m.field} };`;
     case "item":
       return m.op === "remove"
@@ -306,13 +315,13 @@ function reducerCase(w, m, i, cx) {
 // ---------------------------------------------------------------------------------------------
 // One widget module.
 
-const RUNTIME = ["on", "onSend", "onValue", "onInt", "setText", "setProp", "instance", "list", "template"];
+const RUNTIME = ["wire", "setText", "setProp", "instance", "list", "template"];
 const FRAME = ["widget", "place", "nextId", "subscribe"];
 
 // Returns { code, sources }: the module, and the earlier widgets its factory takes.
 function widgetFile(spec, w) {
   const cx = {
-    create: [], patch: [], templates: [], html: "", index: 2, own: false, sources: new Set(), options: new Set(), counts: {},
+    create: [], patch: [], wire: [], templates: [], html: "", index: 2, own: false, sources: new Set(), options: new Set(), counts: {},
     name(prefix) { this.counts[prefix] = (this.counts[prefix] ?? 0) + 1; return prefix + this.counts[prefix]; },
   };
   compileView(w, w.view, "e[0]", cx);
@@ -340,7 +349,8 @@ function widgetFile(spec, w) {
   }
 
   const sources = [...cx.sources];
-  const msgNames = w.messages.map((m) => cap(m.name) + (m.kind === "input" || m.kind === "select" ? " String" : m.kind === "item" ? " Int" : ""));
+  const isInt = (m) => w.fields.find((f) => f.name === m.field)?.type === "int";
+  const msgNames = w.messages.map((m) => cap(m.name) + (m.kind === "input" || m.kind === "select" ? (isInt(m) ? " Float" : " String") : m.kind === "item" ? " Int" : ""));
   if (timed.length) msgNames.push("Tick");
   if (feed) msgNames.push("Notify Item");
 
@@ -350,7 +360,7 @@ function widgetFile(spec, w) {
   fn.push(`export function ${w.id}(parent${sources.map((s) => ", " + s).join("")}) {`);
   fn.push(`  // type Msg = ${msgNames.join(" | ")}`);
   fn.push(`  const self = instance(${lit(spec.initialState.widgets[w.id])}, update, patch);`);
-  fn.push(`  const e = widget(parent, ${q(w.id)}, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))});`);
+  fn.push(`  const e = widget(parent, ${q(w.id)}, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))}${cx.wire.length ? ", self, " + cx.wire.join(", ") : ""});`);
   fn.push(...cx.create);
   // Subscribe to the clock while the gate is on, as soon as the model changes (not at the next
   // render), so a tick right after the gate opens is not missed.
@@ -386,13 +396,15 @@ function widgetFile(spec, w) {
 
 // ---------------------------------------------------------------------------------------------
 
-const FRAME_FILE = `import { element } from "../runtime.js";
+const FRAME_FILE = `import { element, wire } from "../runtime.js";
 
 // The frame every widget shares: its keyed section, holding the widget's own template (its
-// heading and view). Returns the section and the template's elements, in document order.
-export function widget(parent, id, html) {
+// heading and view), its controls wired to \`msgs\` (see \`wire\`). Returns the section and the
+// template's elements, in document order.
+export function widget(parent, id, html, self, ...msgs) {
   const section = element(parent, "section", { "data-key": id, "data-role": "widget" });
   section.innerHTML = html;
+  wire(section, self, msgs);
   return [section, ...section.querySelectorAll("*")];
 }
 
@@ -480,7 +492,7 @@ ${calls.join("\n")}
       lists: "runtime keyed list by item.id: patch changed rows, one forward placement pass when order or membership changes",
       dom: "one static template per widget (trailing end tags left out), elements addressed by document order; one template per list row, cloned per new item",
       conditionals: "node in the template, detached while hidden, placed before its next attached sibling while shown",
-      events: "addEventListener per element through onSend (a constant message) and onValue (a tag applied to the value): click, input, change for checkboxes and selects; number inputs send integers within range only",
+      events: "one entry per control of the template, in document order, attached by the runtime's wire: a button or checkbox sends its constant message on click, a text input, select or number input sends [tag, value] on input; number inputs send valueAsNumber and the reducer takes integers within range only",
       build: "Vite production build, no framework plugin, hidden source maps",
     },
   };

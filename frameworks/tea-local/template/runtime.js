@@ -47,23 +47,17 @@ export function on(node, type, handler) {
   node.addEventListener(type, handler);
 }
 
-// Elm's `onClick msg`: the event sends a constant message to the instance.
-export function onSend(node, self, msg, type = "click") {
-  node.addEventListener(type, () => self.send(msg));
-}
-
-// Elm's `onInput Tag`: the event sends `[tag, node.value]` to the instance.
-export function onValue(node, self, tag, type = "input") {
-  node.addEventListener(type, () => self.send([tag, node.value]));
-}
-
-// A number input decoded as an integer in [min, max]: `[tag, n]` is sent only for such a value;
-// anything else stays in the input, unsent.
-export function onInt(node, self, tag, min, max) {
-  node.addEventListener("input", () => {
-    const n = node.valueAsNumber;
-    if (Number.isInteger(n) && n >= min && n <= max) self.send([tag, n]);
-  });
+// The events of a view (Elm's `onClick msg` and `onInput Tag`): `msgs` holds one entry per control
+// under `root`, in document order. A button or checkbox sends its constant message when clicked;
+// a text input, select or number input sends `[tag, value]` on input, a number input its value
+// as a number (the reducer takes it only if it is an integer in range).
+export function wire(root, self, msgs) {
+  for (const node of root.querySelectorAll("button,input,select")) {
+    const msg = msgs.shift();
+    node.addEventListener(msg.at ? "click" : "input", () =>
+      self.send(msg.at ? msg : [msg, node.type === "number" ? node.valueAsNumber : node.value]),
+    );
+  }
 }
 
 // A dynamic text is the only child of `node`: a text node (a placeholder in the template).
