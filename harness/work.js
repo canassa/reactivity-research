@@ -146,15 +146,23 @@ export async function workScenario(scenario, scenarioOptions, emitters, emitterO
   log(`building ${plan.length} app(s) with up to ${Math.min(jobs, plan.length)} parallel jobs`);
   const built = await runJobs(plan.map((p) => ({
     scenario: scenario.name, emitter: p.emitter.name, variant: p.variant, scenarioOptions: p.options, emitterOptions: p.opts,
-  })), { jobs });
-  plan.forEach((p, i) => { p.outDir = built[i].outDir; });
+  })), { jobs, tolerant: true });
+  // A build that fails (e.g. a compiler limit at a large N) is recorded and that point skipped.
+  const failures = [];
+  plan.forEach((p, i) => {
+    if (built[i].error) {
+      failures.push({ variant: p.variant, size: p.size, error: String(built[i].error).split("\n").find((l) => l.trim()) || "build failed" });
+      log(`${p.variant} n=${p.size}: build failed, skipped`);
+    } else p.outDir = built[i].outDir;
+  });
 
   const chrome = await launch({ args: jsFlags ? [`--js-flags=${jsFlags}`] : [] });
   const records = [];
   let listActions = null;
   try {
     for (const size of sizes) {
-      const here = plan.filter((p) => p.size === size);
+      const here = plan.filter((p) => p.size === size && p.outDir);
+      if (here.length === 0) continue;
       const spec = scenario.mod.generate(here[0].options);
       const ref = scenario.mod;
       const list = actions(spec, ref);
@@ -197,7 +205,7 @@ export async function workScenario(scenario, scenarioOptions, emitters, emitterO
     scenario: scenario.name, kind: "work", date: today(),
     sizes, seeds: [Number(scenarioOptions.seed ?? 1)], runs, jsFlags,
     scenarioOptions: (({ size, seed, ...rest }) => rest)(scenario.mod.normalizeOptions({ ...scenarioOptions, size: 1, seed: 1 })),
-    actions: listActions, variants,
+    actions: listActions, variants, failures,
     versions: { node: process.version, chrome: chromeVersion(bin), platform: `${os.platform()} ${os.release()} ${os.arch()}`, git: gitInfo() },
     method: "Profiler.startPreciseCoverage({ callCount: true, detailed: true }); per action: take (reset), perform, await settled(), take; summed over the app's own scripts (URLs under /<variant>/); calls = function invocations, blocks = basic-block executions",
   };
@@ -208,13 +216,16 @@ export async function workScenario(scenario, scenarioOptions, emitters, emitterO
 // size (calls at N_max / calls at N_min), as its median and its worst action, plus the fitted
 // extra calls per extra widget for the median action.
 export function locality(records, run) {
-  const lo = run.sizes[0], hi = run.sizes[run.sizes.length - 1];
   const median = (xs) => { const s = [...xs].sort((x, y) => x - y); return s[Math.floor((s.length - 1) / 2)]; };
   const out = {};
   for (const v of Object.keys(run.variants)) {
+    // Over the sizes this variant built (a failed build drops its size).
+    const sizes = run.sizes.filter((n) => records.some((r) => r.variant === v && r.size === n));
+    if (sizes.length < 2) continue;
+    const lo = sizes[0], hi = sizes[sizes.length - 1];
     const rows = run.actions.filter((a) => !a.setup).map((a) => {
       const at = (n) => records.find((r) => r.variant === v && r.size === n && r.action === a.name)?.calls;
-      const fit = fitLine(run.sizes.map((n) => [n, at(n)]));
+      const fit = fitLine(sizes.map((n) => [n, at(n)]));
       return { action: a.name, scope: a.scope, lo: at(lo), hi: at(hi), ratio: at(hi) / at(lo), perWidget: fit.slope };
     });
     const local = rows.filter((r) => r.scope === "local");
@@ -229,8 +240,9 @@ export function locality(records, run) {
 }
 
 function localityText(loc) {
-  const rows = Object.entries(loc).map(([v, l]) => [v, String(l.callsAtMin), String(l.callsAtMax), l.medianRatio.toFixed(2), l.maxRatio.toFixed(2), l.medianPerWidget.toFixed(1), l.worst]);
-  const head = ["variant", `median calls N=${Object.values(loc)[0].sizes[0]}`, `N=${Object.values(loc)[0].sizes[1]}`, "median ratio", "max ratio", "calls/widget", "worst action"];
+  // Sizes are per variant: a failed build can end a variant's range early.
+  const rows = Object.entries(loc).map(([v, l]) => [v, `${l.sizes[0]}→${l.sizes[1]}`, `${l.callsAtMin} → ${l.callsAtMax}`, l.medianRatio.toFixed(2), l.maxRatio.toFixed(2), l.medianPerWidget.toFixed(1), l.worst]);
+  const head = ["variant", "N", "median calls", "median ratio", "max ratio", "calls/widget", "worst action"];
   const w = head.map((h, i) => Math.max(h.length, ...rows.map((r) => r[i].length)));
   const fmt = (r) => r.map((c, i) => (i === 0 || i === 6 ? c.padEnd(w[i]) : c.padStart(w[i]))).join("  ");
   return [fmt(head), ...rows.map(fmt)].join("\n");

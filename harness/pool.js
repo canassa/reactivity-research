@@ -16,7 +16,8 @@ export function defaultJobs() {
 
 // jobs: [{ scenario, emitter, scenarioOptions, emitterOptions, measure }] (names, not modules).
 // Calls onDone(job, result) as each finishes; resolves with results in job order.
-export function runJobs(jobs, { jobs: n = defaultJobs(), onDone = () => {} } = {}) {
+// With `tolerant`, a failed job yields { error } in its slot instead of stopping the run.
+export function runJobs(jobs, { jobs: n = defaultJobs(), onDone = () => {}, tolerant = false } = {}) {
   const results = new Array(jobs.length);
   if (jobs.length === 0) return Promise.resolve(results);
   const size = Math.max(1, Math.min(Number(n) || 1, MAX_JOBS, jobs.length));
@@ -38,9 +39,9 @@ export function runJobs(jobs, { jobs: n = defaultJobs(), onDone = () => {} } = {
       const w = fork(WORKER, [], { stdio: ["ignore", "inherit", "inherit", "ipc"] });
       workers.push(w);
       w.on("message", ({ i, result, error }) => {
-        if (error) return fail(new Error(`${describe(jobs[i])}: ${error}`));
-        results[i] = result;
-        onDone(jobs[i], result);
+        if (error && !tolerant) return fail(new Error(`${describe(jobs[i])}: ${error}`));
+        results[i] = error ? { error } : result;
+        if (!error) onDone(jobs[i], result);
         if (++done === jobs.length) {
           for (const x of workers) if (x.connected) x.disconnect();
           resolve(results);
