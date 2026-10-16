@@ -278,3 +278,66 @@ Cost in rows, by class (calls from `./rr work`, N=16, 1,000 against 10,000 rows)
   `removeChecked`, `serverRows`, `serverDelete`.
 
 See `notes/2026-10-16-big-table-tea-inline.md` for the figures.
+
+## routed-app
+
+`../../scenarios/routed-app/tea-inline.js` adds what the dashboards never needed: **lifetime**. Pages,
+tab panels and modals mount and unmount, and the critique's weakness 2 (hidden content built at mount,
+bindings never disposed) is exactly what the scenario's locality bound measures. The runtime stays
+as it is; `template/routes.js` (included only by this scenario, through `extra: ["routes.js"]`, so
+the other scenarios' output is byte-identical) adds three functions.
+
+**The design.** A *unit* (the shell, a page, a tab panel, the modal) is a markup string and a
+function over its elements. `up(ref, at, html, fn)` parses the markup, calls `fn(E, G, D, root)` with
+the elements `E` in document order, a fresh binding table `G` and a list of disposers `D`, schedules
+the table for its first render and returns the arms `fn` returned plus `down`, which runs the
+disposers once. Everything a unit puts outside itself registers a disposer:
+
+- its nodes (`root.remove()`, the first disposer);
+- its timers: `every(D, ms, tick)` is a `setInterval` that `down` clears;
+- its readers of state that outlives it: `reg(D, group, item)` pushes `item` into `group` and removes
+  it on `down`. The groups of a global field are a list outside every unit (`GR.balance`, in
+  `src/state.js`); the shell adds its three bindings when it is built, and a page adds a group of its
+  own (`reg(D, GR.balance, G[3])`). A tab or the modal reading a page field registers with the page's
+  group of that field (`reg(C, G[2], H[1])`) the same way.
+
+Page-local state is a `const` of the unit's function, so it is fresh every time the unit is built,
+which is the scenario's lifetime rule for pages, tab panels and modals. A page's tabs and modal are
+functions inside the page's module, because they share its state: the panel is built by `up(nav,
+"afterend", ...)` when its tab is selected (the old panel's `down` first), the modal by `up(root,
+"beforeend", ...)` when it opens. The page's own disposers end both.
+
+**What a write costs.** Actions are inlined as before, and schedule the groups of the fields they
+write, chosen at compile time: the unit's own, the page's, or `GR.x` for a global field (left out
+when neither the shell nor any unit of that page reads it). Because only mounted units are
+registered, `GR.balance` holds the page shown and nothing else: a write costs the same at N = 256 as
+at N = 16. The shell is the one unit that lives as long as the app. The pages' titles are the only
+O(N) data (`PAGES`, which the menu lists when opened). Navigation is one delegated click listener on
+the app's root, reading `data-key` from the nav bar's, the menu's and the pages' link buttons, so no
+page wires a link.
+
+Style choices: one module per page; static markup per unit, parsed once per build, with the optional
+end tags left out; `E[n]` by place; page-local lists edit rows in place on add (`add`) and replace
+the array on remove (a click on a row that something else dropped already changes nothing); global
+lists are replaced and their groups reconcile (the action cannot know which lists are mounted);
+`reg` calls are one per global field a unit reads, not one per binding.
+
+**Locality** (`./rr work routed-app tea-inline --sizes 16,256`, seed 1, calls per action, N = 16 →
+256): flat in all 22 local actions (worst ratio 1.00; the first navigation, 53 → 52, is the largest
+change): a page event 8 to 9 calls, `serverSet` of a global no page shown reads 5, a navigation 49 to
+147 calls (it builds the new page's whole markup and bindings; p2 → p3 is the heaviest, with tabs
+and a feed), the app's mount (shell and p1) 61 and its dispose 14. Opening the menu is global by
+nature: 36 → 516.
+
+**Size** (seeds 1 to 3, sizes 1 to 256): baseline 4,451 B, slope 307 B per page (R² 0.990); N = 256
+ships 78.9 to 82.6 kB brotli. The runtime is 884 B from N = 4 (661 to 698 at N = 1), against 730 B in
+the dashboards: `routes.js` costs about 140 B. The lifetime machinery in the generated code (the
+`reg` calls and the pages' disposers, deleted from a build to count them) costs 242 B at N = 16
+(2.3%), 874 B at N = 64 and 2,480 B at N = 256 (3.1%), about 10 B per page; the `D`/`C` parameters
+and the registrations are all of it. Building only what is shown costs 3% of the bytes.
+
+**What is not disposed.** A binding already scheduled in the same tick that its unit goes still runs
+once, on its detached nodes: the runtime's pending set is private, and `routes.js` does not edit
+`runtime.js` (it would change every scenario's output). It is wasted work bounded by one page's
+bindings, never a leak: nothing outside the unit keeps it. Rows of a page-local list keep the
+runtime's `drop` method unused (removals reconcile), which costs its few bytes in this scenario.
