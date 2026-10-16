@@ -39,10 +39,10 @@ const attrValue = (v) => (/^[\w.:-]+$/.test(v) ? v : `"${v.replace(/&/g, "&amp;"
 
 const WIDGET_FILE = `import { schedule } from "../runtime.js";
 
-// A widget's DOM, from its markup (the section with its key and heading, and everything it
-// shows): appended to \`parent\`, and returned as its elements in document order.
-export function section(parent, html) {
-  parent.insertAdjacentHTML("beforeend", html);
+// A widget's DOM: its section, keyed by its id, with the markup inside (its heading and
+// everything it shows), appended to \`parent\`, and returned as its elements in document order.
+export function section(parent, id, html) {
+  parent.insertAdjacentHTML("beforeend", \`<section data-key=\${id} data-role=widget>\${html}</section>\`);
   return [parent.lastChild, ...parent.lastChild.querySelectorAll("*")];
 }
 
@@ -381,10 +381,10 @@ function widgetFile(w, reads) {
     throw new Error(`unknown view node ${n.el}`);
   }
 
-  open("section", { "data-key": w.id, "data-role": "widget" });
+  // The section itself (element 0) is written by `section`: the markup is what goes inside.
+  count = 1;
   element("h2", {}, w.label);
   for (const n of w.view) node(n);
-  close("section");
 
   // The bindings: those reading one field of this widget and nothing else are written inline in
   // that field's group; the others are named and listed in each group they belong to.
@@ -435,7 +435,7 @@ function widgetFile(w, reads) {
     ...readIds.map((x) => `const ${x} = model.${x};`),
     ...consts,
     "// The DOM, built once from its markup; the elements the code refers to, in document order.",
-    `const [${Array.from(refs, (r) => r || "").join(", ")}] = section(parent, ${str(html)});`,
+    `const [${Array.from(refs, (r) => r || "").join(", ")}] = section(parent, ${str(w.id)}, ${str(html)});`,
     ...build,
     "",
     ...(namedLines.length ? ["// Bindings reading several fields, or other widgets."] : []),
