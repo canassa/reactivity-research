@@ -203,7 +203,7 @@ const KINDS = {
     (v) => ({ stars: n } = v));
   stars.forEach((_, i) => {
     bind(2 + i, "ariaPressed", () => i < n);
-    bind(2 + i, "textContent", () => (i < n ? "★" : "☆"));
+    text(2 + i, () => (i < n ? "★" : "☆"));
   });
   text(2 + stars.length, () => labels[n]);`,
     metric: `{ m: () => n, p: (k) => k + " stars for " + l }`,
@@ -252,7 +252,7 @@ const KINDS = {
     args: "l, f, src, pre",
     body: `
   const w = widget("summary", l, "<p data-role=summary></p>");
-  const num = (x) => "" + Math.round(x * 100) / 100;
+  const num = (x) => Math.round(x * 100) / 100;
   text(1, () => {
     const v = src.map((e) => e.m());
     const total = num(v.reduce((a, b) => a + b));
