@@ -191,7 +191,6 @@ export const kind = [
     onClick(add, id, 1);
     const items = list(ul, (item) => {
       const [li, box, label, remove] = html("<li><input type=checkbox data-role=toggle><span></span><button data-role=remove>");
-      li.dataset.key = item.id;
       remove.textContent = removeText;
       onCheck(box, id, 2, item.id);
       onClick(remove, id, 3, item.id);
@@ -335,7 +334,6 @@ export const kind = [
     onInput(input, id, 0);
     const rows = list(ul, (item) => {
       const [li] = html("<li>");
-      li.dataset.key = item.id;
       return [li, (item) => setText(li, item.text)];
     });
     return (s) => {
@@ -392,7 +390,6 @@ export const kind = [
     p.textContent = emptyText;
     const entries = list(ul, (entry) => {
       const [li, label, dismiss] = html("<li><span></span><button data-role=dismiss>");
-      li.dataset.key = entry.id;
       dismiss.textContent = dismissText;
       onClick(dismiss, id, 0, entry.id);
       return [li, (entry) => setText(label, entry.text)];

@@ -389,7 +389,6 @@ function widgetModule(w) {
           row += `</li>`;
           L(`const ${l} = list(${node()}, (item) => {`);
           L(`  const r = html(${J(trimTemplate(row))});`);
-          L(`  r[0].dataset.key = item.id;`);
           if (n.check) {
             use("onCheck", "setChecked");
             L(`  onCheck(${box}, ${W}, ${tag(n.check)}, item.id);`);

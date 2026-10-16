@@ -125,14 +125,16 @@ export function branch(node, patch) {
 }
 
 // A keyed list (by item.id) filling `parent`. `row(item)` builds a detached row once and returns
-// [node, patch(item)]. New rows and rows whose item changed are patched; rows whose id is gone
-// are removed, and one walk puts every remaining node in order, moving only the misplaced ones.
+// [node, patch(item)]; the list keys the node. New rows and rows whose item changed are patched;
+// rows whose id is gone are removed, and one walk puts every remaining node in order, moving
+// only the misplaced ones.
 export function list(parent, row) {
   let rows = new Map();
   return (items) => {
     const next = new Map();
     for (const item of items) {
-      const r = rows.get(item.id) || row(item);
+      let r = rows.get(item.id);
+      if (!r) (r = row(item))[0].dataset.key = item.id;
       if (r.item !== item) r[1](item);
       r.item = item;
       next.set(item.id, r);
