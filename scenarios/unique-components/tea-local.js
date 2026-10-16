@@ -315,12 +315,11 @@ function branch(w, m, cx) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// One widget module.
+// One widget: a block of the app's dashboard function.
 
 const RUNTIME = ["setText", "setProp", "instance", "list"];
-const FRAME = ["widget", "widgets", "row", "place", "nextId", "subscribe"];
+const FRAME = ["widget", "widgets", "running", "row", "place", "nextId", "subscribe"];
 
-// Returns { code, sources }: the module, and the earlier widgets its factory takes.
 // Message tags are the compiler's to choose: the controls of the widget's template take 0, 1,
 // 2, ... in document order, then each list row's controls, in order, then the other messages.
 // So `wire` needs no tag list: a control's tag is its position.
@@ -340,7 +339,10 @@ function messageOrder(w) {
   return [...order, ...w.messages.map((m) => m.name).filter((name) => !order.includes(name))];
 }
 
-function widgetFile(spec, w) {
+// The widget's own code as a block of the dashboard function: what its factory would be,
+// inlined, since a unique widget's factory is called once. Its names are the block's own; its
+// patch and reducer arms close over them.
+function widgetBlock(spec, w) {
   const order = messageOrder(w);
   w = { ...w, messages: order.map((name) => w.messages.find((m) => m.name === name)) };
   const cx = {
@@ -379,7 +381,7 @@ function widgetFile(spec, w) {
 
 
   const fn = [];
-  fn.push(`export const ${w.id} = (parent) => {`);
+  fn.push(`{`, `  // ${w.id}: ${w.label} (${w.kind})`);
   // The binding list (it runs after mount, once `self` and `e` are set).
   fn.push(`  const patch = () => {`);
   if (cx.own) fn.push(`    const m = self.m;`);
@@ -392,29 +394,14 @@ function widgetFile(spec, w) {
   fn.push(`  // type Msg = ${msgNames.join(" | ")}`);
   fn.push(`  const self = instance(${lit(spec.initialState.widgets[w.id])}, [`, ...cases.map((c) => `    ${c.replace(/\n/g, "\n    ")},`), `  ], patch);`);
   cx.wire.forEach((t, i) => { if (t !== i) throw new Error(`${w.id}: control tags out of order`); });
-  fn.push(`  const e = widget(parent, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))}, self);`);
+  fn.push(`  const e = widget(main, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))}, self);`);
   fn.push(...cx.create);
   // Subscribe to the clock while the gate is on, as soon as the model changes (not at the next
   // render), so a tick right after the gate opens is not missed.
   if (timed.length) fn.push(`  subscribe(self, ${tickIndex}, (m) => ${gate});`);
-  fn.push(``);
   if (feed) fn.push(`  self.notify = ${notifyIndex}; // the tag of Notify, sent by the app`);
-
-  fn.push(`};`);
-  const body = fn.join("\n");
-
-  const code = body;
-  const used = (names) => names.filter((h) => new RegExp(`\\b${h}\\b`).test(code));
-  const out = [
-    `import { ${used(RUNTIME).join(", ")} } from "../runtime.js";`,
-    `import { ${used(FRAME).join(", ")} } from "./frame.js";`,
-    ``,
-    `// ${w.label} (${w.kind})`,
-    ``,
-    body,
-    ``,
-  ];
-  return { code: out.join("\n"), sources };
+  fn.push(`}`);
+  return fn.map((l) => "  " + l).join("\n");
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -478,22 +465,23 @@ export function emit(spec) {
     ...templateFiles({ name: "unique-components", title: "Unique components" }),
     "src/widgets/frame.js": FRAME_FILE,
   };
-  const calls = [];
-  for (const w of spec.widgets) {
-    const { code, sources } = widgetFile(spec, w);
-    files[`src/widgets/${w.id}.js`] = code;
-    calls.push(`  ${w.id}(main);`);
-  }
+  const blocks = spec.widgets.map((w) => widgetBlock(spec, w));
   // Only an app with a time-driven widget has ticks to route, and only one with a feed, notify.
   const timed = spec.widgets.some((w) => w.fields.some((f) => f.tick));
   const feeds = spec.widgets.some((w) => w.fields.some((f) => f.feed));
-  files["src/app.js"] = `import { widgets${timed ? ", running" : ""} } from "./widgets/frame.js";
-${spec.widgets.map((w) => `import { ${w.id} } from "./widgets/${w.id}.js";`).join("\n")}
+  const code = blocks.join("\n");
+  const used = (names) => names.filter((h) => h === "widgets" || (h === "running" && timed) || new RegExp(`\\b${h}\\(`).test(code));
+  files["src/app.js"] = `import { ${used(RUNTIME).join(", ")} } from "./runtime.js";
+import { ${used(FRAME).join(", ")} } from "./widgets/frame.js";
 
 export function App(root) {
   root.insertAdjacentHTML("beforeend", "<div data-role=dashboard>");
-  const main = root.lastChild;
-${calls.join("\n")}
+  return dashboard(root.lastChild);
+}
+
+// The widgets, each in its own block, in page order, then the routing of external events.
+function dashboard(main) {
+${blocks.join("\n")}
 
   return {
     // External events, routed to the instances they concern.
