@@ -269,35 +269,44 @@ function pushStep(w, op, s) {
   return { text: `${s}.${op[2]}.trim()`, next: `{ ...${s}, ${op[1]}: [...${s}.${op[1]}, ${item}], ${op[2]}: "" }` };
 }
 
-function reducerCase(w, m, i, cx) {
-  const head = `    case ${i}:`;
+// The reducer's branch for one message: a function of the model and the message's argument
+// (every branch has the same signature).
+function handler(code) {
+  return code.startsWith("{") && code.includes("\n") ? `(m, value) => ${code}` : `(m, value) => (${code})`;
+}
+
+function reducerCase(w, m, cx) {
+  return handler(branch(w, m, cx));
+}
+
+function branch(w, m, cx) {
   switch (m.kind) {
     case "input": case "select": {
       // A number input sends its value as a number; only an integer in range is taken.
       const f = w.fields.find((x) => x.name === m.field);
-      if (f.type === "int") return `${head} return Number.isInteger(value) && value >= ${f.min} && value <= ${f.max} ? { ...m, ${m.field}: value } : m;`;
-      return `${head} return { ...m, ${m.field}: value };`;
+      if (f.type === "int") return `Number.isInteger(value) && value >= ${f.min} && value <= ${f.max} ? { ...m, ${m.field}: value } : m`;
+      return `{ ...m, ${m.field}: value }`;
     }
-    case "check": return `${head} return { ...m, ${m.field}: !m.${m.field} };`;
+    case "check": return `{ ...m, ${m.field}: !m.${m.field} }`;
     case "item":
       return m.op === "remove"
-        ? `${head} return { ...m, ${m.field}: m.${m.field}.filter((it) => it.id !== value) };`
-        : `${head} return { ...m, ${m.field}: m.${m.field}.map((it) => (it.id === value ? { ...it, done: !it.done } : it)) };`;
+        ? `{ ...m, ${m.field}: m.${m.field}.filter((it) => it.id !== value) }`
+        : `{ ...m, ${m.field}: m.${m.field}.map((it) => (it.id === value ? { ...it, done: !it.done } : it)) }`;
     case "click": {
       const targets = m.ops.map((op) => op[1]);
       if (!m.ops.some((op) => op[0] === "push") && new Set(targets).size === targets.length) {
-        return `${head} return { ...m, ${m.ops.map((op) => `${op[1]}: ${opAssign(w, op, "m", cx)}`).join(", ")} };`;
+        return `{ ...m, ${m.ops.map((op) => `${op[1]}: ${opAssign(w, op, "m", cx)}`).join(", ")} }`;
       }
       if (m.ops.length === 1) {
         const { text, next } = pushStep(w, m.ops[0], "m");
-        return `${head} {\n      const text = ${text};\n      return text ? ${next} : m;\n    }`;
+        return `{\n  const text = ${text};\n  return text ? ${next} : m;\n}`;
       }
       const body = m.ops.map((op) => {
-        if (op[0] !== "push") return `      n = { ...n, ${op[1]}: ${opAssign(w, op, "n", cx)} };`;
+        if (op[0] !== "push") return `  n = { ...n, ${op[1]}: ${opAssign(w, op, "n", cx)} };`;
         const { text, next } = pushStep(w, op, "n");
-        return `      {\n        const text = ${text};\n        if (text) n = ${next};\n      }`;
+        return `  {\n    const text = ${text};\n    if (text) n = ${next};\n  }`;
       });
-      return `${head} {\n      let n = m;\n${body.join("\n")}\n      return n;\n    }`;
+      return `{\n  let n = m;\n${body.join("\n")}\n  return n;\n}`;
     }
   }
   throw new Error(`unknown message kind ${m.kind}`);
@@ -340,7 +349,7 @@ function widgetFile(spec, w) {
 
   const timed = w.fields.filter((f) => f.tick);
   const feed = w.fields.find((f) => f.feed);
-  const cases = w.messages.map((m, i) => reducerCase(w, m, i, cx));
+  const cases = w.messages.map((m) => reducerCase(w, m, cx));
   let next = w.messages.length;
   let tickIndex, notifyIndex, gate;
   // Time-driven ints: a Tick message, and a subscription while a gate is on.
@@ -348,16 +357,16 @@ function widgetFile(spec, w) {
     tickIndex = next++;
     const step = (f, s) => `${s}.${f.tickWhen} && ${s}.${f.name} < ${f.max}`;
     const grown = (f, s) => `{ ...${s}, ${f.name}: Math.min(${f.max}, ${s}.${f.name} + ${f.tick}) }`;
-    if (timed.length === 1) cases.push(`    case ${tickIndex}: return ${step(timed[0], "m")} ? ${grown(timed[0], "m")} : m;`);
+    if (timed.length === 1) cases.push(handler(`${step(timed[0], "m")} ? ${grown(timed[0], "m")} : m`));
     else {
-      const body = timed.map((f) => `      if (${step(f, "n")}) n = ${grown(f, "n")};`);
-      cases.push(`    case ${tickIndex}: {\n      let n = m;\n${body.join("\n")}\n      return n;\n    }`);
+      const body = timed.map((f) => `  if (${step(f, "n")}) n = ${grown(f, "n")};`);
+      cases.push(handler(`{\n  let n = m;\n${body.join("\n")}\n  return n;\n}`));
     }
     gate = timed.map((f) => "m." + f.tickWhen).join(" || ");
   }
   if (feed) {
     notifyIndex = next++;
-    cases.push(`    case ${notifyIndex}: return { ...m, ${feed.name}: [...m.${feed.name}, value] };`);
+    cases.push(handler(`{ ...m, ${feed.name}: [...m.${feed.name}, value] }`));
   }
 
   const sources = [...cx.sources];
@@ -372,6 +381,8 @@ function widgetFile(spec, w) {
   fn.push(`export function ${w.id}(parent) {`);
   for (const s of sources) fn.push(`  const ${s} = widgets.get(${q(s)});`);
   fn.push(`  // type Msg = ${msgNames.join(" | ")}`);
+  // The reducer, one function per message, indexed by its tag.
+  fn.push(`  const update = [`, ...cases.map((c) => `    ${c.replace(/\n/g, "\n    ")},`), `  ];`);
   fn.push(`  const self = instance(${lit(spec.initialState.widgets[w.id])}, update, patch);`);
   cx.wire.forEach((t, i) => { if (t !== i) throw new Error(`${w.id}: control tags out of order`); });
   fn.push(`  const e = widget(parent, ${q(w.id)}, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))}, self);`);
@@ -381,8 +392,6 @@ function widgetFile(spec, w) {
   if (timed.length) fn.push(`  subscribe(self, ${tickIndex}, (m) => ${gate});`);
   fn.push(``);
   // A widget with a single message has nothing to switch on (an Elm `case` with one branch).
-  if (cases.length === 1) fn.push(`  function update(m, tag, value) {`, cases[0].replace(/^ {4}case 0: ?/, "  ").replace(/^/gm, "  "), `  }`, ``);
-  else fn.push(`  function update(m, tag, value) {`, `    switch (tag) {`, ...cases.map((c) => c.replace(/^/gm, "    ")), `    }`, `  }`, ``);
   fn.push(`  function patch() {`);
   if (cx.own) fn.push(`    const m = self.m;`);
   for (const s of sources) fn.push(`    const m${s.slice(1)} = ${s}.m;`);

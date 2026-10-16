@@ -89,7 +89,9 @@ export function show(parent, node, shown) {
 
 // ---------------------------------------------------------------------------------------------
 // A component instance: its model lives in this closure. `send(tag, value)` (a message: its
-// constructor's tag and its argument, if any) runs the component's own reducer and schedules the instance's `patch` (its binding list) and whoever watches it.
+// constructor's tag and its argument, if any) runs the component's own reducer and schedules
+// the instance's `patch` (its binding list) and whoever watches it. The reducer is compiled as a
+// jump table: `update[tag](model, value)` is the branch of `case msg of` for that constructor.
 // There is no global dispatch, no dirty bits and no dependency tracking.
 
 export function instance(model, update, patch) {
@@ -104,7 +106,7 @@ export function instance(model, update, patch) {
   schedule(patch); // the first render, in the flush after mount
   const self = {
     m: model,
-    send: (tag, value) => set(update(self.m, tag, value)),
+    send: (tag, value) => set(update[tag](self.m, value)),
     set,
     watch: (watcher) => watchers.push(watcher),
   };

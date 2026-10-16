@@ -75,6 +75,12 @@ const KINDS = {
 // type Msg = Inc | Dec | Reset
 
 export function counter(parent, id, heading, step, min, max, start, model) {
+  // The reducer reads the widget's limits, so it closes over them.
+  const update = [
+    (model, value) => ({ value: Math.min(max, model.value + step) }),
+    (model, value) => ({ value: Math.max(min, model.value - step) }),
+    (model, value) => ({ value: start }),
+  ];
   const self = instance(model, update, patch);
   const root = widget(parent, id, heading, "counter", self);
   const value = element(root, "output", { "data-role": "value" }, " ");
@@ -91,22 +97,12 @@ export function counter(parent, id, heading, step, min, max, start, model) {
     setProp(dec, "disabled", m.value <= min);
     setProp(inc, "disabled", m.value >= max);
   }
-  // The reducer reads the widget's limits, so it closes over them.
-  function update(model, tag) {
-    switch (tag) {
-      case 0: return { value: Math.min(max, model.value + step) };
-      case 1: return { value: Math.max(min, model.value - step) };
-      case 2: return { value: start };
-    }
-  }
 }
 `,
 
   toggles: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 // type Msg = Toggle Int
-function update(model, tag, value) {
-  return { on: model.on.map((on, i) => (i === value ? !on : on)) };
-}
+const update = [(model, value) => ({ on: model.on.map((on, i) => (i === value ? !on : on)) })];
 
 export function toggles(parent, id, heading, items, model) {
   const self = instance(model, update, patch);
@@ -131,9 +127,7 @@ export function toggles(parent, id, heading, items, model) {
 
   field: `${HEAD(["element", "on", "setText", "setProp", "show", "instance"])}
 // type Msg = Edit String
-function update(model, tag, value) {
-  return { text: value };
-}
+const update = [(model, value) => ({ text: value })];
 
 export function field(parent, id, heading, placeholder, validate, model) {
   const self = instance(model, update, patch);
@@ -154,19 +148,17 @@ export function field(parent, id, heading, placeholder, validate, model) {
 
   todo: `${HEAD(["element", "on", "setText", "setProp", "instance", "list"])}
 // type Msg = EditDraft String | Add | Toggle Int | Remove Int
-function update(model, tag, value) {
-  switch (tag) {
-    case 0: return { ...model, draft: value };
-    case 1: {
-      const text = model.draft.trim();
-      if (text === "") return model;
-      const id = model.items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
-      return { items: [...model.items, { id, text, done: false }], draft: "" };
-    }
-    case 2: return { ...model, items: model.items.map((item) => (item.id === value ? { ...item, done: !item.done } : item)) };
-    case 3: return { ...model, items: model.items.filter((item) => item.id !== value) };
-  }
-}
+const update = [
+  (model, value) => ({ ...model, draft: value }),
+  (model, value) => {
+    const text = model.draft.trim();
+    if (text === "") return model;
+    const id = model.items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
+    return { items: [...model.items, { id, text, done: false }], draft: "" };
+  },
+  (model, value) => ({ ...model, items: model.items.map((item) => (item.id === value ? { ...item, done: !item.done } : item)) }),
+  (model, value) => ({ ...model, items: model.items.filter((item) => item.id !== value) }),
+];
 
 export function todo(parent, id, heading, placeholder, addText, removeText, model) {
   const self = instance(model, update, patch);
@@ -200,9 +192,7 @@ export function todo(parent, id, heading, placeholder, addText, removeText, mode
 
   tabs: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 // type Msg = Select Int
-function update(model, tag, value) {
-  return { active: value };
-}
+const update = [(model, value) => ({ active: value })];
 
 export function tabs(parent, id, heading, tabs, model) {
   const self = instance(model, update, patch);
@@ -225,9 +215,7 @@ export function tabs(parent, id, heading, tabs, model) {
 
   panel: `${HEAD(["element", "on", "setText", "show", "setProp", "instance"])}
 // type Msg = Toggle
-function update(model) {
-  return { open: !model.open };
-}
+const update = [(model, value) => ({ open: !model.open })];
 
 export function panel(parent, id, heading, showText, hideText, body, model) {
   const self = instance(model, update, patch);
@@ -247,12 +235,10 @@ export function panel(parent, id, heading, showText, hideText, body, model) {
 
   choice: `${HEAD(["element", "on", "setProp", "show", "instance"])}
 // type Msg = Choose String | EditExtra String
-function update(model, tag, value) {
-  switch (tag) {
-    case 0: return { ...model, option: value };
-    case 1: return { ...model, extra: value };
-  }
-}
+const update = [
+  (model, value) => ({ ...model, option: value }),
+  (model, value) => ({ ...model, extra: value }),
+];
 
 export function choice(parent, id, heading, options, extraFor, extraPlaceholder, model) {
   const self = instance(model, update, patch);
@@ -274,9 +260,7 @@ export function choice(parent, id, heading, options, extraFor, extraPlaceholder,
 
   amount: `${HEAD(["element", "on", "setText", "instance"])}
 // type Msg = Set Float
-function update(model, tag, value) {
-  return { value: value };
-}
+const update = [(model, value) => ({ value: value })];
 
 export function amount(parent, id, heading, format, model) {
   const self = instance(model, update, patch);
@@ -299,9 +283,7 @@ export function amount(parent, id, heading, format, model) {
 
   filter: `${HEAD(["element", "on", "setText", "setProp", "instance", "list"])}
 // type Msg = Edit String
-function update(model, tag, value) {
-  return { query: value };
-}
+const update = [(model, value) => ({ query: value })];
 
 export function filter(parent, id, heading, items, placeholder, model) {
   const self = instance(model, update, patch);
@@ -325,9 +307,7 @@ export function filter(parent, id, heading, items, placeholder, model) {
 
   rating: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 // type Msg = Rate Int
-function update(model, tag, value) {
-  return { stars: value };
-}
+const update = [(model, value) => ({ stars: value })];
 
 export function rating(parent, id, heading, stars, labels, model) {
   const self = instance(model, update, patch);
@@ -356,12 +336,10 @@ export function rating(parent, id, heading, stars, labels, model) {
 // type Msg = Dismiss Int | Notify Entry
 export const notify = 1; // the tag of Notify, sent by the app
 
-function update(model, tag, value) {
-  switch (tag) {
-    case 0: return { entries: model.entries.filter((entry) => entry.id !== value) };
-    case 1: return { entries: [...model.entries, value] };
-  }
-}
+const update = [
+  (model, value) => ({ entries: model.entries.filter((entry) => entry.id !== value) }),
+  (model, value) => ({ entries: [...model.entries, value] }),
+];
 
 export function feed(parent, id, heading, emptyText, dismissText, model) {
   const self = instance(model, update, patch);
@@ -386,14 +364,12 @@ export function feed(parent, id, heading, emptyText, dismissText, model) {
 // type Msg = Start | Stop | Reset | Tick
 export const tick = 3; // the tag of Tick, sent by the app
 
-function update(model, tag) {
-  switch (tag) {
-    case 0: return { ...model, running: true };
-    case 1: return { ...model, running: false };
-    case 2: return { seconds: 0, running: false };
-    case 3: return model.running ? { ...model, seconds: model.seconds + 1 } : model;
-  }
-}
+const update = [
+  (model, value) => ({ ...model, running: true }),
+  (model, value) => ({ ...model, running: false }),
+  (model, value) => ({ seconds: 0, running: false }),
+  (model, value) => (model.running ? { ...model, seconds: model.seconds + 1 } : model),
+];
 
 function formatTime(seconds) {
   return \`\${Math.floor(seconds / 60)}:\${String(seconds % 60).padStart(2, "0")}\`;
