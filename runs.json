@@ -148,5 +148,9 @@
   },
   "routed-app": {
     "$bench": { "$comment": "./rr bench: one app per framework at N=64, the size the dashboards bench at; p1 to p5 carry the actions (harness/bench/routed-app.js), the other pages exist only to be left unmounted.", "sizes": [64], "seeds": [1] }
+  },
+  "derived-graph": {
+    "$comment": "No frameworks yet. An entry is expected to look like the others (sizes 1 to 256, seeds 1 to 3) plus \"options\": { \"fanout\": [\"low\", \"mid\", \"high\"] }, which measures each readers-per-value level as its own variant (solid, solid-fanout=low, solid-fanout=high); see scenarios/derived-graph/README.md.",
+    "$bench": { "$comment": "N=64 with the default 2,000 items: the dashboards' bench size; the work actions as do/undo pairs (harness/bench/derived-graph.js).", "sizes": [64], "seeds": [1] }
   }
 }
