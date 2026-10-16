@@ -328,3 +328,38 @@ app, as every js-framework-benchmark entry ships its own helpers. All three are 
   - **O(rows):** `serverUpdate` (1,767 to 28,890 calls: the message names an id that does not
     exist, so `findIndex` scans everything), `serverDelete` and `removeChecked` (`filter`),
     `updateEvery`, create, append, clear, sort and `serverRows`.
+
+## routed-app
+
+The emitter for `routed-app` (`scenarios/routed-app/tea-dirtybits.js`) keeps the strategy and adds
+**lifetime**: only the shell and the page shown (with its open tab and modal) are built, and
+anything left is disposed. The critique's weakness 2 (`notes/2026-10-16-tea-inline-critique.md`) was
+that a component built eagerly stays subscribed for ever; here a page is a unit that mounts and
+unmounts. What it adds, in a new `template/routes.js` (counted as runtime, included only here, with
+its own adapter `routes-adapter.js` whose dispose first calls the app's `stop`):
+
+- **A page is a unit.** `src/pages/<id>.js` registers `[mount, reducer, initial local state]`. `mount()`
+  builds the page from one static template and returns `[root, patch, stop]`. The model has the
+  reference's shape, `{ route, menu, global, page: { fields, tab, panel, modal } }`; navigation replaces
+  `page` with the next page's initial state, so local state resets on its own.
+- **`slot(place, mount)`** is the whole lifetime machinery: `update(key, s, d, m)` mounts the unit
+  when the key appears (patching it with every bit), patches it with the event's bits while the key
+  stays, and, when the key changes, runs the unit's `stop` and removes its root. The shell has two
+  slots (the page, keyed by `route`; the "All pages" menu, keyed by `menu`), a page has one for its
+  tab panel (keyed by the active tab) and one for its modal (keyed by "open"). A time-driven field
+  starts one `setInterval` in its unit's mount and the unit's `stop` clears it (a page's stop also
+  stops its tab slot). A tick is a message to the page's reducer.
+- **One dirty word, no mapping.** `dirty.a` holds, in bits 0 to 5, the six global fields (the same
+  numbers in every page), then the page's own fields, its tab bit, the fields of its tab panels (all
+  panels share the same bits, since one is mounted at a time) and the modal's. A global write marks
+  its bit in that word, and a page patch tests its global reads like any other bit, so a global
+  field no mounted unit reads costs one failed test per binding of the page shown, and a page that is
+  not mounted has no patch at all. `dirty.n` holds the shell's route and menu bits.
+- **Reducers.** One table per page for the page, its tabs and its modal, by tag; an arm returns
+  `[bits, model]`, written with four setters (`setF`, `setP`, `setM`, `setG`) and the moves of the
+  local state (`putModal`, `putTab`). `pagePush` is a named arm and reaches only the page shown.
+- **Menu.** A static template of every page's entry, parsed when the menu opens and removed when it
+  closes or on navigation: the one O(N) part, which the locality check marks global.
+- **Known limit:** two events in one task aimed at a unit that the first removed (a click on a tab
+  panel's control after a click that switched tabs, before the microtask patch) would run the old
+  panel's arm on the new panel's fields. Real input cannot do it (a patch runs between events).
