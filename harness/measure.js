@@ -164,8 +164,8 @@ ${rows.join("\n")}
 `;
 }
 
-// Everything that can change a measurement, hashed: the scenario generator, the emitter, the
-// framework's shared files and lockfile, shared emitter helpers, the harness code that builds
+// Everything that can change a measurement, hashed: the scenario generator, the emitter, code
+// shared by the scenario's emitters (scenarios/<scenario>/shared/), the framework's files and lockfile, shared emitter helpers, the harness code that builds
 // and measures, and the Node and brotli versions. Options, size and seed are added per record.
 const HASHED_HARNESS = ["harness/generate.js", "harness/measure.js", "harness/sourcemap.js"];
 
@@ -181,6 +181,8 @@ function filesUnder(dir) {
 export function codeHash(scenario, emitter) {
   const files = [
     scenario.specFile, emitter.file,
+    // Code shared by several emitters of this scenario (scenarios/<scenario>/shared/).
+    ...filesUnder(path.join(scenario.dir, "shared")),
     ...filesUnder(emitter.frameworkDir), ...filesUnder(path.join(ROOT, "frameworks", "shared")),
     ...HASHED_HARNESS.map((f) => path.join(ROOT, f)),
   ].sort();

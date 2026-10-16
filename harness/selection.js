@@ -1,7 +1,9 @@
 // The selection every subcommand takes: a scenario, a framework list (or `all`), and options.
 //
 // Scenarios are discovered as scenarios/<name>/spec.js; their emitters as every other
-// scenarios/<name>/<emitter>.js. Nothing here knows a scenario or a framework by name.
+// scenarios/<name>/<emitter>.js. Code several emitters of one scenario share goes in
+// scenarios/<name>/shared/, which is not an emitter (only top-level files are) but is part of each
+// measurement's inputs hash. Nothing here knows a scenario or a framework by name.
 
 import fs from "node:fs";
 import path from "node:path";
