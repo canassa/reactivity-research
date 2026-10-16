@@ -7,7 +7,7 @@
 //   (a table of arms by message tag, the ops written out as code, each arm returning the
 //   compile-time bits and the values of the fields it writes, `[bits, fields]`), its initial
 //   state, and its DOM factory `view(parent, id)`, which builds the DOM once from one static
-//   template (bound elements found by their data-role or a marker, by position) and returns a
+//   template (bound elements found by data-role, emptiness or a marker, by position) and returns a
 //   static `patch(s, d, w)` that runs only the bindings whose bits are set. The module adds
 //   the triple [view, reducer, initial state] under its id to the registry in widget.js when
 //   the app imports it (in page order), so no binding is named per widget. Bits and message
@@ -274,9 +274,10 @@ function widgetModule(w) {
 
   // Bound elements are numbered in document order, as `template` returns them: `t[0]` is the
   // section, `t[1]` the first bound element. An element with a `data-role` (the section, every
-  // control, error and list row) is always bound and needs nothing more; any other bound
-  // element carries the marker MK. `node()` numbers a bound element; `node(false)` notes one
-  // the code never touches, which gets no marker and no number.
+  // control, error and list row) is always bound, and so is an empty one (a text or a list the
+  // code fills): those need nothing more. A conditional block, the only other bound element,
+  // carries the marker MK. `node()` numbers a bound element (and an empty one, even when unused);
+  // `node(false)` notes one the code never touches, which gets no marker and no number.
   let count = 1;
   const node = (used = true) => (used ? `t[${count++}]` : null);
   const MK = " b";
@@ -291,11 +292,11 @@ function widgetModule(w) {
         case "text": {
           const deps = new Set();
           const t = textOf(n.parts, deps);
-          const e = node(t.stat === undefined);
+          const e = node(t.stat === undefined || t.stat === "");
           if (t.stat !== undefined) h += `<${n.tag}>${esc(t.stat)}</${n.tag}>`;
           else {
             use("setText");
-            h += `<${n.tag}${MK}></${n.tag}>`;
+            h += `<${n.tag}></${n.tag}>`;
             bind(sc, deps, `setText(${e}, ${t.src});`);
           }
           break;
@@ -382,7 +383,7 @@ function widgetModule(w) {
         case "list": {
           use("template", "setText", "list");
           const l = name();
-          h += `<${n.tag}${MK}></${n.tag}>`;
+          h += `<${n.tag}></${n.tag}>`;
           let row = `<li data-role=${n.field}Item>`;
           let k = 1;
           const box = n.check ? `r[${k++}]` : null;
@@ -413,8 +414,10 @@ function widgetModule(w) {
           break;
         }
         case "group": {
-          node(false);
-          h += `<${n.tag}>${build(n.children, sc, out, ind)}</${n.tag}>`;
+          const inner = build(n.children, sc, out, ind);
+          // An empty element is selected like a bound one (see `node`), so it takes a number.
+          node(inner === "");
+          h += `<${n.tag}>${inner}</${n.tag}>`;
           break;
         }
         case "when": {
@@ -587,7 +590,7 @@ export function emit(spec) {
   return {
     files,
     style: {
-      components: "one module per widget (bits, reducer, initial state, DOM factory with a static template whose bound elements are found by data-role or a marker), each written from that widget's description; nothing interpreted at runtime",
+      components: "one module per widget (bits, reducer, initial state, DOM factory with a static template whose bound elements are found by data-role, emptiness or a marker), each written from that widget's description; nothing interpreted at runtime",
       state: "one immutable TEA model; the app reducer routes messages to the widgets' reducers",
       updates: "reducers are tables of arms by message tag; each arm returns the compile-time dirty bits and values of the fields it writes, merged into the slice by the app; a static patch per widget runs only the bindings whose bits are set, batched in a microtask",
       externalEvents: "through the same reducer (send); serverSet and snapshot mark every bit of the widgets they replace; tick goes to the time-driven widgets",

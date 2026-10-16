@@ -58,12 +58,13 @@ export function html(source, parent) {
 }
 
 // A component's static markup whose root and bound elements carry a `data-role` (the stable
-// selector every interactive element has) or else a `b` attribute, a marker removed here (as
-// Lit removes its own): its root element, appended to `parent`, then the bound elements in
-// document order, so the compiled code finds a node by its position among them.
+// selector every interactive element has), are empty (content the code fills) or else carry a
+// `b` attribute, a marker removed here (as Lit removes its own): its root element, appended to
+// `parent`, then the bound elements in document order, so the compiled code finds a node by its
+// position among them.
 export function template(source, parent) {
   T.innerHTML = source;
-  const bound = T.querySelectorAll("[b],[data-role]");
+  const bound = T.querySelectorAll("[b],[data-role],:empty");
   for (const n of bound) n.removeAttribute("b");
   if (parent) parent.append(bound[0]);
   return bound;
