@@ -1,7 +1,7 @@
 // ./rr check <scenario> <framework|all|a,b> [--size N --seed S] [scenario/emitter options]
 //
 // A quick aid, not the verdict (the owner checks by hand through ./rr serve): builds one small
-// app per framework (default: the scenario's quick-check size, seed 1), serves it with the
+// app per framework (default: the scenario's quick-check size and options, seed 1), serves it with the
 // panel, and runs the whole interaction script in headless Chrome. For every step the panel
 // compares the page with the reference render and checks keyed-node identity and focus/caret;
 // after dispose, that the root is empty and no listeners or timers are left.
@@ -73,7 +73,9 @@ export function checkReport(scenarioName, v, spec, { r, errors, ok, seconds }) {
 export async function checkCommand(rest) {
   const t0 = performance.now();
   const { args, scenario, emitters, scenarioOptions, emitterOptions } = await selection(rest, ["noLocality"]);
-  const options = { size: scenario.mod.quickCheckSize ?? 16, seed: 1, ...scenarioOptions };
+  // The scenario's quick-check size and options (e.g. fewer rows of data), unless the flags say
+  // otherwise; the locality check below builds with the same options.
+  const options = { size: scenario.mod.quickCheckSize ?? 16, seed: 1, ...(scenario.mod.quickCheckOptions || {}), ...scenarioOptions };
   const { spec, variants, handler } = await prepareServe(scenario, emitters, options, emitterOptions, { quiet: true });
   const tBuilt = performance.now();
   const server = await listen(handler, 0);
