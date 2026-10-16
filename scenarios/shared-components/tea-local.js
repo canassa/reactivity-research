@@ -155,9 +155,7 @@ export function todo(parent, heading, placeholder, addText, removeText, model) {
     (model, value) => ({ ...model, draft: value }),
     (model, value) => {
       const text = model.draft.trim();
-      if (text === "") return model;
-      const id = model.items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
-      return { items: [...model.items, { id, text, done: false }], draft: "" };
+      return text ? { items: [...model.items, { id: model.items.reduce((max, item) => Math.max(max, item.id), 0) + 1, text, done: false }], draft: "" } : model;
     },
     (model, value) => ({ ...model, items: model.items.map((item) => (item.id === value ? { ...item, done: !item.done } : item)) }),
     (model, value) => ({ ...model, items: model.items.filter((item) => item.id !== value) }),
@@ -238,23 +236,19 @@ export function choice(parent, heading, options, extraFor, extraPlaceholder, mod
 }
 `,
 
-  amount: `${HEAD(["element", "on", "setText", "instance"])}
+  amount: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 
 export function amount(parent, heading, format, model) {
   const patch = () => {
     const m = self.m;
-    if (input.valueAsNumber !== m.value) input.value = m.value;
+    setProp(input, "valueAsNumber", m.value);
     setText(formatted, format(m.value));
   };
-  // type Msg = Set Float
-  const self = instance(model, [(model, value) => ({ value: value })], patch);
+  // type Msg = Set Float (the input's value as a number; only a valid number is taken, anything
+  // else leaves the model unchanged, so nothing is patched and the input keeps what was typed)
+  const self = instance(model, [(model, value) => (Number.isNaN(value) ? model : { value })], patch);
   const root = widget(parent, heading, "amount", self);
-  const input = element(root, "input", { type: "number", "data-role": "input" });
-  // Only a valid number is a message; anything else stays in the input, unsent.
-  on(input, "input", () => {
-    const value = input.valueAsNumber;
-    if (!Number.isNaN(value)) self.send(0, value);
-  });
+  const input = on(element(root, "input", { type: "number", "data-role": "input" }), "input", () => self.send(0, input.valueAsNumber));
   const formatted = element(root, "output", { "data-role": "formatted" }, " ");
 }
 `,
@@ -332,14 +326,10 @@ export function feed(parent, heading, emptyText, dismissText, model) {
   clock: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 export const tick = 3; // the tag of Tick, sent by the app
 
-function formatTime(seconds) {
-  return \`\${Math.floor(seconds / 60)}:\${String(seconds % 60).padStart(2, "0")}\`;
-}
-
 export function clock(parent, heading, startText, stopText, resetText, model) {
   const patch = () => {
     const m = self.m;
-    setText(time, formatTime(m.seconds));
+    setText(time, \`\${Math.floor(m.seconds / 60)}:\${String(m.seconds % 60).padStart(2, "0")}\`);
     setProp(start, "disabled", m.running);
     setProp(stop, "disabled", !m.running);
   };
@@ -367,9 +357,7 @@ export function summary(parent, heading, text, sources) {
   const root = widget(parent, heading, "summary");
   const line = element(root, "p", { "data-role": "summary" }, " ");
 
-  function patch() {
-    setText(line, text(...sources.map((source) => widgets[source].m)));
-  }
+  const patch = () => setText(line, text(...sources.map((source) => widgets[source].m)));
   for (const source of sources) widgets[source].watch(patch);
   patch();
 }
