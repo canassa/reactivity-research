@@ -242,6 +242,17 @@
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3],
       "options": { "fanout": ["low", "mid", "high"] }
+    },
+    "beni-tea": {
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3],
+      "options": { "fanout": ["low", "mid", "high"] }
+    },
+    "beni-direct": {
+      "$comment": "Sizes 1 to 128 only: browser-direct's compiler memory and time grow steeply with N on this app (every handler re-runs the whole derived block, so the JavaScript grows about with N squared: 368 kB at N=64, 1.16 MB at 128): 3.9 GB and 39 s at N=128, 8.1 GB and 83 s at N=160, and the build is killed (SIGTERM, no diagnostic) past 12 GB at N=192 and 256. See notes/2026-10-17-beni-derived-graph.md.",
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128],
+      "seeds": [1, 2, 3],
+      "options": { "fanout": ["low", "mid", "high"] }
     }
   }
 }
