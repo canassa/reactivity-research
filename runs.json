@@ -71,6 +71,7 @@
     }
   },
   "big-component": {
+    "$comment": "No digest: on the flat form it fails the prototype locality rule (calls per local action grow 8.6x from N=16 to 256, 14x from 64 to 1024), so it is excluded until fixed; see frameworks/digest/README.md (big-component) and notes/2026-10-16-big-component-digest-flat.md.",
     "elm": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3]
@@ -96,10 +97,6 @@
       "seeds": [1, 2, 3]
     },
     "tea-dirtybits": {
-      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
-      "seeds": [1, 2, 3]
-    },
-    "digest": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3]
     }
