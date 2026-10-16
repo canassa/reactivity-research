@@ -49,14 +49,14 @@ const KINDS = {
     args: "l, st, mn, mx, v0",
     body: `
   s.value = v0;
-  widget("counter", l, \`<output data-role=value></output><button data-role=dec>-\${st}</button><button data-role=inc>+\${st}</button><button data-role=reset>Reset</button>\`, {
-    dec: () => { s.value = Math.max(mn, s.value - st); },
-    inc: () => { s.value = Math.min(mx, s.value + st); },
-    reset: () => { s.value = v0; },
-  });
-  text("value", () => s.value);
-  bind(role("dec"), "disabled", () => s.value <= mn);
-  bind(role("inc"), "disabled", () => s.value >= mx);`,
+  widget("counter", l, \`<output data-role=value></output><button data-role=dec>-\${st}</button><button data-role=inc>+\${st}</button><button data-role=reset>Reset</button>\`, [
+    () => s.value = Math.max(mn, s.value - st), // dec
+    () => s.value = Math.min(mx, s.value + st), // inc
+    () => s.value = v0, // reset
+  ]);
+  text(1, () => s.value);
+  bind(2, "disabled", () => s.value <= mn);
+  bind(3, "disabled", () => s.value >= mx);`,
     metric: `{ m: () => s.value, p: (n) => l + ": " + n }`,
     row: (w, s) => [lit(w.step), lit(w.min), lit(w.max), lit(s.value)],
   },
@@ -65,12 +65,12 @@ const KINDS = {
     args: "l, names, on",
     body: `
   s.on = [...on];
-  widget("toggles", l, \`<ul>\${names.map((n, i) => \`<li><label><input type=checkbox data-role=toggle data-key=\${i}>\${n}</label></li>\`).join("")}</ul><p data-role=count></p>\`, {
-    toggle: (t, k) => { s.on[k] = t.checked; },
-  });
-  roles("toggle").forEach((n, i) => bind(n, "checked", () => s.on[i]));
+  widget("toggles", l, \`<ul>\${names.map((n, i) => \`<li><label><input type=checkbox data-role=toggle data-key=\${i}>\${n}</label></li>\`).join("")}</ul><p data-role=count></p>\`,
+    names.map((n, i) => (t) => s.on[i] = t.checked)); // toggle
+  // Each item is li, label, input: the i-th checkbox is element 4 + 3i.
+  names.forEach((n, i) => bind(4 + 3 * i, "checked", () => s.on[i]));
   const count = () => s.on.filter(Boolean).length;
-  text("count", () => count() + " of " + names.length + " on");`,
+  text(2 + 3 * names.length, () => count() + " of " + names.length + " on");`,
     metric: `{ m: count, p: (n) => n + " on in " + l }`,
     row: (w, s) => [arr(w.items, html), arr(s.on, bit)],
   },
@@ -80,11 +80,11 @@ const KINDS = {
     body: `
   s.text = t0;
   re = RegExp(re);
-  widget("field", l, \`<input type=text data-role=input placeholder="\${ph}"><p data-role=error>\${msg}</p>\`, {
-    input: (t) => { s.text = t.value; },
-  });
-  bind(role("input"), "value", () => s.text);
-  show(role("error"), () => !re.test(s.text));`,
+  widget("field", l, \`<input type=text data-role=input placeholder="\${ph}"><p data-role=error>\${msg}</p>\`, [
+    (t) => s.text = t.value, // input
+  ]);
+  bind(1, "value", () => s.text);
+  show(2, () => !re.test(s.text));`,
     row: (w, s) => [html(w.placeholder), lit(rulePattern(w.rule)), html(w.rule.message), lit(s.text)],
   },
 
@@ -93,28 +93,27 @@ const KINDS = {
     body: `
   s.items = items.map(([text, done], i) => ({ id: i + 1, text, done }));
   s.draft = "";
-  widget("todo", l, \`<input type=text data-role=draft placeholder="\${ph}"><button data-role=add>\${add}</button><ul></ul><p data-role=left></p>\`, {
-    draft: (t) => { s.draft = t.value; },
-    add: () => {
+  widget("todo", l, \`<input type=text data-role=draft placeholder="\${ph}"><button data-role=add>\${add}</button><ul></ul><p data-role=left></p>\`, [
+    (t) => s.draft = t.value, // draft
+    () => { // add
       const text = s.draft.trim();
       if (text) {
         s.items.push({ id: Math.max(0, ...s.items.map((i) => i.id)) + 1, text, done: false });
         s.draft = "";
       }
     },
-    toggle: (t, k) => { s.items.find((i) => i.id == k).done = t.checked; },
-    remove: (t, k) => { s.items = s.items.filter((i) => i.id != k); },
-  });
-  bind(role("draft"), "value", () => s.draft);
-  list($("ul"), () => s.items, (r, i) => {
-    const li = el("li", \`<input type=checkbox data-role=toggle><span></span><button data-role=remove>\${rm}</button>\`);
-    li.dataset.key = i.id;
-    bind(li.firstChild, "checked", () => r.i.done);
-    bind(li.children[1], "textContent", () => r.i.text);
-    return li;
-  });
+  ]);
+  bind(1, "value", () => s.draft);
+  list(3, () => s.items, \`<input type=checkbox data-role=toggle><span></span><button data-role=remove>\${rm}</button>\`, (r) => (
+    bind(0, "checked", () => r.i.done),
+    text(1, () => r.i.text),
+    [
+      (t) => r.i.done = t.checked, // toggle
+      () => s.items = s.items.filter((i) => i != r.i), // remove
+    ]
+  ));
   const left = () => s.items.filter((i) => !i.done).length;
-  text("left", () => left() + " left");`,
+  text(4, () => left() + " left");`,
     metric: `{ m: left, p: (n) => n + " left in " + l }`,
     row: (w, s) => {
       sequential(s.items, (i) => i + 1);
@@ -126,11 +125,10 @@ const KINDS = {
     args: "l, titles, texts, a",
     body: `
   s.active = a;
-  widget("tabs", l, \`<div role=tablist>\${titles.map((t, i) => \`<button role=tab data-role=tab data-key=\${i}>\${t}</button>\`).join("")}</div><p role=tabpanel data-role=tab-content></p>\`, {
-    tab: (t, k) => { s.active = +k; },
-  });
-  roles("tab").forEach((n, i) => bind(n, "ariaSelected", () => "" + (i == s.active)));
-  text("tab-content", () => texts[s.active]);`,
+  widget("tabs", l, \`<div role=tablist>\${titles.map((t, i) => \`<button role=tab data-role=tab data-key=\${i}>\${t}</button>\`).join("")}</div><p role=tabpanel data-role=tab-content></p>\`,
+    titles.map((t, i) => () => s.active = i)); // tab
+  titles.forEach((t, i) => bind(2 + i, "ariaSelected", () => "" + (i == s.active)));
+  text(2 + titles.length, () => texts[s.active]);`,
     row: (w, s) => [arr(w.tabs.map((t) => t.title), html), arr(w.tabs.map((t) => t.content)), lit(s.active)],
   },
 
@@ -138,12 +136,12 @@ const KINDS = {
     args: "l, sh, hi, body, o",
     body: `
   s.open = o;
-  widget("panel", l, \`<button data-role=toggle></button><p data-role=body>\${body}</p>\`, {
-    toggle: () => { s.open = !s.open; },
-  });
-  bind(role("toggle"), "ariaExpanded", () => "" + !!s.open);
-  text("toggle", () => (s.open ? hi : sh));
-  show(role("body"), () => s.open);`,
+  widget("panel", l, \`<button data-role=toggle></button><p data-role=body>\${body}</p>\`, [
+    () => s.open = !s.open, // toggle
+  ]);
+  bind(1, "ariaExpanded", () => "" + !!s.open);
+  text(1, () => (s.open ? hi : sh));
+  show(2, () => s.open);`,
     row: (w, s) => [lit(w.showText), lit(w.hideText), html(w.body), bit(s.open)],
   },
 
@@ -152,14 +150,15 @@ const KINDS = {
     body: `
   s.option = o;
   s.extra = x;
-  widget("choice", l, \`<select data-role=select>\${values.map((v, i) => \`<option value="\${v}">\${labels[i]}</option>\`).join("")}</select><input type=text data-role=extra placeholder="\${ph}">\`, {
-    select: (t) => { s.option = t.value; },
-    extra: (t) => { s.extra = t.value; },
-  });
-  bind(role("select"), "value", () => s.option);
-  const extra = role("extra");
-  bind(extra, "value", () => s.extra);
-  show(extra, () => xf.includes(values.indexOf(s.option)));`,
+  widget("choice", l, \`<select data-role=select>\${values.map((v, i) => \`<option value="\${v}">\${labels[i]}</option>\`).join("")}</select><input type=text data-role=extra placeholder="\${ph}">\`, [
+    (t) => s.option = t.value, // select
+    (t) => s.extra = t.value, // extra
+  ]);
+  bind(1, "value", () => s.option);
+  // The extra input comes after the select's options.
+  const n = 2 + values.length;
+  bind(n, "value", () => s.extra);
+  show(n, () => xf.includes(values.indexOf(s.option)));`,
     row: (w, s) => [arr(w.options.map((o) => o.value), html), arr(w.options.map((o) => o.label), html),
       arr(w.extraFor.map((v) => w.options.findIndex((o) => o.value === v))), html(w.extraPlaceholder), lit(s.option), lit(s.extra)],
   },
@@ -168,11 +167,11 @@ const KINDS = {
     args: "l, d, pre, suf, v0",
     body: `
   s.value = v0;
-  widget("amount", l, "<input type=number data-role=input><output data-role=formatted></output>", {
-    input: (t) => { t.value && (s.value = +t.value); },
-  });
-  bind(role("input"), "value", () => "" + s.value);
-  text("formatted", () => pre + s.value.toFixed(d) + suf);`,
+  widget("amount", l, "<input type=number data-role=input><output data-role=formatted></output>", [
+    (t) => { t.value && (s.value = +t.value); }, // input
+  ]);
+  bind(1, "value", () => "" + s.value);
+  text(2, () => pre + s.value.toFixed(d) + suf);`,
     metric: `{ m: () => s.value, p: (n) => l + ": " + n }`,
     row: (w, s) => {
       const f = w.format;
@@ -186,18 +185,14 @@ const KINDS = {
     body: `
   s.query = q;
   items = items.map((text, i) => ({ id: i + 1, text }));
-  widget("filter", l, \`<input type=text data-role=query placeholder="\${ph}"><ul></ul><p data-role=matches></p>\`, {
-    query: (t) => { s.query = t.value; },
-  });
-  bind(role("query"), "value", () => s.query);
+  widget("filter", l, \`<input type=text data-role=query placeholder="\${ph}"><ul></ul><p data-role=matches></p>\`, [
+    (t) => s.query = t.value, // query
+  ]);
+  bind(1, "value", () => s.query);
   const shown = () => items.filter((i) => i.text.toLowerCase().includes(s.query.toLowerCase()));
-  list($("ul"), shown, (r, i) => {
-    const li = el("li", "");
-    li.dataset.key = i.id;
-    li.textContent = i.text;
-    return li;
-  });
-  text("matches", () => shown().length + " matches");`,
+  // The items are constants: their text is written once.
+  list(2, shown, "", (r) => { r.n.textContent = r.i.text; });
+  text(3, () => shown().length + " matches");`,
     metric: `{ m: () => shown().length, p: (n) => n + " found in " + l }`,
     row: (w, s) => {
       sequential(w.items, (i) => i + 1);
@@ -209,14 +204,14 @@ const KINDS = {
     args: "l, labels, v",
     body: `
   s.stars = v;
-  widget("rating", l, \`<div>\${labels.slice(1).map((_, i) => \`<button data-role=star data-key=\${i + 1}></button>\`).join("")}</div><p data-role=rating-label></p>\`, {
-    star: (t, k) => { s.stars = +k; },
+  const stars = labels.slice(1);
+  widget("rating", l, \`<div>\${stars.map((_, i) => \`<button data-role=star data-key=\${i + 1}></button>\`).join("")}</div><p data-role=rating-label></p>\`,
+    stars.map((_, i) => () => s.stars = i + 1)); // star
+  stars.forEach((_, i) => {
+    bind(2 + i, "ariaPressed", () => "" + (i < s.stars));
+    bind(2 + i, "textContent", () => (i < s.stars ? "★" : "☆"));
   });
-  roles("star").forEach((n, i) => {
-    bind(n, "ariaPressed", () => "" + (i < s.stars));
-    bind(n, "textContent", () => (i < s.stars ? "★" : "☆"));
-  });
-  text("rating-label", () => labels[s.stars]);`,
+  text(2 + stars.length, () => labels[s.stars]);`,
     metric: `{ m: () => s.stars, p: (n) => n + " stars for " + l }`,
     row: (w, s) => {
       if (w.labels.length !== w.stars + 1) throw new Error("digest expects one label per rating plus one");
@@ -228,16 +223,12 @@ const KINDS = {
     args: "l, empty, dismiss, entries",
     body: `
   s.entries = entries.map((text, i) => ({ id: i + 1, text }));
-  widget("feed", l, \`<ul></ul><p data-role=empty>\${empty}</p>\`, {
-    dismiss: (t, k) => { s.entries = s.entries.filter((e) => e.id != k); },
-  });
-  list($("ul"), () => s.entries, (r, i) => {
-    const li = el("li", \`<span></span><button data-role=dismiss>\${dismiss}</button>\`);
-    li.dataset.key = i.id;
-    bind(li.firstChild, "textContent", () => r.i.text);
-    return li;
-  });
-  show(role("empty"), () => !s.entries.length);`,
+  widget("feed", l, \`<ul></ul><p data-role=empty>\${empty}</p>\`);
+  list(1, () => s.entries, \`<span></span><button data-role=dismiss>\${dismiss}</button>\`, (r) => (
+    text(0, () => r.i.text),
+    [() => s.entries = s.entries.filter((e) => e != r.i)] // dismiss
+  ));
+  show(2, () => !s.entries.length);`,
     metric: `{ m: () => s.entries.length, p: (n) => n + " in " + l }`,
     row: (w, s) => {
       sequential(s.entries, (i) => i + 1);
@@ -250,14 +241,14 @@ const KINDS = {
     body: `
   s.seconds = sec;
   s.running = on;
-  const w = widget("clock", l, \`<output data-role=time></output><button data-role=start>\${a}</button><button data-role=stop>\${b}</button><button data-role=reset>\${c}</button>\`, {
-    start: () => { s.running = true; },
-    stop: () => { s.running = false; },
-    reset: () => { s.seconds = 0; s.running = false; },
-  });
-  text("time", () => Math.floor(s.seconds / 60) + ":" + String(s.seconds % 60).padStart(2, "0"));
-  bind(role("start"), "disabled", () => s.running);
-  bind(role("stop"), "disabled", () => !s.running);
+  const w = widget("clock", l, \`<output data-role=time></output><button data-role=start>\${a}</button><button data-role=stop>\${b}</button><button data-role=reset>\${c}</button>\`, [
+    () => s.running = true, // start
+    () => s.running = false, // stop
+    () => { s.seconds = 0; s.running = false; }, // reset
+  ]);
+  text(1, () => Math.floor(s.seconds / 60) + ":" + String(s.seconds % 60).padStart(2, "0"));
+  bind(2, "disabled", () => s.running);
+  bind(3, "disabled", () => !s.running);
   T.push(() => s.running && (s.seconds++, run(w)));`,
     metric: `{ m: () => s.seconds, p: (n) => n + "s on " + l }`,
     row: (w, s) => [html(w.startText), html(w.stopText), html(w.resetText), lit(s.seconds), bit(s.running)],
@@ -266,15 +257,15 @@ const KINDS = {
   summary: {
     args: "l, pre, f, src",
     body: `
-  widget("summary", l, "<p data-role=summary></p>");
+  const w = widget("summary", l, "<p data-role=summary></p>");
   const num = (x) => "" + Math.round(x * 100) / 100;
-  const u = text("summary", () => {
+  text(1, () => {
     const v = src.map((e) => e.m());
     const total = num(v.reduce((a, b) => a + b));
     return f == 2 ? src.map((e, i) => e.p(num(v[i]))).join("; ") : pre + ": " + (f ? v.map(num).join(" + ") + " = " : "") + total;
   });
   // A source's digest runs this line too.
-  src = src.map((i) => (W["w" + i].push(u), E["w" + i]));`,
+  src = src.map((i) => (W["w" + i].push(...w), E["w" + i]));`,
     row: (w) => [lit(w.formula === "list" ? "" : w.prefix), lit({ sum: 0, breakdown: 1, list: 2 }[w.formula]),
       arr(w.sources.map((id) => Number(id.slice(1))))],
   },
@@ -317,7 +308,7 @@ function appFile(spec) {
   if (has("feed")) branches.push(`else if (m.type == "notify") S[m.widget].entries.push(m.entry), up(m.widget);`);
 
   return `// Generated by scenarios/shared-components/digest.js. Do not edit.
-import { app, widget, bind, text, role, roles, show, list, el, $, run, up, S, E, W, T } from "./runtime.js";
+import { app, widget, bind, text, show, list, run, up, S, E, W, T } from "./runtime.js";
 
 ${factories.join("\n\n")}
 

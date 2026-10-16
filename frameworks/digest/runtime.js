@@ -8,50 +8,48 @@
 // dependency graph. There is no virtual DOM and no scheduler.
 //
 // Keyed lists are bindings too: they reconcile their items by `id` and run each item's own
-// bindings. Conditional content is a binding that inserts or removes one node.
+// bindings. Conditional content is a binding that swaps one node with an empty text node.
 
 let B; // the bindings being collected: the widget's, or one list item's while it is created
-let X; // the section of the widget being created
+let N; // the elements of the template being created (a widget's, or one list item's), by position
 let D; // the dashboard element
 
 // By widget id: the instance state (S), what other widgets may read of it (E; `m`: its metric,
 // `p`: its phrase) and its bindings (W). T: the clocks' tick functions.
 export let S, E, W, T;
 
-export const run = (b) => b.forEach((f) => f());
+export const run = (b) => {
+  for (const f of b) f();
+};
 
 // Digest one widget after its state changed: its bindings and its readers'.
 export const up = (k) => run(W[k]);
 
-export const el = (tag, html) => {
+const el = (tag, html) => {
   const n = document.createElement(tag);
   n.innerHTML = html;
   return n;
 };
 
-// The element with data-role `r` in the widget being created.
-export const role = (r) => X.querySelector(`[data-role=${r}]`);
-export const roles = (r) => X.querySelectorAll(`[data-role=${r}]`);
-export const $ = (sel) => X.querySelector(sel);
-
-// Write `n[k] = f()` whenever f() changes. Returns the binding, so a widget that reads others
-// can add it to their lists.
-export const bind = (n, k, f, last, u) => {
-  B.push((u = () => last !== (last = f()) && (n[k] = last)));
-  return u;
-};
-export const text = (r, f) => bind(role(r), "textContent", f);
-
-// Keep node `n` in its place (before the sibling it had in the template) only while f() holds.
-export const show = (n, f, last) => {
-  const p = n.parentNode, next = n.nextSibling;
-  B.push(() => last !== (last = !!f()) && (last ? p.insertBefore(n, next) : n.remove()));
+// Give the controls of a template (its buttons, inputs and selects, in document order) their
+// handlers, in the same order. The delegated listener calls the target's handler.
+const on = (n, h, i = 0) => {
+  for (const c of n.querySelectorAll("button,input,select")) c.h = h[i++];
 };
 
-// A keyed list in `p`: `items()` gives the current items (each with an `id`), `make(r, item)`
-// creates an item's element; the bindings it registers read `r.i`, the item's current value.
-export const list = (p, items, make) => {
-  let map = new Map();
+// Write `N[i][k] = f()` whenever f() changes. `i` is the element's position in the template (0 is
+// a widget's heading).
+export const bind = (i, k, f, last, n = N[i]) => B.push(() => last !== (last = f()) && (n[k] = last));
+export const text = (n, f) => bind(n, "textContent", f);
+
+// Keep element `i` in its place only while f() holds; a hidden node leaves an empty text node.
+export const show = (i, f, last, n = N[i], c = new Text()) =>
+  B.push(() => last !== (last = !!f()) && (last ? c.replaceWith(n) : n.replaceWith(c)));
+
+// A keyed list in element `i`: `items()` gives the current items (each with an `id`). An item is
+// an `<li data-key>` made from `html`; `make(r)` registers its bindings, which read `r.i`, the
+// item's current value, and returns the handlers of the item's controls.
+export const list = (i, items, html, make, p = N[i], map = new Map()) =>
   B.push(() => {
     const old = map;
     map = new Map();
@@ -59,45 +57,45 @@ export const list = (p, items, make) => {
       let r = old.get(i.id);
       if (r) old.delete(i.id);
       else {
-        const outer = B;
-        r = { b: (B = []) };
-        r.n = make(r, i);
-        B = outer;
+        // Items are created during a digest, after every widget has registered its bindings,
+        // so B and N are free to collect the item's.
+        r = { b: (B = []), n: el("li", html), i };
+        r.n.dataset.key = i.id;
+        N = r.n.children;
+        on(r.n, make(r));
       }
       r.i = i;
       map.set(i.id, r);
     }
-    old.forEach((r) => r.n.remove());
+    for (const r of old.values()) r.n.remove();
     let c = p.firstChild;
-    map.forEach((r) => {
+    for (const r of map.values()) {
       r.n === c ? (c = c.nextSibling) : p.insertBefore(r.n, c);
       run(r.b);
-    });
+    }
   });
-};
 
-// Create the widget's section: its heading and `html`. `h` maps a data-role to the handler of
-// events on elements with that role: h(element, key of the nearest data-key). Returns the
-// widget's binding list, which the bindings created next fill.
+// Create the widget's section: its heading and `html`, with `h`, the handlers of its controls
+// in document order. Returns the widget's binding list, which the bindings created next fill.
 let id;
 export const widget = (kind, label, html, h) => {
-  X = el("section", "<h2></h2>" + html);
-  X.firstChild.textContent = label;
-  X.dataset.key = id;
-  X.dataset.role = "widget-" + kind;
-  X.h = h;
-  D.append(X);
-  return (W[id] = X.b = B = []);
+  const x = el("section", "<h2></h2>" + html);
+  x.firstChild.textContent = label;
+  x.dataset.key = id;
+  x.dataset.role = "widget-" + kind;
+  on(x, h);
+  D.append(x);
+  N = x.querySelectorAll("*");
+  return (W[id] = x.b = B = []);
 };
 
 // One delegated handler for clicks and input, on the dashboard element. Handlers read the
 // element they are given, so a checkbox's click and input events (both fire) agree. Only the
 // widget the event came from is digested.
 const onEvent = ({ target: t }) => {
-  const x = t.closest("section"), f = x?.h?.[t.dataset.role];
-  if (f) {
-    f(t, t.closest("[data-key]").dataset.key);
-    run(x.b);
+  if (t.h) {
+    t.h(t);
+    run(t.closest("section").b);
   }
 };
 
@@ -124,6 +122,6 @@ export const app = (defs, receive) => ({
   // The listeners are on the dashboard element, so removing it removes them.
   dispose() {
     D.remove();
-    B = S = E = W = T = X = D = null;
+    B = N = S = E = W = T = D = null;
   },
 });
