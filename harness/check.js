@@ -94,7 +94,9 @@ async function checkLocality(scenario, emitters, options, emitterOptions) {
     console.log(`locality: no work actions for ${scenario.name}, skipped`);
     return false;
   }
-  const lo = options.size, hi = options.size * 16;
+  // The work actions need one widget of each kind, so start no smaller than the quick-check size
+  // (the smallest with every kind), whatever --size the script check used.
+  const lo = Math.max(options.size, scenario.mod.quickCheckSize ?? options.size), hi = lo * 16;
   const t = performance.now();
   const { records, run } = await workScenario(scenario, { ...options, size: undefined }, prototypes, emitterOptions,
     { sizes: [lo, hi], runs: 1, jobs: defaultJobs(), log: () => {} });
