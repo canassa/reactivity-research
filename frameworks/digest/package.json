@@ -1,0 +1,9 @@
+{
+  "name": "rr-framework-digest",
+  "private": true,
+  "type": "module",
+  "description": "Pinned toolchain of the digest prototype: Vite only, no framework plugin",
+  "dependencies": {
+    "vite": "8.3.4"
+  }
+}
