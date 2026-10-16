@@ -92,13 +92,6 @@ export function list(parent, items, row) {
   let rows = new Map();
   let last;
 
-  const make = (item) => {
-    const r = row(item);
-    r[1](item);
-    rows.set(item.id, r);
-    return r[0];
-  };
-
   const binding = () => {
     const xs = items();
     if (xs !== last) {
@@ -106,13 +99,11 @@ export function list(parent, items, row) {
       rows = new Map();
       const nodes = [];
       for (const item of xs) {
-        const r = old.get(item.id);
-        if (r) {
-          old.delete(item.id);
-          r[1](item);
-          rows.set(item.id, r);
-          nodes.push(r[0]);
-        } else nodes.push(make(item));
+        const r = old.get(item.id) || row(item);
+        old.delete(item.id);
+        r[1](item);
+        rows.set(item.id, r);
+        nodes.push(r[0]);
       }
       for (const r of old.values()) r[0].remove();
       let at = parent.firstChild;
@@ -121,7 +112,13 @@ export function list(parent, items, row) {
     last = xs;
   };
 
-  binding.add = (item) => schedule(() => rows.has(item.id) || parent.append(make(item)));
+  binding.add = (item) => schedule(() => {
+    if (rows.has(item.id)) return;
+    const r = row(item);
+    r[1](item);
+    rows.set(item.id, r);
+    parent.append(r[0]);
+  });
   binding.drop = (k) => schedule(() => {
     rows.get(k)?.[0].remove();
     rows.delete(k);
