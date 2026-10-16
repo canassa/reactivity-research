@@ -78,17 +78,16 @@ export function when(node) {
 // the model; \`row(item)\` builds a row once and returns \`{ node, set(item) }\`, \`set\` being the
 // row's binding (an action that edits an item in place schedules its row's \`set\` itself).
 //
-// The list is itself a binding. Actions that add or remove items in place record it (\`add\`,
-// \`drop\`), and the flush applies just those rows. When the array itself was
-// replaced (a server push, a snapshot, a derived list), the flush falls back to a full keyed
-// reconcile: rows are reused by id, the rows of ids that left are removed, and one forward pass
-// puts the rest in order: a row already in place stays, any other is moved before the first row
-// not yet placed (so a list that only lost or gained rows moves none, and a reversed run moves
-// all but one).
+// The list is itself a binding, for when the array itself was replaced (a server push, a
+// snapshot, a derived list): a full keyed reconcile, where rows are reused by id, the rows of ids
+// that left are removed, and one forward pass puts the rest in order: a row already in place
+// stays, any other is moved before the first row not yet placed (so a list that only lost or
+// gained rows moves none, and a reversed run moves all but one). Actions that add or remove an
+// item in place schedule just that row's edit (\`add\`, \`drop\`) instead; an edit that a reconcile
+// in the same flush already made is skipped.
 export function list(parent, items, row) {
   let rows = new Map();
   let last;
-  let edits = [];
 
   const make = (item) => {
     const r = row(item);
@@ -99,9 +98,7 @@ export function list(parent, items, row) {
 
   const binding = () => {
     const xs = items();
-    if (xs === last) {
-      for (const e of edits) e();
-    } else {
+    if (xs !== last) {
       const old = rows;
       rows = new Map();
       const nodes = [];
@@ -118,17 +115,12 @@ export function list(parent, items, row) {
       let at = parent.firstChild;
       for (const node of nodes) node === at ? (at = at.nextSibling) : parent.insertBefore(node, at);
     }
-    edits = [];
     last = xs;
   };
 
-  const edit = (e) => {
-    edits.push(e);
-    schedule(binding);
-  };
-  binding.add = (item) => edit(() => parent.append(make(item)));
-  binding.drop = (k) => edit(() => {
-    rows.get(k).node.remove();
+  binding.add = (item) => schedule(() => rows.has(item.id) || parent.append(make(item)));
+  binding.drop = (k) => schedule(() => {
+    rows.get(k)?.node.remove();
     rows.delete(k);
   });
   return binding;
