@@ -14,10 +14,7 @@ let done = null;
 // Schedule bindings: functions, or (nested) arrays of them. `undefined` entries are skipped,
 // so a widget nobody reads can pass its empty `readers`.
 export function schedule(...work) {
-  for (const w of work) {
-    if (typeof w === "function") pending.add(w);
-    else if (w) schedule(...w);
-  }
+  for (const f of work.flat(Infinity)) if (f) pending.add(f);
   done ||= Promise.resolve().then(flush);
 }
 
