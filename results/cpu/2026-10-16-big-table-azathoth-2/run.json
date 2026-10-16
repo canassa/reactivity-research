@@ -2,8 +2,8 @@
   "scenario": "big-table",
   "kind": "cpu",
   "date": "2026-10-16",
-  "started": "2026-10-16T19:33:42.826Z",
-  "finished": "2026-10-16T19:36:46.049Z",
+  "started": "2026-10-16T19:43:01.365Z",
+  "finished": "2026-10-16T19:46:30.086Z",
   "sizes": [
     1
   ],
@@ -175,50 +175,63 @@
       "session": 1,
       "worker": 0,
       "attempt": 0,
-      "loadBefore": 1.7,
-      "loadAfter": 1.71,
-      "seconds": 41.066,
+      "loadBefore": 0.57,
+      "loadAfter": 1.22,
+      "seconds": 40.732,
       "kept": true,
-      "at": "2026-10-16T19:34:36.412Z"
+      "at": "2026-10-16T19:43:54.740Z"
+    },
+    {
+      "variant": "beni-direct",
+      "size": 1,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 0.57,
+      "loadAfter": 1.53,
+      "seconds": 42.695,
+      "kept": true,
+      "at": "2026-10-16T19:43:56.688Z"
     },
     {
       "variant": "digest",
       "size": 1,
       "seed": 1,
       "session": 1,
-      "worker": 1,
+      "worker": 0,
       "attempt": 0,
-      "loadBefore": 1.88,
-      "loadAfter": 1.71,
-      "seconds": 41.99,
+      "loadBefore": 1.22,
+      "loadAfter": 1.73,
+      "seconds": 40.64,
       "kept": true,
-      "at": "2026-10-16T19:34:38.436Z"
-    },
-    {
-      "variant": "solid",
-      "size": 1,
-      "seed": 1,
-      "session": 1,
-      "worker": 1,
-      "attempt": 0,
-      "loadBefore": 1.71,
-      "loadAfter": 1.99,
-      "seconds": 42.59,
-      "kept": true,
-      "at": "2026-10-16T19:35:21.031Z"
+      "at": "2026-10-16T19:44:35.391Z"
     },
     {
       "variant": "elm",
       "size": 1,
       "seed": 1,
       "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 1.53,
+      "loadAfter": 1.81,
+      "seconds": 50.626,
+      "kept": true,
+      "at": "2026-10-16T19:44:47.320Z"
+    },
+    {
+      "variant": "solid",
+      "size": 1,
+      "seed": 1,
+      "session": 1,
       "worker": 0,
       "attempt": 0,
-      "loadBefore": 1.71,
-      "loadAfter": 1.91,
-      "seconds": 52.036,
+      "loadBefore": 1.73,
+      "loadAfter": 1.55,
+      "seconds": 42.132,
       "kept": true,
-      "at": "2026-10-16T19:35:28.470Z"
+      "at": "2026-10-16T19:45:17.530Z"
     },
     {
       "variant": "tea-dirtybits",
@@ -227,11 +240,11 @@
       "session": 1,
       "worker": 1,
       "attempt": 0,
-      "loadBefore": 1.99,
-      "loadAfter": 1.78,
-      "seconds": 41.521,
+      "loadBefore": 1.81,
+      "loadAfter": 1.7,
+      "seconds": 41.298,
       "kept": true,
-      "at": "2026-10-16T19:36:02.558Z"
+      "at": "2026-10-16T19:45:28.628Z"
     },
     {
       "variant": "tea-inline",
@@ -240,24 +253,11 @@
       "session": 1,
       "worker": 0,
       "attempt": 0,
-      "loadBefore": 1.91,
-      "loadAfter": 1.72,
-      "seconds": 41.475,
+      "loadBefore": 1.55,
+      "loadAfter": 1.69,
+      "seconds": 38.894,
       "kept": true,
-      "at": "2026-10-16T19:36:09.951Z"
-    },
-    {
-      "variant": "vanilla",
-      "size": 1,
-      "seed": 1,
-      "session": 1,
-      "worker": 0,
-      "attempt": 0,
-      "loadBefore": 1.72,
-      "loadAfter": 1.59,
-      "seconds": 35.246,
-      "kept": true,
-      "at": "2026-10-16T19:36:45.203Z"
+      "at": "2026-10-16T19:45:56.431Z"
     },
     {
       "variant": "tea-local",
@@ -266,11 +266,24 @@
       "session": 1,
       "worker": 1,
       "attempt": 0,
-      "loadBefore": 1.78,
-      "loadAfter": 1.46,
-      "seconds": 43.266,
+      "loadBefore": 1.7,
+      "loadAfter": 1.74,
+      "seconds": 41.806,
       "kept": true,
-      "at": "2026-10-16T19:36:45.836Z"
+      "at": "2026-10-16T19:46:10.442Z"
+    },
+    {
+      "variant": "vanilla",
+      "size": 1,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 1.69,
+      "loadAfter": 1.4,
+      "seconds": 33.411,
+      "kept": true,
+      "at": "2026-10-16T19:46:29.853Z"
     }
   ],
   "machine": {
@@ -290,9 +303,9 @@
     "chromeBin": "/nix/store/ds7933z0wp7872ic6zqzrwsbpj0m8g6l-google-chrome-154.0.8037.97/bin/google-chrome",
     "chromeVersionLine": "Google Chrome 154.0.8037.97",
     "git": {
-      "commit": "3f881e4226b48be29bd724b5d7682de93a6bed2d",
+      "commit": "2dabeeb3b132a9e24119cfee0b0d8570403aa831",
       "dirty": false
     }
   },
-  "wallSeconds": 183.329
+  "wallSeconds": 208.831
 }
