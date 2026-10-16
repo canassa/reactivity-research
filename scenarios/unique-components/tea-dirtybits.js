@@ -238,6 +238,7 @@ function widgetModule(w) {
   // Appends the markup of `nodes` to the returned string; handlers go to `out`, bindings to `sc`.
   function build(nodes, sc, out, ind) {
     const L = (line) => out.push(ind + line);
+    const E = (line) => wires.push("  " + line);
     let h = "";
     for (const n of nodes) {
       switch (n.el) {
@@ -269,7 +270,7 @@ function widgetModule(w) {
             use("prop");
             bind(sc, d, `prop(${b}, "disabled", ${ex(n.disabled, d)});`);
           }
-          L(`onClick(${b}, ${W}, ${tag(n.msg)});`);
+          E(`onClick(${b}, ${W}, ${tag(n.msg)});`);
           break;
         }
         case "input": {
@@ -285,12 +286,12 @@ function widgetModule(w) {
             use("onInt");
             h += `<input type=number data-role=${n.msg}>`;
             // Only an integer within range becomes a message; anything else stays as typed.
-            L(`onInt(${i}, ${W}, ${tag(n.msg)}, ${f.min}, ${f.max});`);
+            E(`onInt(${i}, ${W}, ${tag(n.msg)}, ${f.min}, ${f.max});`);
             bind(sc, new Set([own(f.name)]), `prop(${i}, "valueAsNumber", s.${f.name});`);
           } else {
             use("onInput");
             h += `<input type=text data-role=${n.msg}${n.placeholder ? ` placeholder="${esc(n.placeholder)}"` : ""}>`;
-            L(`onInput(${i}, ${W}, ${tag(n.msg)});`);
+            E(`onInput(${i}, ${W}, ${tag(n.msg)});`);
             bind(sc, new Set([own(f.name)]), `prop(${i}, "value", s.${f.name});`);
           }
           if (n.label) h += `</label>`;
@@ -310,7 +311,7 @@ function widgetModule(w) {
           node();
           const i = node();
           h += `<label><input type=checkbox data-role=${n.msg}>${esc(n.label)}</label>`;
-          L(`onCheck(${i}, ${W}, ${tag(n.msg)});`);
+          E(`onCheck(${i}, ${W}, ${tag(n.msg)});`);
           bind(sc, new Set([own(m.field)]), `prop(${i}, "checked", s.${m.field});`);
           break;
         }
@@ -329,7 +330,7 @@ function widgetModule(w) {
           }
           h += `</select>`;
           if (n.label) h += `</label>`;
-          L(`onInput(${e}, ${W}, ${tag(n.msg)});`);
+          E(`onInput(${e}, ${W}, ${tag(n.msg)});`);
           bind(sc, new Set([own(m.field)]), `prop(${e}, "value", s.${m.field});`);
           break;
         }
@@ -397,6 +398,7 @@ function widgetModule(w) {
 
   const root = scope();
   const body = [];
+  const wires = [];
   node(); // the section
   node(); // its heading
   const markup = `<section data-role=widget><h2>${esc(w.label)}</h2>${build(w.view, root, body, "  ")}</section>`;
@@ -408,6 +410,8 @@ function widgetModule(w) {
     patch = patch.map(drop);
     body.forEach((l, i) => (body[i] = drop(l)));
   }
+  // Event wiring after the branches and lists, so the handlers read as one run.
+  body.push(...wires);
 
   // -------------------------------------------------------------------------------------------
   // The module
