@@ -827,3 +827,65 @@ Style choices recorded in the emitter's `style`: one list per widget, derived `d
 the companion, state as plain variables (locals of the form's function, module variables for the
 three fields the companion reads, `O.w1` for the feed list), deep-copied external states,
 templates as static strings, delegated events.
+
+## big-table
+
+`scenarios/big-table/digest.js` writes N data tables, each its own function, with
+`runtime-table.js` as the runtime. **It passes `./rr check`, locality included** (sizes 1, 4, 16
+and 64, seeds 1-3; every local action costs the same number of calls from N=16 to N=256, 1.00×),
+and it is local for a structural reason: tables share no state, so no list is wired to any other.
+
+**Structure.** Two kinds of binding list, both digest's own:
+- **A table's list holds one binding, the rows' reconciler** (membership and order, by `id`, with
+  a cursor that leaves a displaced node in place, so a swap moves two nodes). A toolbar button,
+  a server page or a delete digests it. It digests a row's list only when the row is new or its
+  object was replaced (a server page, a snapshot).
+- **A row has its own list**, made with the row (digest's list-item record). A row control
+  digests it alone: toggle and bump edit the row object in place; select also digests the row
+  that was selected (`sel`), because the marker is a per-row binding. Handlers that edit some
+  rows in place (every k-th, a server update) digest those rows' lists themselves. Nothing
+  re-checks every row because the table was digested.
+
+State is a plain object per table with the protocol's four fields; the initial rows come from the
+table's own row builder (the PRNG is a closure over the state), so no row data is embedded. The
+selection is dropped by the reconciler when its row is gone, which is the only way the reference
+loses it. `receive` is generic (rows are plain objects keyed by column name) and is the same text
+in every app. Each table's pools, row builder, template, toolbar handlers, row template, row
+bindings and row handlers are its own code; computed cells are JavaScript expressions in the row's
+bindings. The number and date formats and a few helpers (swap, every k-th, order by, select) are
+the runtime's. Style choices are in the emitter's `style`.
+
+**Sizes** (`./rr measure`, brotli, median of 3 seeds, adapter excluded, not committed): N=1 1,896 B
+(html 148, js 1,748: runtime 989, app 759); N=4 3,110; N=16 5,569; N=64 12,448; N=256 35,979.
+Fit over N ≥ 4: 3,492 B + 128.6 B per table (all sizes: 2,978 + 131.6). The runtime is 1,258 B
+from N=8 (about 270 B of it Vite's modulepreload polyfill); everything else is app code. A table
+costs about 129 B: its pools and headers are data, its row template, bindings and handlers are
+code.
+
+**Work against N** (`./rr work`, seed 1, `--rows` 1,000): the 24 local actions are flat from N=16
+to N=256 (median 491 calls, e.g. select 11-26, swap 6, toggle 23, remove 501-1,012, serverUpdate
+69). Only the snapshot grows (49,213 to 64,799, 1.32×; global by nature).
+
+**Work against rows** (`--sizes 16`, `--rows 1000` against `--rows 10000`):
+- **O(1) in rows, in calls and in time:** select (11-26 calls), toggle (23), bump (25), a
+  `serverUpdate` of a few ids (69), a swap in calls (6).
+- **O(rows) in calls, as the reference's own scans are:** remove 501-1,012 calls at 1,000 rows and
+  5,043-10,012 at 10,000 (`filter` over the rows), `serverDelete` 491 to 5,033, remove
+  checked 1,005 to 10,005, update every k-th 806 to 8,006 (rows/k times the row's bindings),
+  sort 18,906-25,944 to 194,496-359,379, create, append and `serverRows` 17,006-43,006 to
+  170,006-430,006, clear 5.
+- **O(rows) in time that the call counter does not see:** every operation that digests the table's
+  list walks all its rows in the reconciler (one `Map` lookup and one identity check per row, in a
+  loop, not a call). Swap is 6 calls at any size but took about 180 µs at 1,000 rows and 1,500 µs
+  at 10,000 (about 0.15 µs a row); remove 310 to 1,520 µs. A select or a toggle is 10-25 µs at
+  both. So **swap and remove are flat in DOM work (two moves, one removal) but not in JavaScript
+  work**; an index-based version could do them in O(1). Timed by hand in Chrome, N=4, noisy; not
+  a harness result.
+
+Row scans are written the way the other digest emitters write them (`filter` for a removal,
+`includes` for a delete), not rewritten to lower the call count: the first version removed rows
+with `indexOf` and `splice`, which hid the scan from `./rr work`, and was changed back.
+
+**Honest limits.** The row digest on `serverRows` and a snapshot re-checks every row (their
+objects are new), as it must. Creating 10,000 rows runs about 17 calls a row (the record, the
+clone, the bindings and their first run), which is more than a hand-written vanilla table.
