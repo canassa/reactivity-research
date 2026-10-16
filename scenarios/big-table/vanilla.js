@@ -23,7 +23,8 @@
 // - External events: `serverRows`, `serverDelete` and the snapshot go through a small keyed
 //   reconciler (`src/lib.js`, the only generic helper, counted as runtime): rows whose id stays
 //   keep their `<tr>` and get only their changed cells rewritten. `serverUpdate` sets the cells
-//   of the listed rows through the column's setter.
+//   of the listed rows through the column's setter. Rows taken from a message are copied
+//   before they become records, so a dispatched payload is never adopted or mutated.
 // - Formatting (thousands grouping, currency, percent, the three date formats) and the PRNG step
 //   are small app helpers in `src/util.js`; the bundler keeps only those an app uses.
 // - `dispose` removes each table's listener and the page.
@@ -407,7 +408,9 @@ ${indent(cases.join("\n"), "    ")}
   fns.push(`function receive(msg) {
   switch (msg.type) {
     case "serverRows":
-      replace(msg.rows);
+      // Copies become our records (edited in place, carrying their <tr>): the message stays the
+      // sender's.
+      replace(msg.rows.map((r) => ({ ...r })));
       for (const r of msg.rows) if (r.id >= nextId) nextId = r.id + 1;
       break;
     case "serverUpdate": {
@@ -428,11 +431,11 @@ ${indent(data.map((c) => `case ${str(c.name)}: ${setter(c)}(r); break;`).join("\
     }
     case "snapshot": {
       const ts = msg.state.tables.${t.id};
-      replace(ts.rows);
+      replace(ts.rows.map((r) => ({ ...r })));
       nextId = ts.nextId;
       rng = ts.rng;${hasSelect ? `
       const id = ts.selected;
-      select(id == null ? null : rows.find((r) => r.id === id).tr);` : ""}
+      select(id == null ? null : rows.find((r) => r.id === id)?.tr);` : ""}
     }
   }
 }`);
@@ -513,7 +516,7 @@ export function emit(spec) {
       state: "plain mutable state in each table's closure: rows (records carrying their <tr>), nextId, rng (Park–Miller, as the README specifies) and, for tables with select, the selected <tr> (the selection itself)",
       events: "one delegated click listener per table section, switching on data-role; row controls find their <tr> with closest and their record with find/findIndex",
       updates: "direct DOM operations: textContent = '' to clear, a detached <tbody> while an empty table fills, two insertBefore for a swap, the previous selected <tr> unmarked, sort moves the <tr>s in one forward pass",
-      externalEvents: "serverRows, serverDelete and snapshot through a small generic keyed reconciler (src/lib.js, counted as runtime) that keeps every <tr> whose id stays and rewrites only changed cells; serverUpdate through the column's setter",
+      externalEvents: "serverRows, serverDelete and snapshot through a small generic keyed reconciler (src/lib.js, counted as runtime) that keeps every <tr> whose id stays and rewrites only changed cells, fed copies of the message's rows (payloads stay read-only); serverUpdate through the column's setter",
       helpers: "src/util.js: the PRNG step, thousands grouping, currency, percent and date formatters (app code)",
       build: "Vite with no framework plugin, production defaults, hidden source maps",
     },
