@@ -205,3 +205,46 @@ Locality is flat: calls per local action are the same from N=16 to N=256 (median
 ratio 1.00), because an action schedules only the groups of the fields it writes and each field
 is read by at most 6-8 bindings. Only the global events (whole-state `snapshot`, `serverSet` of
 the form) grow with N, by nature. Size: about 82 B brotli per unit; the runtime stays 743 B.
+
+## big-table
+
+`../../scenarios/big-table/tea-inline.js` is the unique-components emitter applied to N data tables,
+each its own module (`src/tables/<id>.js`), with the same strategy and one additive runtime file,
+`template/rows.js` (included only by this scenario, through `templateFiles({ extra: ["rows.js"] })`;
+the other scenarios' output is byte-identical). `rows.js` holds what a table needs whatever its
+columns: the keyed row list, the PRNG step (`next`, `pick`, `between`), the number and date
+formatters, and a table's state (`state`). It is counted as runtime.
+
+Style choices: one module per table; the table's markup (heading, toolbar, header, empty body) is
+one static HTML string parsed once, and its buttons and body are `E[n]`; a row is cloned from one
+row template per table (parsed once, `tpl`) and its elements are `E[n]` in document order; each row
+control carries its arm inline, with the row's item in scope; the table's state is edited in place
+(`s.rows`, `s.selected`, `s.rng`, `s.nextId`); the row builder is written out per table (one draw
+per random cell in column order, then the id; word pools are hoisted constants); initial rows are
+built at mount with that builder; sorts, `removeChecked`, `clear` and `create` replace the array
+and schedule the list; no op table, no column table, no spec descriptions as data.
+
+Who reads what (decided at compile time, by the emitter):
+
+| Written | Read by | The action schedules |
+|---|---|---|
+| `s.rows` replaced (create, clear, sort, removeChecked, server events) | the list | the list: a reconcile by id (nothing reused: the body is emptied in one go; else one forward pass) |
+| `s.rows` edited in place (append, remove, swap) | the list, one row | `add(rows)`, `drop(id)`, `swap(a, b)`: each dropped if the array was replaced since |
+| an item's cell (toggle, bump, updateEvery, serverUpdate) | the item's row `set`, which paints all of its cells | the `set` of the rows it touched (`list.get(id)[1]`) |
+| `s.selected` | each row's `mark`, `s.selected === item.id` | the `mark` of the old and the new selected row, found by id: no binding per row |
+
+The row's `set` paints the whole row (a handful of `text`/`prop` calls that write only on change)
+rather than one binding per cell: a closure per cell per row would cost an allocation per cell on
+every create, for no saving on the rare edit. The list does not repaint a reused row whose item is
+the same object (every in-place edit schedules its own row).
+
+External events are the same for every table, so they live once in `src/app.js`, not per table:
+`serverRows`, `serverUpdate` and `serverDelete` copy the message's rows into the table state
+(`structuredClone`: the message is not ours to edit) and schedule the list or the touched rows;
+`snapshot` assigns each table's state and schedules its list.
+
+Cost in rows: select, toggle, bump and swap touch one or two rows; remove, `serverUpdate` and
+`serverDelete` also scan the array for the item (`indexOf`, `find`, `filter`), as any
+implementation without an index does; `updateEvery`, create, append, clear, sort and
+`serverRows` are proportional to the rows they touch or hold. Nothing is hidden in the counts:
+see `notes/2026-10-16-big-table-tea-inline.md` for the figures.
