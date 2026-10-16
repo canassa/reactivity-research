@@ -86,8 +86,8 @@ export const list = (d, items, role, html, make, p = E[(P += d)], map = new Map(
 export const nx = (a, v) => a[(a.indexOf(v) + 1) % a.length];
 // A new item gets the next id and is not done (a list without checkboxes never reads `done`).
 export const add = (l, text) => l.push({ id: Math.max(0, ...l.map((i) => i.id)) + 1, text, done: false });
-// A list from its items' texts, or [text, done] pairs; the ids are 1, 2, …
-export const L = (a) => a.map((x, i) => (typeof x == "string" ? { id: i + 1, text: x } : { id: i + 1, text: x[0], done: !!x[1] }));
+// A list from its items' texts, or [text, done] pairs, as arguments; the ids are 1, 2, …
+export const L = (...a) => a.map((x, i) => (typeof x == "string" ? { id: i + 1, text: x } : { id: i + 1, text: x[0], done: !!x[1] }));
 
 // Create the widget's section from `html` (its heading and content), with `set`, the setter of
 // its whole state, and `h`, the handlers of its controls in document order, and make it the one

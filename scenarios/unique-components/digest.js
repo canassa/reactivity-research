@@ -134,7 +134,7 @@ function handler(m, fields) {
 function initial(f, v) {
   if (f.type !== "list") return lit(v);
   if (v.every((it, i) => it.id === i + 1)) {
-    return `L(${lit(v.map((it) => (f.checkable ? [it.text, it.done ? 1 : 0] : it.text)))})`;
+    return `L(${v.map((it) => lit(f.checkable ? [it.text, it.done ? 1 : 0] : it.text)).join(", ")})`;
   }
   return lit(v);
 }
