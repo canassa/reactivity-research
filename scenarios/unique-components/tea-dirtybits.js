@@ -54,8 +54,19 @@ function widgetModule(w) {
   const helpers = new Set(["mark"]);
   const use = (...names) => names.forEach((n) => helpers.add(n));
   const bitList = (bits) => bits.reduce((a, b) => a | b, 0);
-  // Messages are tagged by their index, as Elm --optimize tags constructors.
-  const tag = (name) => w.messages.findIndex((m) => m.name === name);
+  // Messages are numbered, as Elm --optimize tags constructors, in the order the view first
+  // sends them (then any the view never sends).
+  const order = [];
+  const sends = (nodes) => {
+    for (const n of nodes) {
+      for (const k of ["msg", "check", "remove"]) if (n[k] && !order.includes(n[k])) order.push(n[k]);
+      if (n.children) sends(n.children);
+    }
+  };
+  sends(w.view);
+  for (const m of w.messages) if (!order.includes(m.name)) order.push(m.name);
+  const messages = order.map((name) => w.messages.find((m) => m.name === name));
+  const tag = (name) => order.indexOf(name);
   const usedOpts = new Set();
 
   // An expression of the widget's fields (`s`) and of other widgets' (`w`); `deps` collects
@@ -163,7 +174,7 @@ function widgetModule(w) {
   }
 
   const arms = [];
-  for (const m of w.messages) {
+  for (const m of messages) {
     const a = arm(m);
     const full = a.values.size === w.fields.length;
     arms.push(`    case ${tag(m.name)}: { // ${m.name}\n${[...a.guard, `mark(${a.bits});`, `return ${write(a.values, full)};`].map((l) => "      " + l).join("\n")}\n    }`);
@@ -402,7 +413,7 @@ function widgetModule(w) {
   // The module
 
   const bits = [...w.fields.map((f) => `${f.name} ${own(f.name)}`), ...[...reads].map(([k, [b]]) => `${k} ${b}`)];
-  const tags = w.messages.map((m, i) => `${m.name} ${i}`);
+  const tags = messages.map((m, i) => `${m.name} ${i}`);
   const opts = [...usedOpts].map((f) => `const ${optsName(f)} = ${J(fieldOf(f).options)};`);
   helpers.add("html");
   const imports = [...helpers].sort().filter((h) => h !== "nextId");
