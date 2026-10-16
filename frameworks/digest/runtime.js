@@ -1,24 +1,27 @@
-// The digest runtime: compiled dirty checking.
+// The digest runtime: compiled dirty checking, one widget at a time.
 //
-// A widget is plain mutable state plus a list of bindings. A binding is a closure that reads
+// A widget is plain mutable state plus its list of bindings. A binding is a closure that reads
 // the state and writes one DOM property when the value it computes differs from the last one
-// it wrote. Every event (a DOM event or an external message) runs its handler, which mutates
-// the state, and then one digest: every binding of the app runs once. There is no dependency
-// tracking, no virtual DOM and no scheduler; derived values (a summary reading three widgets)
-// are just bindings that read more state.
+// it wrote. An event runs its handler, which mutates one widget's state, and then that widget's
+// bindings only: a local digest. A widget's list also holds the bindings of the widgets that
+// read it (a summary adds its line to each source's list), so derived values follow without a
+// dependency graph. There is no virtual DOM and no scheduler.
 //
 // Keyed lists are bindings too: they reconcile their items by `id` and run each item's own
 // bindings. Conditional content is a binding that inserts or removes one node.
 
-let B; // the bindings being collected: the app's, or one list item's while it is created
+let B; // the bindings being collected: the widget's, or one list item's while it is created
 let X; // the section of the widget being created
 let D; // the dashboard element
 
-// Instance state by widget id, and what other widgets may read of a widget (`m`: its metric,
-// `p`: its phrase) or call on it (`t`: on tick).
-export let S, E;
+// By widget id: the instance state (S), what other widgets may read of it (E; `m`: its metric,
+// `p`: its phrase) and its bindings (W). T: the clocks' tick functions.
+export let S, E, W, T;
 
-const run = (b) => b.forEach((f) => f());
+export const run = (b) => b.forEach((f) => f());
+
+// Digest one widget after its state changed: its bindings and its readers'.
+export const up = (k) => run(W[k]);
 
 export const el = (tag, html) => {
   const n = document.createElement(tag);
@@ -31,9 +34,11 @@ export const role = (r) => X.querySelector(`[data-role=${r}]`);
 export const roles = (r) => X.querySelectorAll(`[data-role=${r}]`);
 export const $ = (sel) => X.querySelector(sel);
 
-// Write `n[k] = f()` whenever f() changes.
-export const bind = (n, k, f, last) => {
-  B.push(() => last !== (last = f()) && (n[k] = last));
+// Write `n[k] = f()` whenever f() changes. Returns the binding, so a widget that reads others
+// can add it to their lists.
+export const bind = (n, k, f, last, u) => {
+  B.push((u = () => last !== (last = f()) && (n[k] = last)));
+  return u;
 };
 export const text = (r, f) => bind(role(r), "textContent", f);
 
@@ -72,7 +77,8 @@ export const list = (p, items, make) => {
 };
 
 // Create the widget's section: its heading and `html`. `h` maps a data-role to the handler of
-// events on elements with that role: h(element, key of the nearest data-key).
+// events on elements with that role: h(element, key of the nearest data-key). Returns the
+// widget's binding list, which the bindings created next fill.
 let id;
 export const widget = (kind, label, html, h) => {
   X = el("section", "<h2></h2>" + html);
@@ -81,43 +87,43 @@ export const widget = (kind, label, html, h) => {
   X.dataset.role = "widget-" + kind;
   X.h = h;
   D.append(X);
+  return (W[id] = X.b = B = []);
 };
 
 // One delegated handler for clicks and input, on the dashboard element. Handlers read the
-// element they are given, so a checkbox's click and input events (both fire) agree.
+// element they are given, so a checkbox's click and input events (both fire) agree. Only the
+// widget the event came from is digested.
 const onEvent = ({ target: t }) => {
-  const f = t.closest("section")?.h?.[t.dataset.role];
+  const x = t.closest("section"), f = x?.h?.[t.dataset.role];
   if (f) {
     f(t, t.closest("[data-key]").dataset.key);
-    run(B);
+    run(x.b);
   }
 };
 
 // The program: `defs` is one [factory, ...config] per widget, in page order (ids w1, w2, …);
-// `receive(msg)` applies an external event to S and E.
+// `receive(msg)` applies an external event and digests the widgets it touched (with `up`).
 export const app = (defs, receive) => ({
   mount(root) {
-    B = [];
     S = {};
     E = {};
+    W = {};
+    T = [];
     D = el("div", "");
     D.dataset.role = "dashboard";
     defs.forEach(([f, ...c], i) => {
       id = "w" + (i + 1);
       E[id] = f((S[id] = {}), ...c);
     });
-    run(B);
+    for (const k in W) up(k);
     D.addEventListener("click", onEvent);
     D.addEventListener("input", onEvent);
     root.append(D);
   },
-  receive(msg) {
-    receive(msg);
-    run(B);
-  },
+  receive,
   // The listeners are on the dashboard element, so removing it removes them.
   dispose() {
     D.remove();
-    B = S = E = X = D = null;
+    B = S = E = W = T = X = D = null;
   },
 });
