@@ -84,11 +84,19 @@ function recordEntry(name, value, items) {
 }
 
 // `{ base | a = 1, b = 2 }` on one line when it fits at column `col`, else one assignment per line.
-function rec(base, assigns, col) {
+// An assignment value is a string, or { cond, a, b } for an `if`, which elm-format lays out on
+// several lines.
+function rec(base, assigns, col, off = 4) {
   if (!assigns.length) return base;
-  const flat = `{ ${base} | ${assigns.map(([n, v]) => `${n} = ${v}`).join(", ")} }`;
-  if (col + flat.length <= MAX_WIDTH && !flat.includes("\n")) return flat;
-  return `{ ${base}\n${assigns.map(([n, v], i) => `${sp(col + 4)}${i === 0 ? "|" : ","} ${n} = ${v}`).join("\n")}\n${sp(col)}}`;
+  const multi = assigns.some(([, v]) => typeof v === "object");
+  const flatV = (v) => (typeof v === "object" ? `if ${v.cond} then ${v.a} else ${v.b}` : v);
+  const flat = `{ ${base} | ${assigns.map(([n, v]) => `${n} = ${flatV(v)}`).join(", ")} }`;
+  if (!multi && col + flat.length <= MAX_WIDTH && !flat.includes("\n")) return flat;
+  const P = col + off;
+  const value = ([n, v]) => (typeof v === "object"
+    ? `${n} =\n${sp(P + 4)}if ${v.cond} then\n${sp(P + 8)}${v.a}\n\n${sp(P + 4)}else\n${sp(P + 8)}${v.b}`
+    : `${n} = ${v}`);
+  return `{ ${base}\n${assigns.map((x, i) => `${sp(P)}${i === 0 ? "|" : ","} ${value(x)}`).join("\n")}\n${sp(col)}}`;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -308,6 +316,7 @@ formInit =
   const payload = (m, cx) => {
     if (m.kind === "input") return descOf(m.field, cx).type === "int" ? " Int" : " String";
     if (m.kind === "select") return " String";
+    if (m.kind === "check") return " Bool";
     if (m.kind === "item") return " Int";
     return "";
   };
@@ -359,7 +368,7 @@ ${[...head, `        _ ->\n            ${elmString(f.options[0])}`].join("\n\n")
     };
     switch (m.kind) {
       case "input": case "select": put(m.field, `new${cap(m.field[1])}`); break;
-      case "check": put(m.field, `not ${cur(m.field)}`); break;
+      case "check": put(m.field, `new${cap(m.field[1])}`); break;
       case "item":
         U("nextId");
         if (m.op === "toggle") { U("toggleDone"); put(m.field, `Ui.toggleDone id ${cur(m.field)}`); }
@@ -381,7 +390,7 @@ ${[...head, `        _ ->\n            ${elmString(f.options[0])}`].join("\n\n")
               U("nextId");
               const draft = cur(op[2]);
               const pushed = `${c} ++ [ ${newItem(ref, f, `(String.trim ${draft})`)} ]`;
-              if (m.kind === "confirm") put(ref, `if String.isEmpty (String.trim ${draft}) then ${c} else ${pushed}`);
+              if (m.kind === "confirm") put(ref, { cond: `String.isEmpty (String.trim ${draft})`, a: c, b: pushed });
               else { put(ref, pushed); put(op[2], '""'); }
               break;
             }
@@ -409,11 +418,12 @@ ${[...head, `        _ ->\n            ${elmString(f.options[0])}`].join("\n\n")
       if (m.kind === "confirm") modelAssigns.push(["modal", "Nothing"]);
       else if (a.form.length) modelAssigns.push(["modal", `Just ${rec("form", a.form, -1e6)}`]);
     }
-    return ret(rec("model", modelAssigns, inner), rec("global", a.global, inner), col);
+    const off = writesGlobal ? 2 : 4;
+    return ret(rec("model", modelAssigns, inner, off), rec("global", a.global, inner, off), col);
   }
 
   function branchFor(m, cx) {
-    const pat = m.kind === "input" || m.kind === "select" ? `${ctor(m)} new${cap(m.field[1])}` : m.kind === "item" ? `${ctor(m)} id` : ctor(m);
+    const pat = m.kind === "input" || m.kind === "select" || m.kind === "check" ? `${ctor(m)} new${cap(m.field[1])}` : m.kind === "item" ? `${ctor(m)} id` : ctor(m);
     if (m.kind === "open") return `        ${pat} ->\n            ${ret("{ model | modal = Just formInit }", "global", 12)}`;
     if (m.kind === "close") return `        ${pat} ->\n            ${ret("{ model | modal = Nothing }", "global", 12)}`;
     const a = assignments(m, cx);
@@ -429,7 +439,7 @@ ${[...head, `        _ ->\n            ${elmString(f.options[0])}`].join("\n\n")
     if (cx.kind === "tab") {
       return `        ${pat} ->
             case model.tab of
-                ${tabName(cx.tab)} panel ->
+                ${tabName(cx.tab)} ${/\bpanel\b/.test(body(20)) ? "panel" : "_"} ->
 ${body(20)}
 
                 _ ->
@@ -437,7 +447,7 @@ ${body(20)}
     }
     return `        ${pat} ->
             case model.modal of
-                Just form ->
+                Just ${/\bform\b/.test(body(20)) ? "form" : "_"} ->
 ${body(20)}
 
                 Nothing ->
@@ -580,7 +590,7 @@ ${fn.hoists.map((h) => `        ${h.name} =
       }
       case "check": {
         const m = msgByName(cx, n.msg);
-        const input = el(H("input"), [`${A("type_")} "checkbox"`, role(n.msg), `${A("checked")} ${x(m.field).s}`, `${E("onClick")} ${ctor(m)}`], []);
+        const input = el(H("input"), [`${A("type_")} "checkbox"`, role(n.msg), `${A("checked")} ${x(m.field).s}`, `${E("onCheck")} ${ctor(m)}`], []);
         H("text");
         return [el(H("label"), [], [input, raw(`text ${elmString(n.label)}`)])];
       }
@@ -615,7 +625,7 @@ ${fn.hoists.map((h) => `        ${h.name} =
         const fnDecl = viewFunction(name, inner, el(H(n.tag), [], kids), cx, false);
         declarations.push(fnDecl.text);
         for (const v of fnDecl.params) fn.uses.add(v);
-        return [raw(`Ui.when ${wrap(cond, 10)} (${[name, ...fnDecl.params].join(" ")})`)];
+        return [raw(`Ui.when ${wrap(cond, 10)} ${fnDecl.params.length ? `(${[name, ...fnDecl.params].join(" ")})` : name}`)];
       }
       case "group": return [el(H(n.tag), [], buildNodes(n.children, fn, cx))];
       case "tabs": {
@@ -644,7 +654,7 @@ ${fn.hoists.map((h) => `        ${h.name} =
     const head = `Ui.page ${elmString(page.id)} ${elmString(page.title)}`;
     const flat = `${head} ${listBlock(rootKids.map(flatDoc), 0)}`;
     if (4 + flat.length <= MAX_WIDTH && !flat.includes("\n")) return flat;
-    return `${head}\n        ${kidsLines(rootKids, 8)}`;
+    return `Ui.page ${elmString(page.id)}\n        ${elmString(page.title)}\n        ${kidsLines(rootKids, 8)}`;
   })();
   let viewText = (() => {
     const hoist = lets(rootFn);
@@ -961,6 +971,7 @@ type alias Model =
     , menu : Bool
     , global : Global
     , page : Page
+    , stopped : Bool
     }
 
 
@@ -976,6 +987,7 @@ init _ =
       , menu = False
       , global = Global.init
       , page = ${n(pages[0]).on} ${n(pages[0]).mod}.init
+      , stopped = False
       }
     , Cmd.none
     )
@@ -988,24 +1000,22 @@ pages =
     ${pagesTable}`);
 
   const ctors = ["Navigate String", "ToggleMenu", ...pages.map((p) => `${n(p).got} ${n(p).mod}.Msg`),
-    "SetUser String", "SetCurrency String", "SetBalance Int", "SetOnline Bool", "Notify Global.Item", "Snapshot Global", "Ignored"];
+    "SetUser String", "SetCurrency String", "SetBalance Int", "SetOnline Bool", "Notify Global.Item", "Snapshot Global", "Stop", "Ignored"];
   const pageCases = pages.map((p) => {
     const mod = n(p).mod;
-    const go = linked.includes(p) ? `        ${n(p).got} (${mod}.Go route) ->\n            ( navigate route model, Cmd.none )\n\n` : "";
+    const go = linked.includes(p) ? `        ( ${n(p).got} (${mod}.Go route), ${n(p).on} _ ) ->
+            ( navigate route model, Cmd.none )
+
+` : "";
     const upd = infos[p.id].writesGlobal
-      ? `            let
-                ( newPage, newGlobal ) =
-                    ${mod}.update pageMsg model.global pageModel
-            in
-            ( { model | page = ${n(p).on} newPage, global = newGlobal }, Cmd.none )`
-      : `            ( { model | page = ${n(p).on} (${mod}.update pageMsg pageModel) }, Cmd.none )`;
-    return `${go}        ${n(p).got} pageMsg ->
-            case model.page of
-                ${n(p).on} pageModel ->
-${upd.replace(/^/gm, "        ").replace(/^ {8}(?=\n|$)/gm, "")}${pages.length > 1 ? "\n\n                _ ->\n                    ( model, Cmd.none )" : ""}`;
+      ? `updateWith ${n(p).on} (${mod}.update pageMsg model.global pageModel) model`
+      : `( { model | page = ${n(p).on} (${mod}.update pageMsg pageModel) }, Cmd.none )`;
+    return `${go}        ( ${n(p).got} pageMsg, ${n(p).on} pageModel ) ->
+            ${upd}`;
   });
-  const navCases = pages.map((p) => `        ${elmString(p.id)} ->
-            { model | route = route, menu = False, page = ${n(p).on} ${n(p).mod}.init }`);
+  const anyGlobal = pages.some((p) => infos[p.id].writesGlobal);
+  const navCases = pages.map((p) => `            ${elmString(p.id)} ->
+                { model | route = route, menu = False, page = ${n(p).on} ${n(p).mod}.init }`);
   out.push(`-- UPDATE
 
 
@@ -1015,41 +1025,49 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        Navigate route ->
+    case ( msg, model.page ) of
+        ( Navigate route, _ ) ->
             ( navigate route model, Cmd.none )
 
-        ToggleMenu ->
+        ( ToggleMenu, _ ) ->
             ( { model | menu = not model.menu }, Cmd.none )
 
 ${pageCases.join("\n\n")}
 
-        SetUser user ->
+        ( SetUser user, _ ) ->
             ( withGlobal (\\global -> { global | user = user }) model, Cmd.none )
 
-        SetCurrency currency ->
+        ( SetCurrency currency, _ ) ->
             ( withGlobal (\\global -> { global | currency = currency }) model, Cmd.none )
 
-        SetBalance balance ->
+        ( SetBalance balance, _ ) ->
             ( withGlobal (\\global -> { global | balance = balance }) model, Cmd.none )
 
-        SetOnline online ->
+        ( SetOnline online, _ ) ->
             ( withGlobal (\\global -> { global | online = online }) model, Cmd.none )
 
-        Notify notice ->
+        ( Notify notice, _ ) ->
             ( withGlobal (\\global -> { global | notices = global.notices ++ [ notice ] }) model, Cmd.none )
 
-        Snapshot global ->
+        ( Snapshot global, _ ) ->
             ( { model | global = global }, Cmd.none )
 
-        Ignored ->
+        ( Stop, _ ) ->
+            ( { model | stopped = True }, Cmd.none )
+
+        _ ->
             ( model, Cmd.none )
 
 
 withGlobal : (Global -> Global) -> Model -> Model
 withGlobal change model =
     { model | global = change model.global }
+${anyGlobal ? `
 
+updateWith : (pageModel -> Page) -> ( pageModel, Global ) -> Model -> ( Model, Cmd Msg )
+updateWith toPage ( pageModel, global ) model =
+    ( { model | page = toPage pageModel, global = global }, Cmd.none )
+` : ""}
 
 {-| Go to a page: its model starts from \`init\`. The page already shown only closes the menu.
 -}
@@ -1062,8 +1080,8 @@ navigate route model =
         case route of
 ${navCases.join("\n\n")}
 
-        _ ->
-            model`);
+            _ ->
+                model`);
 
   const eventCases = [
     `                    "deepLink" ->
@@ -1092,6 +1110,8 @@ ${navCases.join("\n\n")}
                         Decode.map Notify (Decode.field "item" Global.itemDecoder)`,
     `                    "snapshot" ->
                         Decode.map Snapshot (Decode.field "global" Global.decoder)`,
+    `                    "stop" ->
+                        Decode.succeed Stop`,
   ];
   if (feeds.length) {
     eventCases.push(`                    "pagePush" ->
@@ -1115,10 +1135,14 @@ ${feeds.map((p) => `                                        ${elmString(p.id)} -
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch
-        [ events (Decode.decodeValue eventDecoder >> Result.withDefault Ignored)
-        , pageSubscriptions model.page
-        ]
+    if model.stopped then
+        Sub.none
+
+    else
+        Sub.batch
+            [ events (Decode.decodeValue eventDecoder >> Result.withDefault Ignored)
+            , pageSubscriptions model.page
+            ]
 
 
 {-| A page's timers exist only while it is shown.

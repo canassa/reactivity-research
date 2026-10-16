@@ -31,10 +31,13 @@
     });
   }
 
-  // Elm 0.19 has no unmount. The program creates no timers, and its only listeners are on its
-  // own DOM nodes, so removing the nodes disconnects them; its one subscription is the
-  // incoming port, which nothing can send to once the adapter drops the program.
+  // Elm 0.19 has no unmount. The program's listeners are on its own DOM nodes, so removing the
+  // nodes disconnects them. An app that runs timers (routed-app's `Time.every`) must stop them
+  // itself: the adapter sends a `stop` event, which such an app answers by dropping every
+  // subscription. Apps with no timers decode `stop` as an unknown event and ignore it; their one
+  // subscription, the incoming port, cannot be sent to once the adapter drops the program.
   function dispose() {
+    app.ports.events.send({ type: "stop" });
     root.textContent = "";
     app = undefined;
     root = undefined;
