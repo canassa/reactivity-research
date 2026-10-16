@@ -16,8 +16,8 @@
 // - External events: `serverSet` and `snapshot` replace instance models (`set`); `tick` and
 //   `notify` are messages to the clock and feed reducers, sent to the instances concerned. The
 //   widget frame registers each instance by id for the events that name a widget.
-// - Keyed lists through the runtime's `list` (patch changed rows, keyed reconcile on any change
-//   of order or membership). Conditional content is built once and attached while shown.
+// - Keyed lists through the runtime's `list` (patch changed rows, forward placement pass on any
+//   change of order or membership). Conditional content is built once and attached while shown.
 
 import { templateFiles } from "../../frameworks/tea-local/framework.js";
 import { literal, tplText, camelCase } from "../../frameworks/shared/jsx.js";
@@ -647,7 +647,7 @@ export function emit(spec) {
       updates: "one patch function per instance, every DOM write skipped when unchanged; batched in a microtask",
       crossWidget: "summaries watch the instances they read and recompute when one changes",
       externalEvents: "serverSet/snapshot replace instance models; tick and notify are messages to clock and feed instances",
-      lists: "runtime keyed list: patch changed rows, Solid 2 reconcileArrays when order or membership changes",
+      lists: "runtime keyed list by item.id: patch changed rows, one forward placement pass when order or membership changes",
       conditionals: "node built once, attached while shown",
       events: "addEventListener per element: click, input, change for checkboxes and selects",
       build: "Vite production build, no framework plugin, hidden source maps",

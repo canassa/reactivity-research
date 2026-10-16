@@ -2,9 +2,8 @@
 // microtask batching, component instances with local message routing, and keyed lists.
 //
 // Adapted from the shared support of canassa/beni's rendering-design research (strategy C,
-// "local reducers"): the same element, text and attribute helpers that skip unchanged writes, the
-// same batching, and the same keyed fallback (Solid 2's reconcileArrays, see reconcile.js).
-import { reconcileArrays } from "./reconcile.js";
+// "local reducers"): the same element, text and attribute helpers that skip unchanged writes,
+// and the same batching. Keyed lists place their rows with one forward pass (see `list`).
 
 // ---------------------------------------------------------------------------------------------
 // Batching: patches run once each, in one microtask after the messages that scheduled them.
@@ -112,7 +111,10 @@ export function instance(model, update, patch, config) {
 // A keyed list owning every child of `parent`, keyed by `item.id` (written as the row's
 // `data-key`). `row(item)` builds a detached row `{ node, patch(item) }`. Rows whose item
 // changed are patched in place; when the sequence of rows changed (adds, removes, filtering,
-// reorders), the keyed reconcile moves the nodes.
+// reorders), one forward pass moves the nodes: a node already in place stays, any other is
+// inserted before the first node not yet placed. That keeps the unchanged nodes still for an
+// insertion, a removal, a filter or a reversed run; its worst case is a rotation, which moves
+// every node but one.
 
 export function list(parent, row) {
   let rows = new Map();
@@ -127,15 +129,21 @@ export function list(parent, row) {
         r = row(item);
         r.node.dataset.key = item.id;
         r.patch(item);
-      } else if (r.item !== item) r.patch(item);
+      } else {
+        rows.delete(item.id);
+        if (r.item !== item) r.patch(item);
+      }
       r.item = item;
       next.set(item.id, r);
       moved ||= r.node !== nodes[order.length];
       order.push(r.node);
     }
     if (moved) {
-      if (nodes.length) reconcileArrays(parent, nodes, order);
-      else parent.append(...order);
+      // The rows left in `rows` are gone. The others are put in order: a node already in
+      // place stays, any other is moved (or inserted) before the first node not yet placed.
+      for (const r of rows.values()) r.node.remove();
+      let at = parent.firstChild;
+      for (const node of order) node === at ? (at = at.nextSibling) : parent.insertBefore(node, at);
     }
     rows = next;
     nodes = order;

@@ -17,7 +17,7 @@ export const label = "tea-local (prototype)";
 export const track = "prototype";
 
 // Files every tea-local app gets unchanged: the HTML shell, the build config, the adapter and
-// the runtime (with its vendored keyed reconcile).
+// the runtime.
 export function templateFiles({ name, title }) {
   const read = (f) => fs.readFileSync(path.join(HERE, "template", f), "utf8");
   return {
@@ -27,15 +27,14 @@ export function templateFiles({ name, title }) {
     "vite.config.js": read("vite.config.js"),
     "src/adapter.js": read("adapter.js"),
     "src/runtime.js": read("runtime.js"),
-    "src/reconcile.js": read("reconcile.js"),
   };
 }
 
 // Which bucket a source-map source belongs to. The runtime has no package of its own: it is
-// the two runtime files every app gets from the template.
+// the runtime file every app gets from the template.
 export function classify(source) {
   if (source.includes("/node_modules/") || source.startsWith("\0") || source.includes("vite/")) return "runtime";
-  if (/(^|\/)src\/(runtime|reconcile)\.js$/.test(source)) return "runtime";
+  if (/(^|\/)src\/runtime\.js$/.test(source)) return "runtime";
   if (/(^|\/)src\/adapter\.js$/.test(source)) return "adapter";
   return "app";
 }
@@ -67,6 +66,5 @@ export function versions() {
   return {
     vite: v("vite"),
     "rolldown (bundler and Oxc minifier)": v("rolldown"),
-    "reconcileArrays (vendored)": "@solidjs/web 2.0.0-rc.9",
   };
 }

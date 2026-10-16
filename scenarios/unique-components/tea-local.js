@@ -488,7 +488,7 @@ ${calls.join("\n")}
       updates: "one patch function per instance, every DOM write skipped when unchanged; derived texts compiled to template literals; batched in a microtask",
       crossWidget: "a reader's factory takes the earlier widgets it reads, reads their models in patch and watches them",
       externalEvents: "serverSet/snapshot replace instance models; notify is a message to a feed widget; tick calls the widgets of a shared running set, each subscribing while its gate is on",
-      lists: "runtime keyed list: patch changed rows, Solid 2 reconcileArrays when order or membership changes",
+      lists: "runtime keyed list by item.id: patch changed rows, one forward placement pass when order or membership changes",
       dom: "one static template per widget (trailing end tags left out), elements addressed by document order; one template per list row, cloned per new item",
       conditionals: "node in the template, detached while hidden, placed before its next attached sibling while shown",
       events: "addEventListener per element through onSend (a constant message) and onValue (a tag applied to the value): click, input, change for checkboxes and selects; number inputs send integers within range only",
