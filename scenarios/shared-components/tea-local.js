@@ -46,6 +46,13 @@ const PARAMS = {
   summary: ["text"],
 };
 
+// The kinds whose initial model is a constant (TEA's `init`), built by their factory: the
+// widget's call passes no model (the emitter checks it is that constant). Measured: the same for
+// counter (`{ value: start }`), choice and filter grew some sizes, so they still pass theirs.
+const INIT = {
+  rating: () => ({ stars: 0 }),
+};
+
 // Config fields that are functions, built from the widget's rules.
 const FUNCTIONS = {
   validate(w) {
@@ -88,12 +95,9 @@ export function counter(parent, heading, step, min, max, start, model) {
   ], patch);
   const root = widget(parent, heading, "counter", self);
   const value = element(root, "output", { "data-role": "value" }, " ");
-  const dec = element(root, "button", { "data-role": "dec" }, "-" + step);
-  const inc = element(root, "button", { "data-role": "inc" }, "+" + step);
-  const reset = element(root, "button", { "data-role": "reset" }, "Reset");
-  on(dec, "click", () => self.send(1));
-  on(inc, "click", () => self.send(0));
-  on(reset, "click", () => self.send(2));
+  const dec = on(element(root, "button", { "data-role": "dec" }, "-" + step), "click", () => self.send(1));
+  const inc = on(element(root, "button", { "data-role": "inc" }, "+" + step), "click", () => self.send(0));
+  on(element(root, "button", { "data-role": "reset" }, "Reset"), "click", () => self.send(2));
 }
 `,
 
@@ -111,9 +115,8 @@ export function toggles(parent, heading, items, model) {
   const ul = element(root, "ul");
   const boxes = items.map((name, i) => {
     const label = element(element(ul, "li"), "label");
-    const box = element(label, "input", { type: "checkbox", "data-role": "toggle", "data-key": i });
+    const box = on(element(label, "input", { type: "checkbox", "data-role": "toggle", "data-key": i }), "change", () => self.send(0, i));
     label.append(name);
-    on(box, "change", () => self.send(0, i));
     return box;
   });
   const count = element(root, "p", { "data-role": "count" }, " ");
@@ -133,8 +136,7 @@ export function field(parent, heading, placeholder, validate, model) {
   // type Msg = Edit String
   const self = instance(model, [(model, value) => ({ text: value })], patch);
   const root = widget(parent, heading, "field", self);
-  const input = element(root, "input", { type: "text", "data-role": "input", placeholder: placeholder });
-  on(input, "input", () => self.send(0, input.value));
+  const input = on(element(root, "input", { type: "text", "data-role": "input", placeholder: placeholder }), "input", () => self.send(0, input.value));
   const error = element(null, "p", { "data-role": "error" }, " ");
 }
 `,
@@ -161,17 +163,14 @@ export function todo(parent, heading, placeholder, addText, removeText, model) {
     (model, value) => ({ ...model, items: model.items.filter((item) => item.id !== value) }),
   ], patch);
   const root = widget(parent, heading, "todo", self);
-  const draft = element(root, "input", { type: "text", "data-role": "draft", placeholder: placeholder });
-  on(draft, "input", () => self.send(0, draft.value));
+  const draft = on(element(root, "input", { type: "text", "data-role": "draft", placeholder: placeholder }), "input", () => self.send(0, draft.value));
   on(element(root, "button", { "data-role": "add" }, addText), "click", () => self.send(1));
   // A row: its elements, then its binding list (an item keeps its id, the row's key).
   const items = list(element(root, "ul"), (item) => {
     const li = element(null, "li");
-    const box = element(li, "input", { type: "checkbox", "data-role": "toggle" });
+    const box = on(element(li, "input", { type: "checkbox", "data-role": "toggle" }), "change", () => self.send(2, item.id));
     const label = element(li, "span", null, " ");
-    const remove = element(li, "button", { "data-role": "remove" }, removeText);
-    on(box, "change", () => self.send(2, item.id));
-    on(remove, "click", () => self.send(3, item.id));
+    on(element(li, "button", { "data-role": "remove" }, removeText), "click", () => self.send(3, item.id));
     return [li, box, label];
   }, (row, item) => {
     setProp(row[1], "checked", item.done);
@@ -194,8 +193,7 @@ export function tabs(parent, heading, tabs, model) {
   const root = widget(parent, heading, "tabs", self);
   const tablist = element(root, "div", { role: "tablist" });
   const buttons = tabs.map((tab, i) => {
-    const button = element(tablist, "button", { role: "tab", "data-role": "tab", "data-key": i }, tab.title);
-    on(button, "click", () => self.send(0, i));
+    const button = on(element(tablist, "button", { role: "tab", "data-role": "tab", "data-key": i }, tab.title), "click", () => self.send(0, i));
     return button;
   });
   const content = element(root, "p", { role: "tabpanel", "data-role": "tab-content" }, " ");
@@ -214,8 +212,7 @@ export function panel(parent, heading, showText, hideText, body, model) {
   // type Msg = Toggle
   const self = instance(model, [(model, value) => ({ open: !model.open })], patch);
   const root = widget(parent, heading, "panel", self);
-  const toggle = element(root, "button", { "data-role": "toggle" }, " ");
-  on(toggle, "click", () => self.send(0));
+  const toggle = on(element(root, "button", { "data-role": "toggle" }, " "), "click", () => self.send(0));
   const text = element(null, "p", { "data-role": "body" }, body);
 }
 `,
@@ -235,11 +232,9 @@ export function choice(parent, heading, options, extraFor, extraPlaceholder, mod
     (model, value) => ({ ...model, extra: value }),
   ], patch);
   const root = widget(parent, heading, "choice", self);
-  const select = element(root, "select", { "data-role": "select" });
+  const select = on(element(root, "select", { "data-role": "select" }), "change", () => self.send(0, select.value));
   for (const option of options) element(select, "option", { value: option.value }, option.label);
-  on(select, "change", () => self.send(0, select.value));
-  const extra = element(null, "input", { type: "text", "data-role": "extra", placeholder: extraPlaceholder });
-  on(extra, "input", () => self.send(1, extra.value));
+  const extra = on(element(null, "input", { type: "text", "data-role": "extra", placeholder: extraPlaceholder }), "input", () => self.send(1, extra.value));
 }
 `,
 
@@ -278,8 +273,7 @@ export function filter(parent, heading, items, placeholder, model) {
   // type Msg = Edit String
   const self = instance(model, [(model, value) => ({ query: value })], patch);
   const root = widget(parent, heading, "filter", self);
-  const input = element(root, "input", { type: "text", "data-role": "query", placeholder: placeholder });
-  on(input, "input", () => self.send(0, input.value));
+  const input = on(element(root, "input", { type: "text", "data-role": "query", placeholder: placeholder }), "input", () => self.send(0, input.value));
   // The items are fixed per widget, so a row never changes once built.
   const shown = list(element(root, "ul"), (item) => [element(null, "li", null, item.text)], () => {});
   const count = element(root, "p", { "data-role": "matches" }, " ");
@@ -288,7 +282,7 @@ export function filter(parent, heading, items, placeholder, model) {
 
   rating: `${HEAD(["element", "on", "setText", "setProp", "instance"])}
 
-export function rating(parent, heading, stars, labels, model) {
+export function rating(parent, heading, stars, labels) {
   const patch = () => {
     const m = self.m;
     buttons.forEach((button, i) => {
@@ -298,14 +292,13 @@ export function rating(parent, heading, stars, labels, model) {
     setText(label, labels[m.stars]);
   };
   // type Msg = Rate Int
-  const self = instance(model, [(model, value) => ({ stars: value })], patch);
+  const self = instance({ stars: 0 }, [(model, value) => ({ stars: value })], patch);
   const root = widget(parent, heading, "rating", self);
   const row = element(root, "div");
   const buttons = [];
   for (let n = 1; n <= stars; n++) {
-    const button = element(row, "button", { "data-role": "star", "data-key": n }, " ");
+    const button = on(element(row, "button", { "data-role": "star", "data-key": n }, " "), "click", () => self.send(0, n));
     buttons.push(button);
-    on(button, "click", () => self.send(0, n));
   }
   const label = element(root, "p", { "data-role": "rating-label" }, " ");
 }
@@ -359,12 +352,9 @@ export function clock(parent, heading, startText, stopText, resetText, model) {
   ], patch);
   const root = widget(parent, heading, "clock", self);
   const time = element(root, "output", { "data-role": "time" }, " ");
-  const start = element(root, "button", { "data-role": "start" }, startText);
-  const stop = element(root, "button", { "data-role": "stop" }, stopText);
-  const reset = element(root, "button", { "data-role": "reset" }, resetText);
-  on(start, "click", () => self.send(0));
-  on(stop, "click", () => self.send(1));
-  on(reset, "click", () => self.send(2));
+  const start = on(element(root, "button", { "data-role": "start" }, startText), "click", () => self.send(0));
+  const stop = on(element(root, "button", { "data-role": "stop" }, stopText), "click", () => self.send(1));
+  on(element(root, "button", { "data-role": "reset" }, resetText), "click", () => self.send(2));
 }
 `,
 
@@ -476,7 +466,7 @@ function needsFormatNumber(spec) {
 // The app: one factory call per widget, with its config, and the routing of external events.
 
 // The factory call's arguments: the parent, the widget's label and config fields in its
-// kind's order, and `last` (the initial model, or a summary's sources).
+// kind's order, and `last` (the initial model, or a summary's sources), if any.
 function args(spec, w, readFilters, last) {
   const entries = ["main", JSON.stringify(w.label)];
   for (const name of PARAMS[w.kind]) {
@@ -487,7 +477,7 @@ function args(spec, w, readFilters, last) {
     else code = literal(w[name], "    ");
     entries.push(code);
   }
-  entries.push(last);
+  if (last !== undefined) entries.push(last);
   const flat = entries.join(", ");
   if (flat.length <= 80 && !flat.includes("\n")) return flat;
   return `\n${entries.map((e) => "    " + e).join(",\n")},\n  `;
@@ -518,7 +508,10 @@ function appFile(spec) {
 
   const calls = spec.widgets.map((w) => {
     if (w.kind === "summary") return `  ${w.kind}(${args(spec, w, readFilters, `[${w.sources.map((id) => id.slice(1) - 1).join(", ")}]`)});`;
-    const call = `${w.kind}(${args(spec, w, readFilters, literal(spec.initialState.widgets[w.id], "    "))});`;
+    const model = spec.initialState.widgets[w.id];
+    // A kind whose `init` is a function of its config builds its model itself.
+    if (INIT[w.kind] && JSON.stringify(INIT[w.kind](w)) !== JSON.stringify(model)) throw new Error(`${w.id}: not its kind's init`);
+    const call = `${w.kind}(${args(spec, w, readFilters, INIT[w.kind] ? undefined : literal(model, "    "))});`;
     return `  ${call}`;
   });
 

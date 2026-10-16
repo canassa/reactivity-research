@@ -45,8 +45,10 @@ export function template(html) {
   return () => t.content.firstChild.cloneNode(true);
 }
 
+// Returns `node`, so an element can be built, wired and named in one expression.
 export function on(node, type, handler) {
   node.addEventListener(type, handler);
+  return node;
 }
 
 // The controls a view wires to messages, and those of them that send on click.
