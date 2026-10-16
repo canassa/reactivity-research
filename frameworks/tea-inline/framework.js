@@ -16,8 +16,10 @@ export const label = "TEA inline (prototype)";
 export const track = "prototype";
 
 // Files every tea-inline app gets unchanged: the HTML shell, the build config, the adapter and
-// the runtime (DOM helpers, microtask batching, keyed lists).
-export function templateFiles({ name, title }) {
+// the runtime (DOM helpers, microtask batching, keyed lists). A scenario that needs more
+// runtime asks for it with `extra`: names of files in template/ that land in src/ (big-table
+// asks for rows.js: its long keyed rows, PRNG step and formatters).
+export function templateFiles({ name, title, extra = [] }) {
   const read = (f) => fs.readFileSync(path.join(HERE, "template", f), "utf8");
   return {
     "package.json": read("package.json").replace("%NAME%", name)
@@ -26,6 +28,7 @@ export function templateFiles({ name, title }) {
     "vite.config.js": read("vite.config.js"),
     "src/adapter.js": read("adapter.js"),
     "src/runtime.js": read("runtime.js"),
+    ...Object.fromEntries(extra.map((f) => [`src/${f}`, read(f)])),
   };
 }
 
@@ -33,7 +36,7 @@ export function templateFiles({ name, title }) {
 // ships whatever it contains; everything the emitter writes is app code.
 export function classify(source) {
   if (source.includes("/node_modules/") || source.startsWith("\0") || source.includes("vite/")) return "runtime";
-  if (/(^|\/)src\/runtime\.js$/.test(source)) return "runtime";
+  if (/(^|\/)src\/(runtime|rows)\.js$/.test(source)) return "runtime";
   if (/(^|\/)src\/adapter\.js$/.test(source)) return "adapter";
   return "app";
 }
