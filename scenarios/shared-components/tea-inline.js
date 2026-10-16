@@ -60,6 +60,9 @@ const FUNCTIONS = {
 
 const VALUES = {
   message: (w) => w.rule.message,
+  // Tabs and options as [title, content] and [value, label] pairs.
+  tabs: (w) => w.tabs.map((t) => [t.title, t.content]),
+  options: (w) => w.options.map((o) => [o.value, o.label]),
 };
 
 // ---------------------------------------------------------------------------------------------
@@ -205,8 +208,8 @@ const FACTORIES = {
   const root = section(parent, id, heading, "tabs");
   const bar = el("div", root, { role: "tablist" });
   // Every tab button and the content read \`active\`.
-  const onActive = tabs.map((tab, i) => {
-    const button = el("button", bar, { role: "tab", "data-role": "tab", "data-key": i }, tab.title);
+  const onActive = tabs.map(([title], i) => {
+    const button = el("button", bar, { role: "tab", "data-role": "tab", "data-key": i }, title);
     // The arm of update: select(i).
     on(button, "click", () => {
       s.active = i;
@@ -215,7 +218,7 @@ const FACTORIES = {
     return () => prop(button, "ariaSelected", String(s.active === i));
   });
   const content = el("p", root, { role: "tabpanel", "data-role": "tab-content" });
-  onActive.push(() => text(content, tabs[s.active].content));
+  onActive.push(() => text(content, tabs[s.active][1]));
 
   return { load: loader(s, onActive) };
 }`,
@@ -251,7 +254,7 @@ const FACTORIES = {
     code: `export function choice(parent, s, readers, id, heading, options, extraFor, extraPlaceholder) {
   const root = section(parent, id, heading, "choice");
   const select = el("select", root, { "data-role": "select" });
-  for (const option of options) el("option", select, { value: option.value }, option.label);
+  for (const [value, label] of options) el("option", select, { value }, label);
   const input = el("input", root, { type: "text", "data-role": "extra", placeholder: extraPlaceholder });
   const extra = when(input);
   // The arm of update: editExtra(text).
