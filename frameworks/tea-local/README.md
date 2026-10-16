@@ -48,9 +48,9 @@ export function counter(parent, heading, step, min, max, start, model) {
   ], patch);
   const root = widget(parent, heading, "counter", self); // DOM built once; registered as w1, w2, …
   const value = element(root, "output", null, " ");  // a dynamic text: a placeholder node
-  const dec = element(root, "button", null, "-");
-  on(dec, "click", () => self.send(1));               // Dec, to this instance only
-  // …
+  const dec = on(element(root, "button", null, "-"), "click", () => self.send(1));
+  // …                                                // Dec, to this instance only (on returns
+  //                                                  // its node: built, wired and named at once)
 }                                                     // instance() scheduled the first patch
 ```
 
@@ -73,10 +73,12 @@ and its arms are kept as written, and `send` runs exactly the arm of the message
 as the switch was). The table is the instance's second argument, next to the initial model.
 
 Each widget is one call with its heading, config fields (positional, in its kind's order)
-and initial model; the widget frame keeps the instance in a registry by id, so the app keeps
-nothing. Widget ids are `w1`, `w2`, … in page order (the emitter checks it), so the frame
-takes the next one from its registry's size (emptied on dispose) and the app does not spell
-them (tea-inline numbers its widgets the same way):
+and initial model; the widget frame keeps the instance in a registry, so the app keeps
+nothing. Widget ids are `w1`, `w2`, … in page order (the emitter checks it), so the registry
+is an array in page order (`w3` is `widgets[2]`; emptied on dispose): the frame numbers the
+next widget with what `push` returns, and the app does not spell ids (tea-inline numbers its
+widgets the same way). A kind whose `init` is a constant (the rating's `{ stars: 0 }`) builds
+its model itself, and its widgets pass none (the emitter checks it):
 
 ```js
 counter(main, "Design tickets", 5, 0, 20, 0, { value: 0 });
@@ -98,20 +100,20 @@ which moves every node but one. The PR's array edit journal, which comes from be
 lists, is left out: the first pass already skips unchanged rows.
 
 **Summaries** read other widgets' state. A summary subscribes to the instances it reads,
-named by id (`widgets.get(id).watch(patch)`). When one of their models changes, for any reason,
+by their index in the registry (`widgets[2].watch(patch)` for w3). When one of their models changes, for any reason,
 the summary's patch is scheduled in the same flush. It recomputes its line from the sources'
 current models (a term read once is written in place; a breakdown, which shows each term and
 their total, names them):
 
 ```js
-summary(main, "…", (m3, m6) => `Total: ${m3.value + m6.value}`, ["w3", "w6"]);
+summary(main, "…", (m3, m6) => `Total: ${m3.value + m6.value}`, [2, 5]);
 ```
 
 **External events** go from the adapter's `dispatch` to `App.receive`, which routes them:
 
 | Event | Becomes |
 |---|---|
-| `serverSet` | `widgets.get(id).set(state)`: the instance's model is replaced |
+| `serverSet` | `widgets[n - 1].set(state)` for `wn`: the instance's model is replaced |
 | `snapshot` | `set` on every instance, each with its own new model |
 | `tick` | the clock's own `Tick` message, sent to each clock instance |
 | `notify` | the feed's `Notify entry` message, sent to that feed |
@@ -135,15 +137,18 @@ sits on a node inside it, and the app has no timers or global listeners.
 ## unique-components
 
 `scenarios/unique-components/tea-local.js` runs the same strategy when every widget is its own
-component type. Nothing is shared per kind, so each widget gets its own module: a factory with
-its initial model and its own reducer table in its `instance` call (one arm per message,
+component type. Nothing is shared per kind, so each widget gets its own code. A factory per
+widget would be called once, so the compiler inlines it: each widget is a block of the app's
+`dashboard(main)` function, in page order (no factory name or call per widget, and every block
+reuses the same local names, so the minifier's names repeat from widget to widget). The block
+has its initial model and its own reducer table in its `instance` call (one arm per message,
 written out from the message's kind and ops, never interpreted), its own static template and
 `patch` (derived texts become template literals; a cycled enum's next option is a chain of
 comparisons over its options, as tea-inline compiles it). The template is the widget's markup
 as one string (trailing end tags left out, as Solid's compiler does); `widget()` inserts it
 with its section in one `insertAdjacentHTML` (the app's dashboard comes from markup too, so
 unique apps ship no `element()`) and returns its elements in document order, which the
-factory addresses as `e[3]` (indexes compress better than names, measured). Only generic
+block addresses as `e[3]` (indexes compress better than names, measured). Only generic
 helpers are shared: this runtime and a small `widgets/frame.js` (the widget frame and its
 registry, list rows, conditional content, next item id, subscriptions).
 
@@ -163,14 +168,14 @@ registry, list rows, conditional content, next item id, subscriptions).
   parses the row's template once and, per new item, clones it, wires its controls from `first`
   with the item's id and returns its elements (`wire` returns them); the third argument is the
   row's binding list over `r[1]`, `r[2]`.
-- **The frame registers every instance by id**, numbering widgets in page order (`w1`, `w2`,
-  …, checked by the emitter): the app calls each factory without keeping what it returns, and a
-  cross-widget reader takes the earlier widget's instance from the registry
-  (`const w3 = widgets.get("w3")`) right after its `patch`, watches it and reads its model in
-  `patch`.
+- **The frame registers every instance in page order** (an array, `w1` first, checked by
+  the emitter): a block keeps nothing for later, and a cross-widget reader reads the earlier
+  widget's model from the registry in its `patch` (`const m3 = widgets[2].m`) and watches it
+  right after its `patch` (`widgets[2].watch(patch)`).
 - A time-driven int is a subscription, like Elm's `subscriptions`: while its gate is on, the
   widget's `tick` is in a shared `running` set, and the app's `tick` event calls only those.
   Otherwise `tick` would cost one call per widget and fail the locality check. An app routes
   `tick` only if it has such a widget, and `notify` only if it has a feed.
-- `notify` is a method of the widgets that have a feed; `serverSet` and `snapshot` use `set`.
+- A widget with a feed keeps its Notify tag (`self.notify = 5`), and the app sends that message
+  to it; `serverSet` and `snapshot` use `set`.
 - The slope is the per-component code: model, reducer, template, event tags and bindings.
