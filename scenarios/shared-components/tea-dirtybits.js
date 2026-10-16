@@ -80,13 +80,13 @@ const METRIC_BIT = {
 const KINDS = {
   counter: `import { html, setText, prop, onClick } from "../runtime.js";
 
-// Dirty bits: value 1. Message tags: inc 0, dec 1, reset 2.
+// Dirty bits: value 1. Message tags: dec 0, inc 1, reset 2.
 
 // The kind: its reducer and its DOM factory.
 export const kind = [
   [
-    ([, , , step, , max], s) => [1, { value: Math.min(max, s.value + step) }],
     ([, , , step, min], s) => [1, { value: Math.max(min, s.value - step) }],
+    ([, , , step, , max], s) => [1, { value: Math.min(max, s.value + step) }],
     ([, , , , , , start]) => [1, { value: start }],
   ],
   (parent, [, , , step, min, max], id) => {
@@ -94,8 +94,8 @@ export const kind = [
       "<section data-role=widget-counter><h2></h2><output data-role=value></output><button data-role=dec></button><button data-role=inc></button><button data-role=reset>Reset", parent);
     dec.textContent = "-" + step;
     inc.textContent = "+" + step;
-    onClick(dec, id, 1);
-    onClick(inc, id, 0);
+    onClick(dec, id, 0);
+    onClick(inc, id, 1);
     onClick(reset, id, 2);
     return (s) => {
       setText(value, s.value);
