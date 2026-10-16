@@ -310,7 +310,7 @@ function widgetFile(spec, w) {
   const feed = w.fields.find((f) => f.feed);
   const cases = w.messages.map((m, i) => reducerCase(w, m, i, cx));
   let next = w.messages.length;
-  let tickIndex, notifyIndex;
+  let tickIndex, notifyIndex, gate;
   // Time-driven ints: a Tick message, and a subscription while a gate is on.
   if (timed.length) {
     tickIndex = next++;
@@ -321,8 +321,7 @@ function widgetFile(spec, w) {
       const body = timed.map((f) => `      if (${step(f, "n")}) n = ${grown(f, "n")};`);
       cases.push(`    case ${tickIndex}: {\n      let n = m;\n${body.join("\n")}\n      return n;\n    }`);
     }
-    cx.own = true;
-    cx.patch.push(`${timed.length > 1 ? "(" : ""}${timed.map((f) => "m." + f.tickWhen).join(" || ")}${timed.length > 1 ? ")" : ""} ? running.add(tick) : running.delete(tick);`);
+    gate = timed.map((f) => "m." + f.tickWhen).join(" || ");
   }
   if (feed) {
     notifyIndex = next++;
@@ -341,7 +340,15 @@ function widgetFile(spec, w) {
   fn.push(`  const self = instance(null, initial, update, patch);`);
   fn.push(`  const root = widget(parent, ${q(w.id)}, ${q(w.label)});`);
   fn.push(...cx.create);
-  if (timed.length) fn.push(`  const tick = () => self.send([${tickIndex}]);`);
+  if (timed.length) {
+    // Subscribe to the clock while the gate is on, as soon as the model changes (not at the next
+    // render), so a tick right after the gate opens is not missed.
+    fn.push(`  const tick = () => self.send([${tickIndex}]);`);
+    fn.push(`  const { send, set } = self;`);
+    fn.push(`  const subscribe = () => { const m = self.model(); ${gate} ? running.add(tick) : running.delete(tick); };`);
+    fn.push(`  self.send = (msg) => { send(msg); subscribe(); };`);
+    fn.push(`  self.set = (next) => { set(next); subscribe(); };`);
+  }
   fn.push(``);
   fn.push(`  function patch() {`);
   if (cx.own) fn.push(`    const m = self.model();`);
