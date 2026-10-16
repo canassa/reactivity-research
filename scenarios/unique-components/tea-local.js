@@ -7,11 +7,13 @@
 //   reducer (one `case` per message, written out from the message's kind and ops) and its own
 //   factory `w3(parent, ...sources)`. Nothing is shared between widgets except generic helpers:
 //   the runtime's DOM, instance and keyed-list helpers, and `widgets/frame.js` (the widget
-//   frame, conditional placement, next item id).
-// - The factory builds the widget's DOM once with createElement calls, wires each DOM event to
-//   `self.send([tag, payload])` of its own instance, and declares one `patch` function: the
-//   binding list, one write per binding (derived texts compiled to template literals and
-//   operators), each skipped when its value did not change.
+//   frame, conditional placement, next item id, subscriptions).
+// - The factory builds the widget's DOM once from its own static template (the markup as one
+//   string, its elements addressed by document order; a list row has a template of its own),
+//   wires each DOM event to a message for its own instance (`onSend(node, self, [tag])`, Elm's
+//   `onClick msg`; `onValue(node, self, tag)`, Elm's `onInput Tag`), and declares one `patch`
+//   function: the binding list, one write per binding (derived texts compiled to template
+//   literals and operators), each skipped when its value did not change.
 // - The model lives in the instance's closure; `send` runs the widget's reducer and schedules
 //   that instance's patch in a microtask. No global dispatch, dirty bits or dependency graph.
 // - A cross-widget read is a factory parameter (the earlier widget's instance): the reader
@@ -22,7 +24,8 @@
 //   the shared `running` set (the app's `tick` event calls only those), and its reducer has its
 //   own Tick message. So `tick` costs the running widgets, not the number of widgets.
 // - Keyed lists through the runtime's `list`. Conditional content (`when`, validation errors)
-//   is built once, detached, and placed before its next attached sibling while shown.
+//   is in the template, detached while hidden and placed before its next attached sibling
+//   while shown.
 // - Number inputs send only integers within [min, max], and are written through
 //   `valueAsNumber`, so a typed "007" is not rewritten.
 
@@ -78,132 +81,150 @@ function textCode(parts, cx) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// The view: creation lines (run once), patch lines (the binding list), and event wiring.
+// The view: one static template (the widget's markup, built once per instance), the event
+// wiring of its elements, and the patch lines (the binding list).
+//
+// The template's elements are addressed by their index in document order (`e[3]`): the
+// factory gets them from `widget()` as `[section, ...section.querySelectorAll("*")]`, so
+// `e[0]` is the section and `e[1]` its heading. A dynamic text is the only child of its
+// element; the template gives it a placeholder space, the text node `setText` writes.
+
+const esc = (s) => String(s).replace(/[&<]/g, (c) => (c === "&" ? "&amp;" : "&lt;"));
+const attr = (v) => (/^[^\s"'=<>`]+$/.test(v) ? v : `"${String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;")}"`);
+const attrs = (a) => Object.entries(a).map(([k, v]) => ` ${k}=${attr(v)}`).join("");
+// The parser closes every open element at the end of a template, so its trailing end tags
+// are left out (as Solid's compiler does).
+const trim = (html) => html.replace(/(<\/\w+>)+$/, "");
 
 function compileView(w, nodes, parent, cx) {
-  const tops = nodes.map((n) => compileNode(w, n, parent, cx)); // per node: [{ v, cond? }]
+  const tops = nodes.map((n) => compileNode(w, n, cx)); // per node: [{ v, cond? }]
   // Conditional tops are placed in patch, before the next attached sibling.
   tops.forEach((group, i) => {
     const later = tops.slice(i + 1).flat().map((t) => t.v);
     for (const t of group) {
-      if (!t.cond) continue;
-      if (later.length) cx.patch.push(`place(${parent}, ${t.v}, ${t.cond}, ${later.join(", ")});`);
-      else cx.patch.push(`show(${parent}, ${t.v}, ${t.cond});`);
+      if (t.cond) cx.patch.push(`place(${[parent, t.v, t.cond, ...later].join(", ")});`);
     }
   });
 }
 
-function compileNode(w, n, parent, cx) {
+function compileNode(w, n, cx) {
   const create = (line) => cx.create.push("  " + line);
   const msgOf = (name) => w.messages.find((m) => m.name === name);
   const fieldOf = (name) => w.fields.find((f) => f.name === name);
-  const send = (name, payload) => `self.send([${w.messages.findIndex((m) => m.name === name)}${payload ? ", " + payload : ""}])`;
+  const tag = (name) => w.messages.findIndex((m) => m.name === name);
+  const send = (name, payload) => `self.send([${tag(name)}${payload ? ", " + payload : ""}])`;
+  // Open an element in the template; returns its reference.
+  const open = (tag, a = {}) => {
+    cx.html += `<${tag}${attrs(a)}>`;
+    return `e[${cx.index++}]`;
+  };
+  const close = (tag) => (cx.html += `</${tag}>`);
+  // A text that is static (in the template) or dynamic (a placeholder written by patch).
+  const content = (v, parts) => {
+    const { code, dynamic } = textCode(parts, cx);
+    if (!dynamic) cx.html += esc(JSON.parse(code));
+    else {
+      cx.html += " ";
+      cx.patch.push(`setText(${v}, ${code});`);
+    }
+  };
+  const labelled = (label, inner) => {
+    if (!label) return [{ v: inner() }];
+    const l = open("label");
+    cx.html += esc(label);
+    inner();
+    close("label");
+    return [{ v: l }];
+  };
   switch (n.el) {
     case "text": {
-      const { code, dynamic } = textCode(n.parts, cx);
-      const v = cx.name("p");
-      if (!dynamic) create(`const ${v} = element(${parent}, ${q(n.tag)}, null, ${code});`);
-      else {
-        const t = cx.name("t");
-        create(`const ${v} = element(${parent}, ${q(n.tag)});`);
-        create(`const ${t} = text(${v});`);
-        cx.patch.push(`setText(${t}, ${code});`);
-      }
+      const v = open(n.tag);
+      content(v, n.parts);
+      close(n.tag);
       return [{ v }];
     }
     case "button": {
-      const v = cx.name("b");
-      const { code, dynamic } = textCode(n.text, cx);
-      const attrs = `{ "data-role": ${q(n.msg)} }`;
-      if (!dynamic) create(`const ${v} = element(${parent}, "button", ${attrs}, ${code});`);
-      else {
-        const t = cx.name("t");
-        create(`const ${v} = element(${parent}, "button", ${attrs});`);
-        create(`const ${t} = text(${v});`);
-        cx.patch.push(`setText(${t}, ${code});`);
-      }
-      create(`on(${v}, "click", () => ${send(n.msg)});`);
+      const v = open("button", { "data-role": n.msg });
+      content(v, n.text);
+      close("button");
+      create(`onSend(${v}, self, [${tag(n.msg)}]);`);
       if (n.disabled) cx.patch.push(`setProp(${v}, "disabled", ${expr(n.disabled, cx, true)});`);
       return [{ v }];
     }
     case "input": {
       const f = fieldOf(msgOf(n.msg).field);
       const number = f.type === "int";
-      const attrs = number ? `{ type: "number", "data-role": ${q(n.msg)} }`
-        : `{ type: "text", "data-role": ${q(n.msg)}${n.placeholder ? `, placeholder: ${q(n.placeholder)}` : ""} }`;
-      const out = [];
-      let at = parent;
-      if (n.label) {
-        const l = cx.name("k");
-        create(`const ${l} = element(${parent}, "label", null, ${q(n.label)});`);
-        out.push({ v: l });
-        at = l;
-      }
-      const v = cx.name("i");
-      create(`const ${v} = element(${at}, "input", ${attrs});`);
-      if (!n.label) out.push({ v });
-      if (number) {
-        create(`on(${v}, "input", () => {`);
-        create(`  const n = ${v}.valueAsNumber;`);
-        create(`  if (Number.isInteger(n) && n >= ${f.min} && n <= ${f.max}) ${send(n.msg, "n")};`);
-        create(`});`);
-        cx.patch.push(`setProp(${v}, "valueAsNumber", m.${f.name});`);
-      } else {
-        create(`on(${v}, "input", () => ${send(n.msg, `${v}.value`)});`);
-        cx.patch.push(`setProp(${v}, "value", m.${f.name});`);
-      }
       cx.own = true;
+      const out = labelled(n.label, () => {
+        const v = open("input", number ? { type: "number", "data-role": n.msg }
+          : { type: "text", "data-role": n.msg, ...(n.placeholder ? { placeholder: n.placeholder } : {}) });
+        if (number) {
+          create(`on(${v}, "input", () => {`);
+          create(`  const n = ${v}.valueAsNumber;`);
+          create(`  if (Number.isInteger(n) && n >= ${f.min} && n <= ${f.max}) ${send(n.msg, "n")};`);
+          create(`});`);
+          cx.patch.push(`setProp(${v}, "valueAsNumber", m.${f.name});`);
+        } else {
+          create(`onValue(${v}, self, ${tag(n.msg)});`);
+          cx.patch.push(`setProp(${v}, "value", m.${f.name});`);
+        }
+        return v;
+      });
       if (n.invalid) {
-        const e = cx.name("e");
-        create(`const ${e} = element(null, "p", { "data-role": ${q(n.msg + "Error")} }, ${q(n.invalid.message)});`);
+        const e = open("p", { "data-role": n.msg + "Error" });
+        cx.html += esc(n.invalid.message);
+        close("p");
         out.push({ v: e, cond: expr(n.invalid.when, cx, true) });
       }
       return out;
     }
     case "check": {
-      const l = cx.name("k"), v = cx.name("c");
-      create(`const ${l} = element(${parent}, "label");`);
-      create(`const ${v} = element(${l}, "input", { type: "checkbox", "data-role": ${q(n.msg)} });`);
-      create(`${l}.append(${q(n.label)});`);
-      create(`on(${v}, "change", () => ${send(n.msg)});`);
+      const l = open("label");
+      const v = open("input", { type: "checkbox", "data-role": n.msg });
+      cx.html += esc(n.label);
+      close("label");
+      create(`onSend(${v}, self, [${tag(n.msg)}], "change");`);
       cx.patch.push(`setProp(${v}, "checked", m.${msgOf(n.msg).field});`);
       cx.own = true;
       return [{ v: l }];
     }
     case "select": {
       const f = fieldOf(msgOf(n.msg).field);
-      const out = [];
-      let at = parent;
-      if (n.label) {
-        const l = cx.name("k");
-        create(`const ${l} = element(${parent}, "label", null, ${q(n.label)});`);
-        out.push({ v: l });
-        at = l;
-      }
-      const v = cx.name("s");
-      create(`const ${v} = element(${at}, "select", { "data-role": ${q(n.msg)} });`);
-      if (!n.label) out.push({ v });
-      create(`for (const o of ${f.name}Options) element(${v}, "option", { value: o }, o);`);
-      create(`on(${v}, "change", () => ${send(n.msg, `${v}.value`)});`);
-      cx.patch.push(`setProp(${v}, "value", m.${f.name});`);
       cx.own = true;
-      cx.options.add(f.name);
-      return out;
+      return labelled(n.label, () => {
+        const v = open("select", { "data-role": n.msg });
+        for (const o of f.options) {
+          open("option", { value: o });
+          cx.html += esc(o);
+          close("option");
+        }
+        close("select");
+        create(`onValue(${v}, self, ${tag(n.msg)}, "change");`);
+        cx.patch.push(`setProp(${v}, "value", m.${f.name});`);
+        return v;
+      });
     }
     case "list": {
-      const u = cx.name("u"), l = cx.name("l");
-      create(`const ${u} = element(${parent}, ${q(n.tag)});`);
-      create(`const ${l} = list(${u}, byId, (item) => {`);
-      create(`  const li = element(null, "li", { "data-key": item.id, "data-role": ${q(n.field + "Item")} });`);
-      if (n.check) create(`  const box = element(li, "input", { type: "checkbox", "data-role": ${q(n.check)} });`);
-      create(`  const label = text(element(li, "span"));`);
-      if (n.remove) create(`  const del = element(li, "button", { "data-role": ${q(n.remove)} }, ${q(n.removeText)});`);
-      if (n.check) create(`  on(box, "change", () => ${send(n.check, "item.id")});`);
-      if (n.remove) create(`  on(del, "click", () => ${send(n.remove, "item.id")});`);
+      const u = open(n.tag);
+      close(n.tag);
+      const l = cx.name("l");
+      // The row's own template, parsed once and cloned for each new item.
+      const row = `<li${attrs({ "data-role": n.field + "Item" })}>`
+        + (n.check ? `<input${attrs({ type: "checkbox", "data-role": n.check })}>` : "")
+        + "<span> </span>"
+        + (n.remove ? `<button${attrs({ "data-role": n.remove })}>${esc(n.removeText)}</button>` : "")
+        + "</li>";
+      const r = cx.name("row");
+      cx.templates.push(`const ${r} = template(${q(trim(row))});`);
+      const kids = [n.check && "box", "label", n.remove && "del"].filter(Boolean);
+      create(`const ${l} = list(${u}, (item) => {`);
+      create(`  const li = ${r}();`);
+      create(`  const [${kids.join(", ")}] = li.children;`);
+      if (n.check) create(`  onSend(box, self, [${tag(n.check)}, item.id], "change");`);
+      if (n.remove) create(`  onSend(del, self, [${tag(n.remove)}, item.id]);`);
       create(`  return {`);
       create(`    node: li,`);
-      create(`    patch(next) {`);
-      create(`      item = next;`);
+      create(`    patch(item) {`);
       if (n.check) create(`      setProp(box, "checked", item.done);`);
       create(`      setText(label, item.text);`);
       create(`    },`);
@@ -213,17 +234,11 @@ function compileNode(w, n, parent, cx) {
       cx.own = true;
       return [{ v: u }];
     }
-    case "when": {
-      const v = cx.name("q");
-      create(`const ${v} = element(null, ${q(n.tag)});`);
+    case "when": case "group": {
+      const v = open(n.tag);
       compileView(w, n.children, v, cx);
-      return [{ v, cond: expr(n.cond, cx, true) }];
-    }
-    case "group": {
-      const v = cx.name("g");
-      create(`const ${v} = element(${parent}, ${q(n.tag)});`);
-      compileView(w, n.children, v, cx);
-      return [{ v }];
+      close(n.tag);
+      return n.el === "when" ? [{ v, cond: expr(n.cond, cx, true) }] : [{ v }];
     }
   }
   throw new Error(`unknown view node ${n.el}`);
@@ -295,16 +310,16 @@ function reducerCase(w, m, i, cx) {
 // ---------------------------------------------------------------------------------------------
 // One widget module.
 
-const RUNTIME = ["element", "text", "on", "setText", "setProp", "show", "instance", "list"];
-const FRAME = ["widget", "place", "nextId", "byId", "running"];
+const RUNTIME = ["on", "onSend", "onValue", "setText", "setProp", "instance", "list", "template"];
+const FRAME = ["widget", "place", "nextId", "subscribe"];
 
 // Returns { code, sources }: the module, and the earlier widgets its factory takes.
 function widgetFile(spec, w) {
   const cx = {
-    create: [], patch: [], own: false, sources: new Set(), options: new Set(), counts: {},
+    create: [], patch: [], templates: [], html: "", index: 2, own: false, sources: new Set(), options: new Set(), counts: {},
     name(prefix) { this.counts[prefix] = (this.counts[prefix] ?? 0) + 1; return prefix + this.counts[prefix]; },
   };
-  compileView(w, w.view, "root", cx);
+  compileView(w, w.view, "e[0]", cx);
 
   const timed = w.fields.filter((f) => f.tick);
   const feed = w.fields.find((f) => f.feed);
@@ -337,35 +352,26 @@ function widgetFile(spec, w) {
 
   const fn = [];
   fn.push(`export function ${w.id}(parent${sources.map((s) => ", " + s).join("")}) {`);
-  fn.push(`  const self = instance(null, initial, update, patch);`);
-  fn.push(`  const root = widget(parent, ${q(w.id)}, ${q(w.label)});`);
+  fn.push(`  const self = instance(initial, update, patch);`);
+  fn.push(`  const e = widget(parent, ${q(w.id)}, ${q(trim("<h2>" + esc(w.label) + "</h2>" + cx.html))});`);
   fn.push(...cx.create);
-  if (timed.length) {
-    // Subscribe to the clock while the gate is on, as soon as the model changes (not at the next
-    // render), so a tick right after the gate opens is not missed.
-    fn.push(`  const tick = () => self.send([${tickIndex}]);`);
-    fn.push(`  const { send, set } = self;`);
-    fn.push(`  const subscribe = () => { const m = self.model(); ${gate} ? running.add(tick) : running.delete(tick); };`);
-    fn.push(`  self.send = (msg) => { send(msg); subscribe(); };`);
-    fn.push(`  self.set = (next) => { set(next); subscribe(); };`);
-  }
+  // Subscribe to the clock while the gate is on, as soon as the model changes (not at the next
+  // render), so a tick right after the gate opens is not missed.
+  if (timed.length) fn.push(`  subscribe(self, [${tickIndex}], (m) => ${gate});`);
   fn.push(``);
   fn.push(`  function patch() {`);
-  if (cx.own) fn.push(`    const m = self.model();`);
-  for (const s of sources) fn.push(`    const m${s.slice(1)} = ${s}.model();`);
+  if (cx.own) fn.push(`    const m = self.m;`);
+  for (const s of sources) fn.push(`    const m${s.slice(1)} = ${s}.m;`);
   fn.push(...cx.patch.map((l) => "    " + l));
   fn.push(`  }`);
   for (const s of sources) fn.push(`  ${s}.watch(patch);`);
   fn.push(`  patch();`);
-  fn.push(feed ? `  return Object.assign(self, { notify: (item) => self.send([${notifyIndex}, item]) });` : `  return self;`);
+  if (feed) fn.push(`  self.notify = (item) => self.send([${notifyIndex}, item]);`);
+  fn.push(`  return self;`);
   fn.push(`}`);
+  const body = fn.join("\n");
 
-  // A variable nothing refers to needs no name.
-  let body = fn.join("\n");
-  body = body.replace(/^(\s*)const (\w+) = (element\(.*)$/gm, (all, sp, name, rest) =>
-    new RegExp(`\\b${name}\\b`).test(body.replace(all, "")) ? all : `${sp}${rest}`);
-
-  const code = [...optionLines, `update`, ...cases, body].join("\n");
+  const code = [...optionLines, ...cx.templates, `update`, ...cases, body].join("\n");
   const used = (names) => names.filter((h) => new RegExp(`\\b${h}\\b`).test(code));
   const out = [
     `import { ${used(RUNTIME).join(", ")} } from "../runtime.js";`,
@@ -374,6 +380,7 @@ function widgetFile(spec, w) {
     `// ${w.label} (${w.kind})`,
     `const initial = ${lit(spec.initialState.widgets[w.id])};`,
     ...optionLines,
+    ...cx.templates,
     ``,
     `// type Msg = ${msgNames.join(" | ")}`,
     `function update(m, msg) {`,
@@ -392,11 +399,12 @@ function widgetFile(spec, w) {
 
 const FRAME_FILE = `import { element } from "../runtime.js";
 
-// The frame every widget shares: its keyed section and its heading.
-export function widget(parent, id, label) {
+// The frame every widget shares: its keyed section, holding the widget's own template (its
+// heading and view). Returns the section and the template's elements, in document order.
+export function widget(parent, id, html) {
   const section = element(parent, "section", { "data-key": id, "data-role": "widget" });
-  element(section, "h2", null, label);
-  return section;
+  section.innerHTML = html;
+  return [section, ...section.querySelectorAll("*")];
 }
 
 // Attach \`node\` to \`parent\` before the first of \`after\` that is attached there (appended if
@@ -408,10 +416,23 @@ export function place(parent, node, shown, ...after) {
 
 export const nextId = (items) => items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
 
-export const byId = (item) => item.id;
-
 // The tick handlers of the widgets whose time-driven gate is on (their subscription).
 export const running = new Set();
+
+// A time-driven widget's subscription, as in Elm's \`subscriptions\`: after every change to its
+// model, its \`tick\` is in \`running\` exactly while \`gate(model)\` holds.
+export function subscribe(self, msg, gate) {
+  const { send, set } = self;
+  const tick = () => self.send(msg);
+  self.send = (msg) => {
+    send(msg);
+    gate(self.m) ? running.add(tick) : running.delete(tick);
+  };
+  self.set = (next) => {
+    set(next);
+    gate(self.m) ? running.add(tick) : running.delete(tick);
+  };
+}
 `;
 
 export function emit(spec) {
@@ -468,8 +489,9 @@ ${calls.join("\n")}
       crossWidget: "a reader's factory takes the earlier widgets it reads, reads their models in patch and watches them",
       externalEvents: "serverSet/snapshot replace instance models; notify is a message to a feed widget; tick calls the widgets of a shared running set, each subscribing while its gate is on",
       lists: "runtime keyed list: patch changed rows, Solid 2 reconcileArrays when order or membership changes",
-      conditionals: "node built once, detached, placed before its next attached sibling while shown",
-      events: "addEventListener per element: click, input, change for checkboxes and selects; number inputs send integers within range only",
+      dom: "one static template per widget (trailing end tags left out), elements addressed by document order; one template per list row, cloned per new item",
+      conditionals: "node in the template, detached while hidden, placed before its next attached sibling while shown",
+      events: "addEventListener per element through onSend (a constant message) and onValue (a tag applied to the value): click, input, change for checkboxes and selects; number inputs send integers within range only",
       build: "Vite production build, no framework plugin, hidden source maps",
     },
   };
