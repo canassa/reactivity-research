@@ -7,8 +7,10 @@
 //   `update(s, msg)` with one arm per message (the ops written out as code, each arm marking the
 //   bits of the fields it writes), its initial state, and its DOM factory `view(parent, id)`,
 //   which builds the DOM once from one static template (nodes found by position) and returns a
-//   static `patch(s, d, w)` that runs only the bindings whose bits are set. Bits and message
-//   tags are numbers. No tables of ops or view trees: nothing is interpreted at runtime.
+//   static `patch(s, d, w)` that runs only the bindings whose bits are set. The module's
+//   default export is the triple [initial state, reducer, view], as Elm --optimize keeps a
+//   program's parts unnamed. Bits and message tags are numbers. No tables of ops or view
+//   trees: nothing is interpreted at runtime.
 // - Conditional sections are `branch`es with their own nested patch, built once with the
 //   template and swapped for an empty comment while hidden.
 // - One app module (src/app.js): the widgets in page order, the app reducer (routes a message to
@@ -26,6 +28,7 @@ export const framework = "tea-dirtybits";
 export const params = {};
 
 const J = JSON.stringify;
+const indent = (lines) => lines.join("\n").split("\n").map((l) => (l ? "  " + l : l)).join("\n");
 const OPS = { "==": "===", "!=": "!==", "<": "<", "<=": "<=", ">": ">", ">=": ">=", and: "&&", or: "||" };
 
 const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" };
@@ -408,24 +411,27 @@ ${helpers.has("nextId") ? `import { nextId } from "./widget.js";\n` : ""}
 // Dirty bits: ${bits.join(", ")}.
 // Message tags: ${tags.join(", ")}.
 ${opts.length ? opts.join("\n") + "\n" : ""}
-export const init = ${literal(Object.fromEntries(w.fields.map((f) => [f.name, f.initial])), "")};
+// The widget: its initial state, its reducer and its DOM factory.
+export default [
+  ${literal(Object.fromEntries(w.fields.map((f) => [f.name, f.initial])), "  ")},
 
-export function update(s, msg) {
-  switch (msg.type) {
-${arms.join("\n")}
-  }
-  return s;
-}
+  (s, msg) => {
+    switch (msg.type) {
+${indent(arms)}
+    }
+    return s;
+  },
 
-// Builds the widget once and returns its static patch.
-export function view(parent, id) {
-  const t = html(${J(trimTemplate(markup))}, parent);
-  t[0].dataset.key = id;
-${body.join("\n")}
-  return (${args}) => {
-${patch.join("\n")}
-  };
-}
+  // Builds the widget once and returns its static patch.
+  (parent, id) => {
+    const t = html(${J(trimTemplate(markup))}, parent);
+    t[0].dataset.key = id;
+${indent(body)}
+    return (${args}) => {
+${indent(patch)}
+    };
+  },
+];
 `;
   return { file, reads, bit: own };
 }
@@ -435,7 +441,7 @@ ${patch.join("\n")}
 
 function appFile(spec, mods) {
   const ids = spec.widgets.map((w) => w.id);
-  const imports = ids.map((id) => `import * as ${id} from "./widgets/${id}.js";`);
+  const imports = ids.map((id) => `import ${id} from "./widgets/${id}.js";`);
   // A tick reaches only the time-driven widgets whose gate is on (checked inline, so a tick costs
   // one reducer call per running widget, not per time-driven one).
   const ticks = spec.widgets.filter((w) => w.fields.some((f) => f.tick)).map((w) => {
@@ -453,9 +459,9 @@ function appFile(spec, mods) {
   return `import { take, touch, html } from "./runtime.js";
 ${imports.join("\n")}
 
-// Every widget in page order: each module is that widget's own initial state, reducer and view.
+// Every widget in page order: each module is that widget's own [initial state, reducer, view].
 const WIDGETS = {
-${ids.map((id) => `  ${id}: [${id}.init, ${id}.update, ${id}.view],`).join("\n")}
+${ids.map((id) => `  ${id},`).join("\n")}
 };
 
 // The initial model: one slice per widget, from its module.
