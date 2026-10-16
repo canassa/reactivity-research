@@ -472,25 +472,25 @@ ${text}
 function appFile(spec, reads) {
   const ticking = spec.widgets.filter((w) => w.fields.some((f) => f.tick));
   const cases = [`      case "serverSet":
-        views[msg.widget].load(msg.state);
+        views[msg.widget.slice(1)].load(msg.state);
         break;`];
   if (ticking.length) {
     cases.push(`      case "tick":
-${ticking.map((w) => `        views.${w.id}.tick();`).join("\n")}
+${ticking.map((w) => `        views[${pos(w.id)}].tick();`).join("\n")}
         break;`);
   }
   if (spec.widgets.some((w) => w.fields.some((f) => f.feed))) {
     cases.push(`      case "notify":
-        views[msg.widget].notify(msg.item);
+        views[msg.widget.slice(1)].notify(msg.item);
         break;`);
   }
   cases.push(`      case "snapshot":
-        for (const id in msg.state.widgets) views[id].load(msg.state.widgets[id]);
+        for (const id in msg.state.widgets) views[id.slice(1)].load(msg.state.widgets[id]);
         break;`);
 
   const readers = {};
   for (const [wid, fs] of Object.entries(reads)) readers[pos(wid)] = Object.fromEntries([...fs].map((f) => [f, []]));
-  const imports = [`import { el, flush, cancel } from "./runtime.js";`,
+  const imports = [`import { flush, cancel } from "./runtime.js";`,
     ...spec.widgets.map((w) => `import { ${w.id} } from "./widgets/${w.id}.js";`)];
 
   return `${imports.join("\n")}
@@ -502,15 +502,16 @@ function init() {
 
 export function start(root) {
   const model = init();
-  const board = el("div", root, { "data-role": "dashboard" });
+  // The dashboard, from its markup like every widget.
+  root.insertAdjacentHTML("beforeend", "<div data-role=dashboard></div>");
+  const board = root.lastChild;
   // For each field another widget reads, the bindings reading it: the widget schedules them
   // when it writes the field.
   const R = ${literal(readers, "  ")};
-  // Every widget in page order, given its number (widget \`wN\` is number N: its slice of the model
-  // is \`model[N]\`); each returns its handle: \`load\` for serverSet and snapshot, and its external arms.
-  const views = {
-${spec.widgets.map((w) => `    ${w.id}: ${w.id}(board, model, R, ${pos(w.id)}),`).join("\n")}
-  };
+  // Every widget in page order, given its number (widget \`wN\` is number N, its position from 1:
+  // its slice of the model is \`model[N]\`, its handle \`views[N]\`; \`map\` skips the hole at 0). A
+  // handle has \`load\` for serverSet and snapshot, and the widget's external arms.
+  const views = [, ${spec.widgets.map((w) => w.id).join(", ")}].map((widget, i) => widget(board, model, R, i));
   flush();
 
   // The arms of update still reached by a message: external events.
