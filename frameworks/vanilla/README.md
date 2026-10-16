@@ -7,18 +7,21 @@ plots' "ratio to vanilla").
 ## What is here
 
 - `framework.js`: label, track, the template files, `classify`, the build and the versions.
-- `template/`: the HTML shell, the Vite config (the same settings as the other Vite setups:
-  `target: "esnext"`, hidden source maps) and the contract adapter.
+- `template/`: the HTML shell, the Vite config and the contract adapter.
 - `package.json` and `package-lock.json`: Vite 8.3.4 alone, pinned, as bundler and minifier.
 
-There is **no runtime library**. The emitter writes everything, as plain DOM code. `classify`
-puts it all in the app except:
+**The floor is what a hand-writer ships.** The Vite config matches the other Vite setups
+(`target: "esnext"`, hidden source maps) with one exception: `modulePreload: { polyfill: false }`.
+The app is one script with no dynamic imports, and a hand-written page would not include Vite's
+module-preload polyfill, which cost about 280 B brotli (15% of the N=1 app). The other frameworks
+keep their tools' defaults, because they are measured as they ship.
 
-- `src/lib.js`, a small generic helper an emitter may write (big-table: a keyed reconciler for
-  the server events and the snapshot). It is counted as vanilla's runtime and must stay small and
-  independent of the app.
-- Vite's own module-preload polyfill (unmapped output, about 670 B raw), which every Vite-built
-  setup in this project ships alike. It is counted as runtime too.
+There is **no runtime library**. The emitter writes everything as plain DOM code, and `classify`
+puts it all in the app except `src/lib.js`. That file is a small generic helper an emitter may
+write (big-table: the keyed reconciler for the server events and the snapshot). **It is
+classified as runtime even though it is hand-written helper code**, so for vanilla the stacked
+chart's "runtime" means "shared helpers", not a library. It must stay small and independent of
+the app.
 
 The adapter (`src/adapter.js`) maps the contract onto the app's `start(root)` →
 `{ receive, stop }`. It contains no app logic, and `settled()` resolves right away because the app
