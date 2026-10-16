@@ -218,12 +218,12 @@ function widgetModule(w) {
     sc.groups.get(key).stmts.push(stmt);
     for (const d of deps) sc.deps.add(d);
   };
-  // The static patch of a scope. A bit's order is the order of first use, which the mask does
-  // not care about.
+  // The static patch of a scope: one test per group of bindings, in the order of their masks
+  // (bindings are independent, so any order is correct; this one reads alike across widgets).
   const patchBody = (sc, ind) => {
     const out = [];
-    for (const g of sc.groups.values()) {
-      const mask = bitList(g.deps);
+    const groups = [...sc.groups.values()].map((g) => [bitList(g.deps), g]).sort((x, y) => x[0] - y[0]);
+    for (const [mask, g] of groups) {
       if (g.stmts.length === 1) out.push(`${ind}if (d & ${mask}) ${g.stmts[0]}`);
       else out.push(`${ind}if (d & ${mask}) {`, ...g.stmts.map((s) => `${ind}  ${s}`), `${ind}}`);
     }
