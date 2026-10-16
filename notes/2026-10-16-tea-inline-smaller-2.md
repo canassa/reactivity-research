@@ -25,11 +25,12 @@ one call less per item toggle, remove or dismiss.
   shared rows no longer spell an id (−6% at N=256); the unique initial model is an array by number
   (no `wN:` key per widget) and the app mounts widgets with one `map` (−1,052 B and −488 B at
   N=256). Then each widget module pushes its function onto a shared array `W` when imported, so
-  the bundle neither names nor lists widgets (−848 B, with `section` no longer returning the
-  section itself and the initial model a literal in `start`). Done naively (a hole and `slice(1)` everywhere) it cost 10 B at
-  N=1; each version kept had to be tuned until no size grew (handing shared factories their slice
-  and counting rows in a `for…of`; building the unique dashboard div from markup, which drops `el`
-  from small apps).
+  the bundle neither names nor lists widgets (−848 B). Done naively (a hole and `slice(1)`
+  everywhere) each step cost about 10 B at N=1, so each kept version was paired with a small-app
+  saving until no size grew: handing shared factories their slice and counting rows in a
+  `for…of`; building the unique dashboard div from markup, which drops `el` from small apps;
+  `section` no longer returning the section itself and the initial model as a literal in
+  `start`.
 - **Readers in the field's group** (unique): `R[widget].f` listed once in `onF` instead of in every
   action and in `load`: −573 B.
 - **Item arms inlined into row handlers** (both): one call and one name less per item control:
@@ -47,7 +48,7 @@ one call less per item toggle, remove or dismiss.
 - Marking referenced elements with a `ref` attribute removed at mount (no comma holes): −443 B at
   N=256 but +18…+31 B up to N=4. Not kept.
 - `when(node, cond)` returning the binding, `prop(node, value, key = "value")`, `loader(s, ...all)`,
-  a simpler keyed loop, `let done;`, `return { receive() {}, stop() {} }`, inlining `init()`:
+  a simpler keyed loop, `let done;`, `return { receive() {}, stop() {} }`, inlining `init()` alone:
   each within ±0.2% noise with some size growing.
 - A flush queued with `queueMicrotask` from the pending set's size (tea-local's idea): −79 B summed
   in shared but +1,100 B at N=256 in unique, only because dropping one top-level variable shifted
