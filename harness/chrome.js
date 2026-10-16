@@ -23,9 +23,10 @@ export function findChrome(explicit) {
 
 // `args`: extra Chrome command-line flags, e.g. ["--js-flags=--no-turbofan"]. `chrome`: the
 // binary (default: findChrome()). `taskset`: a CPU list (e.g. "1-5,7-11") to pin Chrome to.
-export async function launch({ args = [], chrome, taskset } = {}) {
+// `profilePrefix`: the name of its temporary profile directory, before a random suffix.
+export async function launch({ args = [], chrome, taskset, profilePrefix = "rr-chrome-" } = {}) {
   const bin = findChrome(chrome);
-  const profile = fs.mkdtempSync(path.join(os.tmpdir(), "rr-chrome-"));
+  const profile = fs.mkdtempSync(path.join(os.tmpdir(), profilePrefix));
   const argv = [
     "--headless=new", "--remote-debugging-port=0", `--user-data-dir=${profile}`,
     "--no-first-run", "--no-default-browser-check", "--disable-extensions", "--window-size=1400,1000", ...args, "about:blank",
@@ -118,10 +119,13 @@ export async function launch({ args = [], chrome, taskset } = {}) {
   // The browser's product string, e.g. "HeadlessChrome/154.0.8037.97".
   const version = async () => (await send("Browser.getVersion")).product;
 
+  // Kill Chrome, wait for it to exit (it may still be writing its profile), then remove the profile.
   async function close() {
     try { ws.close(); } catch {}
+    const exited = child.exitCode !== null || child.signalCode !== null ? Promise.resolve() : new Promise((r) => child.once("exit", r));
     child.kill("SIGKILL");
-    fs.rmSync(profile, { recursive: true, force: true });
+    await Promise.race([exited, new Promise((r) => setTimeout(r, 5000))]);
+    fs.rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
   return { open, close, version, bin };
 }

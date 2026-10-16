@@ -144,10 +144,13 @@ async function benchScenario(name, which, args) {
 
   try {
     for (let session = 1; session <= sessions; session++) {
-      // Rotate the framework order by one each session, and reverse it every other session.
-      const order = variants.map((_, i) => variants[(i + session - 1) % variants.length]);
+      // Session 2 runs session 1's framework order reversed; sessions 3 and 4 do the same with the
+      // order rotated by one, and so on. (Rotating every session as well would undo the reversal:
+      // with two frameworks, rotate-then-reverse is the original order.)
+      const shift = Math.floor((session - 1) / 2);
+      const order = variants.map((_, i) => variants[(i + shift) % variants.length]);
       if (session % 2 === 0) order.reverse();
-      const chrome = await launch({ args: CHROME_FLAGS, chrome: chromeBin, taskset: args.taskset });
+      const chrome = await launch({ args: CHROME_FLAGS, chrome: chromeBin, taskset: args.taskset, profilePrefix: "rr-bench-chrome-" });
       chromeVersion ||= await chrome.version();
       try {
         for (const size of sizes) {
@@ -189,7 +192,7 @@ async function benchScenario(name, which, args) {
           }
         }
       } finally {
-        await chrome.close();
+        await chrome.close().catch((err) => console.log(`(closing Chrome: ${err.message})`));
       }
     }
   } finally {
@@ -225,7 +228,7 @@ async function benchScenario(name, which, args) {
 // ./rr check's script check on every build, grouped by size and seed. Returns the apps that pass.
 async function gate(scenario, plan, chromeBin, skipped) {
   const ok = new Set();
-  const chrome = await launch({ chrome: chromeBin });
+  const chrome = await launch({ chrome: chromeBin, profilePrefix: "rr-bench-chrome-" });
   try {
     const groups = new Map();
     for (const p of plan) {
@@ -417,7 +420,8 @@ async function remoteBench(args, rest) {
   const sha = git("rev-parse", "HEAD");
   const pushed = spawnSync("git", ["merge-base", "--is-ancestor", sha, "origin/main"], { cwd: ROOT }).status === 0;
   if (!pushed) throw new Error(`HEAD ${sha.slice(0, 12)} is not on origin/main: push it first`);
-  const origin = git("remote", "get-url", "origin");
+  // Cloned over HTTPS: the remote may have no ssh key for GitHub, and the repository is public.
+  const origin = git("remote", "get-url", "origin").replace(/^git@([^:]+):/, "https://$1/");
   const [which] = args._;
   if (!which) throw new Error("usage: ./rr bench <scenario|all> <framework|all> --remote HOST");
   const scenarios = which === "all" ? listScenarios().filter((s) => fs.existsSync(benchModule(s))) : which.split(",");
