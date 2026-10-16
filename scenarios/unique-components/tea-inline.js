@@ -65,8 +65,8 @@ export const loader = (s, all, arms) => (
 // A new list item's id: one more than the largest.
 export const nextId = (items) => items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
 
-// The widgets by number, from 1: each widget's module adds its function when the app imports it,
-// in page order.
+// The widgets by number, from 1: each widget's module adds its markup and its function when the
+// app imports it, in page order.
 export const W = [,];
 
 `;
@@ -440,9 +440,6 @@ function widgetFile(w, reads) {
 
   const all = [...groups.keys()].map((f) => "on" + cap(f)).concat(alone);
   const body = [
-    "const s = model[widget];",
-    "// The DOM, built once from its markup; its elements in document order (those the code refers to are E[n]).",
-    `const E = section(parent, widget, ${str(html)});`,
     ...expand(build),
     "",
     ...(namedLines.length ? ["// Bindings reading several fields, or other widgets."] : []),
@@ -458,17 +455,20 @@ function widgetFile(w, reads) {
       : [`return loader(s, [${all.join(", ")}]);`]),
   ];
   const at = new Map(Object.entries(refs).map(([n, r]) => [r, n]));
-  const text = body.map((l) => (l ? "  " + l : l)).join("\n").replace(/\0\w+\0/g, (r) => `E[${at.get(r)}]`);
+  const text = (body[0] === "" ? body.slice(1) : body).map((l) => (l ? "  " + l : l)).join("\n").replace(/\0\w+\0/g, (r) => `E[${at.get(r)}]`);
 
   const rt = ["el", "text", "prop", "on", "when", "list", "schedule"].filter((n) => new RegExp(`\\b${n}\\(`).test(text));
-  const wi = ["section", "loader", "nextId"].filter((n) => new RegExp(`\\b${n}\\(`).test(text));
+  const wi = ["loader", "nextId"].filter((n) => new RegExp(`\\b${n}\\(`).test(text));
+  // The widget's markup, and its function: given the markup's elements (in document order, those
+  // the code refers to are E[n]), its state slice, the readers, its number, and the model when it
+  // reads other widgets.
   return `import { ${rt.join(", ")} } from "../runtime.js";
 import { ${["W", ...wi].join(", ")} } from "./widget.js";
 
-// Widget ${w.id}.
-W.push((parent, model, R, widget) => {
+// Widget ${w.id}: its markup, and its code over the markup's elements.
+W.push([${str(html)}, (E, s, R, widget${text.includes("model[") ? ", model" : ""}) => {
 ${text}
-});
+}]);
 `;
 }
 
@@ -497,7 +497,7 @@ ${ticking.map((w) => `        views[${pos(w.id)}].tick();`).join("\n")}
   const readers = {};
   for (const [wid, fs] of Object.entries(reads)) readers[pos(wid)] = Object.fromEntries([...fs].map((f) => [f, []]));
   const imports = [`import { flush, cancel } from "./runtime.js";`,
-    `import { W } from "./widgets/widget.js";`,
+    `import { W, section } from "./widgets/widget.js";`,
     ...spec.widgets.map((w) => `import "./widgets/${w.id}.js";`)];
 
   return `${imports.join("\n")}
@@ -511,10 +511,10 @@ export function start(root) {
   // For each field another widget reads, the bindings reading it: the widget schedules them
   // when it writes the field.
   const R = ${literal(readers, "  ")};
-  // Every widget in page order, given its number (widget \`wN\` is number N, its position from 1:
-  // its slice of the model is \`model[N]\`, its handle \`views[N]\`; \`map\` skips the hole at 0). A
-  // handle is its load for serverSet and snapshot, carrying the widget's external arms.
-  const views = W.map((widget, i) => widget(board, model, R, i));
+  // Every widget in page order, given its markup's elements and its number (widget \`wN\` is number N,
+  // its position from 1: its slice of the model is \`model[N]\`, its handle \`views[N]\`; \`map\` skips
+  // the hole at 0). A handle is its load for serverSet and snapshot, carrying its external arms.
+  const views = W.map(([html, widget], i) => widget(section(board, i, html), model[i], R, i, model));
   flush();
 
   // The arms of update still reached by a message: external events.
