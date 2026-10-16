@@ -285,7 +285,7 @@ function widgetFile(w, reads) {
         const p = partsCode(n.text, { own: new Set(), cross: new Set() });
         element("button", { "data-role": n.msg }, p.static ?? "", b);
         if (p.static === undefined) bind((deps) => `() => text(${b}, ${partsCode(n.text, deps).code})`);
-        if (n.disabled) bind((deps) => `() => prop(${b}, "disabled", ${exprCode(n.disabled, deps)})`);
+        if (n.disabled) bind((deps) => `() => prop(${b}, ${exprCode(n.disabled, deps)}, "disabled")`);
         handler(b, message(n.msg));
         return;
       }
@@ -302,7 +302,7 @@ function widgetFile(w, reads) {
         if (n.placeholder) o.placeholder = n.placeholder;
         element("input", o, null, i);
         if (n.label) close("label");
-        bind((deps) => `() => prop(${i}, "value", ${num ? `String(${exprCode(["f", f.name], deps)})` : exprCode(["f", f.name], deps)})`);
+        bind((deps) => `() => prop(${i}, ${num ? `String(${exprCode(["f", f.name], deps)})` : exprCode(["f", f.name], deps)})`);
         handler(i, m);
         if (n.invalid) {
           const e = ref("e");
@@ -318,7 +318,7 @@ function widgetFile(w, reads) {
         element("input", { type: "checkbox", "data-role": n.msg }, null, c);
         html += escText(n.label);
         close("label");
-        bind((deps) => `() => prop(${c}, "checked", ${exprCode(["f", m.field], deps)})`);
+        bind((deps) => `() => prop(${c}, ${exprCode(["f", m.field], deps)}, "checked")`);
         handler(c, m);
         return;
       }
@@ -334,7 +334,7 @@ function widgetFile(w, reads) {
         for (const value of f.options) element("option", { value }, value);
         close("select");
         if (n.label) close("label");
-        bind((deps) => `() => prop(${o}, "value", ${exprCode(["f", f.name], deps)})`);
+        bind((deps) => `() => prop(${o}, ${exprCode(["f", f.name], deps)})`);
         handler(o, m);
         return;
       }
@@ -348,7 +348,7 @@ function widgetFile(w, reads) {
         const set = [];
         if (n.check) {
           row.push(`const box = el("input", node, ${attrs({ type: str("checkbox"), "data-role": str(n.check) })});`);
-          set.push('prop(box, "checked", item.done);');
+          set.push('prop(box, item.done, "checked");');
         }
         row.push('const label = el("span", node);');
         set.push("text(label, item.text);");

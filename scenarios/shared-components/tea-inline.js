@@ -82,8 +82,8 @@ const FACTORIES = {
   // The bindings reading \`value\`.
   const onValue = [
     () => text(value, s.value),
-    () => prop(decButton, "disabled", s.value <= min),
-    () => prop(incButton, "disabled", s.value >= max),
+    () => prop(decButton, s.value <= min, "disabled"),
+    () => prop(incButton, s.value >= max, "disabled"),
     readers[id],
   ];
 
@@ -120,7 +120,7 @@ const FACTORIES = {
       s.on[i] = !s.on[i];
       schedule(boxes[i], onCount);
     });
-    return () => prop(box, "checked", s.on[i]);
+    return () => prop(box, s.on[i], "checked");
   });
   const count = el("p", root, { "data-role": "count" });
   const onCount = [() => text(count, \`\${s.on.filter(Boolean).length} of \${items.length} on\`), readers[id]];
@@ -136,7 +136,7 @@ const FACTORIES = {
   const input = el("input", root, { type: "text", "data-role": "input", placeholder: placeholder });
   const error = el("p", root, { "data-role": "error" }, message);
 
-  const onText = [() => prop(input, "value", s.text), () => when(error, invalid(s.text))];
+  const onText = [() => prop(input, s.text), () => when(error, invalid(s.text))];
 
   // The arm of update: edit(text).
   on(input, () => {
@@ -160,7 +160,7 @@ const FACTORIES = {
     const label = el("span", node);
     // The row's binding: the list hands it the item of its id, so the row keeps its item current.
     const set = (next = item) => {
-      prop(box, "checked", (item = next).done);
+      prop(box, (item = next).done, "checked");
       text(label, item.text);
     };
     // The arms of update for this row's item: toggle(id), which schedules the row's binding,
@@ -178,7 +178,7 @@ const FACTORIES = {
   });
   const left = el("p", root, { "data-role": "left" });
 
-  const onDraft = () => prop(draft, "value", s.draft);
+  const onDraft = () => prop(draft, s.draft);
   const onItems = [() => text(left, \`\${s.items.filter((item) => !item.done).length} left\`), readers[id]];
 
   // The arms of update: editDraft, add. The list edits (here and in the rows) tell the list
@@ -214,7 +214,7 @@ const FACTORIES = {
       s.active = i;
       schedule(onActive);
     });
-    return () => prop(button, "ariaSelected", String(s.active === i));
+    return () => prop(button, String(s.active === i), "ariaSelected");
   });
   const content = el("p", root, { role: "tabpanel", "data-role": "tab-content" });
   onActive.push(() => text(content, tabs[s.active][1]));
@@ -232,7 +232,7 @@ const FACTORIES = {
 
   const onOpen = [
     () => {
-      prop(button, "ariaExpanded", String(s.open));
+      prop(button, String(s.open), "ariaExpanded");
       text(button, s.open ? hideText : showText);
     },
     () => when(body, s.open),
@@ -265,9 +265,9 @@ const FACTORIES = {
   const onExtra = () => {
     const shown = extraFor.includes(s.option);
     when(input, shown);
-    if (shown) prop(input, "value", s.extra);
+    if (shown) prop(input, s.extra);
   };
-  const onOption = [() => prop(select, "value", s.option), onExtra];
+  const onOption = [() => prop(select, s.option), onExtra];
 
   // The arm of update: choose(option).
   on(select, () => {
@@ -286,7 +286,7 @@ const FACTORIES = {
   const input = el("input", root, { type: "number", "data-role": "input" });
   const output = el("output", root, { "data-role": "formatted" });
 
-  const onValue = [() => prop(input, "value", String(s.value)), () => text(output, format(s.value)), readers[id]];
+  const onValue = [() => prop(input, String(s.value)), () => text(output, format(s.value)), readers[id]];
 
   // The arm of update: set(n), sent only while the input holds a number.
   on(input, () => {
@@ -315,7 +315,7 @@ const FACTORIES = {
   const items = list(el("ul", root), shown, (item) => [el("li", null, { "data-key": item.id }, item.text), () => {}]);
   const matches = el("p", root, { "data-role": "matches" });
 
-  const onQuery = [() => prop(query, "value", s.query), items, () => text(matches, \`\${shown().length} matches\`), readers[id]];
+  const onQuery = [() => prop(query, s.query), items, () => text(matches, \`\${shown().length} matches\`), readers[id]];
 
   // The arm of update: edit(query).
   on(query, () => {
@@ -342,7 +342,7 @@ const FACTORIES = {
       schedule(onStars);
     });
     return () => {
-      prop(button, "ariaPressed", String(n <= s.stars));
+      prop(button, String(n <= s.stars), "ariaPressed");
       text(button, n <= s.stars ? "★" : "☆");
     };
   });
@@ -398,7 +398,7 @@ export function clock(parent, s, readers, id, heading, startText, stopText, rese
   const resetButton = el("button", root, { "data-role": "reset" }, resetText);
 
   const onSeconds = [() => text(time, formatTime(s.seconds)), readers[id]];
-  const onRunning = [() => prop(startButton, "disabled", s.running), () => prop(stopButton, "disabled", !s.running)];
+  const onRunning = [() => prop(startButton, s.running, "disabled"), () => prop(stopButton, !s.running, "disabled")];
 
   // The arms of update: start, stop, reset.
   on(startButton, () => {

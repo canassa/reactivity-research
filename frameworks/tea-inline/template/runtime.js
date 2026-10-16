@@ -54,8 +54,9 @@ export function text(node, value) {
   if (node.textContent !== value) node.textContent = value;
 }
 
-// A live property: value, checked, disabled, or a reflected ARIA state (ariaPressed, …).
-export function prop(node, key, value) {
+// A live property: a form control's value unless `key` names another (checked, disabled, or a
+// reflected ARIA state: ariaPressed, …).
+export function prop(node, value, key = "value") {
   if (node[key] !== value) node[key] = value;
 }
 
