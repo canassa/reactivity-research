@@ -382,7 +382,7 @@ function widgetModule(w) {
           use("template", "setText", "list");
           const l = name();
           h += `<${n.tag}${MK}></${n.tag}>`;
-          let row = `<li data-role=${n.field}Item>`;
+          let row = `<li data-role=${n.field}Item${MK}>`;
           let k = 1;
           const box = n.check ? `r[${k++}]` : null;
           if (n.check) row += `<input type=checkbox data-role=${n.check}${MK}>`;
@@ -443,7 +443,7 @@ function widgetModule(w) {
   const root = scope();
   const body = [];
   const wires = [];
-  const markup = `<section data-role=widget><h2>${esc(w.label)}</h2>${build(w.view, root, body, "  ")}</section>`;
+  const markup = `<section data-role=widget${MK}><h2>${esc(w.label)}</h2>${build(w.view, root, body, "  ")}</section>`;
   // A widget's patch runs only with some of its bits set: own fields and fields it reads.
   let patch = patchBody(root, "    ", (1 << (w.fields.length + reads.size)) - 1);
   // Patches take the whole model (`w`) only when the widget reads another widget.
@@ -554,7 +554,7 @@ ${[...(ticks.length ? ["      const ws = model.widgets;"] : []), ...ticks, "    
 // The returned patch first turns dirty bits that other widgets read into the readers' bits, then
 // runs each dirty widget's patch.
 export function view(root, model) {
-  const dash = template("<div data-role=dashboard>", root)[0];
+  const dash = template("<div data-role=dashboard b>", root)[0];
   const w = model.widgets;
   const patches = {};
   for (const id in WIDGETS) {

@@ -42,28 +42,30 @@ export function program(root, model, update, view) {
 // ---------------------------------------------------------------------------------------------
 // DOM construction (run once per component) and bindings (run when their bits are set).
 
-const T = document.createElement("template");
+// The markup is parsed by a detached div (static strings only; a div parses every element these
+// templates hold, rows and options included). A selector over the div's elements returns the
+// template's root first, so no separate lookup of the root is needed.
+const T = document.createElement("div");
 
 // A component's static markup, parsed once and appended to `parent` (or left detached): its
 // root element and every element inside it, in document order, so the compiled code finds a
 // node by its position.
 export function html(source, parent) {
   T.innerHTML = source;
-  const node = T.content.firstChild;
-  if (parent) parent.append(node);
-  return [node, ...node.querySelectorAll("*")];
+  const nodes = T.querySelectorAll("*");
+  if (parent) parent.append(nodes[0]);
+  return nodes;
 }
 
-// A component's static markup whose bound elements carry a `b` attribute, a marker removed here
-// (as Lit removes its own): its root element, appended to `parent`, then the bound elements in
-// document order, so the compiled code finds a node by its position among them.
+// A component's static markup whose root and bound elements carry a `b` attribute, a marker
+// removed here (as Lit removes its own): its root element, appended to `parent`, then the bound
+// elements in document order, so the compiled code finds a node by its position among them.
 export function template(source, parent) {
   T.innerHTML = source;
-  const node = T.content.firstChild;
-  const bound = node.querySelectorAll("[b]");
+  const bound = T.querySelectorAll("[b]");
   for (const n of bound) n.removeAttribute("b");
-  if (parent) parent.append(node);
-  return [node, ...bound];
+  if (parent) parent.append(bound[0]);
+  return bound;
 }
 
 // Events that send a message to a widget, like Elm's `onClick Msg` and `onInput Msg`. A click or
