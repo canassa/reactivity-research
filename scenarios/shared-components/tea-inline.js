@@ -596,10 +596,10 @@ ${clocks.map((w) => `        views.${w.id}.tick();`).join("\n")}
 
   return `${imports.join("\n")}
 ${consts.length ? "\n" + consts.join("\n\n") + "\n" : ""}
-// The page: every widget in order (row N is widget \`wN\`), as its kind's factory, its initial
-// state (its slice of TEA's \`init\`, copied on every mount; none for a summary), its label, and
+// The page, made fresh on every mount: every widget in order (row N is widget \`wN\`), as its kind's
+// factory, its initial state (its slice of TEA's \`init\`; none for a summary), its label, and
 // the arguments of its kind (limits, items, rules, formats, summary sources).
-const WIDGETS = [
+const page = () => [
 ${table.join("\n")}
 ];
 
@@ -612,10 +612,10 @@ export function start(root) {
   // Each widget's handle: its load for serverSet and snapshot, carrying its external arms.
   const views = {};
   let n = 0;
-  for (const [factory, init, ...config] of WIDGETS) {
-    // Widget wN is number N: its state slice is \`model[N]\`, a fresh copy of its initial state (a
-    // summary gets the model), and its readers \`readers[N]\`.
-    views["w" + ++n] = factory(board, init ? (model[n] = structuredClone(init)) : model, readers, n, ...config);
+  for (const [factory, init, ...config] of page()) {
+    // Widget wN is number N: its state slice is \`model[N]\`, its initial state (a summary gets the
+    // model), and its readers \`readers[N]\`.
+    views["w" + ++n] = factory(board, init ? (model[n] = init) : model, readers, n, ...config);
   }
   flush();
 
