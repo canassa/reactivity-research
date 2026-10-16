@@ -43,3 +43,21 @@ first emitter, `scenarios/big-table/vanilla.js`, modelled on js-framework-benchm
   point.
 - The panel structured-clones external events, so the app can keep the server's row objects as
   its own records with no copy.
+
+## After review
+
+A code review found no cheating and confirmed the slope. Three fixes followed:
+
+- **Payloads stay read-only.** `serverRows` and the snapshot used to adopt the message's row
+  objects as records and then mutate them. That only worked because the panel and `./rr work`
+  structured-clone messages, and the CPU bench re-dispatches the same objects. They now copy the
+  rows (`map((r) => ({ ...r }))`) where they enter. The snapshot's selected-row lookup is
+  guarded (`?.tr`).
+- **No module-preload polyfill** (`build.modulePreload: { polyfill: false }`): the floor is what a
+  hand-writer ships. Runtime dropped from about 460 B to 179 B brotli, which is now only the
+  reconciler. The README says that "runtime" means shared helpers for vanilla, not a library.
+- Checks pass again (N = 1, 4, 16, 64 × seeds 1 to 3, all clean), and builds are byte-identical.
+
+Sizes, brotli total, seed 1, before → after: N=1 1,914 → 1,657 B; N=16 8,625 → 8,350 B; N=64
+22,082 → 21,813 B; N=256 68,388 → 68,177 B. Fit over N ≥ 4: 4,504 + 254.8 B/table → 4,242 +
+255.0 B/table. The slope is unchanged and the baseline drops by the polyfill.
