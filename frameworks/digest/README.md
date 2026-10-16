@@ -242,3 +242,25 @@ Every number below comes from the same quick measurement: sizes 1, 4, 16, 64 and
   `ariaExpanded`): Chrome, Safari, and Firefox 119 and later.
 - **A non-canonical number spelling stays as typed.** If you type `1e2` into an amount whose
   value is already 100, the input still shows `1e2`. Solid's controlled input behaves the same.
+
+## unique-components
+
+`scenarios/unique-components/digest.js` writes every widget as **its own function**, with no
+per-kind factories and no data rows (the shared-components size win came from rows, which the
+scenario's rule forbids). A widget function holds, as code: its state literal, its template (one
+static HTML string), its handlers (one arrow function per message, the ops compiled to
+statements), its bindings (derived expressions compiled to JavaScript) and, for a time-driven
+field, its tick function. Only initial values and texts are data.
+
+It uses `runtime-unique.js` instead of `runtime.js`: the same strategy (binding closures that
+write on change, a local digest), but it knows nothing about widget kinds. `widget(html, s, h)`
+builds the section and returns the template's elements in document order, and bindings refer to
+them by position (`e[3]`). Differences from `runtime.js`:
+- a hidden node leaves an empty text node, so adjacent conditionals work (the shared limit
+  above does not apply);
+- the delegated listener finds the widget by `data-role=widget`, because a conditional section
+  may itself be a `<section>`;
+- a reader widget adds its whole binding list to each source's list (`dep`, a compile-time
+  fact), so a source's change digests the readers too, and nothing else;
+- external events deep-copy what they receive (`structuredClone`), because handlers mutate
+  the widget's lists in place and must not alter the sender's data.
