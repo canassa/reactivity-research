@@ -239,8 +239,10 @@ function widgetFile(w, reads) {
     const m = message(name);
     itemBodies[name] = () => {
       const v = `s.${m.field}`;
-      if (m.op === "toggle") return ["item.done = !item.done;", ...sched([m.field], ["set"])];
-      return [`${v}.splice(${v}.indexOf(item), 1);`, `${lists[m.field]}.drop(item.id);`, ...sched([m.field])];
+      // By id: an earlier event in the same task (a second click, a server push) may have
+      // removed or replaced the item, and an action on a gone item does nothing.
+      if (m.op === "toggle") return [`const it = ${v}.find((x) => x.id === item.id);`, "if (!it) return;", "it.done = !it.done;", ...sched([m.field], ["set"])];
+      return [`const at = ${v}.findIndex((x) => x.id === item.id);`, "if (at < 0) return;", `${v}.splice(at, 1);`, `${lists[m.field]}.drop(item.id);`, ...sched([m.field])];
     };
     return `@@${name}@@`;
   }

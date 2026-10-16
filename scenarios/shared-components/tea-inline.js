@@ -177,13 +177,18 @@ const FACTORIES = {
       text(label, item.text);
     };
     // The arms of update for this row's item: toggle(id), which schedules the row's binding,
-    // and remove(id).
+    // and remove(id). By id: an earlier event in the same task (a second click, a server push)
+    // may have removed or replaced the item, and an action on a gone item does nothing.
     on(box, () => {
-      item.done = !item.done;
+      const it = s.items.find((x) => x.id === item.id);
+      if (!it) return;
+      it.done = !it.done;
       schedule(set, onItems);
     });
     on(el("button", node, { "data-role": "remove" }, removeText), () => {
-      s.items.splice(s.items.indexOf(item), 1);
+      const at = s.items.findIndex((x) => x.id === item.id);
+      if (at < 0) return;
+      s.items.splice(at, 1);
       items.drop(item.id);
       schedule(onItems);
     });
@@ -373,9 +378,12 @@ const FACTORIES = {
   const entries = list(el("ul", root), () => s.entries, (entry) => {
     const node = el("li", null, { "data-key": entry.id });
     const label = el("span", node);
-    // The arm of update for this row's entry: dismiss(id). The row keeps its entry current.
+    // The arm of update for this row's entry: dismiss(id), by id (see the todo's remove). The
+    // row keeps its entry current.
     on(el("button", node, { "data-role": "dismiss" }, dismissText), () => {
-      s.entries.splice(s.entries.indexOf(entry), 1);
+      const at = s.entries.findIndex((x) => x.id === entry.id);
+      if (at < 0) return;
+      s.entries.splice(at, 1);
       entries.drop(entry.id);
       schedule(onEntries);
     });

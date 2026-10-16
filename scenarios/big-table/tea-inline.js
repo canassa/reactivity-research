@@ -127,7 +127,7 @@ function tableFile(t, spec) {
           const a = n++;
           cells.push(`<a data-role=${attrValue(c.select)}></a>`);
           paints.push(`text(${E(a)}, ${value});`);
-          events.push(`on(${E(a)}, () => {`, "  const was = s.selected;", "  s.selected = item.id;", `  schedule(${L}.get(was)?.[2], mark);`, "});");
+          events.push(`on(${E(a)}, () => {`, "  if (!s.rows.some((x) => x.id === item.id)) return;", "  const was = s.selected;", "  s.selected = item.id;", `  schedule(${L}.get(was)?.[2], mark);`, "});");
           use("text", "on", "schedule");
         } else {
           cells.push("");
