@@ -48,71 +48,70 @@ const KINDS = {
   counter: {
     args: "l, st, mn, mx, v0",
     body: `
-  s.value = v0;
+  let value = v0;
   widget("counter", l, \`<output data-role=value></output><button data-role=dec>-\${st}</button><button data-role=inc>+\${st}</button><button data-role=reset>Reset</button>\`, [
-    () => s.value = Math.max(mn, s.value - st), // dec
-    () => s.value = Math.min(mx, s.value + st), // inc
-    () => s.value = v0, // reset
-  ]);
-  text(1, () => s.value);
-  bind(2, "disabled", () => s.value <= mn);
-  bind(3, "disabled", () => s.value >= mx);`,
-    metric: `{ m: () => s.value, p: (n) => l + ": " + n }`,
+    () => value = Math.max(mn, value - st), // dec
+    () => value = Math.min(mx, value + st), // inc
+    () => value = v0, // reset
+  ], (v) => ({ value } = v));
+  text(1, () => value);
+  bind(2, "disabled", () => value <= mn);
+  bind(3, "disabled", () => value >= mx);`,
+    metric: `{ m: () => value, p: (n) => l + ": " + n }`,
     row: (w, s) => [lit(w.step), lit(w.min), lit(w.max), lit(s.value)],
   },
 
   toggles: {
     args: "l, names, on",
     body: `
-  s.on = [...on];
   widget("toggles", l, \`<ul>\${names.map((n, i) => \`<li><label><input type=checkbox data-role=toggle data-key=\${i}>\${n}</label></li>\`).join("")}</ul><p data-role=count></p>\`,
-    names.map((n, i) => (t) => s.on[i] = t.checked)); // toggle
+    names.map((n, i) => (t) => on[i] = t.checked), // toggle
+    (v) => ({ on } = v));
   // Each item is li, label, input: the i-th checkbox is element 4 + 3i.
-  names.forEach((n, i) => bind(4 + 3 * i, "checked", () => s.on[i]));
-  const count = () => s.on.filter(Boolean).length;
+  names.forEach((n, i) => bind(4 + 3 * i, "checked", () => on[i]));
+  const count = () => on.filter(Boolean).length;
   text(2 + 3 * names.length, () => count() + " of " + names.length + " on");`,
     metric: `{ m: count, p: (n) => n + " on in " + l }`,
     row: (w, s) => [arr(w.items, html), arr(s.on, bit)],
   },
 
   field: {
-    args: "l, ph, re, msg, t0",
+    args: "l, ph, re, msg, str",
     body: `
-  s.text = t0;
   re = RegExp(re);
   widget("field", l, \`<input type=text data-role=input placeholder="\${ph}"><p data-role=error>\${msg}</p>\`, [
-    (t) => s.text = t.value, // input
-  ]);
-  bind(1, "value", () => s.text);
-  show(2, () => !re.test(s.text));`,
+    (t) => str = t.value, // input
+  ], (v) => ({ text: str } = v));
+  bind(1, "value", () => str);
+  show(2, () => !re.test(str));`,
     row: (w, s) => [html(w.placeholder), lit(rulePattern(w.rule)), html(w.rule.message), lit(s.text)],
   },
 
   todo: {
     args: "l, ph, add, rm, items",
     body: `
-  s.items = items.map(([text, done], i) => ({ id: i + 1, text, done }));
-  s.draft = "";
+  items = items.map(([text, done], i) => ({ id: i + 1, text, done }));
+  let draft = "";
   widget("todo", l, \`<input type=text data-role=draft placeholder="\${ph}"><button data-role=add>\${add}</button><ul></ul><p data-role=left></p>\`, [
-    (t) => s.draft = t.value, // draft
+    (t) => draft = t.value, // draft
     () => { // add
-      const text = s.draft.trim();
+      const text = draft.trim();
       if (text) {
-        s.items.push({ id: Math.max(0, ...s.items.map((i) => i.id)) + 1, text, done: false });
-        s.draft = "";
+        items.push({ id: Math.max(0, ...items.map((i) => i.id)) + 1, text, done: false });
+        draft = "";
       }
     },
-  ]);
-  bind(1, "value", () => s.draft);
-  list(3, () => s.items, \`<input type=checkbox data-role=toggle><span></span><button data-role=remove>\${rm}</button>\`, (r) => (
+  ], (v) => ({ items, draft } = v));
+  bind(1, "value", () => draft);
+  list(3, () => items, \`<input type=checkbox data-role=toggle><span></span><button data-role=remove>\${rm}</button>\`, (r) => (
     bind(0, "checked", () => r.i.done),
     text(1, () => r.i.text),
     [
       (t) => r.i.done = t.checked, // toggle
-      () => s.items = s.items.filter((i) => i != r.i), // remove
+      () => items = items.filter((i) => i != r.i), // remove
     ]
   ));
-  const left = () => s.items.filter((i) => !i.done).length;
+  const left = () => items.filter((i) => !i.done).length;
   text(4, () => left() + " left");`,
     metric: `{ m: left, p: (n) => n + " left in " + l }`,
     row: (w, s) => {
@@ -122,57 +121,53 @@ const KINDS = {
   },
 
   tabs: {
-    args: "l, titles, texts, a",
+    args: "l, titles, texts, active",
     body: `
-  s.active = a;
   widget("tabs", l, \`<div role=tablist>\${titles.map((t, i) => \`<button role=tab data-role=tab data-key=\${i}>\${t}</button>\`).join("")}</div><p role=tabpanel data-role=tab-content></p>\`,
-    titles.map((t, i) => () => s.active = i)); // tab
-  titles.forEach((t, i) => bind(2 + i, "ariaSelected", () => "" + (i == s.active)));
-  text(2 + titles.length, () => texts[s.active]);`,
+    titles.map((t, i) => () => active = i), // tab
+    (v) => ({ active } = v));
+  titles.forEach((t, i) => bind(2 + i, "ariaSelected", () => "" + (i == active)));
+  text(2 + titles.length, () => texts[active]);`,
     row: (w, s) => [arr(w.tabs.map((t) => t.title), html), arr(w.tabs.map((t) => t.content)), lit(s.active)],
   },
 
   panel: {
-    args: "l, sh, hi, body, o",
+    args: "l, sh, hi, body, open",
     body: `
-  s.open = o;
   widget("panel", l, \`<button data-role=toggle></button><p data-role=body>\${body}</p>\`, [
-    () => s.open = !s.open, // toggle
-  ]);
-  bind(1, "ariaExpanded", () => "" + !!s.open);
-  text(1, () => (s.open ? hi : sh));
-  show(2, () => s.open);`,
+    () => open = !open, // toggle
+  ], (v) => ({ open } = v));
+  bind(1, "ariaExpanded", () => "" + !!open);
+  text(1, () => (open ? hi : sh));
+  show(2, () => open);`,
     row: (w, s) => [lit(w.showText), lit(w.hideText), html(w.body), bit(s.open)],
   },
 
   choice: {
-    args: "l, values, labels, xf, ph, o, x",
+    args: "l, values, labels, xf, ph, option, extra",
     body: `
-  s.option = o;
-  s.extra = x;
   widget("choice", l, \`<select data-role=select>\${values.map((v, i) => \`<option value="\${v}">\${labels[i]}</option>\`).join("")}</select><input type=text data-role=extra placeholder="\${ph}">\`, [
-    (t) => s.option = t.value, // select
-    (t) => s.extra = t.value, // extra
-  ]);
-  bind(1, "value", () => s.option);
+    (t) => option = t.value, // select
+    (t) => extra = t.value, // extra
+  ], (v) => ({ option, extra } = v));
+  bind(1, "value", () => option);
   // The extra input comes after the select's options.
   const n = 2 + values.length;
-  bind(n, "value", () => s.extra);
-  show(n, () => xf.includes(values.indexOf(s.option)));`,
+  bind(n, "value", () => extra);
+  show(n, () => xf.includes(values.indexOf(option)));`,
     row: (w, s) => [arr(w.options.map((o) => o.value), html), arr(w.options.map((o) => o.label), html),
       arr(w.extraFor.map((v) => w.options.findIndex((o) => o.value === v))), html(w.extraPlaceholder), lit(s.option), lit(s.extra)],
   },
 
   amount: {
-    args: "l, d, pre, suf, v0",
+    args: "l, d, pre, suf, value",
     body: `
-  s.value = v0;
   widget("amount", l, "<input type=number data-role=input><output data-role=formatted></output>", [
-    (t) => { t.value && (s.value = +t.value); }, // input
-  ]);
-  bind(1, "value", () => "" + s.value);
-  text(2, () => pre + s.value.toFixed(d) + suf);`,
-    metric: `{ m: () => s.value, p: (n) => l + ": " + n }`,
+    (t) => { t.value && (value = +t.value); }, // input
+  ], (v) => ({ value } = v));
+  bind(1, "value", () => "" + value);
+  text(2, () => pre + value.toFixed(d) + suf);`,
+    metric: `{ m: () => value, p: (n) => l + ": " + n }`,
     row: (w, s) => {
       const f = w.format;
       const [pre, suf] = f.type === "currency" ? [f.symbol, ""] : f.type === "percent" ? ["", "%"] : ["", " " + f.unit];
@@ -181,15 +176,14 @@ const KINDS = {
   },
 
   filter: {
-    args: "l, ph, items, q",
+    args: "l, ph, items, query",
     body: `
-  s.query = q;
   items = items.map((text, i) => ({ id: i + 1, text }));
   widget("filter", l, \`<input type=text data-role=query placeholder="\${ph}"><ul></ul><p data-role=matches></p>\`, [
-    (t) => s.query = t.value, // query
-  ]);
-  bind(1, "value", () => s.query);
-  const shown = () => items.filter((i) => i.text.toLowerCase().includes(s.query.toLowerCase()));
+    (t) => query = t.value, // query
+  ], (v) => ({ query } = v));
+  bind(1, "value", () => query);
+  const shown = () => items.filter((i) => i.text.toLowerCase().includes(query.toLowerCase()));
   // The items are constants: their text is written once.
   list(2, shown, "", (r) => { r.n.textContent = r.i.text; });
   text(3, () => shown().length + " matches");`,
@@ -201,18 +195,18 @@ const KINDS = {
   },
 
   rating: {
-    args: "l, labels, v",
+    args: "l, labels, n",
     body: `
-  s.stars = v;
   const stars = labels.slice(1);
   widget("rating", l, \`<div>\${stars.map((_, i) => \`<button data-role=star data-key=\${i + 1}></button>\`).join("")}</div><p data-role=rating-label></p>\`,
-    stars.map((_, i) => () => s.stars = i + 1)); // star
+    stars.map((_, i) => () => n = i + 1), // star
+    (v) => ({ stars: n } = v));
   stars.forEach((_, i) => {
-    bind(2 + i, "ariaPressed", () => "" + (i < s.stars));
-    bind(2 + i, "textContent", () => (i < s.stars ? "★" : "☆"));
+    bind(2 + i, "ariaPressed", () => "" + (i < n));
+    bind(2 + i, "textContent", () => (i < n ? "★" : "☆"));
   });
-  text(2 + stars.length, () => labels[s.stars]);`,
-    metric: `{ m: () => s.stars, p: (n) => n + " stars for " + l }`,
+  text(2 + stars.length, () => labels[n]);`,
+    metric: `{ m: () => n, p: (k) => k + " stars for " + l }`,
     row: (w, s) => {
       if (w.labels.length !== w.stars + 1) throw new Error("digest expects one label per rating plus one");
       return [arr(w.labels), lit(s.stars)];
@@ -222,14 +216,16 @@ const KINDS = {
   feed: {
     args: "l, empty, dismiss, entries",
     body: `
-  s.entries = entries.map((text, i) => ({ id: i + 1, text }));
-  widget("feed", l, \`<ul></ul><p data-role=empty>\${empty}</p>\`);
+  // \`notify\` pushes into the entries: they stay on a record, which the factory returns (E).
+  const s = { entries: entries.map((text, i) => ({ id: i + 1, text })) };
+  widget("feed", l, \`<ul></ul><p data-role=empty>\${empty}</p>\`, [], (v) => ({ entries: s.entries } = v));
   list(1, () => s.entries, \`<span></span><button data-role=dismiss>\${dismiss}</button>\`, (r) => (
     text(0, () => r.i.text),
     [() => s.entries = s.entries.filter((e) => e != r.i)] // dismiss
   ));
   show(2, () => !s.entries.length);`,
-    metric: `{ m: () => s.entries.length, p: (n) => n + " in " + l }`,
+    metric: `Object.assign(s, { m: () => s.entries.length, p: (n) => n + " in " + l })`,
+    ret: "s",
     row: (w, s) => {
       sequential(s.entries, (i) => i + 1);
       return [html(w.emptyText), html(w.dismissText), arr(s.entries.map((e) => e.text))];
@@ -237,20 +233,18 @@ const KINDS = {
   },
 
   clock: {
-    args: "l, a, b, c, sec, on",
+    args: "l, a, b, c, seconds, running",
     body: `
-  s.seconds = sec;
-  s.running = on;
   const w = widget("clock", l, \`<output data-role=time></output><button data-role=start>\${a}</button><button data-role=stop>\${b}</button><button data-role=reset>\${c}</button>\`, [
-    () => s.running = true, // start
-    () => s.running = false, // stop
-    () => { s.seconds = 0; s.running = false; }, // reset
-  ]);
-  text(1, () => Math.floor(s.seconds / 60) + ":" + String(s.seconds % 60).padStart(2, "0"));
-  bind(2, "disabled", () => s.running);
-  bind(3, "disabled", () => !s.running);
-  T.push(() => s.running && (s.seconds++, run(w)));`,
-    metric: `{ m: () => s.seconds, p: (n) => n + "s on " + l }`,
+    () => running = true, // start
+    () => running = false, // stop
+    () => { seconds = 0; running = false; }, // reset
+  ], (v) => ({ seconds, running } = v));
+  text(1, () => Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0"));
+  bind(2, "disabled", () => running);
+  bind(3, "disabled", () => !running);
+  T.push(() => running && (seconds++, run(w)));`,
+    metric: `{ m: () => seconds, p: (n) => n + "s on " + l }`,
     row: (w, s) => [html(w.startText), html(w.stopText), html(w.resetText), lit(s.seconds), bit(s.running)],
   },
 
@@ -290,8 +284,8 @@ function appFile(spec) {
 
   const factories = kinds.map((k) => {
     const K = KINDS[k];
-    const ret = read.has(k) && K.metric;
-    return `const ${k} = (s, ${K.args}) => {${K.body}${ret ? `\n  return ${ret};` : ""}\n};`;
+    const ret = (read.has(k) && K.metric) || K.ret;
+    return `const ${k} = (${K.args}) => {${K.body}${ret ? `\n  return ${ret};` : ""}\n};`;
   });
 
   const rows = spec.widgets.map((w) => {
@@ -303,14 +297,14 @@ function appFile(spec) {
   const has = (k) => kinds.includes(k);
   const branches = [
     // External data is copied before it is kept: handlers mutate state in place.
-    `if (m.type == "serverSet") Object.assign(S[m.widget], structuredClone(m.state)), up(m.widget);`,
-    `else if (m.type == "snapshot") { const w = structuredClone(m.state.widgets); for (const k in w) Object.assign(S[k], w[k]), up(k); }`,
+    `if (m.type == "serverSet") S[m.widget](structuredClone(m.state)), run(W[m.widget]);`,
+    `else if (m.type == "snapshot") { const w = structuredClone(m.state.widgets); for (const k in w) S[k](w[k]), run(W[k]); }`,
   ];
   if (has("clock")) branches.push(`else if (m.type == "tick") for (const t of T) t();`);
-  if (has("feed")) branches.push(`else if (m.type == "notify") S[m.widget].entries.push(m.entry), up(m.widget);`);
+  if (has("feed")) branches.push(`else if (m.type == "notify") E[m.widget].entries.push(m.entry), run(W[m.widget]);`);
 
   return `// Generated by scenarios/shared-components/digest.js. Do not edit.
-import { app, widget, bind, text, show, list, run, up, id, S, E, W, T } from "./runtime.js";
+import { app, widget, bind, text, show, list, run, id, S, E, W, T } from "./runtime.js";
 
 ${factories.join("\n\n")}
 

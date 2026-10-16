@@ -14,16 +14,16 @@ let B; // the bindings being collected: the widget's, or one list item's while i
 let N; // the elements of the template being created (a widget's, or one list item's), by position
 let D; // the dashboard element
 
-// By widget id: the instance state (S), what other widgets may read of it (E; `m`: its metric,
-// `p`: its phrase) and its bindings (W). T: the clocks' tick functions.
+// By widget id: the setter that replaces the widget's whole state (S), what its factory returns
+// for others to read (E; `m`: its metric, `p`: its phrase; a feed's record, which `notify`
+// pushes into) and its bindings (W). T: the clocks' tick functions.
 export let S, E, W, T;
 
+// Digest a binding list: `run(W[k])` digests widget k after its state changed, its bindings and
+// its readers'.
 export const run = (b) => {
   for (const f of b) f();
 };
-
-// Digest one widget after its state changed: its bindings and its readers'.
-export const up = (k) => run(W[k]);
 
 const el = (tag, html) => {
   const n = document.createElement(tag);
@@ -79,8 +79,9 @@ export const list = (i, items, html, make, p = N[i], map = new Map()) =>
 export let id;
 
 // Create the widget's section: its heading and `html`, with `h`, the handlers of its controls
-// in document order. Returns the widget's binding list, which the bindings created next fill.
-export const widget = (kind, label, html, h) => {
+// in document order, and `set`, the setter of its whole state. Returns the widget's binding
+// list, which the bindings created next fill.
+export const widget = (kind, label, html, h, set) => {
   const x = el("section", "<h2></h2>" + html);
   x.firstChild.textContent = label;
   x.dataset.key = id;
@@ -88,6 +89,7 @@ export const widget = (kind, label, html, h) => {
   on(x, h);
   D.append(x);
   N = x.querySelectorAll("*");
+  S[id] = set;
   return (W[id] = x.b = B = []);
 };
 
@@ -102,7 +104,7 @@ const onEvent = ({ target: t }) => {
 };
 
 // The program: `defs` is one [factory, ...config] per widget, in page order (ids w1, w2, …);
-// `receive(msg)` applies an external event and digests the widgets it touched (with `up`).
+// `receive(msg)` applies an external event and digests the widgets it touched (with `run`).
 export const app = (defs, receive) => ({
   mount(root) {
     S = {};
@@ -113,9 +115,9 @@ export const app = (defs, receive) => ({
     D.dataset.role = "dashboard";
     defs.forEach(([f, ...c], i) => {
       id = "w" + (i + 1);
-      E[id] = f((S[id] = {}), ...c);
+      E[id] = f(...c);
     });
-    for (const k in W) up(k);
+    for (const k in W) run(W[k]);
     D.addEventListener("click", onEvent);
     D.addEventListener("input", onEvent);
     root.append(D);
