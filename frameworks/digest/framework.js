@@ -15,7 +15,8 @@ export const track = "prototype";
 
 // Files every digest app gets unchanged: the HTML shell, the build config, the adapter and the
 // runtime.
-export function templateFiles({ name, title }) {
+// `runtime` is runtime.js, or runtime-unique.js for apps made of one-off components.
+export function templateFiles({ name, title, runtime = "runtime.js" }) {
   const read = (f) => fs.readFileSync(path.join(HERE, f), "utf8");
   return {
     "package.json": read("template/package.json").replace("%NAME%", name)
@@ -23,7 +24,7 @@ export function templateFiles({ name, title }) {
     "index.html": read("template/index.html").replace("%TITLE%", title),
     "vite.config.js": read("template/vite.config.js"),
     "src/adapter.js": read("template/adapter.js"),
-    "src/runtime.js": read("runtime.js"),
+    "src/runtime.js": read(runtime),
   };
 }
 
