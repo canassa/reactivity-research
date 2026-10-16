@@ -385,8 +385,11 @@
 
     // 2. Fitted baseline and slope.
     const metricKey = mode === "br" ? "total.br" : "total.raw";
+    // A variant measured at one size (e.g. beni on big-table) has no line to fit.
+    const fitted = (v) => bySize(v.records, M.total).length >= 2;
     const curves = vs.flatMap((v, i) => {
       const c = [];
+      if (!fitted(v)) return c;
       const a = v.fit.all[metricKey];
       c.push({ color: color(i), fn: (x) => a.baseline + a.slope * x, width: 1.5, opacity: 0.55, dash: "5 4" });
       if (v.fit.steady) {
@@ -398,13 +401,14 @@
     const fitSeries = vs.map((v, i) => ({ name: v.name, color: color(i), points: bySize(v.records, M.total) }));
     const fitRows = [];
     for (const v of vs) {
+      if (!fitted(v)) { fitRows.push([v.name, "one size: no fit", ...Array(11).fill("—")]); continue; }
       for (const which of ["all", "steady"]) {
         const f = v.fit[which];
         if (!f) continue;
         const pick = (k) => f[`${k}.${mode}`];
         const row = [v.name, which === "all" ? "all" : `N ≥ ${f.from}`];
         for (const k of ["total", "js", "html", "runtime", "app"]) { const g = pick(k); row.push(fmt(g.baseline), g.slope.toFixed(1)); }
-        row.push(pick("total").r2.toFixed(3));
+        row.push(pick("total").r2 == null ? "—" : pick("total").r2.toFixed(3));
         fitRows.push(row);
       }
     }
