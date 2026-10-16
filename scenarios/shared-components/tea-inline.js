@@ -9,10 +9,11 @@
 //   it writes the fields that arm changes and schedules exactly the bindings that read them,
 //   plus the summaries reading that widget (`readers[id]`) when it writes a field they read.
 // - The app is a table of rows (factory, initial state, label, the kind's arguments) in page
-//   order, the arguments passed positionally; row N is widget wN. The model is TEA's model,
-//   `{ [id]: state }`, made on each mount from a copy of every row's initial state (TEA's
-//   `init`, split per widget); each factory is handed its slice and edits it in place (the
-//   compiler proved it unshared); a summary is handed the model it reads.
+//   order, the arguments passed positionally; row N is widget wN, number N. The model is TEA's
+//   model by widget number, `{ [N]: state }`, made on each mount from a copy of every row's
+//   initial state (TEA's `init`, split per widget); each factory is handed its number and its
+//   slice, and edits the slice in place (the compiler proved it unshared); a summary is handed
+//   the model it reads and the numbers of its sources.
 // - External events stay messages: `receive(msg)` is the part of `update` still reached by a
 //   message (serverSet, tick, notify, snapshot), routed to the widget's own arms.
 
@@ -451,7 +452,7 @@ const WIDGET_FILE = `import { el, schedule } from "../runtime.js";
 
 // The section every widget renders into: its key, its kind and its heading.
 export function section(parent, id, label, kind) {
-  const root = el("section", parent, { "data-key": id, "data-role": "widget-" + kind });
+  const root = el("section", parent, { "data-key": "w" + id, "data-role": "widget-" + kind });
   el("h2", root, null, label);
   return root;
 }
@@ -512,7 +513,7 @@ function summaryText(spec, w, indent) {
   // A breakdown shows each term and their total: its terms are named; any other text uses each
   // term once, inline.
   if (w.formula !== "breakdown") {
-    const terms = sources.map((src) => metricExpr(src, `w.${src.id}`, itemsName(src)));
+    const terms = sources.map((src) => metricExpr(src, `w[${src.id.slice(1)}]`, itemsName(src)));
     const decimal = sources.map((src) => src.kind === "amount");
     const total = decimal.some(Boolean) ? `formatNumber(${terms.join(" + ")})` : terms.join(" + ");
     const text = w.formula === "sum" ? `${tplText(w.prefix)}: \${${total}}`
@@ -524,7 +525,7 @@ function summaryText(spec, w, indent) {
     let name = camelCase(src.label);
     while (names.includes(name)) name += "2";
     names.push(name);
-    return `const ${name} = ${metricExpr(src, `w.${src.id}`, itemsName(src))};`;
+    return `const ${name} = ${metricExpr(src, `w[${src.id.slice(1)}]`, itemsName(src))};`;
   });
   // Only amounts can hold fractions; their terms (and any total including them) are rounded.
   const decimal = sources.map((src) => src.kind === "amount");
@@ -565,7 +566,7 @@ function formatNumber(n) {
       else if (w.kind === "filter" && name === "items" && read.has(w.id)) config.push(itemsName(w));
       else config.push(literal(w[name], ind));
     }
-    if (w.kind === "summary") config.push(literal(w.sources), summaryText(spec, w, ind));
+    if (w.kind === "summary") config.push(literal(w.sources.map((id) => Number(id.slice(1)))), summaryText(spec, w, ind));
     const flat = `  [${config.join(", ")}],`;
     return flat.length <= 100 && !flat.includes("\n") ? flat : `  [\n${config.map((c) => ind + c + ",").join("\n")}\n  ],`;
   });
@@ -590,7 +591,7 @@ ${clocks.map((w) => `        views.${w.id}.tick();`).join("\n")}
 
   const imports = [`import { el, flush, cancel } from "./runtime.js";`,
     ...kinds.map((k) => `import { ${k} } from "./widgets/${k}.js";`)];
-  const readers = Object.fromEntries(spec.widgets.filter((w) => read.has(w.id)).map((w) => [w.id, []]));
+  const readers = Object.fromEntries(spec.widgets.filter((w) => read.has(w.id)).map((w) => [w.id.slice(1), []]));
 
   return `${imports.join("\n")}
 ${consts.length ? "\n" + consts.join("\n\n") + "\n" : ""}
@@ -611,9 +612,9 @@ export function start(root) {
   const views = {};
   let n = 0;
   for (const [factory, init, ...config] of WIDGETS) {
-    const id = "w" + ++n;
-    // A widget gets its state slice (a fresh copy of its initial state), a summary the model.
-    views[id] = factory(board, init ? (model[id] = structuredClone(init)) : model, readers, id, ...config);
+    // Widget wN is number N: its state slice is \`model[N]\`, a fresh copy of its initial state (a
+    // summary gets the model), and its readers \`readers[N]\`.
+    views["w" + ++n] = factory(board, init ? (model[n] = structuredClone(init)) : model, readers, n, ...config);
   }
   flush();
 
