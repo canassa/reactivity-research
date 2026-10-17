@@ -45,3 +45,14 @@ Style choices are in each emitter's header and in every app's `rr.json`.
   global writes and mount is O(pages that read the global), guard checks only, not subscriptions.
 - **derived-graph note keystroke** (139,945 -> 777,765 calls, N=16 -> 256) is a real Marko property: `items` is
   immutable, so every `<const>` that reads `items` reruns, and Marko cannot track fields through arrays.
+
+## Same-value writes (second review round)
+`int-field` now takes a revision, `input.rev`; an invalid edit is `pending = { rev, text }` and shows only while
+`pending.rev === input.rev`. The parent bumps `rev` on every write that does not come from the field itself, so a
+write that leaves the value as it was still drops the typed text. derived-graph: one `<let/rev>` in the root, bumped
+by step buttons, `serverInputs`, `serverItems` and `snapshot`. routed-app: the root has one (bumped by `serverSet` and
+`snapshot`, passed to pages whose number inputs show a global), each page, panel and modal with a number input has its
+own (bumped by click and confirm handlers, and by the page when its modal closes); a field's revision is the sum of
+the ones above it, and they only grow. Probed in headless Chrome: serverInputs and snapshot of the same value, a
+clamped step, `serverItems` with the same qty, and a same-value reset on a page. Sizes at N=256, seed 1: routed-app
+168,112 -> 171,019 B, derived-graph 34,063 -> 34,238 B.
