@@ -14,7 +14,7 @@
 //   `maxBy`, `minBy`, `topBy`, `sumByCategory`), which are `static` functions of the template.
 //   The item builder's PRNG and the number formatters are `static` too: the scenario's own code.
 // - Inputs: a number input is the `int-field` tag, a controllable `<let/value:=input.value>` with a
-//   `<let/pending>` for an edit that is not a valid integer in range (the cheat sheet's pattern),
+//   `<let/pending>` for an edit that is not a valid integer in range (the cheat sheet's pattern; the edit remembers the value it was made over, so any new value replaces it),
 //   bound with `value:=name`; step buttons are `onClick` handlers that clamp; a checkbox is
 //   `checked:=name`; a select is `<select value:=name>` with its options written out.
 // - Items: `items`, `nextId` and `rng` are `<let>`s of the root; the rows are a `<for … by="id">`
@@ -29,14 +29,14 @@
 //   start-up by the item builder.
 
 import { templateFiles } from "../../frameworks/marko/framework.js";
-import { literal } from "../../frameworks/marko/source.js";
+import { INT_FIELD, literal } from "../../frameworks/marko/source.js";
 
 export const framework = "marko";
 
 export const params = {};
 
 const str = JSON.stringify;
-const text = (s) => String(s).replace(/</g, "&lt;").replace(/\$\{/g, "\\${");
+const text = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\$\{/g, "\\${");
 
 // Names the generated code uses itself: no cell may share one.
 const RESERVED = new Set([
@@ -98,10 +98,16 @@ const HELPERS = {
   return list.length ? Math.floor(sumBy(list, value) / list.length) : 0;
 }`,
   maxBy: `static function maxBy(list, value) {
-  return list.length ? Math.max(...list.map(value)) : 0;
+  if (!list.length) return 0;
+  let best = value(list[0]);
+  for (const it of list) best = Math.max(best, value(it));
+  return best;
 }`,
   minBy: `static function minBy(list, value) {
-  return list.length ? Math.min(...list.map(value)) : 0;
+  if (!list.length) return 0;
+  let best = value(list[0]);
+  for (const it of list) best = Math.min(best, value(it));
+  return best;
 }`,
   topBy: `// The first \`k\` items by \`value\`, ascending when \`sign\` is 1 and descending when it is -1; ties by id.
 static function topBy(list, value, sign, k) {
@@ -112,21 +118,6 @@ static function sumByCategory(list, value) {
   return CATS.map((cat) => sumBy(list.filter((it) => it.category === cat), value));
 }`,
 };
-
-const INT_FIELD = `<let/value:=input.value>
-<let/pending=null>
-<const/draft=pending ?? value>
-
-<input type="number" data-role=input.msg value=draft valueChange(text) {
-  const n = Number(text);
-  if (text.trim() !== "" && Number.isInteger(n) && n >= input.min && n <= input.max) {
-    value = n;
-    pending = null;
-  } else {
-    pending = text;
-  }
-}>
-`;
 
 function appFile(spec) {
   const cats = spec.categories;
