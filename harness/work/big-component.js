@@ -21,11 +21,15 @@ export function actions(spec, ref) {
     const c = ref.controls(big).get(name);
     return c && !c.inWhen ? c.node : null;
   };
-  const find = (what, pred) => {
+  // With `--lists none` the generator forces no list, so the list actions and notify are left
+  // out (`optional`); every other capability is still forced.
+  const noLists = spec.options.lists === "none";
+  const find = (what, pred, optional = false) => {
     for (const m of big.messages) {
       const node = always(m.name);
       if (node && pred(m, node)) return m;
     }
+    if (optional) return null;
     throw new Error(`big-component work: no ${what} in w1 (the generator forces one into the first ${ref.FORCED.length} units)`);
   };
   const one = (m, op) => m.kind === "click" && m.ops.length === 1 && m.ops[0][0] === op;
@@ -62,8 +66,8 @@ export function actions(spec, ref) {
   // 3. A list fed from a draft: the draft input, the push button and the item remove control.
   const push = find("list push from a draft", (m) => one(m, "push") &&
     big.messages.some((x) => x.kind === "input" && x.field === m.ops[0][2] && always(x.name)) &&
-    big.messages.some((x) => x.kind === "item" && x.op === "remove" && x.field === m.ops[0][1] && always(x.name)));
-  const listField = push.ops[0][1], draftField = push.ops[0][2];
+    big.messages.some((x) => x.kind === "item" && x.op === "remove" && x.field === m.ops[0][1] && always(x.name)), noLists);
+  const listField = push?.ops[0][1], draftField = push?.ops[0][2];
   const draft = big.messages.find((x) => x.kind === "input" && x.field === draftField);
   const remove = big.messages.find((x) => x.kind === "item" && x.op === "remove" && x.field === listField);
   // 4. A bool toggle (checkbox or toggle button) whose field a conditional section reads.
@@ -80,14 +84,17 @@ export function actions(spec, ref) {
     (m.kind === "check" && m.field === timed?.tickWhen) ||
     (m.kind === "click" && m.ops.length === 1 && m.ops[0][1] === timed?.tickWhen && (m.ops[0][0] === "toggle" || (m.ops[0][0] === "set" && m.ops[0][2] === true))));
   // 8. The feed list, for notify.
-  if (!ref.feedField(big)) throw new Error("big-component work: no feed list in w1");
+  const feed = !!ref.feedField(big);
+  if (!feed && !noLists) throw new Error("big-component work: no feed list in w1");
 
   return [
     { name: "button: add to an int", scope: "local", step: () => click(add.name) },
     { name: "input: type a character", scope: "local", step: (s) => type(text.name, s.widgets[big.id][text.field] + "k") },
-    { name: "list: type in the draft", scope: "local", step: () => type(draft.name, "Buy milk") },
-    { name: "list: push the draft", scope: "local", step: () => click(push.name) },
-    { name: "list: remove an item", scope: "local", step: (s) => click(remove.name, s.widgets[big.id][listField][0].id) },
+    ...(push ? [
+      { name: "list: type in the draft", scope: "local", step: () => type(draft.name, "Buy milk") },
+      { name: "list: push the draft", scope: "local", step: () => click(push.name) },
+      { name: "list: remove an item", scope: "local", step: (s) => click(remove.name, s.widgets[big.id][listField][0].id) },
+    ] : []),
     { name: "bool: toggle (a conditional section reads it)", scope: "local", step: () => click(toggle.name) },
     { name: "enum: select or cycle", scope: "local", step: (s) => {
       if (choice.kind !== "select") return click(choice.name);
@@ -104,7 +111,7 @@ export function actions(spec, ref) {
     { name: "gate: start a time-driven field", scope: "local", setup: true, step: () => click(gate.name) },
     { name: "dispatch: tick (one field running)", scope: "local", step: () => ({ do: "dispatch", msg: { type: "tick" } }) },
     { name: "dispatch: serverSet the companion", scope: "local", step: (s) => ({ do: "dispatch", msg: { type: "serverSet", widget: companion.id, state: ref.serverState(spec, s, companion.id, "work") } }) },
-    { name: "dispatch: notify the feed", scope: "local", step: (s) => ({ do: "dispatch", msg: ref.notifyMsg(spec, s, big.id, "work") }) },
+    ...(feed ? [{ name: "dispatch: notify the feed", scope: "local", step: (s) => ({ do: "dispatch", msg: ref.notifyMsg(spec, s, big.id, "work") }) }] : []),
     { name: "dispatch: whole-state snapshot", scope: "global", step: (s) => ({ do: "dispatch", msg: { type: "snapshot", state: ref.snapshot(spec, s, "work") } }) },
     { name: "dispatch: serverSet the whole component", scope: "global", step: (s) => ({ do: "dispatch", msg: { type: "serverSet", widget: big.id, state: ref.serverState(spec, s, big.id, "work") } }) },
   ];

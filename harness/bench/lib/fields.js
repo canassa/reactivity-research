@@ -19,10 +19,11 @@
 import { serverPair, snapshotPair, restoreField, adjacentOption } from "./pairs.js";
 
 export function fieldBenchActions(spec, ref, list, scenario) {
-  const find = (prefix) => {
+  // The list and notify actions are absent from a spec generated with `--lists none`.
+  const find = (prefix, optional = false) => {
     const a = list.find((x) => x.name.startsWith(prefix));
-    if (!a) throw new Error(`${scenario} bench: no work action starting "${prefix}"`);
-    return a;
+    if (!a && !optional) throw new Error(`${scenario} bench: no work action starting "${prefix}"`);
+    return a ?? null;
   };
   const widget = (id) => ref.byId(spec, id);
   const message = (step) => ref.messageOf(widget(step.msg.widget), step.msg.type);
@@ -34,11 +35,11 @@ export function fieldBenchActions(spec, ref, list, scenario) {
   };
 
   const add = find("button: add to an int"), text = find("input: type a character");
-  const draft = find("list: type in the draft"), push = find("list: push the draft"), remove = find("list: remove an item");
+  const draft = find("list: type in the draft", true), push = find("list: push the draft", true), remove = find("list: remove an item", true);
   const bool = find("bool: toggle"), choice = find("enum: select or cycle"), number = find("number: type a digit");
   const gate = find("gate: start a time-driven field"), tick = find("dispatch: tick");
   const server = list.find((a) => a.name.startsWith("dispatch: serverSet") && a.scope === "local");
-  const notify = find("dispatch: notify"), snapshot = find("dispatch: whole-state snapshot");
+  const notify = find("dispatch: notify", true), snapshot = find("dispatch: whole-state snapshot");
   const serverAll = list.find((a) => a.name.startsWith("dispatch: serverSet") && a.scope === "global");
 
   // The untimed reset for a field that only grows (an add button, a tick): put it back before
@@ -58,14 +59,14 @@ export function fieldBenchActions(spec, ref, list, scenario) {
       const st = text.step(s0), m = message(st), was = s0.widgets[st.msg.widget][m.field];
       return [{ name: text.name, step: text.step }, { name: "input: delete it", step: () => type(st.msg.widget, st.msg.type, was) }];
     } },
-    { name: "list: type, push, remove", scope: "local", halves: (s0) => {
+    ...(push ? [{ name: "list: type, push, remove", scope: "local", halves: (s0) => {
       const p = push.step(s0), field = message(p).ops[0][1], name = remove.step(s0).msg.type;
       return [
         { name: draft.name, step: draft.step },
         { name: push.name, step: push.step },
         { name: "list: remove the pushed item", step: (s) => click(p.msg.widget, name, s.widgets[p.msg.widget][field].at(-1).id) },
       ];
-    } },
+    } }] : []),
     { name: bool.name, scope: "local", halves: () => [{ name: bool.name, step: bool.step }, { name: "bool: toggle back", step: bool.step }] },
     { name: choice.name, scope: "local", halves: (s0) => {
       const st = choice.step(s0);
@@ -90,7 +91,7 @@ export function fieldBenchActions(spec, ref, list, scenario) {
       } },
   ];
   if (server) out.push({ name: server.name, scope: "local", halves: (s0) => serverPair(spec, ref, s0, server.step(s0).msg.widget, server.name) });
-  out.push({ name: "notify, dismiss", scope: "local", halves: (s0) => {
+  if (notify) out.push({ name: "notify, dismiss", scope: "local", halves: (s0) => {
     const st = notify.step(s0), w = widget(st.msg.widget), field = st.msg.field;
     const dismiss = w.messages.find((m) => m.kind === "item" && m.op === "remove" && m.field === field && shown(w, m.name));
     const halves = [{ name: notify.name, step: notify.step }];

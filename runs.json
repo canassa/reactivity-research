@@ -59,8 +59,10 @@
       "seeds": [1, 2, 3]
     },
     "tea-inline": {
+      "$comment": "lists=none is the variant without keyed lists (README, \"The first widgets\"), measured so an approach without keyed lists yet can be compared on it.",
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
-      "seeds": [1, 2, 3]
+      "seeds": [1, 2, 3],
+      "options": { "lists": ["all", "none"] }
     }
   },
   "big-component": {
@@ -79,8 +81,10 @@
       "seeds": [1, 2, 3]
     },
     "tea-inline": {
+      "$comment": "lists=none is the variant without keyed lists (README, \"The first widgets\"), measured so an approach without keyed lists yet can be compared on it.",
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
-      "seeds": [1, 2, 3]
+      "seeds": [1, 2, 3],
+      "options": { "lists": ["all", "none"] }
     },
     "tea-local": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],

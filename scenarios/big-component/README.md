@@ -155,6 +155,12 @@ capability, never inside a conditional section:
 | 7 | a time-driven int with its gate bool and a control for the gate |
 | 8 | an int with a derived text reading unit 6's field, and a conditional section over unit 3's bool |
 
+**`--lists none`** is a variant of the same form with no keyed list anywhere: unit 2 is then a
+text input, unit 5 an int, and the random draw skips lists (every other draw is the same, so a
+unit without a list is the same unit in both variants). It exists for an approach that has no
+keyed lists yet, measured against the others on the same variant; the work actions and the bench
+leave out the list actions and `notify`.
+
 ### The companion
 
 `w2`, the same at every N ≥ 7: a `pinned` checkbox, a `reviewer` input (error while empty),
@@ -373,6 +379,7 @@ rendered once with each expression compiled into a binding, and the companion's
 |---|---|---|
 | `--size` | 16 | N, the number of field units in the big component |
 | `--seed` | 1 | the random seed |
+| `--lists` | `all` | `none`: no keyed list anywhere (see "The first units") |
 
 `./rr check` builds N = 16 by default (`quickCheckSize`), which also starts the locality check
 (16 to 256). The work actions (`harness/work/big-component.js`) need N ≥ 9. Each framework's

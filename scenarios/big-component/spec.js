@@ -28,14 +28,20 @@ export const scenario = "big-component";
 // units always carry the capabilities the work actions need (see FORCED); 16 adds variety.
 export const quickCheckSize = 16;
 
-// The scenario's own parameters (beyond --size and --seed): none.
-export const params = {};
+// The scenario's own parameters (beyond --size and --seed).
+export const params = {
+  lists: { default: "all", help: "all: keyed lists as drawn; none: no keyed list anywhere (unit 2 is a text input, unit 5 an int)" },
+};
+
+const LISTS = ["all", "none"];
 
 export function normalizeOptions(raw = {}) {
   const size = int(raw.size ?? 16, "size");
   const seed = int(raw.seed ?? 1, "seed");
   if (size < 1) throw new Error("--size must be at least 1");
-  return { size, seed };
+  const lists = String(raw.lists ?? "all");
+  if (!LISTS.includes(lists)) throw new Error(`--lists must be one of ${LISTS.join(", ")}`);
+  return { size, seed, lists };
 }
 
 function int(v, name) {
@@ -183,11 +189,11 @@ const READ_CAP = 3;
 
 export function generate(rawOptions) {
   const options = normalizeOptions(rawOptions);
-  const { size, seed } = options;
+  const { size, seed, lists } = options;
 
   // The component: its fields, messages and units, built unit by unit. `reads` counts, per
   // field, the binding sites of later units that read it.
-  const W = { fields: [], messages: [], used: new Set(), words: new Map(), unitOf: new Map(), reads: new Map(), units: [] };
+  const W = { fields: [], messages: [], used: new Set(), words: new Map(), unitOf: new Map(), reads: new Map(), units: [], noLists: lists === "none" };
   for (let i = 0; i < size; i++) W.units.push(buildUnit(W, rng("unit", seed, i), i, FORCED[i] ?? null));
 
   const rh = rng("component", seed);
@@ -285,18 +291,23 @@ function buildUnit(W, r, i, role) {
   const forced = !!role;
   const before = W.fields.length;
 
+  // With `--lists none` the two forced list units become a text input and an int, and the
+  // random draw skips lists (the draws themselves are the same, so a unit without a list is the
+  // same unit in both variants).
   switch (role) {
     case "addButton": GEN.int(b, { addButton: true }); break;
     case "textInput": GEN.text(b, { required: true }); break;
-    case "listPush": GEN.list(b, { pushFromDraft: true, remove: true }); break;
+    case "listPush": if (W.noLists) GEN.text(b, { required: true }); else GEN.list(b, { pushFromDraft: true, remove: true }); break;
     case "boolToggle": GEN.bool(b, { toggle: true }); break;
     case "enumControl": GEN.enum(b, { control: true }); break;
-    case "feed": GEN.list(b, { feed: true }); break;
+    case "feed": if (W.noLists) GEN.int(b, { required: true }); else GEN.list(b, { feed: true }); break;
     case "numberInput": GEN.int(b, { numberInput: true }); break;
     case "tick": tickField(b); break;
     case "dependent": GEN.int(b, { required: true }); break;
     default: {
-      const t = r.weighted([["int", 30], ["bool", 20], ["text", 20], ["enum", 15], ["list", 6], ["tick", 2]]);
+      let t;
+      do t = r.weighted([["int", 30], ["bool", 20], ["text", 20], ["enum", 15], ["list", 6], ["tick", 2]]);
+      while (t === "list" && W.noLists);
       if (t === "tick") tickField(b);
       else GEN[t](b, {});
     }

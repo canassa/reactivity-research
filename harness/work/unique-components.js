@@ -14,13 +14,17 @@ export function actions(spec, ref) {
     const c = ref.controls(w).get(name);
     return c && !c.inWhen ? c.node : null;
   };
-  const find = (what, pred) => {
+  // With `--lists none` the generator forces no list, so the list actions and notify are left
+  // out (`optional`); every other capability is still forced.
+  const noLists = spec.options.lists === "none";
+  const find = (what, pred, optional = false) => {
     for (const w of spec.widgets) {
       for (const m of w.messages) {
         const node = always(w, m.name);
         if (node && pred(w, m, node)) return { w, m, node };
       }
     }
+    if (optional) return null;
     throw new Error(`unique-components work: no widget with ${what} (the defaults force one into the first 8 widgets)`);
   };
   const isPush = (w, field) => w.messages.some((x) => x.kind === "click" && x.ops.some((op) => op[0] === "push" && op[2] === field));
@@ -34,10 +38,10 @@ export function actions(spec, ref) {
   // 3. A list fed from a draft: the draft input, the push button and the item remove control.
   const push = find("a list push from a draft", (w, m) => m.kind === "click" && m.ops.length === 1 && m.ops[0][0] === "push" &&
     w.messages.some((x) => x.kind === "input" && x.field === m.ops[0][2] && always(w, x.name)) &&
-    w.messages.some((x) => x.kind === "item" && x.op === "remove" && x.field === m.ops[0][1] && always(w, x.name)));
-  const listField = push.m.ops[0][1], draftField = push.m.ops[0][2];
-  const draft = push.w.messages.find((x) => x.kind === "input" && x.field === draftField);
-  const remove = push.w.messages.find((x) => x.kind === "item" && x.op === "remove" && x.field === listField);
+    w.messages.some((x) => x.kind === "item" && x.op === "remove" && x.field === m.ops[0][1] && always(w, x.name)), noLists);
+  const listField = push?.m.ops[0][1], draftField = push?.m.ops[0][2];
+  const draft = push?.w.messages.find((x) => x.kind === "input" && x.field === draftField);
+  const remove = push?.w.messages.find((x) => x.kind === "item" && x.op === "remove" && x.field === listField);
   // 4. A bool toggle: a checkbox or a toggle button (not the gate of a time-driven field, which
   // the tick action needs on).
   const isGate = (w, name) => w.fields.some((f) => f.tickWhen === name);
@@ -63,14 +67,16 @@ export function actions(spec, ref) {
   });
   // 8. A feed list, for notify.
   const feed = spec.widgets.find((w) => ref.feedField(w));
-  if (!feed) throw new Error("unique-components work: no feed list (the defaults force one into the first 8 widgets)");
+  if (!feed && !noLists) throw new Error("unique-components work: no feed list (the defaults force one into the first 8 widgets)");
 
   return [
     { name: "button: add to an int", scope: "local", step: () => click(add.w, add.m.name) },
     { name: "input: type a character", scope: "local", step: (s) => type(text.w, text.m.name, s.widgets[text.w.id][text.m.field] + "k") },
-    { name: "list: type in the draft", scope: "local", step: () => type(push.w, draft.name, "Buy milk") },
-    { name: "list: push the draft", scope: "local", step: () => click(push.w, push.m.name) },
-    { name: "list: remove an item", scope: "local", step: (s) => click(push.w, remove.name, s.widgets[push.w.id][listField][0].id) },
+    ...(push ? [
+      { name: "list: type in the draft", scope: "local", step: () => type(push.w, draft.name, "Buy milk") },
+      { name: "list: push the draft", scope: "local", step: () => click(push.w, push.m.name) },
+      { name: "list: remove an item", scope: "local", step: (s) => click(push.w, remove.name, s.widgets[push.w.id][listField][0].id) },
+    ] : []),
     { name: "bool: toggle", scope: "local", step: () => click(toggle.w, toggle.m.name) },
     { name: "enum: select or cycle", scope: "local", step: (s) => {
       if (choice.m.kind !== "select") return click(choice.w, choice.m.name);
@@ -87,7 +93,7 @@ export function actions(spec, ref) {
     { name: "gate: start a time-driven field", scope: "local", setup: true, step: () => click(gate.w, gate.m.name) },
     { name: "dispatch: tick (one field running)", scope: "local", step: () => ({ do: "dispatch", msg: { type: "tick" } }) },
     { name: "dispatch: serverSet one widget", scope: "local", step: (s) => ({ do: "dispatch", msg: { type: "serverSet", widget: add.w.id, state: ref.serverState(spec, s, add.w.id, "work") } }) },
-    { name: "dispatch: notify one feed", scope: "local", step: (s) => ({ do: "dispatch", msg: ref.notifyMsg(spec, s, feed.id, "work") }) },
+    ...(feed ? [{ name: "dispatch: notify one feed", scope: "local", step: (s) => ({ do: "dispatch", msg: ref.notifyMsg(spec, s, feed.id, "work") }) }] : []),
     { name: "dispatch: whole-state snapshot", scope: "global", step: (s) => ({ do: "dispatch", msg: { type: "snapshot", state: ref.snapshot(spec, s, "work") } }) },
   ];
 }

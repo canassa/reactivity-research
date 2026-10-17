@@ -179,6 +179,12 @@ conditional section:
 | w7 | a time-driven int with its gate bool and a control for the gate |
 | w8 | a reader whose first read is w6's number-input field |
 
+**`--lists none`** is a variant of the same app with no keyed list anywhere: w3 is then a text
+input, w5 a bare enum control, and the random draw skips lists (every other draw is the same,
+so a widget without a list is the same widget in both variants). It exists for an approach that
+has no keyed lists yet, measured against the others on the same variant; the work actions and
+the bench leave out the list actions and `notify`.
+
 ## State and messages
 
 - **State:** `{ widgets: { [id]: { [field]: value } } }`, one entry per widget.
@@ -344,6 +350,7 @@ function runOps(state, ops) { for (const op of ops) state = OPS[op[0]](state, op
 | `--size` | 16 | N, the number of widgets |
 | `--seed` | 1 | the random seed |
 | `--reader-every` | 8 | every k-th widget is a reader of earlier widgets; 0 for none. The w8 guarantee above holds only at the default |
+| `--lists` | `all` | `none`: no keyed list anywhere (see "The first widgets") |
 
 `./rr check` builds N = 16 by default (`quickCheckSize`), which also starts the locality check
 (16 to 256). Each framework's emitter may take its own style parameters; it records which it

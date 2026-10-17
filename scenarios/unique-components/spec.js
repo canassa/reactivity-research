@@ -21,7 +21,10 @@ export const quickCheckSize = 16;
 // The scenario's own parameters (beyond --size and --seed), with their defaults.
 export const params = {
   readerEvery: { default: 8, help: "every k-th widget is a reader of earlier widgets (0: none)" },
+  lists: { default: "all", help: "all: keyed lists as drawn; none: no keyed list anywhere (w3 is a text input, w5 a bare enum control)" },
 };
+
+const LISTS = ["all", "none"];
 
 export function normalizeOptions(raw = {}) {
   const size = int(raw.size ?? 16, "size");
@@ -29,7 +32,9 @@ export function normalizeOptions(raw = {}) {
   if (size < 1) throw new Error("--size must be at least 1");
   const readerEvery = int(raw.readerEvery ?? 8, "reader-every");
   if (readerEvery < 0 || readerEvery === 1) throw new Error("--reader-every must be 0 or at least 2");
-  return { size, seed, readerEvery };
+  const lists = String(raw.lists ?? "all");
+  if (!LISTS.includes(lists)) throw new Error(`--lists must be one of ${LISTS.join(", ")}`);
+  return { size, seed, readerEvery, lists };
 }
 
 function int(v, name) {
@@ -167,7 +172,7 @@ export const FORCED = [
 
 export function generate(rawOptions) {
   const options = normalizeOptions(rawOptions);
-  const { size, seed, readerEvery } = options;
+  const { size, seed, readerEvery, lists } = options;
   const widgets = [];
   const sigs = new Set();
   const tokens = new Set();
@@ -177,7 +182,7 @@ export function generate(rawOptions) {
     for (let attempt = 0; ; attempt++) {
       if (attempt > 200) throw new Error(`could not generate a unique widget at position ${i + 1}`);
       const r = rng("widget", seed, i, attempt);
-      const w = buildWidget(r, i, widgets, { reader: reader || forced === "reader", forced });
+      const w = buildWidget(r, i, widgets, { reader: reader || forced === "reader", forced, lists });
       const sig = signature(w);
       if (sigs.has(sig) || tokens.has(w.token)) continue;
       sigs.add(sig);
@@ -204,25 +209,29 @@ const structuredCloneish = (v) => (Array.isArray(v) ? v.map((x) => ({ ...x })) :
 // The widget builder. Fields are generated one by one; each contributes messages and view
 // nodes (a "chunk"). Then come combined messages, derived texts, cross-widget reads, the token
 // caption, conditional sections and nesting.
-function buildWidget(r, i, earlier, { reader, forced }) {
+function buildWidget(r, i, earlier, { reader, forced, lists }) {
   const id = `w${i + 1}`;
   const token = Array.from({ length: 4 }, () => "abcdefghijklmnopqrstuvwxyz0123456789"[r.int(0, 35)]).join("");
   const label = `${r.pick(ADJECTIVES)} ${r.pick(TOPICS)} ${token}`;
   const b = makeBuilder(r);
 
-  // The field types: forced ones first, then random ones up to 1-5 fields in all.
+  // The field types: forced ones first, then random ones up to 1-5 fields in all. With
+  // `--lists none` the two forced list widgets keep their other capability (w3 a text input, w5
+  // the enum control) and the random draw skips lists; the draws themselves are the same, so a
+  // widget without a list is the same widget in both variants.
+  const noLists = lists === "none";
   const want = [];
   if (forced === "addButton") want.push(["int", { addButton: true }]);
   if (forced === "textInput") want.push(["text", { required: true }]);
-  if (forced === "listPush") want.push(["list", { pushFromDraft: true, remove: true }]);
+  if (forced === "listPush") want.push(noLists ? ["text", { required: true }] : ["list", { pushFromDraft: true, remove: true }]);
   if (forced === "boolToggle") want.push(["bool", { toggle: true }]);
-  if (forced === "enumFeed") want.push(["enum", { control: true }], ["list", { feed: true }]);
+  if (forced === "enumFeed") want.push(["enum", { control: true }], ...(noLists ? [] : [["list", { feed: true }]]));
   if (forced === "numberInput") want.push(["int", { numberInput: true }]);
   if (forced === "tick") want.push(["int", { tick: true }]);
   const total = reader ? r.int(1, 2) : r.weighted([[1, 10], [2, 25], [3, 30], [4, 20], [5, 15]]);
   while (want.length < total) {
     const t = r.weighted([["int", 30], ["bool", 20], ["text", 18], ["list", 14], ["enum", 15], ["tick", 3]]);
-    if (t === "list" && want.filter(([x]) => x === "list").length >= 2) continue;
+    if (t === "list" && (noLists || want.filter(([x]) => x === "list").length >= 2)) continue;
     if (t === "tick") want.push(["int", { tick: true }]);
     else want.push([t, {}]);
   }
