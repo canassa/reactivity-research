@@ -1,0 +1,1171 @@
+{
+  "scenario": "derived-graph",
+  "date": "2026-10-17",
+  "sizes": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "scenarioOptions": {
+    "rows": 2000,
+    "fanout": "mid"
+  },
+  "variants": {
+    "tea-inline-fanout=low": {
+      "emitter": "tea-inline",
+      "framework": "tea-inline",
+      "label": "TEA inline (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "track": "prototype: no framework implements this strategy",
+        "components": "no components: the sheet is one static HTML string parsed once, every element is E[n] (its place in document order, labels and options left out); the items are a row template cloned per row",
+        "messages": "erased for DOM events: each update arm is inlined into the action its control calls (an input's setter P.name, an item's handler in its row)",
+        "derivedValues": "compile-time memoization: every formula is a node that recomputes its value once per flush, in dependency order (a sorted queue of nodes ranked by creation order), with an equality cut-off (a list or a group compares its items); the readers of a cell are written into the cell's own code, resolved at build time, so nobody registers at mount",
+        "cutoff": "yes: a formula whose value did not change queues no reader and paints nothing; a top-k list always repaints its keyed list (a field of a listed item may have changed in place) but cuts off its readers",
+        "displays": "a display that reads one cell is inlined into that cell's code; one that reads several is a function that each of its cells collects and that runs after the formulas",
+        "itemEdits": "an item edit writes the item in place and queues the formulas that read the field it wrote (by qty, by active) or, for a change to the set of items, every formula that reads the items; no incremental aggregates: each affected formula recomputes over the items",
+        "lists": "keyed by id: rows.js for the items table (reconcile on a replaced array, add/drop in place), runtime.js list for the top-k lists",
+        "externalEvents": "receive(msg): serverInputs through the input actions, serverItems and snapshot move copies of the message's data into the state; a snapshot is applied like the initial state",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "91d00b2bd3442534",
+      "scenarioOptions": {
+        "fanout": "low"
+      }
+    },
+    "tea-inline": {
+      "emitter": "tea-inline",
+      "framework": "tea-inline",
+      "label": "TEA inline (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "track": "prototype: no framework implements this strategy",
+        "components": "no components: the sheet is one static HTML string parsed once, every element is E[n] (its place in document order, labels and options left out); the items are a row template cloned per row",
+        "messages": "erased for DOM events: each update arm is inlined into the action its control calls (an input's setter P.name, an item's handler in its row)",
+        "derivedValues": "compile-time memoization: every formula is a node that recomputes its value once per flush, in dependency order (a sorted queue of nodes ranked by creation order), with an equality cut-off (a list or a group compares its items); the readers of a cell are written into the cell's own code, resolved at build time, so nobody registers at mount",
+        "cutoff": "yes: a formula whose value did not change queues no reader and paints nothing; a top-k list always repaints its keyed list (a field of a listed item may have changed in place) but cuts off its readers",
+        "displays": "a display that reads one cell is inlined into that cell's code; one that reads several is a function that each of its cells collects and that runs after the formulas",
+        "itemEdits": "an item edit writes the item in place and queues the formulas that read the field it wrote (by qty, by active) or, for a change to the set of items, every formula that reads the items; no incremental aggregates: each affected formula recomputes over the items",
+        "lists": "keyed by id: rows.js for the items table (reconcile on a replaced array, add/drop in place), runtime.js list for the top-k lists",
+        "externalEvents": "receive(msg): serverInputs through the input actions, serverItems and snapshot move copies of the message's data into the state; a snapshot is applied like the initial state",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "91d00b2bd3442534",
+      "scenarioOptions": {
+        "fanout": "mid"
+      }
+    },
+    "tea-inline-fanout=high": {
+      "emitter": "tea-inline",
+      "framework": "tea-inline",
+      "label": "TEA inline (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "track": "prototype: no framework implements this strategy",
+        "components": "no components: the sheet is one static HTML string parsed once, every element is E[n] (its place in document order, labels and options left out); the items are a row template cloned per row",
+        "messages": "erased for DOM events: each update arm is inlined into the action its control calls (an input's setter P.name, an item's handler in its row)",
+        "derivedValues": "compile-time memoization: every formula is a node that recomputes its value once per flush, in dependency order (a sorted queue of nodes ranked by creation order), with an equality cut-off (a list or a group compares its items); the readers of a cell are written into the cell's own code, resolved at build time, so nobody registers at mount",
+        "cutoff": "yes: a formula whose value did not change queues no reader and paints nothing; a top-k list always repaints its keyed list (a field of a listed item may have changed in place) but cuts off its readers",
+        "displays": "a display that reads one cell is inlined into that cell's code; one that reads several is a function that each of its cells collects and that runs after the formulas",
+        "itemEdits": "an item edit writes the item in place and queues the formulas that read the field it wrote (by qty, by active) or, for a change to the set of items, every formula that reads the items; no incremental aggregates: each affected formula recomputes over the items",
+        "lists": "keyed by id: rows.js for the items table (reconcile on a replaced array, add/drop in place), runtime.js list for the top-k lists",
+        "externalEvents": "receive(msg): serverInputs through the input actions, serverItems and snapshot move copies of the message's data into the state; a snapshot is applied like the initial state",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "91d00b2bd3442534",
+      "scenarioOptions": {
+        "fanout": "high"
+      }
+    },
+    "marko-fanout=low": {
+      "emitter": "marko",
+      "framework": "marko",
+      "label": "Marko 6",
+      "track": "real",
+      "emitterOptions": {},
+      "style": {
+        "components": "one root template (src/app.marko) holds the sheet and the items table; the number input is the int-field tag",
+        "state": "<let> per input, and for the markup, the items, nextId and rng",
+        "derivedValues": "<const> per formula, in unit order: Marko's compiler computes each once per change, shares it between its readers and stops where a value is unchanged (===); no memo is written by hand",
+        "collections": "static helper functions that take the formula's own code as an arrow function (sumBy, avgBy, maxBy, minBy, topBy, sumByCategory); filters are Array.filter in the formula",
+        "displays": "plain ${…} interpolation of the cells in the markup; formats are static functions",
+        "lists": "<for … by=\"id\"> for the items and the top-k lists, <for> over the static category list for group rows",
+        "itemEdits": "immutable: items.map matching the row by id (a missing id is a no-op); no incremental aggregates",
+        "inputs": "int-field (controllable <let> plus <let/pending> for an edit that is not a valid integer in range); checked:= for checkboxes, <select value:=> for selects; step buttons clamp in onClick",
+        "externalEvents": "app.marko <return>s a function that assigns the <let>s; serverInputs and snapshot go through one setInput switch; dispatched items are copied, never adopted",
+        "build": "Vite + @marko/vite (linked: false), production mode, client-only mount, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "abbaf5c57108c532",
+      "scenarioOptions": {
+        "fanout": "low"
+      }
+    },
+    "marko": {
+      "emitter": "marko",
+      "framework": "marko",
+      "label": "Marko 6",
+      "track": "real",
+      "emitterOptions": {},
+      "style": {
+        "components": "one root template (src/app.marko) holds the sheet and the items table; the number input is the int-field tag",
+        "state": "<let> per input, and for the markup, the items, nextId and rng",
+        "derivedValues": "<const> per formula, in unit order: Marko's compiler computes each once per change, shares it between its readers and stops where a value is unchanged (===); no memo is written by hand",
+        "collections": "static helper functions that take the formula's own code as an arrow function (sumBy, avgBy, maxBy, minBy, topBy, sumByCategory); filters are Array.filter in the formula",
+        "displays": "plain ${…} interpolation of the cells in the markup; formats are static functions",
+        "lists": "<for … by=\"id\"> for the items and the top-k lists, <for> over the static category list for group rows",
+        "itemEdits": "immutable: items.map matching the row by id (a missing id is a no-op); no incremental aggregates",
+        "inputs": "int-field (controllable <let> plus <let/pending> for an edit that is not a valid integer in range); checked:= for checkboxes, <select value:=> for selects; step buttons clamp in onClick",
+        "externalEvents": "app.marko <return>s a function that assigns the <let>s; serverInputs and snapshot go through one setInput switch; dispatched items are copied, never adopted",
+        "build": "Vite + @marko/vite (linked: false), production mode, client-only mount, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "abbaf5c57108c532",
+      "scenarioOptions": {
+        "fanout": "mid"
+      }
+    },
+    "marko-fanout=high": {
+      "emitter": "marko",
+      "framework": "marko",
+      "label": "Marko 6",
+      "track": "real",
+      "emitterOptions": {},
+      "style": {
+        "components": "one root template (src/app.marko) holds the sheet and the items table; the number input is the int-field tag",
+        "state": "<let> per input, and for the markup, the items, nextId and rng",
+        "derivedValues": "<const> per formula, in unit order: Marko's compiler computes each once per change, shares it between its readers and stops where a value is unchanged (===); no memo is written by hand",
+        "collections": "static helper functions that take the formula's own code as an arrow function (sumBy, avgBy, maxBy, minBy, topBy, sumByCategory); filters are Array.filter in the formula",
+        "displays": "plain ${…} interpolation of the cells in the markup; formats are static functions",
+        "lists": "<for … by=\"id\"> for the items and the top-k lists, <for> over the static category list for group rows",
+        "itemEdits": "immutable: items.map matching the row by id (a missing id is a no-op); no incremental aggregates",
+        "inputs": "int-field (controllable <let> plus <let/pending> for an edit that is not a valid integer in range); checked:= for checkboxes, <select value:=> for selects; step buttons clamp in onClick",
+        "externalEvents": "app.marko <return>s a function that assigns the <let>s; serverInputs and snapshot go through one setInput switch; dispatched items are copied, never adopted",
+        "build": "Vite + @marko/vite (linked: false), production mode, client-only mount, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "abbaf5c57108c532",
+      "scenarioOptions": {
+        "fanout": "high"
+      }
+    },
+    "tea-local-fanout=low": {
+      "emitter": "tea-local",
+      "framework": "tea-local",
+      "label": "tea-local (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "components": "one instance per input (model: its value), per formula (model: its last value, the cache the compiler keeps) and one for the items section; no chunking by position or count. A unit's displays are the binding list of its formula's instance, an input's control the binding list of the input's instance",
+        "reads": "a formula is a reader: it watches the cells its expression reads and is sent its one message when one changes; its binding list also watches the cells its displays read. A value that did not change (=== , or the same items for a list) tells nobody. Jobs run in rank order, so a formula is recomputed once after the cells it reads",
+        "formulas": "each expression compiled into its formula's arm; generic collection helpers (sum, avg, top, groupSum) take the formula's own function; lists and group sums are cached as arrays and compared item by item",
+        "items": "quiet=analysed (default): an arm that writes only fields outside R, the item fields read by a formula or display, does not notify the readers (a compile-time rule applied to every arm, tea-inline's analysis at one bit per arm); quiet=none: every arm notifies",
+        "events": "controls wired by position (wire) to the cell that owns them; the rows by one delegated listener per event type on the table body",
+        "externalEvents": "serverInputs sets the named inputs, serverItems is a message of the items instance, a snapshot sets every input and the items instance",
+        "lists": "runtime keyed list for the top-k lists (src/runtime.js) and the minimal-move keyed table for the items (src/table.js)",
+        "dom": "each unit's markup as one static template (trailing end tags left out), placeholders for dynamic texts",
+        "build": "Vite production build, no framework plugin, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "5e564c9a5a66be17",
+      "scenarioOptions": {
+        "fanout": "low"
+      }
+    },
+    "tea-local": {
+      "emitter": "tea-local",
+      "framework": "tea-local",
+      "label": "tea-local (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "components": "one instance per input (model: its value), per formula (model: its last value, the cache the compiler keeps) and one for the items section; no chunking by position or count. A unit's displays are the binding list of its formula's instance, an input's control the binding list of the input's instance",
+        "reads": "a formula is a reader: it watches the cells its expression reads and is sent its one message when one changes; its binding list also watches the cells its displays read. A value that did not change (=== , or the same items for a list) tells nobody. Jobs run in rank order, so a formula is recomputed once after the cells it reads",
+        "formulas": "each expression compiled into its formula's arm; generic collection helpers (sum, avg, top, groupSum) take the formula's own function; lists and group sums are cached as arrays and compared item by item",
+        "items": "quiet=analysed (default): an arm that writes only fields outside R, the item fields read by a formula or display, does not notify the readers (a compile-time rule applied to every arm, tea-inline's analysis at one bit per arm); quiet=none: every arm notifies",
+        "events": "controls wired by position (wire) to the cell that owns them; the rows by one delegated listener per event type on the table body",
+        "externalEvents": "serverInputs sets the named inputs, serverItems is a message of the items instance, a snapshot sets every input and the items instance",
+        "lists": "runtime keyed list for the top-k lists (src/runtime.js) and the minimal-move keyed table for the items (src/table.js)",
+        "dom": "each unit's markup as one static template (trailing end tags left out), placeholders for dynamic texts",
+        "build": "Vite production build, no framework plugin, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "5e564c9a5a66be17",
+      "scenarioOptions": {
+        "fanout": "mid"
+      }
+    },
+    "tea-local-fanout=high": {
+      "emitter": "tea-local",
+      "framework": "tea-local",
+      "label": "tea-local (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "components": "one instance per input (model: its value), per formula (model: its last value, the cache the compiler keeps) and one for the items section; no chunking by position or count. A unit's displays are the binding list of its formula's instance, an input's control the binding list of the input's instance",
+        "reads": "a formula is a reader: it watches the cells its expression reads and is sent its one message when one changes; its binding list also watches the cells its displays read. A value that did not change (=== , or the same items for a list) tells nobody. Jobs run in rank order, so a formula is recomputed once after the cells it reads",
+        "formulas": "each expression compiled into its formula's arm; generic collection helpers (sum, avg, top, groupSum) take the formula's own function; lists and group sums are cached as arrays and compared item by item",
+        "items": "quiet=analysed (default): an arm that writes only fields outside R, the item fields read by a formula or display, does not notify the readers (a compile-time rule applied to every arm, tea-inline's analysis at one bit per arm); quiet=none: every arm notifies",
+        "events": "controls wired by position (wire) to the cell that owns them; the rows by one delegated listener per event type on the table body",
+        "externalEvents": "serverInputs sets the named inputs, serverItems is a message of the items instance, a snapshot sets every input and the items instance",
+        "lists": "runtime keyed list for the top-k lists (src/runtime.js) and the minimal-move keyed table for the items (src/table.js)",
+        "dom": "each unit's markup as one static template (trailing end tags left out), placeholders for dynamic texts",
+        "build": "Vite production build, no framework plugin, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "5e564c9a5a66be17",
+      "scenarioOptions": {
+        "fanout": "high"
+      }
+    },
+    "vanilla-fanout=low": {
+      "emitter": "vanilla",
+      "framework": "vanilla",
+      "label": "vanilla",
+      "track": "real",
+      "emitterOptions": {},
+      "style": {
+        "model": "hand-written style: plain let variables for the inputs and formulas, a state object for the items, records edited in place",
+        "formulas": "one calcX() per formula, its own expression as JavaScript, returning whether the value changed (=== for numbers, bools and texts; lists and group sums always count as changed)",
+        "derived": "a change recomputes what it feeds, in dependency order, as straight-line code per trigger (changeX per input; itemsChanged, qtyChanged, activeChanged for the items); a formula downstream runs only if a formula it reads changed",
+        "displays": "one showX() per cell writing the text nodes that read it (textContent); a node reading several cells is a function every one of them calls; found by position in a static markup string",
+        "lists": "top-k lists through a generic keyed-list helper (src/lib.js, runtime) that keeps the <li> of an item that stays; group rows are static <li>s",
+        "items": "rows cloned from a <tr> template, records carrying their <tr>; server items and snapshots through the generic keyed reconciler (src/lib.js, runtime), fed copies of the message's items",
+        "events": "delegated click, input and change listeners per section, switching on data-role; a number input sends only while valid; controls written only when they differ",
+        "helpers": "src/util.js (app code): PRNG step, formatters, sumBy/avgBy/maxBy/minBy/topBy/groupSum taking the formula's own code as a function",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "f521bbf309c6ba85",
+      "scenarioOptions": {
+        "fanout": "low"
+      }
+    },
+    "vanilla": {
+      "emitter": "vanilla",
+      "framework": "vanilla",
+      "label": "vanilla",
+      "track": "real",
+      "emitterOptions": {},
+      "style": {
+        "model": "hand-written style: plain let variables for the inputs and formulas, a state object for the items, records edited in place",
+        "formulas": "one calcX() per formula, its own expression as JavaScript, returning whether the value changed (=== for numbers, bools and texts; lists and group sums always count as changed)",
+        "derived": "a change recomputes what it feeds, in dependency order, as straight-line code per trigger (changeX per input; itemsChanged, qtyChanged, activeChanged for the items); a formula downstream runs only if a formula it reads changed",
+        "displays": "one showX() per cell writing the text nodes that read it (textContent); a node reading several cells is a function every one of them calls; found by position in a static markup string",
+        "lists": "top-k lists through a generic keyed-list helper (src/lib.js, runtime) that keeps the <li> of an item that stays; group rows are static <li>s",
+        "items": "rows cloned from a <tr> template, records carrying their <tr>; server items and snapshots through the generic keyed reconciler (src/lib.js, runtime), fed copies of the message's items",
+        "events": "delegated click, input and change listeners per section, switching on data-role; a number input sends only while valid; controls written only when they differ",
+        "helpers": "src/util.js (app code): PRNG step, formatters, sumBy/avgBy/maxBy/minBy/topBy/groupSum taking the formula's own code as a function",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "f521bbf309c6ba85",
+      "scenarioOptions": {
+        "fanout": "mid"
+      }
+    },
+    "vanilla-fanout=high": {
+      "emitter": "vanilla",
+      "framework": "vanilla",
+      "label": "vanilla",
+      "track": "real",
+      "emitterOptions": {},
+      "style": {
+        "model": "hand-written style: plain let variables for the inputs and formulas, a state object for the items, records edited in place",
+        "formulas": "one calcX() per formula, its own expression as JavaScript, returning whether the value changed (=== for numbers, bools and texts; lists and group sums always count as changed)",
+        "derived": "a change recomputes what it feeds, in dependency order, as straight-line code per trigger (changeX per input; itemsChanged, qtyChanged, activeChanged for the items); a formula downstream runs only if a formula it reads changed",
+        "displays": "one showX() per cell writing the text nodes that read it (textContent); a node reading several cells is a function every one of them calls; found by position in a static markup string",
+        "lists": "top-k lists through a generic keyed-list helper (src/lib.js, runtime) that keeps the <li> of an item that stays; group rows are static <li>s",
+        "items": "rows cloned from a <tr> template, records carrying their <tr>; server items and snapshots through the generic keyed reconciler (src/lib.js, runtime), fed copies of the message's items",
+        "events": "delegated click, input and change listeners per section, switching on data-role; a number input sends only while valid; controls written only when they differ",
+        "helpers": "src/util.js (app code): PRNG step, formatters, sumBy/avgBy/maxBy/minBy/topBy/groupSum taking the formula's own code as a function",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "f521bbf309c6ba85",
+      "scenarioOptions": {
+        "fanout": "high"
+      }
+    },
+    "solid-fanout=low": {
+      "emitter": "solid",
+      "framework": "solid",
+      "label": "Solid 1",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "components": "Sheet (every formula's memo, then the units' displays) and Items (toolbar and table); no formula descriptors, nothing interpreted",
+        "state": "three createStore stores in a context: inputs (one property per input), items (an array of records) and meta (markup, nextId, rng); path setters, a filter for remove, reconcile(…, { key: 'id' }) for a snapshot; message data copied, never adopted",
+        "derived": "createMemo per formula in dependency order, inside the render root; aggregates over the items are memos reading the store (field-level subscriptions); memos compare with ===",
+        "lists": "<For> over the items store, over a top-k memo (keyed by the proxy) and over the categories for group sums",
+        "displays": "JSX text children reading memo accessors; formatters from src/util.js",
+        "events": "onInput (delegated) for number and text inputs (a number input writes only while valid), onClick for buttons, onChange for checkboxes and selects",
+        "externalEvents": "store.receive(msg): serverInputs merged into inputs; serverItems one path set per upsert and a filter for removes; snapshot through reconcile",
+        "helpers": "src/util.js (app code): PRNG step, formatters, sumBy/avgBy/maxBy/minBy/topBy/groupSum taking the formula's own code as a function",
+        "build": "Vite + vite-plugin-solid, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "2a93dae7df239bec",
+      "scenarioOptions": {
+        "fanout": "low"
+      }
+    },
+    "solid": {
+      "emitter": "solid",
+      "framework": "solid",
+      "label": "Solid 1",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "components": "Sheet (every formula's memo, then the units' displays) and Items (toolbar and table); no formula descriptors, nothing interpreted",
+        "state": "three createStore stores in a context: inputs (one property per input), items (an array of records) and meta (markup, nextId, rng); path setters, a filter for remove, reconcile(…, { key: 'id' }) for a snapshot; message data copied, never adopted",
+        "derived": "createMemo per formula in dependency order, inside the render root; aggregates over the items are memos reading the store (field-level subscriptions); memos compare with ===",
+        "lists": "<For> over the items store, over a top-k memo (keyed by the proxy) and over the categories for group sums",
+        "displays": "JSX text children reading memo accessors; formatters from src/util.js",
+        "events": "onInput (delegated) for number and text inputs (a number input writes only while valid), onClick for buttons, onChange for checkboxes and selects",
+        "externalEvents": "store.receive(msg): serverInputs merged into inputs; serverItems one path set per upsert and a filter for removes; snapshot through reconcile",
+        "helpers": "src/util.js (app code): PRNG step, formatters, sumBy/avgBy/maxBy/minBy/topBy/groupSum taking the formula's own code as a function",
+        "build": "Vite + vite-plugin-solid, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "2a93dae7df239bec",
+      "scenarioOptions": {
+        "fanout": "mid"
+      }
+    },
+    "solid-fanout=high": {
+      "emitter": "solid",
+      "framework": "solid",
+      "label": "Solid 1",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "components": "Sheet (every formula's memo, then the units' displays) and Items (toolbar and table); no formula descriptors, nothing interpreted",
+        "state": "three createStore stores in a context: inputs (one property per input), items (an array of records) and meta (markup, nextId, rng); path setters, a filter for remove, reconcile(…, { key: 'id' }) for a snapshot; message data copied, never adopted",
+        "derived": "createMemo per formula in dependency order, inside the render root; aggregates over the items are memos reading the store (field-level subscriptions); memos compare with ===",
+        "lists": "<For> over the items store, over a top-k memo (keyed by the proxy) and over the categories for group sums",
+        "displays": "JSX text children reading memo accessors; formatters from src/util.js",
+        "events": "onInput (delegated) for number and text inputs (a number input writes only while valid), onClick for buttons, onChange for checkboxes and selects",
+        "externalEvents": "store.receive(msg): serverInputs merged into inputs; serverItems one path set per upsert and a filter for removes; snapshot through reconcile",
+        "helpers": "src/util.js (app code): PRNG step, formatters, sumBy/avgBy/maxBy/minBy/topBy/groupSum taking the formula's own code as a function",
+        "build": "Vite + vite-plugin-solid, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "2a93dae7df239bec",
+      "scenarioOptions": {
+        "fanout": "high"
+      }
+    },
+    "elm-fanout=low": {
+      "emitter": "elm",
+      "framework": "elm",
+      "label": "Elm 0.19.3",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "TEA with Browser.element: one Model (a record field per input, items, markup, nextId, rng), one Msg (a constructor per control and per item control), one update (a case branch per message as record updates), one view",
+        "derived": "computed in view: viewSheet opens with a let binding every formula, in dependency order, to its own expression over model and the formulas above it, so each is computed once per view; the model caches nothing, update stays one-field record updates; every event recomputes every formula (Html.Lazy skips rows, not formulas)",
+        "rows": "Html.Keyed.node \"tbody\" with ( String.fromInt item.id, lazy2 viewRow model.markup item ); items replaced, never mutated, by mapItem id (a missing id is a no-op)",
+        "lists": "top-k lists and group sums as Html.Keyed lists (by item id, by category)",
+        "numbers": "Int throughout; division is floor (toFloat a / toFloat b) (fdiv), never // (32-bit); number input text applied by onInt only while an integer in range",
+        "externalEvents": "one incoming port events : (Value -> msg) -> Sub msg, decoded with Json.Decode into ServerInputs (Dict String Value, read per input by readInputs), ServerItems and Snapshot",
+        "helpers": "src/Util.elm (app code): Item, PRNG step and word pools, formatters, sumBy/avgBy/maxBy/minBy/topBy/groupSum, decoders, attribute helpers",
+        "formatting": "as elm-format 0.8.8 writes it (an if is a whole binding body, or bound to a name of its own); elm.json lists only the dependencies the app imports",
+        "build": "elm make --optimize, then uglify-js compress (pure_funcs) and mangle passes, as the Elm guide recommends"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "ff0a2c6eed6aad31",
+      "scenarioOptions": {
+        "fanout": "low"
+      }
+    },
+    "elm": {
+      "emitter": "elm",
+      "framework": "elm",
+      "label": "Elm 0.19.3",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "TEA with Browser.element: one Model (a record field per input, items, markup, nextId, rng), one Msg (a constructor per control and per item control), one update (a case branch per message as record updates), one view",
+        "derived": "computed in view: viewSheet opens with a let binding every formula, in dependency order, to its own expression over model and the formulas above it, so each is computed once per view; the model caches nothing, update stays one-field record updates; every event recomputes every formula (Html.Lazy skips rows, not formulas)",
+        "rows": "Html.Keyed.node \"tbody\" with ( String.fromInt item.id, lazy2 viewRow model.markup item ); items replaced, never mutated, by mapItem id (a missing id is a no-op)",
+        "lists": "top-k lists and group sums as Html.Keyed lists (by item id, by category)",
+        "numbers": "Int throughout; division is floor (toFloat a / toFloat b) (fdiv), never // (32-bit); number input text applied by onInt only while an integer in range",
+        "externalEvents": "one incoming port events : (Value -> msg) -> Sub msg, decoded with Json.Decode into ServerInputs (Dict String Value, read per input by readInputs), ServerItems and Snapshot",
+        "helpers": "src/Util.elm (app code): Item, PRNG step and word pools, formatters, sumBy/avgBy/maxBy/minBy/topBy/groupSum, decoders, attribute helpers",
+        "formatting": "as elm-format 0.8.8 writes it (an if is a whole binding body, or bound to a name of its own); elm.json lists only the dependencies the app imports",
+        "build": "elm make --optimize, then uglify-js compress (pure_funcs) and mangle passes, as the Elm guide recommends"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "ff0a2c6eed6aad31",
+      "scenarioOptions": {
+        "fanout": "mid"
+      }
+    },
+    "elm-fanout=high": {
+      "emitter": "elm",
+      "framework": "elm",
+      "label": "Elm 0.19.3",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "TEA with Browser.element: one Model (a record field per input, items, markup, nextId, rng), one Msg (a constructor per control and per item control), one update (a case branch per message as record updates), one view",
+        "derived": "computed in view: viewSheet opens with a let binding every formula, in dependency order, to its own expression over model and the formulas above it, so each is computed once per view; the model caches nothing, update stays one-field record updates; every event recomputes every formula (Html.Lazy skips rows, not formulas)",
+        "rows": "Html.Keyed.node \"tbody\" with ( String.fromInt item.id, lazy2 viewRow model.markup item ); items replaced, never mutated, by mapItem id (a missing id is a no-op)",
+        "lists": "top-k lists and group sums as Html.Keyed lists (by item id, by category)",
+        "numbers": "Int throughout; division is floor (toFloat a / toFloat b) (fdiv), never // (32-bit); number input text applied by onInt only while an integer in range",
+        "externalEvents": "one incoming port events : (Value -> msg) -> Sub msg, decoded with Json.Decode into ServerInputs (Dict String Value, read per input by readInputs), ServerItems and Snapshot",
+        "helpers": "src/Util.elm (app code): Item, PRNG step and word pools, formatters, sumBy/avgBy/maxBy/minBy/topBy/groupSum, decoders, attribute helpers",
+        "formatting": "as elm-format 0.8.8 writes it (an if is a whole binding body, or bound to a name of its own); elm.json lists only the dependencies the app imports",
+        "build": "elm make --optimize, then uglify-js compress (pure_funcs) and mangle passes, as the Elm guide recommends"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "ff0a2c6eed6aad31",
+      "scenarioOptions": {
+        "fanout": "high"
+      }
+    },
+    "tea-dirtybits-fanout=low": {
+      "emitter": "tea-dirtybits",
+      "framework": "tea-dirtybits",
+      "label": "TEA + dirty bits (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "components": "the sheet is one module (cells as module-level lets and cell functions, arms, DOM built once from one static template); the items section is another; every formula, display and control is written out as code from the spec, nothing interpreted at runtime",
+        "state": "one immutable TEA model in the reference's shape; formulas are not state: each stores its value in a module-level variable, computed once per change",
+        "dirtyBits": "one bit per cell (a formula, a display or a control), numbered so each cell comes after the cells it reads; an arm marks the bits of the cells that read the field it wrote (IN[name]); a flush sweeps the marked cells in ascending order",
+        "derivedValues": "a formula recomputes when marked, compares with its stored value and marks its readers only when it changed (numbers, booleans and words by !==, a filtered list by the identity of its items; a top-k list and a group sum count as changed every time they are recomputed)",
+        "items": "item edits mark the formulas that read the edited field (a quantity, the active flag) with compile-time bits, structural changes mark every formula that reads the items, a note marks none; formulas over the items recompute in full (no incremental aggregates)",
+        "rows": "one cloned template per row, patched by column bits (quantity, active, note, markup), as in big-table; events delegated by data-role",
+        "externalEvents": "through the same send: serverInputs sets the named inputs through the same arms, serverItems reconciles the table and marks the formulas over the items, snapshot marks every cell and reconciles the table",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "d6193af34cde1eba",
+      "scenarioOptions": {
+        "fanout": "low"
+      }
+    },
+    "tea-dirtybits": {
+      "emitter": "tea-dirtybits",
+      "framework": "tea-dirtybits",
+      "label": "TEA + dirty bits (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "components": "the sheet is one module (cells as module-level lets and cell functions, arms, DOM built once from one static template); the items section is another; every formula, display and control is written out as code from the spec, nothing interpreted at runtime",
+        "state": "one immutable TEA model in the reference's shape; formulas are not state: each stores its value in a module-level variable, computed once per change",
+        "dirtyBits": "one bit per cell (a formula, a display or a control), numbered so each cell comes after the cells it reads; an arm marks the bits of the cells that read the field it wrote (IN[name]); a flush sweeps the marked cells in ascending order",
+        "derivedValues": "a formula recomputes when marked, compares with its stored value and marks its readers only when it changed (numbers, booleans and words by !==, a filtered list by the identity of its items; a top-k list and a group sum count as changed every time they are recomputed)",
+        "items": "item edits mark the formulas that read the edited field (a quantity, the active flag) with compile-time bits, structural changes mark every formula that reads the items, a note marks none; formulas over the items recompute in full (no incremental aggregates)",
+        "rows": "one cloned template per row, patched by column bits (quantity, active, note, markup), as in big-table; events delegated by data-role",
+        "externalEvents": "through the same send: serverInputs sets the named inputs through the same arms, serverItems reconciles the table and marks the formulas over the items, snapshot marks every cell and reconciles the table",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "d6193af34cde1eba",
+      "scenarioOptions": {
+        "fanout": "mid"
+      }
+    },
+    "tea-dirtybits-fanout=high": {
+      "emitter": "tea-dirtybits",
+      "framework": "tea-dirtybits",
+      "label": "TEA + dirty bits (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "components": "the sheet is one module (cells as module-level lets and cell functions, arms, DOM built once from one static template); the items section is another; every formula, display and control is written out as code from the spec, nothing interpreted at runtime",
+        "state": "one immutable TEA model in the reference's shape; formulas are not state: each stores its value in a module-level variable, computed once per change",
+        "dirtyBits": "one bit per cell (a formula, a display or a control), numbered so each cell comes after the cells it reads; an arm marks the bits of the cells that read the field it wrote (IN[name]); a flush sweeps the marked cells in ascending order",
+        "derivedValues": "a formula recomputes when marked, compares with its stored value and marks its readers only when it changed (numbers, booleans and words by !==, a filtered list by the identity of its items; a top-k list and a group sum count as changed every time they are recomputed)",
+        "items": "item edits mark the formulas that read the edited field (a quantity, the active flag) with compile-time bits, structural changes mark every formula that reads the items, a note marks none; formulas over the items recompute in full (no incremental aggregates)",
+        "rows": "one cloned template per row, patched by column bits (quantity, active, note, markup), as in big-table; events delegated by data-role",
+        "externalEvents": "through the same send: serverInputs sets the named inputs through the same arms, serverItems reconciles the table and marks the formulas over the items, snapshot marks every cell and reconciles the table",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "d6193af34cde1eba",
+      "scenarioOptions": {
+        "fanout": "high"
+      }
+    },
+    "beni-tea-fanout=low": {
+      "emitter": "beni-tea",
+      "framework": "beni-tea",
+      "label": "beni browser-tea (6a1b567fa)",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "The Elm Architecture: Tea.element, one Model in Main (inputs + the items section's model), one update, one view (markup)",
+        "derived": "each formula is a constant let of view, in dependency order (beni's derived values): computed once per change of what it reads, no cache in the model",
+        "formulas": "the spec's expression written out as beni code per formula (inline arithmetic, Num.floorDiv, Num.pct, Agg.sumBy/avgBy/maxBy/minBy/topBy/groupSum with the formula's own function)",
+        "inputs": "controlled; a number input keeps its typed text in a Maybe String field beside the number while it is not an integer in range",
+        "components": "Items (item type, model, messages, builder, update, server events, table view); Main owns the sheet; Rng, Fmt, Num, Agg generic helpers",
+        "routing": "one Msg constructor per sheet message, ItemsMsg wrapping Items.Msg (Html.map), Pushed for host events",
+        "lists": "keyed For for rows (.id), top-k lists (.id) and group rows (.category)",
+        "externalEvents": "project platform layer Push.onPush, read with schema declarations (Event tagged on type, Snapshot, Values with Maybe fields)",
+        "build": "beni build --release --source-maps (beni's own minifier)"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "73c48d2ccf0b9a3c",
+      "scenarioOptions": {
+        "fanout": "low"
+      }
+    },
+    "beni-tea": {
+      "emitter": "beni-tea",
+      "framework": "beni-tea",
+      "label": "beni browser-tea (6a1b567fa)",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "The Elm Architecture: Tea.element, one Model in Main (inputs + the items section's model), one update, one view (markup)",
+        "derived": "each formula is a constant let of view, in dependency order (beni's derived values): computed once per change of what it reads, no cache in the model",
+        "formulas": "the spec's expression written out as beni code per formula (inline arithmetic, Num.floorDiv, Num.pct, Agg.sumBy/avgBy/maxBy/minBy/topBy/groupSum with the formula's own function)",
+        "inputs": "controlled; a number input keeps its typed text in a Maybe String field beside the number while it is not an integer in range",
+        "components": "Items (item type, model, messages, builder, update, server events, table view); Main owns the sheet; Rng, Fmt, Num, Agg generic helpers",
+        "routing": "one Msg constructor per sheet message, ItemsMsg wrapping Items.Msg (Html.map), Pushed for host events",
+        "lists": "keyed For for rows (.id), top-k lists (.id) and group rows (.category)",
+        "externalEvents": "project platform layer Push.onPush, read with schema declarations (Event tagged on type, Snapshot, Values with Maybe fields)",
+        "build": "beni build --release --source-maps (beni's own minifier)"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "73c48d2ccf0b9a3c",
+      "scenarioOptions": {
+        "fanout": "mid"
+      }
+    },
+    "beni-tea-fanout=high": {
+      "emitter": "beni-tea",
+      "framework": "beni-tea",
+      "label": "beni browser-tea (6a1b567fa)",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "The Elm Architecture: Tea.element, one Model in Main (inputs + the items section's model), one update, one view (markup)",
+        "derived": "each formula is a constant let of view, in dependency order (beni's derived values): computed once per change of what it reads, no cache in the model",
+        "formulas": "the spec's expression written out as beni code per formula (inline arithmetic, Num.floorDiv, Num.pct, Agg.sumBy/avgBy/maxBy/minBy/topBy/groupSum with the formula's own function)",
+        "inputs": "controlled; a number input keeps its typed text in a Maybe String field beside the number while it is not an integer in range",
+        "components": "Items (item type, model, messages, builder, update, server events, table view); Main owns the sheet; Rng, Fmt, Num, Agg generic helpers",
+        "routing": "one Msg constructor per sheet message, ItemsMsg wrapping Items.Msg (Html.map), Pushed for host events",
+        "lists": "keyed For for rows (.id), top-k lists (.id) and group rows (.category)",
+        "externalEvents": "project platform layer Push.onPush, read with schema declarations (Event tagged on type, Snapshot, Values with Maybe fields)",
+        "build": "beni build --release --source-maps (beni's own minifier)"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "73c48d2ccf0b9a3c",
+      "scenarioOptions": {
+        "fanout": "high"
+      }
+    },
+    "beni-direct-fanout=low": {
+      "emitter": "beni-direct",
+      "framework": "beni-direct",
+      "label": "beni browser-direct (6a1b567fa)",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "The Elm Architecture: Tea.element, one Model in Main (inputs + the items section's model), one update, one view (markup)",
+        "derived": "each formula is a constant let of view, in dependency order (beni's derived values): computed once per change of what it reads, no cache in the model",
+        "formulas": "the spec's expression written out as beni code per formula (inline arithmetic, Num.floorDiv, Num.pct, Agg.sumBy/avgBy/maxBy/minBy/topBy/groupSum with the formula's own function)",
+        "inputs": "controlled; a number input keeps its typed text in a Maybe String field beside the number while it is not an integer in range",
+        "components": "Items (item type, model, messages, builder, update, server events, table view); Main owns the sheet; Rng, Fmt, Num, Agg generic helpers",
+        "routing": "one Msg constructor per sheet message, ItemsMsg wrapping Items.Msg (Html.map), Pushed for host events",
+        "lists": "keyed For for rows (.id), top-k lists (.id) and group rows (.category)",
+        "externalEvents": "project platform layer Push.onPush, read with schema declarations (Event tagged on type, Snapshot, Values with Maybe fields)",
+        "build": "beni build --release --source-maps (beni's own minifier)"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "afb889b400df4146",
+      "scenarioOptions": {
+        "fanout": "low"
+      }
+    },
+    "beni-direct": {
+      "emitter": "beni-direct",
+      "framework": "beni-direct",
+      "label": "beni browser-direct (6a1b567fa)",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "The Elm Architecture: Tea.element, one Model in Main (inputs + the items section's model), one update, one view (markup)",
+        "derived": "each formula is a constant let of view, in dependency order (beni's derived values): computed once per change of what it reads, no cache in the model",
+        "formulas": "the spec's expression written out as beni code per formula (inline arithmetic, Num.floorDiv, Num.pct, Agg.sumBy/avgBy/maxBy/minBy/topBy/groupSum with the formula's own function)",
+        "inputs": "controlled; a number input keeps its typed text in a Maybe String field beside the number while it is not an integer in range",
+        "components": "Items (item type, model, messages, builder, update, server events, table view); Main owns the sheet; Rng, Fmt, Num, Agg generic helpers",
+        "routing": "one Msg constructor per sheet message, ItemsMsg wrapping Items.Msg (Html.map), Pushed for host events",
+        "lists": "keyed For for rows (.id), top-k lists (.id) and group rows (.category)",
+        "externalEvents": "project platform layer Push.onPush, read with schema declarations (Event tagged on type, Snapshot, Values with Maybe fields)",
+        "build": "beni build --release --source-maps (beni's own minifier)"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "afb889b400df4146",
+      "scenarioOptions": {
+        "fanout": "mid"
+      }
+    },
+    "beni-direct-fanout=high": {
+      "emitter": "beni-direct",
+      "framework": "beni-direct",
+      "label": "beni browser-direct (6a1b567fa)",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "The Elm Architecture: Tea.element, one Model in Main (inputs + the items section's model), one update, one view (markup)",
+        "derived": "each formula is a constant let of view, in dependency order (beni's derived values): computed once per change of what it reads, no cache in the model",
+        "formulas": "the spec's expression written out as beni code per formula (inline arithmetic, Num.floorDiv, Num.pct, Agg.sumBy/avgBy/maxBy/minBy/topBy/groupSum with the formula's own function)",
+        "inputs": "controlled; a number input keeps its typed text in a Maybe String field beside the number while it is not an integer in range",
+        "components": "Items (item type, model, messages, builder, update, server events, table view); Main owns the sheet; Rng, Fmt, Num, Agg generic helpers",
+        "routing": "one Msg constructor per sheet message, ItemsMsg wrapping Items.Msg (Html.map), Pushed for host events",
+        "lists": "keyed For for rows (.id), top-k lists (.id) and group rows (.category)",
+        "externalEvents": "project platform layer Push.onPush, read with schema declarations (Event tagged on type, Snapshot, Values with Maybe fields)",
+        "build": "beni build --release --source-maps (beni's own minifier)"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "afb889b400df4146",
+      "scenarioOptions": {
+        "fanout": "high"
+      }
+    }
+  },
+  "frameworks": {
+    "tea-inline": {
+      "label": "TEA inline (prototype)",
+      "track": "prototype",
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "marko": {
+      "label": "Marko 6",
+      "track": "real",
+      "versions": {
+        "marko": "6.4.6",
+        "@marko/compiler": "5.42.12",
+        "@marko/vite": "6.1.13",
+        "@babel/core": null,
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-local": {
+      "label": "tea-local (prototype)",
+      "track": "prototype",
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "vanilla": {
+      "label": "vanilla",
+      "track": "real",
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "solid": {
+      "label": "Solid 1",
+      "track": "framework",
+      "versions": {
+        "solid-js": "1.9.17",
+        "babel-preset-solid": "1.9.16",
+        "babel-plugin-jsx-dom-expressions": "0.40.11",
+        "@babel/core": "7.29.7",
+        "vite-plugin-solid": "2.11.14",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "elm": {
+      "label": "Elm 0.19.3",
+      "track": "framework",
+      "versions": {
+        "elm (compiler, npm installer)": "0.19.3-0",
+        "@elm_binaries/linux_x64": "0.19.3-0",
+        "uglify-js": "3.19.3",
+        "elm/browser": "1.0.2",
+        "elm/core": "1.0.5",
+        "elm/html": "1.0.1",
+        "elm/json": "1.1.4",
+        "elm/regex": "1.0.0",
+        "elm/time": "1.0.0",
+        "elm/url": "1.0.0",
+        "elm/virtual-dom": "1.0.5"
+      }
+    },
+    "tea-dirtybits": {
+      "label": "TEA + dirty bits (prototype)",
+      "track": "prototype",
+      "versions": {
+        "tea-dirtybits runtime": "prototype (frameworks/tea-dirtybits/template)",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "beni-tea": {
+      "label": "beni browser-tea (6a1b567fa)",
+      "track": "framework",
+      "versions": {
+        "beni (commit)": "6a1b567fad5410fe80c8bc4e0a1f6733279fd908",
+        "beni version (build id)": "beni 0.1.0-m1 ee040d874c1f0f73e43a0e7ef109007d",
+        "beni binary sha256": "c50cd632b076a5d2c2f75b7ba6a41e0897556d3f2adc20a52a396bfc49632dcc",
+        "zig, node (beni's flake.lock at that commit)": "zig 0.17.0, node 24",
+        "platform": "browser-tea"
+      }
+    },
+    "beni-direct": {
+      "label": "beni browser-direct (6a1b567fa)",
+      "track": "framework",
+      "versions": {
+        "beni (commit)": "6a1b567fad5410fe80c8bc4e0a1f6733279fd908",
+        "beni version (build id)": "beni 0.1.0-m1 ee040d874c1f0f73e43a0e7ef109007d",
+        "beni binary sha256": "c50cd632b076a5d2c2f75b7ba6a41e0897556d3f2adc20a52a396bfc49632dcc",
+        "zig, node (beni's flake.lock at that commit)": "zig 0.17.0, node 24",
+        "platform": "browser-direct"
+      }
+    }
+  },
+  "versions": {
+    "node": "v26.11.1",
+    "brotli": "1.2.0 (node:zlib)",
+    "platform": "linux 6.12.112 x64",
+    "git": {
+      "commit": "e1bbf4e1dea27a41a873dddeabc1cb2128433183",
+      "dirty": false
+    }
+  },
+  "compression": {
+    "brotli": {
+      "quality": 11,
+      "lgwin": 24,
+      "mode": "generic"
+    },
+    "html": "not minified",
+    "js": "minified by the framework's production build"
+  },
+  "attribution": "source maps: node_modules → runtime; unmapped bundler output → tooling (counted with runtime); the adapter file → adapter (excluded); everything else → app. Brotli split: runtime = brotli(runtime+tooling); app = brotli(app JS) − runtime.",
+  "reused": 0
+}
