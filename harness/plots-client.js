@@ -392,7 +392,7 @@
     const fwv = Object.entries(run.variants).map(([n, x]) => `${n}: ${Object.entries(x.versions || {}).map(([k, y]) => `${k} ${y}`).join(", ")}`);
     const rowsAll = summary.events.slice().sort((a, b) => NAMES.indexOf(a.variant) - NAMES.indexOf(b.variant))
       .filter((e) => !cpuEvent || e.half === cpuEvent)
-      .map((e) => [e.variant, e.half + (e.scope === "global" ? " *" : ""), us(e.script.median), `${us(e.script.p25)}–${us(e.script.p75)}`, `${us(e.script.ci[0])}–${us(e.script.ci[1])}`, e.script.n, e.total.median.toFixed(2)]);
+      .map((e) => [e.variant, e.half + (e.scope === "global" ? " *" : ""), us(e.script.median), `${us(e.script.p25)}–${us(e.script.p75)}`, e.script.ci[0] == null ? "—" : `${us(e.script.ci[0])}–${us(e.script.ci[1])}`, e.script.n, e.total.median.toFixed(2)]);
     const out = [el("h3", { text: `CPU time (N=${sizes}, seed ${seeds})` }),
       el("p", { class: "note", text: "One app per framework, at the same size. Script time (µs) of one event, from a Chrome trace: from the input event to the first commit after the app's work, the JavaScript inside (js-framework-benchmark's rule, no CPU throttling). Each event is ./rr work's action as real input through the DevTools protocol, repeated from the same state on one page; the bar is the median over the reps (of the median over the local events, unless one event is picked), the whisker the interquartile range. Lower is faster. Differences under about 10% are within the A/A noise." + (run.quick ? " This is a --quick run: few reps; for development, not for conclusions." : "") }),
       ...excluded.map((n) => el("p", { class: "note", text: `${n} is shown for reference only: it ${run.variants[n].excluded}. It is left out of this scenario's size results.` })),
