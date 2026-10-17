@@ -28,32 +28,52 @@ function schedule(job) {
 }
 
 function flush() {
+  let error, failed;
   while (pending.length) {
     const job = pending[0];
     job.q = false;
-    job();
+    try {
+      job();
+    } catch (e) {
+      // One failing job must not wedge the queue: the rest still run, the first error is rethrown.
+      if (!failed) [failed, error] = [true, e];
+    }
     pending.shift();
   }
+  if (failed) throw error;
+}
+
+// Forget the queued jobs (on dispose).
+export function reset() {
+  for (const job of pending) job.q = false;
+  pending.length = 0;
 }
 
 let ranks = 0;
 
 // A cell: `update[tag](model, a, b)` is the reducer's arm for a constructor. `quiet` lists the
-// tags whose arms change nothing that the readers read (the compiler knows which fields they
-// read): the cell's own patch runs after them, the readers are not told. A cell that is only
+// tags whose arms change nothing that the readers read (a compile-time analysis of the arms
+// against the readers, one bit per arm): the cell's own patch runs after them, the readers are
+// not told. `typed` lists the tags that take what the user typed: when such an arm rejects the
+// value the controls are left alone. A cell that is only
 // read has no patch. Returns the instance: its model `m`, `send`, `set` (replace the model) and
 // the two jobs a reader subscribes (`refresh` runs the formula's message 0, `patch` the binding
 // list), kept in `w`, the list of the jobs to run when the model changes.
-export function cell(model, update, patch = () => {}, quiet = []) {
+export function cell(model, update, patch = () => {}, quiet = [], typed = []) {
   const rank = ++ranks;
   const w = [];
-  const set = (next, mute) => {
-    if (next === self.m) return; // a value that did not change tells nobody
+  // `repaint`: the model is the same but the controls may not show it (an external write, a
+  // clamped step), so the binding list runs; its writes are skipped when nothing differs.
+  const set = (next, mute, repaint) => {
+    if (next === self.m) { // a value that did not change tells nobody
+      if (repaint) schedule(patch);
+      return;
+    }
     self.m = next;
     schedule(patch);
     if (!mute) for (const job of w) schedule(job);
   };
-  const refresh = () => self.send(0);
+  const refresh = () => set(update[0](self.m));
   refresh.r = rank;
   patch.r = rank + 0.5;
   const self = {
@@ -61,8 +81,9 @@ export function cell(model, update, patch = () => {}, quiet = []) {
     w,
     patch,
     refresh,
-    set,
-    send: (tag, a, b) => set(update[tag](self.m, a, b), quiet.includes(tag)),
+    set: (next) => set(next, false, true),
+    // A typed value that is rejected leaves the model, and what the user typed, alone (`typed`).
+    send: (tag, a, b) => set(update[tag](self.m, a, b), quiet.includes(tag), !typed.includes(tag)),
   };
   schedule(patch); // the first render, in the flush after mount
   return self;
@@ -84,20 +105,5 @@ export function formula(derive, patch, sources, shown) {
 export function unit(parent, html, self) {
   parent.insertAdjacentHTML("beforeend", html);
   const root = parent.lastChild;
-  return self ? wire(root, self, 0) : [root, ...root.querySelectorAll("*")];
-}
-
-// The events of a table's rows, delegated to its body (one listener per event type, not one per
-// row): the control in column `columns[i]` sends the message `base + i` with the row's key and,
-// for an input, its value (a number input as a number).
-export function rowEvents(body, self, base, columns) {
-  for (const type of ["click", "input"]) {
-    body.addEventListener(type, (e) => {
-      const c = e.target;
-      if (c.matches("button,[type=checkbox]") === (type === "click")) {
-        const tag = base + columns.indexOf(c.closest("td").cellIndex);
-        self.send(tag, +c.closest("tr").dataset.key, c.type === "number" ? c.valueAsNumber : c.value);
-      }
-    });
-  }
+  return self ? wire(root, self, 1) : [root, ...root.querySelectorAll("*")];
 }

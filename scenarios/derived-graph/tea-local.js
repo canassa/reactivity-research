@@ -20,9 +20,11 @@
 //   binding list of the input's own instance.
 // - The jobs of one flush run in rank order (graph.js): a cell made later is run later, so each
 //   formula is recomputed once after the cells it reads, whatever the shape of the graph.
-// - Messages the formulas do not read (a note, the markup) are `quiet` arms of the items
-//   instance: its rows are patched, its readers are not told. Without that every keystroke in a
-//   note would recompute every formula over the items (see the README).
+// - `quiet` (a param): with `analysed` (default) the items instance skips telling its readers after
+//   an arm that writes only fields no formula or display reads (a note, the markup), by a
+//   compile-time rule applied to every arm (see quietArms). That borrows tea-inline's
+//   action-to-reader analysis at one bit per arm. With `none` (the strategy as written) every
+//   arm tells them, and note and markup edits fail locality: the strategy's dead end here.
 // - Formulas are code: each expression is compiled into its arm (`Math.floor(a * b / 100)`);
 //   generic collection helpers (`sum`, `top`, `groupSum`) take the formula's own function.
 // - External events: `serverInputs` sets the named inputs (`inputs.name.set`), `serverItems` is a
@@ -35,7 +37,13 @@ import { templateFiles, runtimeFile } from "../../frameworks/tea-local/framework
 
 export const framework = "tea-local";
 
-export const params = {};
+export const params = {
+  quiet: {
+    default: "analysed",
+    choices: ["none", "analysed"],
+    help: "whether an items arm that writes nothing a formula or display reads skips notifying its readers: analysed (a compile-time rule, borrowed from tea-inline) or none (the strategy as written)",
+  },
+};
 
 const q = JSON.stringify;
 const esc = (s) => String(s).replace(/[&<]/g, (c) => (c === "&" ? "&amp;" : "&lt;"));
@@ -68,6 +76,24 @@ export const top = (list, f, desc, k) =>
 // The sum of f over the items of each category, in the order of \`cats\`.
 export const groupSum = (cats, list, f) => cats.map((c) => sum(list.filter((it) => it.category === c), f));
 
+// A cell's Load: the value of an external write.
+export const adopt = (m, v) => v;
+
+// The events of a table's rows, delegated to its body (one listener per event type, not one per
+// row): the control in column columns[i] sends the message base + i with the row's key and,
+// for an input, its value (a number input as a number).
+export function rowEvents(body, self, base, columns) {
+  for (const type of ["click", "input"]) {
+    body.addEventListener(type, (e) => {
+      const c = e.target;
+      if (c.matches("button,[type=checkbox]") === (type === "click")) {
+        const tag = base + columns.indexOf(c.closest("td").cellIndex);
+        self.send(tag, +c.closest("tr").dataset.key, c.type === "number" ? c.valueAsNumber : c.value);
+      }
+    });
+  }
+}
+
 // The old array when the new one holds the same items: a list that did not change tells nobody.
 export const keep = (m, v) => (m && m.length === v.length && v.every((x, i) => x === m[i]) ? m : v);
 
@@ -90,7 +116,8 @@ export function edit(m, id, change) {
 
 // The message of the server: items with a listed id are replaced in place, new ids appended in
 // order, listed ids removed.
-export function serverItems(m, { upsert, remove }) {
+export function serverItems(m, { upsert: sent, remove }) {
+  const upsert = structuredClone(sent); // adopted: the page keeps its own copy
   const byId = new Map(upsert.map((it) => [it.id, it]));
   const gone = new Set(remove);
   const known = new Set(m.items.map((it) => it.id));
@@ -347,8 +374,10 @@ function unitBlock(spec, cx, u) {
 
   const body = [];
   if (input) {
+    // The tags of the controls that take what the user types: a rejected value keeps their text.
+    const typed = controls.flatMap((m, i) => (m.kind === "input" ? [i + 1] : []));
     const patch = ctl.length ? `() => {\n${indent(ctl.join("\n"))}\n}` : null;
-    body.push(`inputs.${input.name} = ${v$(input.name)} = cell(${q(input.initial)}, [${controls.map(arm).join(", ")}]${patch ? `, ${patch}` : ""});`);
+    body.push(`inputs.${input.name} = ${v$(input.name)} = cell(${q(input.initial)}, [adopt, ${controls.map(arm).join(", ")}], ${patch ?? "undefined"}${typed.length ? `, [], ${q(typed)}` : ""});`);
   }
   body.push(`${v$(f.name)} = formula(${derive}, () => {\n${indent(view.join("\n"))}\n}, [${sources.join(", ")}], [${shownCells.join(", ")}]);`);
   body.push(`const e = unit(sheet, ${q(trim(html))}${input && ctl.length + controls.length ? `, ${v$(input.name)}` : ""});`);
@@ -364,11 +393,70 @@ function unitBlock(spec, cx, u) {
 // ---------------------------------------------------------------------------------------------
 // The items section: one instance, a keyed table.
 
-function itemsBlock(spec) {
+// The arms of the items instance, by key, with the model fields each writes. "@members" is the
+// set of items (which items exist, in which order).
+const ITEM_FIELDS = ["name", "category", "qty", "price", "active", "note"];
+const ARMS = {
+  load: ["@members", ...ITEM_FIELDS],
+  addItem: ["@members"],
+  markup: ["markup"],
+  serverItems: ["@members", ...ITEM_FIELDS],
+  snapshot: ["@members", ...ITEM_FIELDS, "markup"],
+  qty: ["qty"],
+  active: ["active"],
+  note: ["note"],
+  remove: ["@members"],
+};
+const ORDER = Object.keys(ARMS); // the constructors: the toolbar's controls first (load, addItem, markup), then the rest
+
+// The compile-time rule of `quiet: analysed`, applied to every arm: R is the set of model fields
+// that a formula or a display reads (the item fields of `["i", f]`, the name a top-k list shows,
+// and the membership when a formula reads the items); an arm is quiet exactly when it writes
+// only fields outside R. It is the action-to-reader analysis of tea-inline, at one bit per arm.
+function quietArms(spec, mode) {
+  if (mode === "none") return [];
+  const R = new Set();
+  const walk = (e) => {
+    if (!Array.isArray(e)) return;
+    if (e[0] === "items") R.add("@members");
+    else if (e[0] === "i") R.add(e[1]);
+    else if (e[0] !== "k") e.slice(1).forEach(walk);
+  };
+  for (const u of spec.units) {
+    walk(u.cell.expr);
+    if (u.view.some((n) => n.el === "top")) R.add("name");
+  }
+  const quiet = ORDER.filter((key) => ARMS[key].every((field) => !R.has(field)));
+  // What the scenario promises: no formula reads a note or the markup, and a change of the
+  // items themselves is read.
+  for (const key of ["note", "markup"]) if (!quiet.includes(key)) throw new Error(`arm ${key} is read by a formula`);
+  for (const key of ["load", "addItem", "serverItems", "snapshot", "remove"]) {
+    if (R.has("@members") && quiet.includes(key)) throw new Error(`arm ${key} changes the items but is quiet`);
+  }
+  return quiet;
+}
+
+function itemsBlock(spec, mode) {
   const money = "money";
   const rows = spec.options.rows;
   const cols = [2, 6, 7, 8]; // qty, active, note, remove
+  const tag = (key) => ORDER.indexOf(key);
+  if (tag("load") !== 0 || tag("addItem") !== 1 || tag("markup") !== 2) throw new Error("the toolbar's controls must be constructors 0, 1, 2");
+  if (["qty", "active", "note", "remove"].some((k, i) => tag(k) !== tag("qty") + i)) throw new Error("the row controls must be consecutive constructors");
+  const quiet = quietArms(spec, mode).map(tag);
+  const typed = ["markup", "qty"].map(tag);
   const rowHtml = "<tr data-role=item><td> </td><td> </td><td><input type=number data-role=qty></td><td> </td><td> </td><td> </td><td><input type=checkbox data-role=active></td><td><input type=text data-role=note placeholder=Note></td><td><button data-role=remove>×</button></td>";
+  const arm = {
+    load: `(m) => make(m, [], ${rows})`,
+    addItem: `(m) => make(m, m.items.slice(), 1)`,
+    markup: `(m, v) => (Number.isInteger(v) && v >= ${spec.markup.min} && v <= ${spec.markup.max} ? { ...m, markup: v } : m)`,
+    serverItems: `serverItems`,
+    snapshot: `(m, s) => ({ items: structuredClone(s.items), markup: s.markup, nextId: s.nextId, rng: s.rng })`,
+    qty: `(m, id, v) => (Number.isInteger(v) && v >= 0 && v <= 999 ? edit(m, id, (it) => (it.qty === v ? it : { ...it, qty: v })) : m)`,
+    active: `(m, id) => edit(m, id, (it) => ({ ...it, active: !it.active }))`,
+    note: `(m, id, v) => edit(m, id, (it) => ({ ...it, note: v }))`,
+    remove: `(m, id) => ({ ...m, items: m.items.filter((it) => it.id !== id) })`,
+  };
   const lines = [
     `// The items`,
     `const rowTemplate = template(${q(rowHtml)});`,
@@ -385,14 +473,7 @@ function itemsBlock(spec) {
     `});`,
     `let shown, marked = ${spec.markup.initial};`,
     `$items = cell(make({ markup: ${spec.markup.initial}, rng: ${spec.rng}, nextId: 1 }, [], ${spec.initialItems}), [`,
-    `  (m) => make(m, [], ${rows}),`,
-    `  (m) => make(m, m.items.slice(), 1),`,
-    `  (m, v) => (Number.isInteger(v) && v >= ${spec.markup.min} && v <= ${spec.markup.max} ? { ...m, markup: v } : m),`,
-    `  serverItems,`,
-    `  (m, id, v) => (Number.isInteger(v) && v >= 0 && v <= 999 ? edit(m, id, (it) => (it.qty === v ? it : { ...it, qty: v })) : m),`,
-    `  (m, id) => edit(m, id, (it) => ({ ...it, active: !it.active })),`,
-    `  (m, id, v) => edit(m, id, (it) => ({ ...it, note: v })),`,
-    `  (m, id) => ({ ...m, items: m.items.filter((it) => it.id !== id) }),`,
+    ...ORDER.map((key) => `  ${arm[key]}, // ${key}`),
     `], () => {`,
     `  const m = $items.m;`,
     `  if (m.items !== shown) fill((shown = m.items));`,
@@ -401,16 +482,17 @@ function itemsBlock(spec) {
     `    for (const it of m.items) setText(fill.get(it.id).children[5], ${money}(Math.floor(it.qty * it.price * (100 + marked) / 100)));`,
     `  }`,
     `  setProp(bar[4], "valueAsNumber", m.markup);`,
-    `}, [2, 6]);`,
+    `}, ${q(quiet)}, ${q(typed)});`,
     `const bar = wire(main.lastChild.children[1], $items, 0);`,
-    `rowEvents(body, $items, 4, ${q(cols)});`,
+    `rowEvents(body, $items, ${tag("qty")}, ${q(cols)});`,
   ];
-  return lines.join("\n");
+  return { code: lines.join("\n"), tag, quiet };
 }
 
 // ---------------------------------------------------------------------------------------------
 
-export function emit(spec) {
+export function emit(spec, options = {}) {
+  const mode = options.quiet ?? "analysed";
   const cells = new Map();
   spec.units.forEach((u, i) => {
     if (u.index !== i) throw new Error(`expected unit ${i}, got ${u.index}`);
@@ -436,7 +518,7 @@ export function emit(spec) {
   ].join("");
 
   const used = (list, text) => list.filter((h) => new RegExp(`\\b${h}\\b`).test(text));
-  const FRAME = ["next", "sum", "avg", "maxOf", "minOf", "top", "groupSum", "keep", "grouped", "money", "edit", "serverItems"];
+  const FRAME = ["next", "sum", "avg", "maxOf", "minOf", "top", "groupSum", "keep", "grouped", "money", "edit", "serverItems", "adopt", "rowEvents"];
   const RUNTIME = ["template", "setText", "setProp", "wire", "list"];
   const makeFn = `  // The items of the app's own generator (word pools, categories): \`n\` more, from the model's PRNG.
   const categories = ${q(spec.categories)};
@@ -456,9 +538,10 @@ export function emit(spec) {
   };`;
 
   // Import only what the blocks use.
-  const code = [makeFn, itemsBlock(spec), ...blocks.map((b) => b.code)].join("\n");
+  const itemsPart = itemsBlock(spec, mode);
+  const code = [makeFn, itemsPart.code, ...blocks.map((b) => b.code)].join("\n");
   files["src/app.js"] = `import { ${used(RUNTIME, code).join(", ")} } from "./runtime.js";
-import { cell, formula, unit, rowEvents } from "./graph.js";
+import { cell, formula, unit, reset } from "./graph.js";
 import { keyed } from "./table.js";
 import { ${used(FRAME, code).join(", ")} } from "./sheet/frame.js";
 
@@ -471,7 +554,7 @@ export function App(root) {
   let $items, ${names.map(v$).join(", ")};
   const inputs = {};
 ${makeFn}
-${indent(itemsBlock(spec))}
+${indent(itemsPart.code)}
 ${indent(blocks.map((b) => b.code).join("\n"))}
 
   return {
@@ -480,20 +563,21 @@ ${indent(blocks.map((b) => b.code).join("\n"))}
     receive(msg) {
       switch (msg.type) {
         case "serverInputs":
-          for (const k in msg.values) inputs[k].set(msg.values[k]);
+          for (const k in msg.values) inputs[k].send(0, msg.values[k]);
           break;
         case "serverItems":
-          $items.send(3, msg);
+          $items.send(${itemsPart.tag("serverItems")}, msg);
           break;
         case "snapshot": {
           const s = msg.state;
-          for (const k in s.inputs) inputs[k].set(s.inputs[k]);
-          $items.set({ items: s.items, markup: s.markup, nextId: s.nextId, rng: s.rng });
+          for (const k in s.inputs) inputs[k].send(0, s.inputs[k]);
+          $items.send(${itemsPart.tag("snapshot")}, s);
           break;
         }
       }
     },
     dispose() {
+      reset();
       main.remove();
     },
   };
@@ -505,7 +589,7 @@ ${indent(blocks.map((b) => b.code).join("\n"))}
       components: "one instance per input (model: its value), per formula (model: its last value, the cache the compiler keeps) and one for the items section; no chunking by position or count. A unit's displays are the binding list of its formula's instance, an input's control the binding list of the input's instance",
       reads: "a formula is a reader: it watches the cells its expression reads and is sent its one message when one changes; its binding list also watches the cells its displays read. A value that did not change (=== , or the same items for a list) tells nobody. Jobs run in rank order, so a formula is recomputed once after the cells it reads",
       formulas: "each expression compiled into its formula's arm; generic collection helpers (sum, avg, top, groupSum) take the formula's own function; lists and group sums are cached as arrays and compared item by item",
-      items: "quiet arms: a note and the markup are not read by any formula, so the items instance patches its rows and does not tell its readers",
+      items: "quiet=analysed (default): an arm that writes only fields outside R, the item fields read by a formula or display, does not notify the readers (a compile-time rule applied to every arm, tea-inline's analysis at one bit per arm); quiet=none: every arm notifies",
       events: "controls wired by position (wire) to the cell that owns them; the rows by one delegated listener per event type on the table body",
       externalEvents: "serverInputs sets the named inputs, serverItems is a message of the items instance, a snapshot sets every input and the items instance",
       lists: "runtime keyed list for the top-k lists (src/runtime.js) and the minimal-move keyed table for the items (src/table.js)",

@@ -95,7 +95,9 @@ export function show(parent, node, shown) {
 // constructor's tag and its argument, if any) runs the component's own reducer and schedules
 // the instance's `patch` (its binding list) and whoever watches it. The reducer is compiled as a
 // jump table: `update[tag](model, value)` is the branch of `case msg of` for that constructor.
-// There is no global dispatch, no dirty bits and no dependency tracking.
+// There is no global dispatch, no dirty bits and no dependency tracking. (The derived-graph
+// scenario uses `cell` in graph.js instead: memo nodes with compile-time lists of the cells they
+// read, flushed in rank order.)
 
 export function instance(model, update, patch) {
   const watchers = [];

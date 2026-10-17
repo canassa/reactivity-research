@@ -436,13 +436,26 @@ Nothing is cut by position or by count. The units are the sheet's own:
   is an array and `keep(m, v)` returns the old array when the new one holds the same items. The
   readers do not run: the cut-off input costs 14 calls when its bool keeps its value and 50 when
   it flips (the bool's four displays and `toggleCell`).
-- **Quiet arms.** Two messages of the items instance, a note and the markup, change nothing a
-  formula reads. The compiler knows that (no expression reads `note`, only the rows read the
-  markup), so those arms are declared `quiet`: the instance patches its rows and does not tell its
-  readers. This is static knowledge of what a message touches, not dependency tracking at run
-  time, but it is the one place the strategy leans on analysis. Without it every keystroke in a
-  note recomputes every formula over the items: 44,246 calls at N=16 and 448,814 at N=256
-  (against 31 and 31), 10.1x, a locality failure; the markup 52,224 and 427,003 (8.2x).
+- **Quiet arms, the param `quiet: none | analysed` (default `analysed`).** The strategy alone fails
+  here, and `analysed` borrows tea-inline's compile-time action-to-reader analysis, at one-bit
+  granularity: it is not part of tea-local as written for the other scenarios.
+  - **`none`: the strategy as written; every arm of the items instance tells its readers.** A
+    note keystroke recomputes every formula over the items: 44,238 calls at N=16 and 448,734 at
+    N=256 (against 31 and 31), 10.1x; the markup 52,216 and 426,929 (8.2x). `./rr check` fails
+    its locality (10.1x for seed 1; 8.1x, over the limit of 8x, for seed 2 at N=16 to 256) and
+    passes the page check at every size. This is tea-local's dead end on this scenario, kept as a
+    measured variant (`tea-local-quiet=none` in `runs.json`).
+  - **`analysed`: one rule, applied to every arm.** R is the set of model fields that a formula
+    or a display reads (the item fields of `["i", f]`, the name a top-k list shows, and the
+    membership when a formula reads the items). Each arm of the items instance, named by key, has
+    the fields it writes (`qty` writes qty, `remove` the membership, `serverItems` and
+    `snapshot` everything, `markup` only the markup). An arm is quiet exactly when it writes only
+    fields outside R; the emitter asserts that this is `note` and `markup` and that no arm that
+    changes the items is quiet. A quiet arm patches the instance's rows and does not schedule its
+    readers. It is a compile-time analysis, not run-time tracking, and it is the one place the
+    strategy leans on tea-inline's mechanism.
+  - Bytes are the same to within about 10 B (the two quiet tags): the cost of `analysed` is not
+    bytes.
 - **Formulas are code.** Each expression is compiled into its arm with the precedence of each
   operator (parentheses only where needed). Generic helpers take the formula's function (`sum`,
   `avg`, `maxOf`, `top`, `groupSum`), in the ordinary array-method form.
@@ -458,41 +471,49 @@ Nothing is cut by position or by count. The units are the sheet's own:
 
 ### Results
 
-- `./rr check derived-graph tea-local` passes at sizes 1, 4, 16 and 64 with seeds 1-3, and at size
-  16 with `--fanout low` and `high`, locality included: 1.0x from N=16 to 256 (64 to 1024), median
-  65 calls (52-68 across seeds, 54 at `low`, 85 at `high`). Builds are byte-identical. The other
-  scenarios' tea-local checks still pass.
-- **Work over N** (`./rr work`, seed 1, calls, N=16 and 256, 2,000 items). The local actions are
-  flat: chain input 82 and 82, cut-off unchanged 14, flipped 50, flipped back 899, filter select
+- `./rr check derived-graph tea-local` (`analysed`) passes at sizes 1, 4, 16 and 64 with seeds 1-3,
+  and at size 16 with `--fanout low` and `high`, locality included: 1.0x from N=16 to 256 (64 to
+  1024), median 63 calls for seed 1 (50-66 across seeds). Builds are byte-identical. The other
+  scenarios' tea-local checks still pass. `quiet=none` passes the page check at the same sizes
+  and fails locality.
+- **External writes and clamped steps repaint.** A cell whose model is unchanged still runs its
+  binding list after an external write or a step that clamps (the writes are skipped when nothing
+  differs), so a number input that holds rejected typed text shows the model again; a rejected
+  typed value alone leaves the text (`typed` tags). Dispatched items are copied on adoption
+  (`structuredClone`), as tea-inline does. The flush survives a throwing job (it finishes the
+  queue and rethrows) and `dispose` resets the queue.
+- **Work over N** (`./rr work`, seed 1, calls, N=16 and 256, 2,000 items, `analysed`). The local
+  actions are flat: chain input 79 and 79, cut-off unchanged 13, flipped 48, flipped back 899, filter select
   2,839, toggle 30, threshold 14,178, markup 8,009, note 31, `serverInputs` of the closed inputs
-  20,626. The global ones grow, as the contract expects: hub input 2,270 to 78,920 (34.8x), a
-  quantity 49,266 to 526,664 (10.7x), toggle active 49,058 to 523,886, add one 52,886 to 463,575,
+  20,626. The global ones grow, as the contract expects: hub input 2,264 to 78,814 (34.8x), a
+  quantity 49,252 to 526,466 (10.7x), toggle active 49,058 to 523,886, add one 52,886 to 463,575,
   remove one 53,227 to 533,578, `serverItems` 55,241 to 536,136, snapshot 83,549 to 498,613 (6x).
   An item edit re-sums every aggregate that reads the items: each of the 65 formulas over the items
   at N=256 re-runs once (not once per reader), but each is O(rows). That is the coarse
   per-instance subscription (no per-field tracking); an incremental aggregate would not pay it.
-- **Work over rows** (N=64, 1,000 against 10,000 items). Flat: chain input 82 and 82, cut-off 14
-  and 14 (flip 50 and 50), toggle 30, note 31. Proportional: filter select 1,447 to 14,101, flip
-  back 469 to 4,079, threshold 6,495 to 83,410, markup 4,009 to 40,009 (one cell per row),
-  `serverInputs` 9,692 to 121,625, hub input 12,043 to 112,436 (some of the hub's readers are
-  filters over the items, which re-run), a quantity 54,704 to 577,961, add 55,792 to 576,162,
-  snapshot 63,910 to 649,599.
-- **Bytes** (brotli, mean of seeds 1-3; the table was measured into `/tmp/rr-dg5-measure-*`, not
+- **Work over rows** (N=64, 1,000 against 10,000 items). Flat: chain input 79 and 79, cut-off 13
+  and 13 (flip 48 and 48), toggle 29, note 31. Proportional: filter select 1,445 to 14,099, flip
+  back 467 to 4,077, threshold 6,494 to 83,409, markup 4,009 to 40,009 (one cell per row),
+  `serverInputs` 9,692 to 121,625, hub input 12,007 to 112,400 (some of the hub's readers are
+  filters over the items, which re-run), a quantity 54,649 to 577,905, add 55,736 to 576,107,
+  snapshot 63,912 to 649,601.
+- **Bytes** (brotli, mean of seeds 1-3; the table was measured into `/tmp/rr-dg5-measure2-*`, not
   committed):
 
-  | fanout | 1 | 4 | 16 | 64 | 256 | baseline + slope (N >= 16) |
+  | variant | 1 | 4 | 16 | 64 | 256 | baseline + slope (N >= 16) |
   |---|---|---|---|---|---|---|
-  | low | 2749 | 3082 | 4450 | 8055 | 20840 | 3541 B + 67.9 B |
-  | mid | 2763 | 3160 | 4738 | 9369 | 26759 | 3406 B + 91.5 B |
-  | high | 2802 | 3278 | 5187 | 11441 | 35914 | 3204 B + 127.9 B |
+  | low | 2844 | 3176 | 4556 | 8154 | 20946 | 3648 B + 67.9 B |
+  | mid | 2855 | 3252 | 4833 | 9494 | 26938 | 3492 B + 91.8 B |
+  | mid, `quiet=none` | 2853 | 3249 | 4822 | 9485 | 26941 | 3482 B + 91.9 B |
+  | high | 2892 | 3376 | 5289 | 11555 | 36116 | 3296 B + 128.3 B |
 
   The runtime is 1.21-1.28 kB brotli (`runtime.js`, `graph.js` and the keyed table together)
   and the HTML about 145 B. Only the displays differ between the fanouts, so the difference in
-  slope (67.9, 91.5, 127.9 B per unit) is the price of read edges: a unit has 1, 4 or 10 more
+  slope (67.9, 91.8, 128.3 B per unit) is the price of read edges: a unit has 1, 4 or 10 more
   display reads, each one a template-literal fragment and, for a cell the unit does not own, one
   entry in the `shown` list.
 - **Not built, and why.** A formula computed inside the binding list (no cached value) would
   run the O(rows) aggregates whenever any display source changed, and each of its readers would
   compute it again. The split into `refresh` and `patch` subscriptions is what keeps a display-only
   dependency from recomputing a formula, and the cached model is what lets a value read by 48 sites
-  be computed once. The one dead end measured is the items instance without `quiet` arms (above).
+  be computed once. The one dead end measured is `quiet=none` (above).
