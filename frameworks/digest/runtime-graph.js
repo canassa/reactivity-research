@@ -39,7 +39,7 @@ const on = (n, h, b, i = 0) => {
 // Write `n[k] = f()` whenever f() changes (`k` is an input's value unless given). A binding names
 // its element `n` by its distance `d` from the previous binding's element: a template's bindings
 // are made in document order. An element that is not in the template is given as `n`.
-export const bind = (d, f, k = "value", n = E[(P += d)], last) => B.push(() => last !== (last = f()) && (n[k] = last));
+export const bind = (d, f, k = "value", n = E[(P += d)], last) => B.push(() => (last !== (last = f()) || n[k] != last) && (n[k] = last));
 export const text = (d, f, n) => bind(d, f, "textContent", n);
 
 // A formula: recomputed in its place in the list, writes no DOM.

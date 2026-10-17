@@ -40,7 +40,7 @@ const on = (n, h, b, i = 0) => {
 
 // Write `N[i][k] = f()` whenever f() changes. `i` is the element's position in the template (0 is
 // a widget's heading).
-export const bind = (i, k, f, last, n = N[i]) => B.push(() => last !== (last = f()) && (n[k] = last));
+export const bind = (i, k, f, last, n = N[i]) => B.push(() => (last !== (last = f()) || n[k] != last) && (n[k] = last));
 export const text = (n, f) => bind(n, "textContent", f);
 
 // Keep element `i` in its place only while f() holds; a hidden node leaves an empty text node.

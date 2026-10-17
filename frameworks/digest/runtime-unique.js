@@ -46,7 +46,7 @@ const on = (n, h, b, i = 0) => {
 // Write `n[k] = f()` whenever f() changes (`k` is an input's value unless given). A binding names
 // its element `n` by its distance `d` from the previous binding's element: a template's bindings
 // are made in document order.
-export const bind = (d, f, k = "value", n = E[(P += d)], last) => B.push(() => last !== (last = f()) && (n[k] = last));
+export const bind = (d, f, k = "value", n = E[(P += d)], last) => B.push(() => (last !== (last = f()) || n[k] != last) && (n[k] = last));
 // A text binding writes a text node of its own at the end of the element, after the static
 // text the template gives it (`<p>Total: </p>` shows `Total: ` and then f()), as Solid's
 // compiler does.

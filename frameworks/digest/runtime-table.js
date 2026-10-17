@@ -42,7 +42,7 @@ const on = (n, h, b, i = 0) => {
 
 // Write `n[k] = f()` whenever f() changes. A binding names its element `n` by its distance `d`
 // from the previous binding's element: a row's bindings are made in document order.
-export const bind = (d, f, k, last, n = E[(P += d)]) => B.push(() => last !== (last = f()) && (n[k] = last));
+export const bind = (d, f, k, last, n = E[(P += d)]) => B.push(() => (last !== (last = f()) || n[k] != last) && (n[k] = last));
 export const text = (d, f) => bind(d, f, "textContent");
 
 // Create a table's section from its template (heading, toolbar, header and an empty body), with
