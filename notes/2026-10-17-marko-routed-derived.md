@@ -29,3 +29,19 @@ Style choices are in each emitter's header and in every app's `rr.json`.
   Mid fit over N>=16: 6,496 B + 108.6 B/formula (R2 1.000).
 - Dead end noted: a controlled number input resets invalid text, so `pending` is needed per input
   (one shared tag); an external set after an invalid edit leaves the invalid text shown.
+
+## Review fixes (same day)
+- **Number input.** `int-field` is now one shared `INT_FIELD` (`frameworks/marko/source.js`). The pending edit
+  remembers the value it was made over (`pending = { over, text }`, `draft = pending?.over === value ? pending.text : value`),
+  so a new value from any writer (serverSet, snapshot, serverInputs, serverItems on a qty, a step button) replaces
+  typed text. Probed by hand in headless Chrome: serverInputs, step button, snapshot and serverItems on a row's qty
+  all show the state's value. Remaining case: a write of the *same* value leaves the typed text, as nothing changed.
+- **Same-task pagePush.** The root `feeds` const holds the subscribers and `queued`, a push for the route that has
+  changed but whose page has not mounted yet; the page drains it in `onMount`; `go` clears it. Probed: deepLink + pagePush
+  in one task shows the item once; a push to a page left in the same task is not applied when it is visited later.
+- **nextId** is one module, `src/list.js`, imported by the pages and panels that use it.
+- `maxBy`/`minBy` use a loop; `text()` escapes `&`.
+- **Routing variant dropped** on the owner's scope change: the `<if>` chain stays the only routing. Its cost on
+  global writes and mount is O(pages that read the global), guard checks only, not subscriptions.
+- **derived-graph note keystroke** (139,945 -> 777,765 calls, N=16 -> 256) is a real Marko property: `items` is
+  immutable, so every `<const>` that reads `items` reruns, and Marko cannot track fields through arrays.
