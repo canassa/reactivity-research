@@ -23,12 +23,12 @@ export function attrs(obj, indent = "") {
 // The number input every emitter with integer fields shares: `src/tags/int-field.marko`.
 // It is controllable (`value:=name`, or `value=… valueChange(n) { … }`) and commits only integers
 // in `min`..`max`. An edit that is not one stays in the input as `pending` (the cheat sheet's
-// pattern for uncommitted edits), remembered with the value it was made over, so any new value
-// from outside (an external event, a button, a confirm) replaces it. A write of the same value
-// leaves the typed text, since nothing changed.
+// pattern for uncommitted edits), tagged with the parent's revision `input.rev`. The parent bumps
+// its revision on every write to the value that does not come from this tag (an external event, a
+// button, a confirm), so any such write drops the typed text, even one that leaves the value as it was.
 export const INT_FIELD = `<let/value:=input.value>
 <let/pending=null>
-<const/draft=(pending?.over === value ? pending.text : value)>
+<const/draft=(pending?.rev === input.rev ? pending.text : value)>
 
 <input type="number" data-role=input.msg value=draft valueChange(text) {
   const n = Number(text);
@@ -36,7 +36,7 @@ export const INT_FIELD = `<let/value:=input.value>
     value = n;
     pending = null;
   } else {
-    pending = { over: value, text };
+    pending = { rev: input.rev, text };
   }
 }>
 `;

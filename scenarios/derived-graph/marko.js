@@ -172,14 +172,14 @@ function appFile(spec) {
         case "input": {
           const m = msgs.get(n.msg);
           const c = cells.get(m.cell);
-          p(4, `<label>${text(n.label)}<int-field msg=${str(n.msg)} min=${c.min} max=${c.max} value:=${c.name}/></label>`);
+          p(4, `<label>${text(n.label)}<int-field msg=${str(n.msg)} min=${c.min} max=${c.max} value:=${c.name} rev=rev/></label>`);
           break;
         }
         case "button": {
           const m = msgs.get(n.msg);
           const c = cells.get(m.cell);
           const next = m.k > 0 ? `Math.min(${c.max}, ${c.name} + ${m.k})` : `Math.max(${c.min}, ${c.name} - ${-m.k})`;
-          p(4, `<button data-role=${str(n.msg)} onClick() { ${c.name} = ${next} }>${text(n.text)}</button>`);
+          p(4, `<button data-role=${str(n.msg)} onClick() { ${c.name} = ${next}; rev++ }>${text(n.text)}</button>`);
           break;
         }
         case "check": {
@@ -272,6 +272,9 @@ ${helpers.join("\n\n")}`;
 
 ${lets.join("\n")}
 <let/markup=${spec.markup.initial}>
+// Bumped by every write that does not come from the number inputs themselves (a step button, an
+// external event), so an input drops an invalid edit even when the value it holds does not change.
+<let/rev=0>
 <let/items=initial.items>
 <let/nextId=initial.nextId>
 <let/rng=initial.rng>
@@ -299,7 +302,7 @@ ${sheet.join("\n")}
         rng = built.rng;
         nextId = built.nextId;
       }>Add item</button>
-      <label>Markup %<int-field msg="markup" min=0 max=100 value:=markup/></label>
+      <label>Markup %<int-field msg="markup" min=0 max=100 value:=markup rev=rev/></label>
     </div>
     <table>
       <thead>
@@ -310,7 +313,7 @@ ${sheet.join("\n")}
           <tr data-key=item.id data-role="item">
             <td>\${item.name}</td>
             <td>\${item.category}</td>
-            <td><int-field msg="qty" min=0 max=999 value=item.qty valueChange(qty) { ${rowEdit("qty")} }/></td>
+            <td><int-field msg="qty" min=0 max=999 value=item.qty rev=rev valueChange(qty) { ${rowEdit("qty")} }/></td>
             <td>\${formatMoney(item.price)}</td>
             <td>\${formatMoney(item.qty * item.price)}</td>
             <td>\${formatMoney(Math.floor((item.qty * item.price * (100 + markup)) / 100))}</td>
@@ -334,6 +337,7 @@ ${setInput.join("\n")}
   switch (msg.type) {
     case "serverInputs":
       for (const name in msg.values) setInput(name, msg.values[name]);
+      rev++;
       break;
     case "serverItems": {
       const gone = new Set(msg.remove);
@@ -344,11 +348,13 @@ ${setInput.join("\n")}
         .map((it) => changed.get(it.id) ?? it)
         .concat(msg.upsert.filter((it) => !known.has(it.id) && !gone.has(it.id)).map((it) => ({ ...it })));
       nextId = Math.max(nextId, ...msg.upsert.map((it) => it.id + 1));
+      rev++;
       break;
     }
     case "snapshot": {
       const state = msg.state;
       for (const name in state.inputs) setInput(name, state.inputs[name]);
+      rev++;
       markup = state.markup;
       items = state.items.map((it) => ({ ...it }));
       nextId = state.nextId;

@@ -81,6 +81,31 @@ function makeCtx(page, comp, kind) {
     const list = ref[0] === "g" ? GLOBAL : ref[0] === "p" ? page.fields : comp.fields;
     return list.find((f) => f.name === ref[1]);
   };
+  // The number inputs of this component (the `int-field` tags it uses), and of the whole page.
+  const intRefs = (c) => {
+    const out = [];
+    const walk = (nodes) => {
+      for (const n of nodes) {
+        if (n.el === "input") {
+          const m = c.messages.find((x) => x.name === n.msg);
+          const list = m.field[0] === "g" ? GLOBAL : m.field[0] === "p" ? page.fields : c.fields;
+          if (list.find((f) => f.name === m.field[1]).type === "int") out.push(m.field);
+        }
+        walk(n.children || []);
+      }
+    };
+    walk(c.view);
+    return out;
+  };
+  const pageInts = componentsOf(page).flatMap(intRefs);
+  // The revision that tells an `int-field` its value was written from outside it (see
+  // frameworks/marko/source.js): the root's (when a number input shows a global), the page's, and
+  // the component's own. Every revision only grows, so the sum changes with any of them.
+  ctx.hasInt = intRefs(comp).length > 0;
+  ctx.pageHasInt = pageInts.length > 0;
+  ctx.pageNeedsRootRev = pageInts.some((ref) => ref[0] === "g");
+  ctx.ownRev = kind === "page" ? ctx.pageHasInt : ctx.hasInt;
+  ctx.revExpr = kind === "page" ? (ctx.pageNeedsRootRev ? "input.rev + rev" : "rev") : "input.rev + rev";
   // Is the ref a `<let>` of this component's template?
   const bound = (ref) => {
     if (ref[0] === "f" || (ref[0] === "p" && kind === "page")) return true;
@@ -156,6 +181,7 @@ function opStatement(ctx, op) {
 function clickHandler(ctx, m, pad) {
   if (m.kind === "close") return "onClick() { input.onClose() }";
   const stmts = m.ops.map((op) => opStatement(ctx, op));
+  if (ctx.ownRev) stmts.push("rev++;");
   if (m.kind === "confirm") stmts.push("input.onClose();");
   const lines = stmts.flatMap((s) => s.split("\n"));
   if (lines.length === 1) return `onClick() { ${lines[0].replace(/;$/, "")} }`;
@@ -189,7 +215,7 @@ function view(ctx, page, comp, n, ind) {
       const f = ctx.desc(m.field);
       const name = ctx.name(m.field);
       const field = f.type === "int"
-        ? `<int-field msg="${n.msg}" min=${f.min} max=${f.max} value:=${name}/>`
+        ? `<int-field msg="${n.msg}" min=${f.min} max=${f.max} value:=${name} rev=${ctx.revExpr}/>`
         : `<input type="text" data-role="${n.msg}"${n.placeholder ? ` placeholder=${str(n.placeholder)}` : ""} value:=${name}/>`;
       const lines = [n.label ? `${pad}<label>${text(n.label)}${field}</label>` : `${pad}${field}`];
       if (n.invalid) {
@@ -259,7 +285,8 @@ function childTag(ctx, page, comp, kind) {
     if (ref[0] === "f") continue;
     attrs.push(child.writes.has(key) ? ` ${ref[1]}:=${ref[1]}` : ` ${ref[1]}=${ctx.read(ref)}`);
   }
-  if (kind === "modal") attrs.push(" onClose() { modalOpen = false }");
+  if (child.hasInt) attrs.push(` rev=${ctx.revExpr}`);
+  if (kind === "modal") attrs.push(ctx.ownRev ? " onClose() {\n    modalOpen = false;\n    rev++;\n  }" : " onClose() { modalOpen = false }");
   return `<${tagOf(page, comp, kind)}${attrs.join("")}/>`;
 }
 
@@ -281,6 +308,7 @@ function componentFile(page, comp, kind) {
   for (const f of comp.fields) decls.push(`<let/${f.name}=${literal(f.initial)}>`);
   if (kind === "page" && page.tabs) decls.push(`<let/activeTab=${str(page.tabs[0].id)}>`);
   if (kind === "page" && page.modal) decls.push("<let/modalOpen=false>");
+  if (ctx.ownRev) decls.push("<let/rev=0>");
 
   const live = comp.fields.find((f) => f.every);
   const feed = kind === "page" ? comp.fields.find((f) => f.feed) : null;
@@ -322,7 +350,7 @@ function componentFile(page, comp, kind) {
     lines.push("<lifecycle", "  onMount() {", ...mounts.map((m) => `    ${m}`), "  }", "  onDestroy() {", ...destroys.map((m) => `    ${m}`), "  }", "/>");
   }
   lines.push("", ...markup);
-  return { code: lines.join("\n") + "\n", needs: ctx.needs, takes };
+  return { code: lines.join("\n") + "\n", needs: ctx.needs, takes, needsRootRev: ctx.pageNeedsRootRev };
 }
 
 // The pieces of a page: [tag name, file]. Also what the root must pass the page.
@@ -357,6 +385,7 @@ function appFile(spec, pageInfo) {
     const attrs = [];
     for (const [key, name] of used) attrs.push(info.takes.includes(name) ? ` ${name}:=${name}` : ` ${name}=${name}`);
     if (p.fields.some((f) => f.feed)) attrs.push(" feeds=feeds");
+    if (info.needsRootRev) attrs.push(" rev=rev");
     if (componentsOf(p).some((c) => JSON.stringify(c.view).includes('"el":"link"'))) attrs.push(" onNavigate=go");
     const [open, close] = i === 0 ? ["if", "if"] : ["else if", "else"];
     return `  <${open}=route === ${str(p.id)}>\n    <page-${p.id}${attrs.join("")}/>\n  </${close}>`;
@@ -371,6 +400,7 @@ ${spec.pages.map(row).join("\n")}
 ];
 
 <let/route=${str(spec.pages[0].id)}>
+<let/rev=0>
 <let/menu=false>
 ${globals.join("\n")}
 <const/go=(to) => {
@@ -409,6 +439,7 @@ ${branches.join("\n")}
       switch (msg.field) {
 ${["user", "currency", "balance", "online"].map((f) => `        case "${f}":\n          ${f} = msg.value;\n          break;`).join("\n")}
       }
+      rev++;
       break;
     case "notify":
       notices = notices.concat({ id: msg.item.id, text: msg.item.text });
@@ -427,6 +458,7 @@ ${anyFeed ? `      {
 ` : ""}      break;
     case "snapshot":
 ${spec.global.map((f) => `      ${f.name} = ${f.type === "list" ? `msg.global.${f.name}.map((item) => ({ ...item }))` : `msg.global.${f.name}`};`).join("\n")}
+      rev++;
       break;
   }
 }>
