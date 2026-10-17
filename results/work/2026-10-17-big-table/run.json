@@ -1,0 +1,195 @@
+{
+  "scenario": "big-table",
+  "kind": "work",
+  "date": "2026-10-17",
+  "sizes": [
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "seeds": [
+    1
+  ],
+  "runs": 2,
+  "jsFlags": "--no-turbofan --no-maglev",
+  "scenarioOptions": {
+    "rows": 1000
+  },
+  "actions": [
+    {
+      "name": "setup: t1 create rows",
+      "scope": "local",
+      "setup": true
+    },
+    {
+      "name": "t1: select a row",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t1: select another row",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t1: update every 10th row",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t1: swap rows",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t1: remove a row",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t1: append rows",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t1: replace all rows",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "dispatch: serverRows t1",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t1: clear",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "setup: t2 create rows",
+      "scope": "local",
+      "setup": true
+    },
+    {
+      "name": "t2: toggle a flag",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t2: sort ascending (text)",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t2: sort descending (date)",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t2: remove checked rows",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t2: remove a row",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "dispatch: serverDelete t2",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "setup: t3 create rows",
+      "scope": "local",
+      "setup": true
+    },
+    {
+      "name": "t3: select a row",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t3: bump a number (a computed cell reads it)",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t3: update every k-th row (number)",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t3: swap rows",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "dispatch: serverUpdate t3",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t3: append rows",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "setup: t4 create rows",
+      "scope": "local",
+      "setup": true
+    },
+    {
+      "name": "t4: update every k-th row (status)",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t4: select a row",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "t4: clear",
+      "scope": "local",
+      "setup": false
+    },
+    {
+      "name": "dispatch: whole-state snapshot",
+      "scope": "global",
+      "setup": false
+    }
+  ],
+  "variants": {
+    "marko": {
+      "emitter": "marko",
+      "framework": "marko",
+      "label": "Marko 6",
+      "track": "real",
+      "emitterOptions": {},
+      "versions": {
+        "marko": "6.4.6",
+        "@marko/compiler": "5.42.12",
+        "@marko/vite": "6.1.13",
+        "@babel/core": null,
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    }
+  },
+  "failures": [],
+  "versions": {
+    "node": "v26.11.1",
+    "chrome": "Google Chrome 154.0.8037.97",
+    "platform": "linux 6.12.112 x64",
+    "git": {
+      "commit": "3bd2b50c0bd953401ef5e4ec4c704f3218b589d3",
+      "dirty": true
+    }
+  },
+  "method": "Profiler.startPreciseCoverage({ callCount: true, detailed: true }); per action: take (reset), perform, await settled(), take; summed over the app's own scripts (URLs under /<variant>/); calls = function invocations, blocks = basic-block executions"
+}

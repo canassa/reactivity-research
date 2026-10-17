@@ -1,0 +1,3047 @@
+[
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "setup: t1 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 55055,
+  "blocks": 56065,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    55055,
+    55055
+   ],
+   "blocks": [
+    56065,
+    56065
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t1: select a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 3046,
+  "blocks": 5058,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3046,
+    3046
+   ],
+   "blocks": [
+    5058,
+    5058
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t1: select another row",
+  "scope": "local",
+  "setup": false,
+  "calls": 50,
+  "blocks": 62,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    50,
+    50
+   ],
+   "blocks": [
+    62,
+    62
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t1: update every 10th row",
+  "scope": "local",
+  "setup": false,
+  "calls": 7042,
+  "blocks": 8051,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    7042,
+    7042
+   ],
+   "blocks": [
+    8051,
+    8051
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t1: swap rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 7049,
+  "blocks": 17043,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    7049,
+    7049
+   ],
+   "blocks": [
+    17043,
+    17043
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t1: remove a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 8040,
+  "blocks": 9052,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8040,
+    8040
+   ],
+   "blocks": [
+    9052,
+    9052
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t1: append rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 62044,
+  "blocks": 63054,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    62044,
+    62044
+   ],
+   "blocks": [
+    63054,
+    63054
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t1: replace all rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 62064,
+  "blocks": 65074,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    62064,
+    62064
+   ],
+   "blocks": [
+    65074,
+    65074
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverRows t1",
+  "scope": "local",
+  "setup": false,
+  "calls": 9393,
+  "blocks": 19930,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    9393,
+    9393
+   ],
+   "blocks": [
+    19930,
+    19930
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t1: clear",
+  "scope": "local",
+  "setup": false,
+  "calls": 1859,
+  "blocks": 1868,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1859,
+    1859
+   ],
+   "blocks": [
+    1868,
+    1868
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "setup: t2 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 67069,
+  "blocks": 68079,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    67069,
+    67069
+   ],
+   "blocks": [
+    68079,
+    68079
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t2: toggle a flag",
+  "scope": "local",
+  "setup": false,
+  "calls": 21055,
+  "blocks": 22066,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    21055,
+    21055
+   ],
+   "blocks": [
+    22066,
+    22066
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t2: sort ascending (text)",
+  "scope": "local",
+  "setup": false,
+  "calls": 29779,
+  "blocks": 57878,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29779,
+    29779
+   ],
+   "blocks": [
+    57878,
+    57878
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t2: sort descending (date)",
+  "scope": "local",
+  "setup": false,
+  "calls": 32527,
+  "blocks": 59901,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    32527,
+    32527
+   ],
+   "blocks": [
+    59901,
+    59901
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t2: remove checked rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 13841,
+  "blocks": 16764,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    13841,
+    13841
+   ],
+   "blocks": [
+    16764,
+    16764
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t2: remove a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 10746,
+  "blocks": 11245,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10746,
+    10746
+   ],
+   "blocks": [
+    11245,
+    11245
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverDelete t2",
+  "scope": "local",
+  "setup": false,
+  "calls": 10713,
+  "blocks": 13105,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10713,
+    10713
+   ],
+   "blocks": [
+    13105,
+    13105
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "setup: t3 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 99061,
+  "blocks": 100071,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    99061,
+    99061
+   ],
+   "blocks": [
+    100071,
+    100071
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t3: select a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 3046,
+  "blocks": 5058,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3046,
+    3046
+   ],
+   "blocks": [
+    5058,
+    5058
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t3: bump a number (a computed cell reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 12055,
+  "blocks": 13067,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12055,
+    12055
+   ],
+   "blocks": [
+    13067,
+    13067
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t3: update every k-th row (number)",
+  "scope": "local",
+  "setup": false,
+  "calls": 13667,
+  "blocks": 14676,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    13667,
+    13667
+   ],
+   "blocks": [
+    14676,
+    14676
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t3: swap rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 12049,
+  "blocks": 22043,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12049,
+    12049
+   ],
+   "blocks": [
+    22043,
+    22043
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: serverUpdate t3",
+  "scope": "local",
+  "setup": false,
+  "calls": 16082,
+  "blocks": 17082,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16082,
+    16082
+   ],
+   "blocks": [
+    17082,
+    17082
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t3: append rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 111051,
+  "blocks": 112061,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    111051,
+    111051
+   ],
+   "blocks": [
+    112061,
+    112061
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "setup: t4 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 81061,
+  "blocks": 82071,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    81061,
+    81061
+   ],
+   "blocks": [
+    82071,
+    82071
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t4: update every k-th row (status)",
+  "scope": "local",
+  "setup": false,
+  "calls": 15042,
+  "blocks": 16051,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    15042,
+    15042
+   ],
+   "blocks": [
+    16051,
+    16051
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t4: select a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 6046,
+  "blocks": 8058,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    6046,
+    6046
+   ],
+   "blocks": [
+    8058,
+    8058
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "t4: clear",
+  "scope": "local",
+  "setup": false,
+  "calls": 2058,
+  "blocks": 2068,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2058,
+    2058
+   ],
+   "blocks": [
+    2068,
+    2068
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 16,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 49342,
+  "blocks": 76762,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    49342,
+    49342
+   ],
+   "blocks": [
+    76762,
+    76762
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "setup: t1 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 55055,
+  "blocks": 56065,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    55055,
+    55055
+   ],
+   "blocks": [
+    56065,
+    56065
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t1: select a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 3046,
+  "blocks": 5058,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3046,
+    3046
+   ],
+   "blocks": [
+    5058,
+    5058
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t1: select another row",
+  "scope": "local",
+  "setup": false,
+  "calls": 50,
+  "blocks": 62,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    50,
+    50
+   ],
+   "blocks": [
+    62,
+    62
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t1: update every 10th row",
+  "scope": "local",
+  "setup": false,
+  "calls": 7042,
+  "blocks": 8051,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    7042,
+    7042
+   ],
+   "blocks": [
+    8051,
+    8051
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t1: swap rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 7049,
+  "blocks": 17043,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    7049,
+    7049
+   ],
+   "blocks": [
+    17043,
+    17043
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t1: remove a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 8040,
+  "blocks": 9052,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8040,
+    8040
+   ],
+   "blocks": [
+    9052,
+    9052
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t1: append rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 62044,
+  "blocks": 63054,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    62044,
+    62044
+   ],
+   "blocks": [
+    63054,
+    63054
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t1: replace all rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 62064,
+  "blocks": 65074,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    62064,
+    62064
+   ],
+   "blocks": [
+    65074,
+    65074
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverRows t1",
+  "scope": "local",
+  "setup": false,
+  "calls": 9393,
+  "blocks": 19930,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    9393,
+    9393
+   ],
+   "blocks": [
+    19930,
+    19930
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t1: clear",
+  "scope": "local",
+  "setup": false,
+  "calls": 1859,
+  "blocks": 1868,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1859,
+    1859
+   ],
+   "blocks": [
+    1868,
+    1868
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "setup: t2 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 67069,
+  "blocks": 68079,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    67069,
+    67069
+   ],
+   "blocks": [
+    68079,
+    68079
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t2: toggle a flag",
+  "scope": "local",
+  "setup": false,
+  "calls": 21055,
+  "blocks": 22066,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    21055,
+    21055
+   ],
+   "blocks": [
+    22066,
+    22066
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t2: sort ascending (text)",
+  "scope": "local",
+  "setup": false,
+  "calls": 29779,
+  "blocks": 57878,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29779,
+    29779
+   ],
+   "blocks": [
+    57878,
+    57878
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t2: sort descending (date)",
+  "scope": "local",
+  "setup": false,
+  "calls": 32527,
+  "blocks": 59901,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    32527,
+    32527
+   ],
+   "blocks": [
+    59901,
+    59901
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t2: remove checked rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 13841,
+  "blocks": 16764,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    13841,
+    13841
+   ],
+   "blocks": [
+    16764,
+    16764
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t2: remove a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 10746,
+  "blocks": 11245,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10746,
+    10746
+   ],
+   "blocks": [
+    11245,
+    11245
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverDelete t2",
+  "scope": "local",
+  "setup": false,
+  "calls": 10713,
+  "blocks": 13105,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10713,
+    10713
+   ],
+   "blocks": [
+    13105,
+    13105
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "setup: t3 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 99061,
+  "blocks": 100071,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    99061,
+    99061
+   ],
+   "blocks": [
+    100071,
+    100071
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t3: select a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 3046,
+  "blocks": 5058,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3046,
+    3046
+   ],
+   "blocks": [
+    5058,
+    5058
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t3: bump a number (a computed cell reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 12055,
+  "blocks": 13067,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12055,
+    12055
+   ],
+   "blocks": [
+    13067,
+    13067
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t3: update every k-th row (number)",
+  "scope": "local",
+  "setup": false,
+  "calls": 13667,
+  "blocks": 14676,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    13667,
+    13667
+   ],
+   "blocks": [
+    14676,
+    14676
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t3: swap rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 12049,
+  "blocks": 22043,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12049,
+    12049
+   ],
+   "blocks": [
+    22043,
+    22043
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: serverUpdate t3",
+  "scope": "local",
+  "setup": false,
+  "calls": 16082,
+  "blocks": 17082,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16082,
+    16082
+   ],
+   "blocks": [
+    17082,
+    17082
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t3: append rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 111051,
+  "blocks": 112061,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    111051,
+    111051
+   ],
+   "blocks": [
+    112061,
+    112061
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "setup: t4 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 81061,
+  "blocks": 82071,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    81061,
+    81061
+   ],
+   "blocks": [
+    82071,
+    82071
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t4: update every k-th row (status)",
+  "scope": "local",
+  "setup": false,
+  "calls": 15042,
+  "blocks": 16051,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    15042,
+    15042
+   ],
+   "blocks": [
+    16051,
+    16051
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t4: select a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 6046,
+  "blocks": 8058,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    6046,
+    6046
+   ],
+   "blocks": [
+    8058,
+    8058
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "t4: clear",
+  "scope": "local",
+  "setup": false,
+  "calls": 2058,
+  "blocks": 2068,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2058,
+    2058
+   ],
+   "blocks": [
+    2068,
+    2068
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 32,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 52288,
+  "blocks": 80242,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    52288,
+    52288
+   ],
+   "blocks": [
+    80242,
+    80242
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "setup: t1 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 55055,
+  "blocks": 56065,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    55055,
+    55055
+   ],
+   "blocks": [
+    56065,
+    56065
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t1: select a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 3046,
+  "blocks": 5058,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3046,
+    3046
+   ],
+   "blocks": [
+    5058,
+    5058
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t1: select another row",
+  "scope": "local",
+  "setup": false,
+  "calls": 50,
+  "blocks": 62,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    50,
+    50
+   ],
+   "blocks": [
+    62,
+    62
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t1: update every 10th row",
+  "scope": "local",
+  "setup": false,
+  "calls": 7042,
+  "blocks": 8051,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    7042,
+    7042
+   ],
+   "blocks": [
+    8051,
+    8051
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t1: swap rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 7049,
+  "blocks": 17043,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    7049,
+    7049
+   ],
+   "blocks": [
+    17043,
+    17043
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t1: remove a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 8040,
+  "blocks": 9052,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8040,
+    8040
+   ],
+   "blocks": [
+    9052,
+    9052
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t1: append rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 62044,
+  "blocks": 63054,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    62044,
+    62044
+   ],
+   "blocks": [
+    63054,
+    63054
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t1: replace all rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 62064,
+  "blocks": 65074,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    62064,
+    62064
+   ],
+   "blocks": [
+    65074,
+    65074
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverRows t1",
+  "scope": "local",
+  "setup": false,
+  "calls": 9393,
+  "blocks": 19930,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    9393,
+    9393
+   ],
+   "blocks": [
+    19930,
+    19930
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t1: clear",
+  "scope": "local",
+  "setup": false,
+  "calls": 1859,
+  "blocks": 1868,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1859,
+    1859
+   ],
+   "blocks": [
+    1868,
+    1868
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "setup: t2 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 67069,
+  "blocks": 68079,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    67069,
+    67069
+   ],
+   "blocks": [
+    68079,
+    68079
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t2: toggle a flag",
+  "scope": "local",
+  "setup": false,
+  "calls": 21055,
+  "blocks": 22066,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    21055,
+    21055
+   ],
+   "blocks": [
+    22066,
+    22066
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t2: sort ascending (text)",
+  "scope": "local",
+  "setup": false,
+  "calls": 29779,
+  "blocks": 57878,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29779,
+    29779
+   ],
+   "blocks": [
+    57878,
+    57878
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t2: sort descending (date)",
+  "scope": "local",
+  "setup": false,
+  "calls": 32527,
+  "blocks": 59901,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    32527,
+    32527
+   ],
+   "blocks": [
+    59901,
+    59901
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t2: remove checked rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 13841,
+  "blocks": 16764,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    13841,
+    13841
+   ],
+   "blocks": [
+    16764,
+    16764
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t2: remove a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 10746,
+  "blocks": 11245,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10746,
+    10746
+   ],
+   "blocks": [
+    11245,
+    11245
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverDelete t2",
+  "scope": "local",
+  "setup": false,
+  "calls": 10713,
+  "blocks": 13105,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10713,
+    10713
+   ],
+   "blocks": [
+    13105,
+    13105
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "setup: t3 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 99061,
+  "blocks": 100071,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    99061,
+    99061
+   ],
+   "blocks": [
+    100071,
+    100071
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t3: select a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 3046,
+  "blocks": 5058,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3046,
+    3046
+   ],
+   "blocks": [
+    5058,
+    5058
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t3: bump a number (a computed cell reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 12055,
+  "blocks": 13067,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12055,
+    12055
+   ],
+   "blocks": [
+    13067,
+    13067
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t3: update every k-th row (number)",
+  "scope": "local",
+  "setup": false,
+  "calls": 13667,
+  "blocks": 14676,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    13667,
+    13667
+   ],
+   "blocks": [
+    14676,
+    14676
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t3: swap rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 12049,
+  "blocks": 22043,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12049,
+    12049
+   ],
+   "blocks": [
+    22043,
+    22043
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: serverUpdate t3",
+  "scope": "local",
+  "setup": false,
+  "calls": 16082,
+  "blocks": 17082,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16082,
+    16082
+   ],
+   "blocks": [
+    17082,
+    17082
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t3: append rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 111051,
+  "blocks": 112061,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    111051,
+    111051
+   ],
+   "blocks": [
+    112061,
+    112061
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "setup: t4 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 81061,
+  "blocks": 82071,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    81061,
+    81061
+   ],
+   "blocks": [
+    82071,
+    82071
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t4: update every k-th row (status)",
+  "scope": "local",
+  "setup": false,
+  "calls": 15042,
+  "blocks": 16051,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    15042,
+    15042
+   ],
+   "blocks": [
+    16051,
+    16051
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t4: select a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 6046,
+  "blocks": 8058,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    6046,
+    6046
+   ],
+   "blocks": [
+    8058,
+    8058
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "t4: clear",
+  "scope": "local",
+  "setup": false,
+  "calls": 2058,
+  "blocks": 2068,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2058,
+    2058
+   ],
+   "blocks": [
+    2068,
+    2068
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 64,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 57759,
+  "blocks": 86701,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    57759,
+    57759
+   ],
+   "blocks": [
+    86701,
+    86701
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "setup: t1 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 55055,
+  "blocks": 56065,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    55055,
+    55055
+   ],
+   "blocks": [
+    56065,
+    56065
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t1: select a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 3046,
+  "blocks": 5058,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3046,
+    3046
+   ],
+   "blocks": [
+    5058,
+    5058
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t1: select another row",
+  "scope": "local",
+  "setup": false,
+  "calls": 50,
+  "blocks": 62,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    50,
+    50
+   ],
+   "blocks": [
+    62,
+    62
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t1: update every 10th row",
+  "scope": "local",
+  "setup": false,
+  "calls": 7042,
+  "blocks": 8051,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    7042,
+    7042
+   ],
+   "blocks": [
+    8051,
+    8051
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t1: swap rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 7049,
+  "blocks": 17043,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    7049,
+    7049
+   ],
+   "blocks": [
+    17043,
+    17043
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t1: remove a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 8040,
+  "blocks": 9052,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8040,
+    8040
+   ],
+   "blocks": [
+    9052,
+    9052
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t1: append rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 62044,
+  "blocks": 63054,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    62044,
+    62044
+   ],
+   "blocks": [
+    63054,
+    63054
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t1: replace all rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 62064,
+  "blocks": 65074,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    62064,
+    62064
+   ],
+   "blocks": [
+    65074,
+    65074
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverRows t1",
+  "scope": "local",
+  "setup": false,
+  "calls": 9393,
+  "blocks": 19930,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    9393,
+    9393
+   ],
+   "blocks": [
+    19930,
+    19930
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t1: clear",
+  "scope": "local",
+  "setup": false,
+  "calls": 1859,
+  "blocks": 1868,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1859,
+    1859
+   ],
+   "blocks": [
+    1868,
+    1868
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "setup: t2 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 67069,
+  "blocks": 68079,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    67069,
+    67069
+   ],
+   "blocks": [
+    68079,
+    68079
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t2: toggle a flag",
+  "scope": "local",
+  "setup": false,
+  "calls": 21055,
+  "blocks": 22066,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    21055,
+    21055
+   ],
+   "blocks": [
+    22066,
+    22066
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t2: sort ascending (text)",
+  "scope": "local",
+  "setup": false,
+  "calls": 29779,
+  "blocks": 57878,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29779,
+    29779
+   ],
+   "blocks": [
+    57878,
+    57878
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t2: sort descending (date)",
+  "scope": "local",
+  "setup": false,
+  "calls": 32527,
+  "blocks": 59901,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    32527,
+    32527
+   ],
+   "blocks": [
+    59901,
+    59901
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t2: remove checked rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 13841,
+  "blocks": 16764,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    13841,
+    13841
+   ],
+   "blocks": [
+    16764,
+    16764
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t2: remove a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 10746,
+  "blocks": 11245,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10746,
+    10746
+   ],
+   "blocks": [
+    11245,
+    11245
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverDelete t2",
+  "scope": "local",
+  "setup": false,
+  "calls": 10713,
+  "blocks": 13105,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10713,
+    10713
+   ],
+   "blocks": [
+    13105,
+    13105
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "setup: t3 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 99061,
+  "blocks": 100071,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    99061,
+    99061
+   ],
+   "blocks": [
+    100071,
+    100071
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t3: select a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 3046,
+  "blocks": 5058,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3046,
+    3046
+   ],
+   "blocks": [
+    5058,
+    5058
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t3: bump a number (a computed cell reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 12055,
+  "blocks": 13067,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12055,
+    12055
+   ],
+   "blocks": [
+    13067,
+    13067
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t3: update every k-th row (number)",
+  "scope": "local",
+  "setup": false,
+  "calls": 13667,
+  "blocks": 14676,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    13667,
+    13667
+   ],
+   "blocks": [
+    14676,
+    14676
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t3: swap rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 12049,
+  "blocks": 22043,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12049,
+    12049
+   ],
+   "blocks": [
+    22043,
+    22043
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: serverUpdate t3",
+  "scope": "local",
+  "setup": false,
+  "calls": 16082,
+  "blocks": 17082,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16082,
+    16082
+   ],
+   "blocks": [
+    17082,
+    17082
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t3: append rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 111051,
+  "blocks": 112061,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    111051,
+    111051
+   ],
+   "blocks": [
+    112061,
+    112061
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "setup: t4 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 81061,
+  "blocks": 82071,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    81061,
+    81061
+   ],
+   "blocks": [
+    82071,
+    82071
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t4: update every k-th row (status)",
+  "scope": "local",
+  "setup": false,
+  "calls": 15042,
+  "blocks": 16051,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    15042,
+    15042
+   ],
+   "blocks": [
+    16051,
+    16051
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t4: select a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 6046,
+  "blocks": 8058,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    6046,
+    6046
+   ],
+   "blocks": [
+    8058,
+    8058
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "t4: clear",
+  "scope": "local",
+  "setup": false,
+  "calls": 2058,
+  "blocks": 2068,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2058,
+    2058
+   ],
+   "blocks": [
+    2068,
+    2068
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 128,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 69069,
+  "blocks": 100087,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    69069,
+    69069
+   ],
+   "blocks": [
+    100087,
+    100087
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "setup: t1 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 55055,
+  "blocks": 56065,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    55055,
+    55055
+   ],
+   "blocks": [
+    56065,
+    56065
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t1: select a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 3046,
+  "blocks": 5058,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3046,
+    3046
+   ],
+   "blocks": [
+    5058,
+    5058
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t1: select another row",
+  "scope": "local",
+  "setup": false,
+  "calls": 50,
+  "blocks": 62,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    50,
+    50
+   ],
+   "blocks": [
+    62,
+    62
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t1: update every 10th row",
+  "scope": "local",
+  "setup": false,
+  "calls": 7042,
+  "blocks": 8051,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    7042,
+    7042
+   ],
+   "blocks": [
+    8051,
+    8051
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t1: swap rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 7049,
+  "blocks": 17043,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    7049,
+    7049
+   ],
+   "blocks": [
+    17043,
+    17043
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t1: remove a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 8040,
+  "blocks": 9052,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    8040,
+    8040
+   ],
+   "blocks": [
+    9052,
+    9052
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t1: append rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 62044,
+  "blocks": 63054,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    62044,
+    62044
+   ],
+   "blocks": [
+    63054,
+    63054
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t1: replace all rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 62064,
+  "blocks": 65074,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    62064,
+    62064
+   ],
+   "blocks": [
+    65074,
+    65074
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverRows t1",
+  "scope": "local",
+  "setup": false,
+  "calls": 9393,
+  "blocks": 19930,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    9393,
+    9393
+   ],
+   "blocks": [
+    19930,
+    19930
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t1: clear",
+  "scope": "local",
+  "setup": false,
+  "calls": 1859,
+  "blocks": 1868,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    1859,
+    1859
+   ],
+   "blocks": [
+    1868,
+    1868
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "setup: t2 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 67069,
+  "blocks": 68079,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    67069,
+    67069
+   ],
+   "blocks": [
+    68079,
+    68079
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t2: toggle a flag",
+  "scope": "local",
+  "setup": false,
+  "calls": 21055,
+  "blocks": 22066,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    21055,
+    21055
+   ],
+   "blocks": [
+    22066,
+    22066
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t2: sort ascending (text)",
+  "scope": "local",
+  "setup": false,
+  "calls": 29779,
+  "blocks": 57878,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    29779,
+    29779
+   ],
+   "blocks": [
+    57878,
+    57878
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t2: sort descending (date)",
+  "scope": "local",
+  "setup": false,
+  "calls": 32527,
+  "blocks": 59901,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    32527,
+    32527
+   ],
+   "blocks": [
+    59901,
+    59901
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t2: remove checked rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 13841,
+  "blocks": 16764,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    13841,
+    13841
+   ],
+   "blocks": [
+    16764,
+    16764
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t2: remove a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 10746,
+  "blocks": 11245,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10746,
+    10746
+   ],
+   "blocks": [
+    11245,
+    11245
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverDelete t2",
+  "scope": "local",
+  "setup": false,
+  "calls": 10713,
+  "blocks": 13105,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    10713,
+    10713
+   ],
+   "blocks": [
+    13105,
+    13105
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "setup: t3 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 99061,
+  "blocks": 100071,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    99061,
+    99061
+   ],
+   "blocks": [
+    100071,
+    100071
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t3: select a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 3046,
+  "blocks": 5058,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    3046,
+    3046
+   ],
+   "blocks": [
+    5058,
+    5058
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t3: bump a number (a computed cell reads it)",
+  "scope": "local",
+  "setup": false,
+  "calls": 12055,
+  "blocks": 13067,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12055,
+    12055
+   ],
+   "blocks": [
+    13067,
+    13067
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t3: update every k-th row (number)",
+  "scope": "local",
+  "setup": false,
+  "calls": 13667,
+  "blocks": 14676,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    13667,
+    13667
+   ],
+   "blocks": [
+    14676,
+    14676
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t3: swap rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 12049,
+  "blocks": 22043,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    12049,
+    12049
+   ],
+   "blocks": [
+    22043,
+    22043
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: serverUpdate t3",
+  "scope": "local",
+  "setup": false,
+  "calls": 16082,
+  "blocks": 17082,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    16082,
+    16082
+   ],
+   "blocks": [
+    17082,
+    17082
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t3: append rows",
+  "scope": "local",
+  "setup": false,
+  "calls": 111051,
+  "blocks": 112061,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    111051,
+    111051
+   ],
+   "blocks": [
+    112061,
+    112061
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "setup: t4 create rows",
+  "scope": "local",
+  "setup": true,
+  "calls": 81061,
+  "blocks": 82071,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    81061,
+    81061
+   ],
+   "blocks": [
+    82071,
+    82071
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t4: update every k-th row (status)",
+  "scope": "local",
+  "setup": false,
+  "calls": 15042,
+  "blocks": 16051,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    15042,
+    15042
+   ],
+   "blocks": [
+    16051,
+    16051
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t4: select a row",
+  "scope": "local",
+  "setup": false,
+  "calls": 6046,
+  "blocks": 8058,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    6046,
+    6046
+   ],
+   "blocks": [
+    8058,
+    8058
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "t4: clear",
+  "scope": "local",
+  "setup": false,
+  "calls": 2058,
+  "blocks": 2068,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    2058,
+    2058
+   ],
+   "blocks": [
+    2068,
+    2068
+   ]
+  }
+ },
+ {
+  "variant": "marko",
+  "size": 256,
+  "seed": 1,
+  "action": "dispatch: whole-state snapshot",
+  "scope": "global",
+  "setup": false,
+  "calls": 91745,
+  "blocks": 126864,
+  "deterministic": true,
+  "runs": {
+   "calls": [
+    91745,
+    91745
+   ],
+   "blocks": [
+    126864,
+    126864
+   ]
+  }
+ }
+]

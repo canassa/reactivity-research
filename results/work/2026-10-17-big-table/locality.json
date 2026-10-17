@@ -1,0 +1,17 @@
+{
+  "1": {
+    "marko": {
+      "sizes": [
+        16,
+        256
+      ],
+      "medianRatio": 1,
+      "maxRatio": 1,
+      "worst": "t1: select a row",
+      "medianPerWidget": 0,
+      "callsAtMin": 10746,
+      "callsAtMax": 10746,
+      "snapshotRatio": 1.85936929998784
+    }
+  }
+}
