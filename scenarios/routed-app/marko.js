@@ -24,7 +24,7 @@
 //   Text inputs, checkboxes and selects are controlled with `value:=` and `checked:=`.
 // - Time-driven fields: a `<lifecycle>` in the tag that owns the field, `setInterval` in
 //   `onMount`, `clearInterval` in `onDestroy`. A page with a feed list subscribes to `pagePush` in
-//   the same `<lifecycle>`: the root holds a `feeds` Map (a `<const>`), the page sets its handler
+//   the same `<lifecycle>`: the root holds `feeds` (a `<const>`: the subscribers by page, and a push waiting for a page that is mounting), the page sets its handler
 //   on mount and deletes it on destroy, so a push reaches only the page shown.
 // - External events: the root `<return>`s one function that assigns the root's `<let>`s;
 //   dispatched items are copied, never adopted.
@@ -33,7 +33,7 @@
 //   markup, conditional sections and validation errors are `<if>`, lists are `<for … by="id">`.
 
 import { templateFiles } from "../../frameworks/marko/framework.js";
-import { literal } from "../../frameworks/marko/source.js";
+import { INT_FIELD, literal } from "../../frameworks/marko/source.js";
 import { GLOBAL, messageWrites, refKey } from "./spec.js";
 
 export const framework = "marko";
@@ -44,7 +44,7 @@ const str = JSON.stringify;
 const COMPARE = { "==": "===", "!=": "!==", "<": "<", "<=": "<=", ">": ">", ">=": ">=" };
 
 // Text inside a Marko template: `<` and `${` are the only characters that need escaping here.
-const text = (s) => String(s).replace(/</g, "&lt;").replace(/\$\{/g, "\\${");
+const text = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\$\{/g, "\\${");
 
 const tagOf = (page, comp, kind) =>
   kind === "page" ? `page-${page.id}` : kind === "modal" ? `page-${page.id}-modal` : `page-${page.id}-${comp.id}`;
@@ -290,14 +290,16 @@ function componentFile(page, comp, kind) {
     destroys.push("clearInterval(this.timer);");
   }
   if (feed) {
-    mounts.push(`input.feeds.set(${str(page.id)}, (item) => { ${feed.name} = ${feed.name}.concat({ id: item.id, text: item.text }) });`);
-    destroys.push(`input.feeds.delete(${str(page.id)});`);
+    // A push that reached the root in the task that navigated here waits in `feeds.queued`.
+    mounts.push(
+      `const receive = (items) => { ${feed.name} = ${feed.name}.concat(items.map(({ id, text }) => ({ id, text }))) };`,
+      `input.feeds.subscribers.set(${str(page.id)}, receive);`,
+      `if (input.feeds.queued?.page === ${str(page.id)}) {\n      receive(input.feeds.queued.items);\n      input.feeds.queued = null;\n    }`,
+    );
+    destroys.push(`input.feeds.subscribers.delete(${str(page.id)});`);
   }
 
   const statics = [];
-  if (ctx.needs.nextId) {
-    statics.push("static function nextId(items) {\n  return items.reduce((max, item) => Math.max(max, item.id), 0) + 1;\n}");
-  }
   for (const [name, options] of ctx.options) statics.push(`static const ${name} = ${literal(options)};`);
 
   const markup = {
@@ -313,6 +315,7 @@ function componentFile(page, comp, kind) {
   }[kind]();
 
   const lines = [];
+  if (ctx.needs.nextId) lines.push('import { nextId } from "../list.js";', "");
   if (statics.length) lines.push(statics.join("\n\n"), "");
   lines.push(...decls);
   if (mounts.length) {
@@ -338,21 +341,6 @@ function pageFiles(page) {
 
 // ---------------------------------------------------------------------------------------------
 // The root template and the files
-
-const INT_FIELD = `<let/value:=input.value>
-<let/pending=null>
-<const/draft=pending ?? value>
-
-<input type="number" data-role=input.msg value=draft valueChange(text) {
-  const n = Number(text);
-  if (text.trim() !== "" && Number.isInteger(n) && n >= input.min && n <= input.max) {
-    value = n;
-    pending = null;
-  } else {
-    pending = text;
-  }
-}>
-`;
 
 function appFile(spec, pageInfo) {
   const row = (p) => `  [${str(p.id)}, ${str(p.title)}],`;
@@ -387,9 +375,9 @@ ${spec.pages.map(row).join("\n")}
 ${globals.join("\n")}
 <const/go=(to) => {
   route = to;
-  menu = false;
+  menu = false;${anyFeed ? "\n  feeds.queued = null;" : ""}
 }>
-${anyFeed ? "<const/feeds=new Map()>\n" : ""}
+${anyFeed ? "<const/feeds={ subscribers: new Map(), queued: null }>\n" : ""}
 <div data-role="app">
   <header data-key="shell" data-role="shell">
     <strong>${text(spec.app)}</strong>
@@ -426,7 +414,17 @@ ${["user", "currency", "balance", "online"].map((f) => `        case "${f}":\n  
       notices = notices.concat({ id: msg.item.id, text: msg.item.text });
       break;
     case "pagePush":
-${anyFeed ? "      feeds.get(msg.page)?.(msg.item);\n" : ""}      break;
+${anyFeed ? `      {
+        const receive = feeds.subscribers.get(msg.page);
+        if (receive) {
+          receive([msg.item]);
+        } else if (msg.page === route) {
+          // The page is about to mount: a navigation in this task changed the route.
+          if (feeds.queued?.page !== route) feeds.queued = { page: route, items: [] };
+          feeds.queued.items.push(msg.item);
+        }
+      }
+` : ""}      break;
     case "snapshot":
 ${spec.global.map((f) => `      ${f.name} = ${f.type === "list" ? `msg.global.${f.name}.map((item) => ({ ...item }))` : `msg.global.${f.name}`};`).join("\n")}
       break;
@@ -434,6 +432,12 @@ ${spec.global.map((f) => `      ${f.name} = ${f.type === "list" ? `msg.global.${
 }>
 `;
 }
+
+const LIST_FILE = `// The id for a new list item: one more than the largest.
+export function nextId(items) {
+  return items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
+}
+`;
 
 export function emit(spec) {
   const files = { ...templateFiles({ name: "routed-app", title: "Routed app" }), "src/tags/int-field.marko": INT_FIELD };
@@ -443,11 +447,13 @@ export function emit(spec) {
     Object.assign(files, f);
     pageInfo.set(p.id, page);
   }
+  if (Object.entries(files).some(([name, code]) => name.startsWith("src/tags/page-") && code.includes("../list.js"))) files["src/list.js"] = LIST_FILE;
   files["src/app.marko"] = appFile(spec, pageInfo);
   return {
     files,
     style: {
-      routing: "in-app route <let> in the root template; an <if>/<else if> chain with one branch per page mounts the page the route names and destroys the one it leaves; no router; the nav bar and the menu read static tables of (id, title)",
+      routing: "in-app route <let> in the root template; an <if>/<else if> chain with one branch per page (each given only the globals it uses) mounts the page the route names and destroys the one it leaves; no router; the nav bar and the menu read static tables of (id, title)",
+      sharedHelpers: "nextId is one module, src/list.js, imported by the pages and panels that add list items",
       components: "one tag per page (src/tags/page-pN.marko), with its tab panels (page-pN-tK) and modal (page-pN-modal) as tags of their own; written from the description, nothing interpreted at runtime",
       localState: "<let>s in the page, panel and modal tags, created when the tag mounts and gone when it is destroyed; the active tab's panel and the open modal are <if> branches, so they start fresh each time",
       globalState: "<let>s in the root template, passed down as attributes (no context API): read-only as name=name, written as name:=name into a controllable <let/name:=input.name>; a page passes its panels and modal what they use the same way",
