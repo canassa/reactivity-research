@@ -60,3 +60,25 @@ section in `frameworks/tea-dirtybits/README.md` describes the design.
   should cost more than a number per reader.
 - Not tried: incremental aggregates, a smaller table of reader lists (ranges), comparing top-k
   lists by item and key.
+
+## Review fixes (same day)
+
+- Same-value writes: `set` now touches the input's controls (`CTRL[name]`) when nothing changed, so
+  invalid typed text in a number input is replaced after `serverInputs` with the same value and
+  after a raise clamped at the maximum. A snapshot files bit 2 (force), so every row is filled.
+  Tested in headless Chrome with a scratch script: typed "1.5", then the server writes the current
+  value (control shows 18); typed the max, then "1.5", then raise (shows 40); typed 5000 in a
+  quantity, then a snapshot (shows the snapshot's quantity).
+- The sweep records the lowest and highest marked word (`touch`, `markAll`) and walks only that range.
+- `table`, `clone`, `idOf`, `ranked` and `groups` moved into generated app code (items.js, lists.js);
+  graph.js keeps `touch`, `markAll`, `sweep` and the on-handlers. Runtime at N=256 went from
+  1,228 B to 803 B brotli; the app grew by about as much.
+- A top-k list whose key reads only item fields now uses the identity cut-off; the emitter asserts
+  every reader's cell number exceeds its source's; an unknown message type leaves the model alone.
+- Sizes after (brotli total, median of 3 seeds, N=1 / 16 / 64 / 256): low 2,875 / 4,930 / 9,194 /
+  24,527; mid 2,898 / 5,249 / 10,736 / 31,695; high 2,932 / 5,932 / 13,471 / 43,376. Fit N >= 16:
+  low 3,788 + 81.8, mid 3,610 + 109.9, high 3,448 + 155.4 B per formula. Before: 2,809 / 4,802 /
+  9,057 / 24,255, 2,825 / 5,158 / 10,575 / 31,222 and 2,862 / 5,827 / 13,316 / 42,987. The cost is
+  the CTRL table, the force bit and the lo/hi tracking.
+- Checks pass again at sizes 1, 4, 16, 64 (seeds 1 to 3), fanout low and high at 16, and the
+  other scenarios (locality 1.00 on this one).

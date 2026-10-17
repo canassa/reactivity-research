@@ -151,6 +151,14 @@ function sheetFiles(spec) {
     else readBy(k.node.cell, k);
   }
 
+  // A reader's cell number must exceed its source's, or one sweep would not settle the graph.
+  for (const k of cells) {
+    const names = k.kind === "formula" ? reads(k.c.expr) : k.kind === "text" ? k.node.parts.filter(Array.isArray).map((p) => p[1]) : k.kind === "top" || k.kind === "groups" ? [k.node.cell] : [];
+    for (const name of names) if (formulas.has(name) && of.get(formulas.get(name)).g >= k.g) throw new Error(`cell ${k.g} reads ${name}, which does not come first`);
+  }
+  const ctrls = new Map([...inputs.keys()].map((n) => [n, []]));
+  for (const k of cells) if (k.kind === "ctrl") ctrls.get(msgs.get(k.node.msg).cell).push(k.g);
+
   // --- Item fields: which formulas an edit of a field dirties. -----------------------------------
   // A formula that is a list holds item objects, so it is refreshed by every field its readers
   // read through it (otherwise it would hand them stale items).
@@ -285,9 +293,10 @@ function sheetFiles(spec) {
     else if (k.kind === "formula") {
       const c = k.c, code = compile(c.expr, cx), arg = /\bs\./.test(code) ? "s" : "";
       const mark = touchCode(c.name);
-      if (c.type === "top" || c.type === "group") fns.push(`(${arg}) => {\n  ${c.name} = ${code};\n  ${mark}\n},`);
+      const keyFree = c.type === "top" && reads(c.expr[2]).length === 0; // a key of item fields only: same items, same keys
+      if ((c.type === "top" && !keyFree) || c.type === "group") fns.push(`(${arg}) => {\n  ${c.name} = ${code};\n  ${mark}\n},`);
       else {
-        const same = c.type === "list" ? `!same(v, ${c.name})` : `v !== ${c.name}`;
+        const same = c.type === "list" || keyFree ? `!same(v, ${c.name})` : `v !== ${c.name}`;
         fns.push(`(${arg}) => {\n  const v = ${code};\n  if (${same}) {\n    ${c.name} = v;\n    ${mark}\n  }\n},`);
       }
     } else if (k.kind === "text") {
@@ -303,15 +312,15 @@ function sheetFiles(spec) {
     } else if (k.kind === "groups") {
       const n = k.node, c = formulas.get(n.cell);
       const h = `r${k.g}`;
-      lists.push(`const ${h} = groups(${T(n)}, ${J(n.cell)}, CATS);`);
+      lists.push(`const ${h} = groups(${T(n)}, ${J(n.cell)});`);
       fns.push(`() => ${h}(${n.cell}, ${formatter(c.format)}),`);
     }
   }
   const helperNames = ["setText", "setNumber", "setChecked", "setValue"].filter((h) => fns.some((f) => f.includes(`${h}(`)));
   const usesRanked = lists.some((l) => l.includes("ranked("));
   const usesGroups = lists.some((l) => l.includes("groups("));
-  const graphNames = ["touch", ...used, ...(usesRanked ? ["ranked"] : []), ...(usesGroups ? ["groups"] : [])].sort();
-  const listNames = ["CATS", "same", "sumBy", "avgBy", "maxBy", "minBy", "topBy", "groupBy"].filter((h) => new RegExp(`\\b${h}\\b`).test(fns.join("\n") + lists.join("\n")));
+  const graphNames = ["touch", ...used].sort();
+  const listNames = ["CATS", "same", ...(usesRanked ? ["ranked"] : []), ...(usesGroups ? ["groups"] : []), "sumBy", "avgBy", "maxBy", "minBy", "topBy", "groupBy"].filter((h) => new RegExp(`\\b${h}\\b`).test(fns.join("\n") + lists.join("\n")));
   const fmtNames = ["group", "money"].filter((h) => new RegExp(`\\b${h}\\b`).test(fns.join("\n") + lists.join("\n")));
 
   // The `let` declarations of the formulas' stored values.
@@ -325,6 +334,7 @@ function sheetFiles(spec) {
 
   const body = (code) => code.split("\n").map((l) => (l ? "  " + l : l)).join("\n");
   const IN = [...inputs.keys()].map((n) => `  ${n}: [${readers.get(n).join(", ")}],`).join("\n");
+  const CTRL = [...inputs.keys()].map((n) => `  ${n}: [${ctrls.get(n).join(", ")}],`).join("\n");
   const initial = [...inputs.values()].map((c) => `  ${c.name}: ${J(c.initial)},`).join("\n");
   const sheet = `import { template, ${helperNames.join(", ")} } from "./runtime.js";
 import { ${graphNames.join(", ")} } from "./graph.js";
@@ -346,13 +356,19 @@ export const M_ITEMS = [${masks.M_ITEMS.join(", ")}];
 export const M_QTY = [${masks.M_QTY.join(", ")}];
 export const M_ACTIVE = [${masks.M_ACTIVE.join(", ")}];
 
+// The controls of each input: a write that changes nothing still rewrites them (a number input
+// may hold text the user typed that is not the value).
+const CTRL = {
+${CTRL}
+};
+
 export const INITIAL = {
 ${initial}
 };
 
 // One input changed, or none: the arm marks the cells that read it.
 export function set(s, name, value) {
-  if (s.inputs[name] === value) return s;
+  if (s.inputs[name] === value) return touch(CTRL[name]), s;
   touch(IN[name]);
   return { ...s, inputs: { ...s.inputs, [name]: value } };
 }
@@ -385,9 +401,10 @@ function itemsFile(spec) {
   const row = "<tr data-role=item><td></td><td></td><td><input type=number data-role=qty></td><td></td><td></td><td></td><td><input type=checkbox data-role=active></td><td><input type=text data-role=note placeholder=Note></td><td><button data-role=remove>×</button></td></tr>";
   const words = (a) => J(a);
   return `import { html, send, setChecked, setNumber, setText, setValue } from "./runtime.js";
-import { clone, idOf, table } from "./graph.js";
 import { CATS } from "./lists.js";
 import { money } from "./format.js";
+
+${TABLE_CODE}
 
 const ADJECTIVES = ${words(spec.itemWords.adjectives)};
 const NOUNS = ${words(spec.itemWords.nouns)};
@@ -539,10 +556,10 @@ export function update(s, msg) {
     }
     case "snapshot":
       markAll(SIZE);
-      file(257);
+      file(259);
       return msg.state;
   }
-  return ARMS[msg.type](s, msg);
+  return ARMS[msg.type]?.(s, msg) ?? s;
 }
 
 // Builds the page once; the returned patch sweeps the marked cells of the sheet and patches the
@@ -563,6 +580,7 @@ export function view(root, model) {
 }
 
 const LISTS = (spec) => `// Collection helpers of the sheet's formulas (scenario code): each takes the formula's own code as a function.
+import { setText } from "./runtime.js";
 
 export const CATS = ${J(spec.categories)};
 
@@ -589,7 +607,7 @@ export function groupBy(list, f) {
 
 // Whether a filtered list holds the same items (by identity) as before.
 export const same = (list, old) => !!old && list.length === old.length && list.every((i, k) => i === old[k]);
-`;
+${DISPLAY_LISTS}`;
 
 const FORMAT = (spec) => `// Number formats of the sheet (scenario code). No locale APIs, so every language formats alike.
 
@@ -627,3 +645,119 @@ export function emit(spec) {
     },
   };
 }
+
+// The items table (scenario code): a keyed set of rows, each a clone of one template. `row()`
+// builds a detached record [tr, item, …bound elements], `fill(record, item, bits, markup)` is the
+// row's static patch. Dirty bits of the table: reconcile 1, force 2 (patch every row, even of an
+// item that is the same object), gone 4, added 16, and one bit per cell group of a row from 32 up
+// (the row patch tests them); 256 is the markup, which every row reads. The payload names the rows
+// an event touched (ids for gone, items for added and edited cells). A second event of one tick
+// files bit 1, which covers both.
+const TABLE_CODE = `function table(body, row, fill) {
+  let recs = new Map();
+  const make = (item, s) => {
+    const r = row();
+    r[1] = item;
+    r[0].dataset.key = item.id;
+    fill(r, item, -1, s.markup);
+    return r;
+  };
+  // The whole list: new items get rows, changed items are patched, gone rows are removed and one
+  // walk moves only the nodes out of place.
+  const sync = (s, force) => {
+    const next = new Map();
+    let hits = 0;
+    for (const item of s.items) {
+      let r = recs.get(item.id);
+      if (r) {
+        hits++;
+        if (force || r[1] !== item) fill(r, (r[1] = item), -1, s.markup);
+      } else r = make(item, s);
+      next.set(item.id, r);
+    }
+    if (hits) {
+      for (const [id, r] of recs) if (!next.has(id)) r[0].remove();
+    } else body.textContent = "";
+    let cur = body.firstChild;
+    for (const r of next.values()) {
+      if (r[0] === cur) cur = cur.nextSibling;
+      else body.insertBefore(r[0], cur);
+    }
+    recs = next;
+  };
+  return (s, bits, p) => {
+    if (bits & 1) sync(s, bits & 2);
+    else if (bits & 4) {
+      for (const id of p) {
+        const r = recs.get(id);
+        if (r) r[0].remove(), recs.delete(id);
+      }
+    } else if (bits & 16) {
+      for (const item of p) {
+        const r = make(item, s);
+        recs.set(item.id, r);
+        body.append(r[0]);
+      }
+    } else if (bits & 224) {
+      for (const item of p) {
+        const r = recs.get(item.id);
+        if (r) fill(r, (r[1] = item), bits, s.markup);
+      }
+    }
+    if (bits & 256) for (const r of recs.values()) fill(r, r[1], 256, s.markup);
+  };
+}
+
+// The id of the row an element is in.
+const idOf = (el) => +el.closest("tr").dataset.key;
+
+// A row's static markup, parsed once; each row is a clone, \`bind\` finds its bound elements.
+function clone(source, bind) {
+  const t = document.createElement("template");
+  t.innerHTML = source;
+  const proto = t.content.firstChild;
+  return () => bind(proto.cloneNode(true));
+}`;
+
+// Lists of derived values (scenario code). Both write guarded texts.
+const DISPLAY_LISTS = `
+// A keyed list of items (\`<li data-key=id data-role=roleItem>\`): the returned (items, text) writes
+// every row's text (a row's key may change with a scalar cell although the item did not), builds
+// the rows of new items, removes the rows of gone ones and moves only the misplaced nodes.
+export function ranked(parent, role) {
+  let rows = new Map();
+  return (items, text) => {
+    const next = new Map();
+    for (const item of items) {
+      let li = rows.get(item.id);
+      if (!li) {
+        li = document.createElement("li");
+        li.dataset.key = item.id;
+        li.dataset.role = role + "Item";
+      }
+      setText(li, text(item));
+      next.set(item.id, li);
+    }
+    for (const [id, li] of rows) if (!next.has(id)) li.remove();
+    let at = parent.firstChild;
+    for (const li of next.values()) {
+      if (li === at) at = at.nextSibling;
+      else parent.insertBefore(li, at);
+    }
+    rows = next;
+  };
+}
+
+// One row per category (\`<li data-key=category data-role=roleRow>\`); the returned (group, format)
+// writes them.
+export function groups(ul, role) {
+  const rows = CATS.map((c) => {
+    const li = document.createElement("li");
+    li.dataset.key = c;
+    li.dataset.role = role + "Row";
+    ul.append(li);
+    return li;
+  });
+  return (g, format) => rows.forEach((li, k) => setText(li, CATS[k] + ": " + format(g[CATS[k]])));
+}
+`;

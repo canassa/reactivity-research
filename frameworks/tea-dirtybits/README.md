@@ -379,33 +379,42 @@ shape, the reference's id rule and the message of a link are app code, `src/mode
 
 The emitter for `derived-graph` (`scenarios/derived-graph/tea-dirtybits.js`) keeps the strategy for
 a sheet of N formulas over inputs and a table of items, whose cells read each other. What it adds:
-`template/graph.js` (the dirty-bit sweep, the numbered-message events, the top-k and group lists,
-and the items table, which is big-table's keyed grid trimmed to this scenario), included only here
-and counted as runtime. The formulas, displays, formats and collection helpers are generated from
-the spec and count as app.
+`template/graph.js` (`touch`, `markAll`, the sweep and the numbered-message events: about 400 B
+brotli, counted as runtime), included only here. Everything tied to the scenario is generated and
+counts as app: the formulas and displays, the formats, the collection helpers, the top-k and group
+lists and the items table (big-table's keyed grid with this scenario's bit layout).
 
 - **A bit per cell.** Every formula, display and input control is a cell, numbered (`g`) so each
   comes after the cells it reads: a unit's controls, its formula, its displays. The dirty set is
   an array of 31-bit words (bit `g % 31` of word `g / 31`), as in big-component. Cell `g` is a
-  closure in one table, built once with the DOM, so the number is its position and nothing is
-  named per cell.
+  closure in one table, built once with the DOM, so the number is its position and no cell has
+  a name (inputs keep string keys in `IN`/`CTRL`, formulas are named variables).
 - **Arms mark readers.** A control sends a numbered message and its arm returns the new state with
   the input changed (`set`). The bits it marks are the compile-time numbers of the cells that read
   that input (`IN[name]`: the formulas, displays and controls reading it), so no pass finds
   readers at run time. `serverInputs` goes through the same `set` per named input.
-- **A flush is one ascending sweep.** `sweep` takes the lowest set bit of each word in turn and
-  runs that cell with the model. Marks only point to higher cells (a reader is always after its
+- **A flush is one ascending sweep over the marked range.** `touch` and `markAll` record the lowest
+  and highest word marked, and `sweep` visits only those, taking the lowest set bit of each word in
+  turn and running that cell with the model. Marks only point to higher cells (a reader is always after its
   source), so one pass settles the graph and no cell runs twice.
+- **Propagation is dynamic, value-gated and push-based:** which readers run depends on whether the
+  value changed, and a source marks its readers. The reader lists are compile-time; the decision is
+  not.
 - **A derived value is computed once and stored.** A formula is a module-level `let` plus its cell
-  function: recompute from the model and the stored values of the cells it reads, compare with the
+  function (a cache outside the model, which keeps the reference's shape): recompute from the model and the stored values of the cells it reads, compare with the
   stored value and, only when it differs, mark its readers (`touch([…])`, written out per formula).
   Its readers read the variable. A display reads the variables it shows and writes a guarded text.
 - **The unchanged-value case.** A formula whose value did not change marks nothing, so its readers
   do not run (the cut-off input's bool, a count that stays). Numbers, booleans and words compare by
   `!==`; a filtered list compares its items by identity (an edit of an item outside the list leaves
-  its readers alone); a top-k list and a group sum are taken as changed every time they are
-  recomputed (their displays then rewrite equal texts, guarded), as comparing them would need the
-  displayed keys too.
+  its readers alone); a top-k list whose key reads only item fields compares like a list (items are
+  immutable, so the same items have the same keys). A top-k list whose key reads a scalar cell, and
+  a group sum, are taken as changed every time they are recomputed (their displays then rewrite
+  equal texts, guarded): the same items can have new keys, and a group is a new object each time.
+- **Same-value writes still rewrite the controls.** `set` touches the input's controls (`CTRL`)
+  even when the value is unchanged, so a number input holding invalid typed text shows the value
+  again after `serverInputs` or a raise clamped at its maximum. A snapshot forces the fill of every
+  row (bit 2), so typed text in a quantity does not survive it.
 - **Items are data with compile-time bits too.** The emitter knows which fields each formula reads
   (an item expression's `i.qty`), so an edit of a quantity marks the formulas that read quantities
   (`M_QTY`), the active flag marks those that read it (`M_ACTIVE`), a note marks none, and load,
@@ -416,8 +425,8 @@ the spec and count as app.
 - **The table is big-table's.** One cloned template per row, patched by column bits (quantity,
   active, note, markup); the markup is a bit every row tests; add, remove and edits patch the rows
   they touched; load, `serverItems` and the snapshot reconcile the keyed rows. Events are delegated.
-- **Honest limits.** `sweep` walks the dirty words up to the highest one marked, so an event costs
-  O(N/31) loop steps (no calls) beside its cells; the numbers of the cells are global to the sheet
-  (adding a unit shifts nothing, since units are appended). The analysis is easy because the
+- **Honest limits.** The sweep still walks the words between the lowest and the highest one marked
+  (at most N/31 loop steps, no calls); a local action whose cells sit far apart pays for the gap.
+  The cell numbers are global to the sheet (adding a unit shifts nothing, since units are appended). The analysis is easy because the
   formulas are a closed vocabulary, as with tea-inline (critique, weakness 1). `serverItems` marks
   every formula over the items even when only a price changed.
