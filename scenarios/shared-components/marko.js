@@ -5,7 +5,8 @@
 //   by attributes; every instance is a use of its kind's tag. The `-widget` suffix keeps the names
 //   clear of native elements (`<summary>` is one).
 // - State, by the `state` parameter; both are patterns of Marko's cheat sheet:
-//   - `root` (default): each kind tag declares its state as controllable `<let>`s
+//   - `root` (not the default: the root cannot clear a number input's pending edit inside a tag,
+//     so a same-value write leaves stale text): each kind tag declares its state as controllable `<let>`s
 //     (`<let/value:=input.value>`), for state a parent may own. The root template, app.marko,
 //     owns every widget's state as `<let>`s and binds them down with `:=`
 //     (`<counter-widget value:=w1Value …/>`): the summaries read other widgets' state and the
@@ -38,8 +39,8 @@ export const framework = "marko";
 
 export const params = {
   state: {
-    default: "root",
-    choices: ["root", "local"],
+    default: "local",
+    choices: ["local", "root"],
     help: "where widget state lives: lifted into the root template and bound down with :=, or in each widget's tag, which <return>s its state and an API",
   },
 };
@@ -517,7 +518,7 @@ ${cases.join("\n")}
 }
 
 export function emit(spec, options = {}) {
-  const local = (options.state ?? "root") === "local";
+  const local = (options.state ?? "local") === "local";
   const files = {
     ...templateFiles({ name: "dashboard", title: "Dashboard" }),
     "src/app.marko": appFile(spec, local),

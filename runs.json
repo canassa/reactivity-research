@@ -36,9 +36,9 @@
       "seeds": [1, 2, 3]
     },
     "marko": {
+      "$comment": "Only state=local (the default) is measured, here and in unique-components and big-component: the root-state variants cannot clear a number input's pending edit inside a tag, so a same-value write from the root leaves stale text (see frameworks/marko/README.md).",
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
-      "seeds": [1, 2, 3],
-      "options": { "state": ["root", "local"] }
+      "seeds": [1, 2, 3]
     }
   },
   "unique-components": {

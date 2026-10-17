@@ -228,12 +228,13 @@ An emitter returns `{ files, style }` like any other (see `scenarios/shared-comp
 ## Emitters
 
 - **shared-components** (`scenarios/shared-components/marko.js`): one tag per widget kind. Its
-  `state` parameter (both measured, `runs.json`):
-  - `root` (default, variant `marko`): every widget's state lifted into `app.marko` as `<let>`s
+  `state` parameter (`local`, the default, is the one measured in `runs.json`):
+  - `root` (variant `marko-state=root`, no longer measured: the root cannot clear a number input's
+    pending edit inside a tag, so a same-value write leaves stale text): every widget's state lifted into `app.marko` as `<let>`s
     bound down with `:=` to controllable `<let>`s in the kind tags; the root's `<return>`ed
     function assigns them for `serverSet`, `tick`, `notify` and `snapshot`. Fit over N >= 16:
     8,195 B + 66.0 B/widget.
-  - `local` (variant `marko-state=local`): each tag owns its `<let>`s and `<return>`s its state
+  - `local` (default, variant `marko`): each tag owns its `<let>`s and `<return>`s its state
     with `set` (and `tick`/`notify`); the root reads the widgets' tag variables for the summaries
     and the external events. Fit over N >= 16: 8,434 B + 55.2 B/widget.
 
