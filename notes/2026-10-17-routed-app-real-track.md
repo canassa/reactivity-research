@@ -39,7 +39,34 @@ grows. Mount and navigation: vanilla 21 and 13 to 39 calls, Solid 518 and 265 to
 - **vanilla is the floor only at N=1.** Its baseline is 1.6 KB against 8 to 10 KB, but its slope (450 B per page) is
   above Solid's and Elm's. Each page ships its HTML, a path to every bound node, a `render()` and three event
   switches, written out in plain DOM calls, and none of that is shared. Elm's view DSL is the densest.
-- **`<Switch>`/`<Match>` is not a router for many pages:** Solid evaluates every `Match` condition, so routing
-  through it makes mount and navigation grow with the page count. `<Dynamic>` over a lookup keeps them flat.
 - **Elm's costs are constant but high** (about 1,000 calls per page event), because the virtual DOM diffs the
   whole page each time; it does not depend on N.
+
+## Review round (same day)
+
+A code review found all three fair and asked for fixes, now applied:
+
+- **Elm:** `dispose()` left `Time.every` running (the script ended on p1, so the check missed it). The adapter now
+  sends `{type:"stop"}` first; routed-app answers by dropping every subscription, the other Elm scenarios ignore it.
+  Verified in headless Chrome on p4: 1 interval, 0 after dispose. A stale `Go` from a page already left no longer
+  navigates (`Main.update` matches `( msg, model.page )`). Output is elm-format-clean at 1 to 256; checkboxes use
+  `onCheck`. The dead `Go _` branches stay: the exhaustive `case` needs them.
+- **Solid:** a number input re-asserts its value on every writer (a per-field signal), opening an open modal resets it
+  (it remounts), tab panels and modals get the page store only when they use it.
+- **vanilla:** opening the modal again removes the old `<aside>` first.
+- **Routing, Solid:** the first note blamed `<Switch>`/`<Match>` on the call counter, which rule 3 forbids as a
+  reason. `routing: "dynamic" | "switch"` is now a recorded variant (`runs.json` options) and both are reported.
+  `<Dynamic>` stays the default because it is how a router resolves a component, **not** because it is smaller:
+  it adds about 2.4 KB of baseline (slopes equal, about 431 B per page).
+
+| Solid, median of 3 seeds | N=1 | N=16 | N=64 | N=256 | baseline | slope |
+|---|---|---|---|---|---|---|
+| dynamic | 10,552 | 19,852 | 45,437 | 119,787 | 13,053 | 430.3 |
+| switch | 8,175 | 17,382 | 43,135 | 117,461 | 10,633 | 431.0 |
+
+Work, N=16 to 256: `dynamic` is flat on every local action (navigation 390, mount 518); `switch` is not (navigation
+745 to 36,625, mount 976 to 38,296, because every `Match` is evaluated). As a prototype it would fail the locality
+bound; as a real framework it is only reported.
+
+After the fixes (median of 3 seeds): vanilla 1,599 / 11,186 / 38,608 / 115,997 (slope 451.0); Elm 8,045 / 17,688 /
+40,313 / 107,738 (baseline 11,142, slope 388.2). Elm's app dispose now costs 932 calls instead of 5 (the stop event).
