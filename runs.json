@@ -223,9 +223,10 @@
       "options": { "fanout": ["low", "mid", "high"] }
     },
     "tea-local": {
+      "$comment": "Only quiet=analysed (the default) is measured: quiet=none, plain tea-local, fails the prototype locality rule here (a note keystroke grows 10.1x from N=16 to 256) and is a recorded dead end; see frameworks/tea-local/README.md (derived-graph) and notes/2026-10-17-derived-graph-tea-local.md.",
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3],
-      "options": { "fanout": ["low", "mid", "high"], "quiet": ["analysed", "none"] }
+      "options": { "fanout": ["low", "mid", "high"] }
     },
     "vanilla": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
