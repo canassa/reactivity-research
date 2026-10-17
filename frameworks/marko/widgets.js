@@ -146,6 +146,8 @@ function clickBody(w, m, needs) {
     if (code.some((l) => l.includes("nextId("))) needs.nextId = true;
     lines.push(...code);
   }
+  const pending = pendingFields(w);
+  for (const x of written) if (pending.has(x)) lines.push(`${x}Pending = null;`);
   if (mode === "next") lines.push(`${cfg.sv} = next;`);
   return lines;
 }
@@ -259,6 +261,21 @@ function view(w, n, ind, needs) {
 // A list copied out of a message, so no dispatched object ends up in the state.
 const copy = (f, source) => (f.type === "list" ? `${source}.map((item) => ({ ...item }))` : source);
 
+// The int fields with a number input: each keeps a pending edit, which every write to the field
+// clears (the commit of a valid edit, the external events, the buttons).
+function pendingFields(w) {
+  const out = new Set();
+  const walk = (n) => {
+    if (n.el === "input") {
+      const field = w.messages.find((m) => m.name === n.msg).field;
+      if (w.fields.find((x) => x.name === field).type === "int") out.add(field);
+    }
+    for (const c of n.children || []) walk(c);
+  };
+  w.view.forEach(walk);
+  return out;
+}
+
 const timed = (w) => w.fields.filter((f) => f.tick);
 const feeds = (w) => w.fields.filter((f) => f.feed);
 
@@ -294,9 +311,11 @@ function widgetParts(w, ind, { initial, inRoot = false }) {
 // other widgets read, `set`, and `tick` and `notify` where the widget has them.
 function apiMembers(w, exposed) {
   const members = [...exposed];
-  members.push(`set(next) {\n${w.fields.map((f) => `    ${f.name} = ${copy(f, `next.${f.name}`)};`).join("\n")}\n  }`);
+  const pending = pendingFields(w);
+  const clear = (f) => (pending.has(f.name) ? `\n    ${f.name}Pending = null;` : "");
+  members.push(`set(next) {\n${w.fields.map((f) => `    ${f.name} = ${copy(f, `next.${f.name}`)};${clear(f)}`).join("\n")}\n  }`);
   if (timed(w).length) {
-    members.push(`tick() {\n${timed(w).map((f) => `    if (${f.tickWhen}) ${f.name} = Math.min(${f.max}, ${f.name} + ${f.tick});`).join("\n")}\n  }`);
+    members.push(`tick() {\n${timed(w).map((f) => (pending.has(f.name) ? `    if (${f.tickWhen}) {\n      ${f.name} = Math.min(${f.max}, ${f.name} + ${f.tick});\n      ${f.name}Pending = null;\n    }` : `    if (${f.tickWhen}) ${f.name} = Math.min(${f.max}, ${f.name} + ${f.tick});`)).join("\n")}\n  }`);
   }
   const fd = feeds(w);
   if (fd.length === 1) {

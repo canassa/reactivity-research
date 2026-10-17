@@ -320,7 +320,7 @@ function localTag(kind) {
   const fields = FIELDS[kind];
   if (fields.length === 0) return TAGS[kind];
   const src = TAGS[kind].replace(/<let\/(\w+):=input\.\1>/g, "<let/$1=input.$1>");
-  const set = `set(state) {\n${fields.map((f) => `    ${f} = state.${f};`).join("\n")}\n  }`;
+  const set = `set(state) {\n${fields.map((f) => `    ${f} = state.${f};`).join("\n")}${kind === "amount" ? "\n    pending = null;" : ""}\n  }`;
   const members = [...fields, set, ...(METHODS[kind] ? [METHODS[kind]] : [])];
   return `${src}
 // The widget's state, for the dashboard's summaries, and its API for external events.
