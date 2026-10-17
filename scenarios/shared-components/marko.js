@@ -19,7 +19,7 @@
 //     events through `w1.set(state)`.
 // - Derived values with `<const>` (field errors, filtered lists, summary texts and their terms).
 // - Lists with `<for … by="id">` for keyed items, `<for>` (by index) for fixed lists, and
-//   `<for from to>` for the stars. Immutable updates (`concat`, `toSpliced`), as Marko requires.
+//   `<for from to>` for the stars. Immutable updates (`concat`, `filter`, `map`), as Marko requires.
 // - Conditional content with `<if>`.
 // - Events as handlers in markup (`onClick() { … }`); inputs, checkboxes and selects are
 //   controlled with `value:=`, `checked`/`checkedChange` and `<select value:=…>`. The number
@@ -152,11 +152,11 @@ const TAGS = {
     \${input.addText}
   </button>
   <ul>
-    <for|item, i| of=items by="id">
+    <for|item| of=items by="id">
       <li data-key=item.id>
-        <input type="checkbox" data-role="toggle" checked=item.done checkedChange(done) { items = items.toSpliced(i, 1, { ...item, done }) }>
+        <input type="checkbox" data-role="toggle" checked=item.done checkedChange(done) { items = items.map((other) => (other.id === item.id ? { ...other, done } : other)) }>
         <span>\${item.text}</span>
-        <button data-role="remove" onClick() { items = items.toSpliced(i, 1) }>\${input.removeText}</button>
+        <button data-role="remove" onClick() { items = items.filter((other) => other.id !== item.id) }>\${input.removeText}</button>
       </li>
     </for>
   </ul>
@@ -263,10 +263,10 @@ const TAGS = {
 <section data-key=input.id data-role="widget-feed">
   <h2>\${input.label}</h2>
   <ul>
-    <for|entry, i| of=entries by="id">
+    <for|entry| of=entries by="id">
       <li data-key=entry.id>
         <span>\${entry.text}</span>
-        <button data-role="dismiss" onClick() { entries = entries.toSpliced(i, 1) }>\${input.dismissText}</button>
+        <button data-role="dismiss" onClick() { entries = entries.filter((other) => other.id !== entry.id) }>\${input.dismissText}</button>
       </li>
     </for>
   </ul>

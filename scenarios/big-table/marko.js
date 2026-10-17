@@ -173,7 +173,7 @@ function cell(t, c, needs) {
   switch (c.kind) {
     case "id": return `<td>\${row.id}</td>`;
     case "label": case "text":
-      if (c.select) return `<td><a data-role="${c.select}" onClick() { selected = row.id }>\${row.${c.name}}</a></td>`;
+      if (c.select) return `<td><a data-role="${c.select}" onClick() { if (rows.some((r) => r.id === row.id)) selected = row.id }>\${row.${c.name}}</a></td>`;
       return `<td>\${row.${c.name}}</td>`;
     case "number": return `<td>\${${formatted(c, `row.${c.name}`, needs)}}</td>`;
     case "date": needs.format.add(DATE_FORMATS[c.format]); return `<td>\${${DATE_FORMATS[c.format]}(row.${c.name})}</td>`;

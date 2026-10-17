@@ -2,6 +2,7 @@
 //
 // It expects the app's root template, `src/app.marko`, to `<return>` one function that takes an
 // external event message (the root's tag variable, which `Template.mount` exposes as `.value`).
+import { run } from "marko/dom";
 import App from "./app.marko";
 
 let mounted;
@@ -30,8 +31,13 @@ function mount(root) {
   mounted = App.mount({}, root);
 }
 
+// An external event arrives in a task of its own, and Marko renders the writes it makes in a
+// microtask that follows, before any later event. `run` (the queue that microtask runs) is
+// called here so that holds when the caller goes on in the same task, as the same-task check
+// does: the DOM and the handlers' state are current before the next click.
 function dispatch(msg) {
   mounted.value(msg);
+  run();
 }
 
 // Marko has no public flush. A write schedules a microtask that renders and requests an

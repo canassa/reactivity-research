@@ -26,6 +26,10 @@
 //   `onMount`, `clearInterval` in `onDestroy`. A page with a feed list subscribes to `pagePush` in
 //   the same `<lifecycle>`: the root holds `feeds` (a `<const>`: the subscribers by page, and a push waiting for a page that is mounting), the page sets its handler
 //   on mount and deletes it on destroy, so a push reaches only the page shown.
+// - A click that touches a global runs through the root's `edit(page, change)` (the page gets `input.edit`):
+//   the root's `<let>`s are current within a task, the page's bound copies are not, so two clicks in one
+//   task would both start from the same value; `edit` and the `Change` handlers also drop a write from a
+//   page that is no longer the route (`nav.route`, set by `go` at once; `route` itself updates on render).
 // - External events: the root `<return>`s one function that assigns the root's `<let>`s;
 //   dispatched items are copied, never adopted.
 // - Click messages are handlers in markup (`onClick() { … }`) with immutable list updates; items
@@ -65,6 +69,9 @@ function refsOf(comp) {
 
 const messagesOf = (comp) => comp.messages.filter((m) => m.kind !== "tab");
 const writesOf = (comp) => new Set(messagesOf(comp).flatMap((m) => messageWrites(m)).map(refKey));
+// Does a click message touch a global? Its handler then edits the globals in the root (below).
+const touchesGlobal = (m) => m.kind !== "close" && m.ops?.some((op) => op.some((x) => Array.isArray(x) && x[0] === "g"));
+const editsGlobals = (comp) => messagesOf(comp).some(touchesGlobal);
 const componentsOf = (page) => [page, ...(page.tabs || []), ...(page.modal ? [page.modal] : [])];
 
 // ---------------------------------------------------------------------------------------------
@@ -112,8 +119,11 @@ function makeCtx(page, comp, kind) {
     if (kind === "page") return pageGlobalWrites.has(refKey(ref));
     return writes.has(refKey(ref));
   };
-  ctx.read = (ref) => (bound(ref) ? ref[1] : `input.${ref[1]}`);
+  // Inside `input.edit((g) => { … })` a global is `g.name`.
+  ctx.editing = false;
+  ctx.read = (ref) => (ctx.editing && ref[0] === "g" ? `g.${ref[1]}` : bound(ref) ? ref[1] : `input.${ref[1]}`);
   ctx.name = (ref) => {
+    if (ctx.editing && ref[0] === "g") return `g.${ref[1]}`;
     if (!bound(ref)) throw new Error(`${comp.id || page.id}: ${refKey(ref)} is written but not bound`);
     return ref[1];
   };
@@ -180,7 +190,17 @@ function opStatement(ctx, op) {
 // `onClick() { … }` for a click or confirm message; a confirm closes the modal after its ops.
 function clickHandler(ctx, m, pad) {
   if (m.kind === "close") return "onClick() { input.onClose() }";
-  const stmts = m.ops.map((op) => opStatement(ctx, op));
+  // A global is bound to the page with `:=`, which a handler reads as of the last render: two
+  // clicks in one task would both start from the same value. The root's `<let>` is current, so
+  // a handler that touches globals runs its statements there, over a copy of them.
+  const edits = touchesGlobal(m);
+  ctx.editing = edits;
+  let stmts = m.ops.map((op) => opStatement(ctx, op));
+  ctx.editing = false;
+  if (edits) {
+    ctx.needs.edit = true;
+    stmts = ["input.edit((g) => {", ...stmts.flatMap((x) => x.split("\n")).map((l) => "  " + l), "});"];
+  }
   if (ctx.ownRev) stmts.push("rev++;");
   if (m.kind === "confirm") stmts.push("input.onClose();");
   const lines = stmts.flatMap((s) => s.split("\n"));
@@ -285,6 +305,7 @@ function childTag(ctx, page, comp, kind) {
     if (ref[0] === "f") continue;
     attrs.push(child.writes.has(key) ? ` ${ref[1]}:=${ref[1]}` : ` ${ref[1]}=${ctx.read(ref)}`);
   }
+  if (editsGlobals(comp)) attrs.push(" edit=input.edit");
   if (child.hasInt) attrs.push(` rev=${ctx.revExpr}`);
   if (kind === "modal") attrs.push(ctx.ownRev ? " onClose() {\n    modalOpen = false;\n    rev++;\n  }" : " onClose() { modalOpen = false }");
   return `<${tagOf(page, comp, kind)}${attrs.join("")}/>`;
@@ -383,7 +404,8 @@ function appFile(spec, pageInfo) {
     const used = new Map();
     for (const c of componentsOf(p)) for (const [key, ref] of refsOf(c)) if (ref[0] === "g") used.set(key, ref[1]);
     const attrs = [];
-    for (const [key, name] of used) attrs.push(info.takes.includes(name) ? ` ${name}:=${name}` : ` ${name}=${name}`);
+    for (const [key, name] of used) attrs.push(info.takes.includes(name) ? ` ${name}=${name} ${name}Change(value) { if (nav.route === ${str(p.id)}) ${name} = value }` : ` ${name}=${name}`);
+    if (componentsOf(p).some(editsGlobals)) attrs.push(` edit(change) { edit(${str(p.id)}, change) }`);
     if (p.fields.some((f) => f.feed)) attrs.push(" feeds=feeds");
     if (info.needsRootRev) attrs.push(" rev=rev");
     if (componentsOf(p).some((c) => JSON.stringify(c.view).includes('"el":"link"'))) attrs.push(" onNavigate=go");
@@ -403,8 +425,20 @@ ${spec.pages.map(row).join("\n")}
 <let/rev=0>
 <let/menu=false>
 ${globals.join("\n")}
+// The route as of the last navigation. A handler reads \`route\` as of the last render, so a click
+// on the old page after a navigation in the same task would still see its page as current.
+<const/nav={ route: ${str(spec.pages[0].id)} }>
+// A page's handlers edit the globals here: the root's \`<let>\`s are current when a page's bound copies
+// are not yet, and the edit is dropped when the page is no longer the route.
+<const/edit=(page, change) => {
+  if (nav.route !== page) return;
+  const g = { ${spec.global.map((f) => f.name).join(", ")} };
+  change(g);
+${spec.global.map((f) => `  ${f.name} = g.${f.name};`).join("\n")}
+}>
 <const/go=(to) => {
   route = to;
+  nav.route = to;
   menu = false;${anyFeed ? "\n  feeds.queued = null;" : ""}
 }>
 ${anyFeed ? "<const/feeds={ subscribers: new Map(), queued: null }>\n" : ""}

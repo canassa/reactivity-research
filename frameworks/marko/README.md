@@ -249,3 +249,23 @@ An emitter returns `{ files, style }` like any other (see `scenarios/shared-comp
   - `root`: every field is a `<let>` in the root bound down with `:=`. unique-components: 5.9 KB +
     399 B per widget; big-component: a form tag costs 127 B per field, the form written in the root
     (`--form inline`) 101 B. `--layout object` (one `<let>` per widget): slope 3.5% smaller on unique-components, 8% larger on big-component.
+
+## Same-task events (what `./rr check`'s same-task pass found)
+
+Marko renders in a microtask after a write, so within one task the DOM is the old one and a
+handler can run on it. What a handler reads then:
+
+- **A plain `<let>`** is current: the write sets the scope value at once (`_let` in
+  `references/marko/packages/runtime-tags/src/dom/signals.ts`), only the render waits.
+- **A controllable `<let>` (`:=`, `valueChange=`)** is not: a write calls the parent's change
+  handler and the child's value changes after the parent renders. Two clicks in one task both
+  read the old value.
+- **Item controls** therefore find their item by id (`map`/`filter` on `item.id`), never by the
+  loop index (`toSpliced(i, …)` hit the wrong item), so a control on a removed item is a no-op.
+- **A page's writes to global state** (routed-app) go through a function of the root, which
+  holds the `<let>`s: `edit(page, change)` runs the change over a copy of the globals and drops it
+  when `nav.route` (a plain object `go` updates at once; `route` itself is read as of the last
+  render) is no longer that page.
+- **External events** (`dispatch`): the adapter calls `run()` from `marko/dom` after the write,
+  which is the flush the microtask would do before the next task. Without it, a click in the
+  same task reads the state before the event.
