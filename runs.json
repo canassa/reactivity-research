@@ -148,6 +148,10 @@
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3]
     },
+    "marko": {
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3]
+    },
     "beni-tea": {
       "$comment": "Only N=1: from N=2 (seed 2) up, tables whose selection marker is aria-selected replace the selected <tr> instead of updating it, because the shipped vocabulary declares aria-* as a plain String, so beni cannot omit it (an upstream pub attribute \"aria-selected\" : Maybe String would fix it); that fails the node-identity rule, so those sizes do not count. N=1 (table 1 is js-framework-benchmark, marked by class) passes and is kept for the CPU bench. See notes/2026-10-16-beni-big-table.md.",
       "sizes": [1],
