@@ -21,7 +21,8 @@
 //   its reference and its row is skipped. A missing id is a no-op. Top-k lists and group sums are
 //   `Html.Keyed` lists too (items keyed by id, groups by category).
 // - Numbers are `Int`; division is `floor (toFloat a / toFloat b)` (`fdiv`), never `//`, which is
-//   32-bit. A number input sends its text and `onInt` applies it only while it is an integer in
+//   32-bit. A number input sends its value through `onNumber`, a custom `input` decoder that fails (no
+//   message, no redraw, so the typed text stays) unless the text is an integer in
 //   range, so an invalid text leaves the model and the view alone.
 // - External events: one incoming port, `events : (Value -> msg) -> Sub msg`, decoded with
 //   `Json.Decode` into `ServerInputs` (a `Dict String Value`, read per input by `readInputs`),
@@ -33,11 +34,17 @@
 // - Production build: `elm make --optimize`, then the guide's two uglify-js passes.
 
 import { templateFiles } from "../../frameworks/elm/framework.js";
-import { cap, fields, jsExpr, readGraph, readsItems, rootsOfItems, str } from "./shared/graph.js";
+import { cap, readGraph, readsItems } from "./shared/graph.js";
 
 export const framework = "elm";
 
-export const params = {};
+export const params = {
+  derived: {
+    default: "view",
+    choices: ["view", "model", "lazy"],
+    help: "where derived values are computed: in view (naive TEA: every formula on every event), cached in a Derived record in the model and recomputed in update when a message can change them (model), or by lazy sections that each take only the fields they read and compute their own formulas (lazy)",
+  },
+};
 
 const elm = (s) => '"' + String(s).replace(/[\\"\n\r\t]/g, (c) => ({ "\\": "\\\\", '"': '\\"', "\n": "\\n", "\r": "\\r", "\t": "\\t" })[c]) + '"';
 const sp = (n) => " ".repeat(n);
@@ -91,9 +98,9 @@ function elmExpr(e, g, ctx) {
     case "k":
       if (typeof e[1] === "string") return atom(elm(e[1]));
       return atom(String(e[1])); // a negative literal is bare, as elm-format writes it
-    case "v": return atom(g.cells.get(e[1]).kind === "input" ? `model.${e[1]}` : e[1]);
+    case "v": return atom(g.cells.get(e[1]).kind === "input" ? g.inputRef(e[1]) : e[1]);
     case "i": return atom(`it.${e[1]}`);
-    case "items": return atom("model.items");
+    case "items": return atom(g.itemsRef);
     case "+": return { s: e.slice(1).map((x) => w(x, 6)).join(" + "), p: 6 };
     case "-": return { s: `${w(e[1], 6)} - ${w(e[2], 7)}`, p: 6 };
     case "*": return { s: `${w(e[1], 7)} * ${w(e[2], 8)}`, p: 7 };
@@ -170,7 +177,7 @@ function utilModule(spec) {
     , mergeItems
     , minBy
     , money
-    , onInt
+    , onNumber
     , options
     , pct
     , role
@@ -182,6 +189,7 @@ function utilModule(spec) {
 import Dict exposing (Dict)
 import Html exposing (Attribute, Html)
 import Html.Attributes exposing (attribute, selected, value)
+import Html.Events exposing (stopPropagationOn, targetValue)
 import Json.Decode as Decode exposing (Decoder)
 
 
@@ -304,20 +312,27 @@ money cents =
         ++ String.padLeft 2 '0' (String.fromInt (remainderBy 100 a))
 
 
-{-| Apply a number input's text while it is an integer in [lo, hi]; otherwise leave the model.
+{-| A number input's message, sent only while its text is an integer in [lo, hi]. Otherwise the
+decoder fails: no message and no redraw, so the text typed stays in the input.
 -}
-onInt : Int -> Int -> String -> model -> (Int -> model) -> model
-onInt lo hi typed model apply =
-    case String.toInt typed of
-        Just n ->
-            if n >= lo && n <= hi && not (String.startsWith "+" typed) then
-                apply n
+onNumber : Int -> Int -> (Int -> msg) -> Attribute msg
+onNumber lo hi toMsg =
+    stopPropagationOn "input"
+        (targetValue
+            |> Decode.andThen
+                (\\typed ->
+                    case String.toInt typed of
+                        Just n ->
+                            if n >= lo && n <= hi && not (String.startsWith "+" typed) then
+                                Decode.succeed ( toMsg n, True )
 
-            else
-                model
+                            else
+                                Decode.fail "out of range"
 
-        Nothing ->
-            model
+                        Nothing ->
+                            Decode.fail "not an integer"
+                )
+        )
 
 
 
@@ -498,7 +513,7 @@ const typeOf = (c) => (c.type === "num" ? "Int" : c.type === "bool" ? "Bool" : "
 const decoderOf = (c) => (c.type === "num" ? "Decode.int" : c.type === "bool" ? "Decode.bool" : "Decode.string");
 const valueOf = (c, v) => (c.type === "bool" ? (v ? "True" : "False") : c.type === "num" ? String(v) : elm(v));
 
-function mainModule(spec, g) {
+function mainModule(spec, g, mode) {
   const out = [];
   const html = new Set(["Html"]);
   const attrs = new Set(["attribute"]);
@@ -510,75 +525,149 @@ function mainModule(spec, g) {
 
   const msgName = (m) => cap(m.name);
   const inputs = g.inputs;
+  // The record the messages update: `Model` itself, or `State` where the model also holds the
+  // derived values.
+  const S = mode === "model" ? "State" : "Model";
+  g.inputRef = (name) => `model.${name}`;
+  g.itemsRef = "model.items";
 
   // ---- the model
-  const modelFields = [...inputs.map((c) => `${c.name} : ${typeOf(c)}`), "markup : Int", "items : List Item", "nextId : Int", "rng : Int"];
+  const modelFields = [...inputs.map((c) => `${c.name} : ${typeOf(c)}`), "markup : Int", "items : List Item", "nextId : Int", "rng : Int", ...(mode === "lazy" ? ["epoch : Int"] : [])];
   const initial = spec.initialState;
   const item = (it) => `{ id = ${it.id}, name = ${elm(it.name)}, category = ${elm(it.category)}, qty = ${it.qty}, price = ${it.price}, active = ${it.active ? "True" : "False"}, note = ${elm(it.note)} }`;
-  const initFields = [...inputs.map((c) => `${c.name} = ${valueOf(c, initial.inputs[c.name])}`), `markup = ${initial.markup}`, `items =\n        [ ${initial.items.map(item).join("\n        , ")}\n        ]`, `nextId = ${initial.nextId}`, `rng = ${initial.rng}`];
+  const initFields = [...inputs.map((c) => `${c.name} = ${valueOf(c, initial.inputs[c.name])}`), `markup = ${initial.markup}`, `items =\n    [ ${initial.items.map(item).join("\n    , ")}\n    ]`, `nextId = ${initial.nextId}`, `rng = ${initial.rng}`, ...(mode === "lazy" ? ["epoch = 0"] : [])];
+  const initRecord = `{ ${initFields.join("\n, ")}\n}`;
 
-  out.push(`type alias Model =
+  // The formulas' types, for the Derived record.
+  const derivedType = (f) => (f.type === "num" ? "Int" : f.type === "bool" ? "Bool" : f.type === "text" ? "String" : f.type === "group" ? "List ( String, Int )" : "List Item");
+  const topCells = g.formulas.filter((f) => f.type === "top");
+  const derivedFields = [...g.formulas.map((f) => `${f.name} : ${derivedType(f)}`), ...topCells.map((f) => `${f.name}Keys : List Int`)];
+
+  out.push(`type alias ${S} =
     { ${modelFields.join("\n    , ")}
     }`);
-  out.push(`init : Model
-init =
-    { ${initFields.join("\n    , ")}
+  if (mode === "model") {
+    out.push(`type alias Derived =
+    { ${derivedFields.join("\n    , ")}
     }`);
+    out.push(`type alias Model =
+    { state : State
+    , derived : Derived
+    }`);
+    out.push(`init : Model
+init =
+    let
+        state =
+${pad(initRecord, 12)}
+    in
+    { state = state, derived = derive state }`);
+  } else {
+    out.push(`init : Model
+init =
+${pad(initRecord, 4)}`);
+  }
 
   // ---- messages
   const ctors = [];
   for (const m of g.messages.values()) {
-    const c = g.cells.get(m.cell);
-    const arg = m.kind === "input" || m.kind === "select" ? " String" : m.kind === "check" ? " Bool" : "";
+    const arg = m.kind === "input" ? " Int" : m.kind === "select" ? " String" : m.kind === "check" ? " Bool" : "";
     ctors.push(`${msgName(m)}${arg}`);
   }
-  ctors.push("Load", "AddItem", "SetMarkup String", "SetQty Int String", "ToggleActive Int Bool", "SetNote Int String", "Remove Int");
+  ctors.push("Load", "AddItem", "SetMarkup Int", "SetQty Int Int", "ToggleActive Int Bool", "SetNote Int String", "Remove Int");
   ctors.push("ServerInputs (Dict String Decode.Value)", "ServerItems (List Item) (List Int)", "Snapshot (Dict String Decode.Value) Int (List Item) Int Int", "Event Decode.Value");
   out.push(`type Msg
     = ${ctors.join("\n    | ")}`);
 
   // ---- update
   const branches = [];
+  // Html.Lazy skips a section whose arguments did not change, so a number input holding an unsent
+  // text would keep it when an event sets the value it already had; the sections with a number
+  // input also take an epoch that steps and external inputs bump.
+  const epochBump = mode === "lazy" ? ", epoch = model.epoch + 1" : "";
   const upd = (pattern, body) => branches.push(`${pattern} ->\n${pad(body, 4)}`);
   for (const m of g.messages.values()) {
     const c = g.cells.get(m.cell);
     switch (m.kind) {
       case "input":
-        U("onInt");
-        upd(`${msgName(m)} typed`, `onInt ${c.min} ${c.max} typed model (\\n -> { model | ${c.name} = n })`);
+        upd(`${msgName(m)} typed`, `{ model | ${c.name} = typed }`);
         break;
       case "add":
-        upd(msgName(m), `{ model | ${c.name} = clamp ${valueOf(c, c.min)} ${valueOf(c, c.max)} (model.${c.name} ${m.k < 0 ? "-" : "+"} ${Math.abs(m.k)}) }`);
+        upd(msgName(m), `{ model | ${c.name} = clamp ${valueOf(c, c.min)} ${valueOf(c, c.max)} (model.${c.name} ${m.k < 0 ? "-" : "+"} ${Math.abs(m.k)})${epochBump} }`);
         break;
       case "check": upd(`${msgName(m)} isOn`, `{ model | ${c.name} = isOn }`); break;
       case "select": upd(`${msgName(m)} chosen`, `{ model | ${c.name} = chosen }`); break;
     }
   }
   const rows = spec.options.rows;
-  U("buildItems"); U("mapItem"); U("mergeItems"); U("onInt");
+  U("buildItems"); U("mapItem"); U("mergeItems");
   upd("Load", `let\n    ( items, rng ) =\n        buildItems ${rows} model.nextId model.rng\nin\n{ model | items = items, nextId = model.nextId + ${rows}, rng = rng }`);
   upd("AddItem", `let\n    ( items, rng ) =\n        buildItems 1 model.nextId model.rng\nin\n{ model | items = model.items ++ items, nextId = model.nextId + 1, rng = rng }`);
-  upd("SetMarkup typed", `onInt 0 100 typed model (\\n -> { model | markup = n })`);
-  upd("SetQty id typed", `onInt 0 999 typed model (\\n -> { model | items = mapItem id (\\it -> { it | qty = n }) model.items })`);
+  upd("SetMarkup typed", `{ model | markup = typed }`);
+  upd("SetQty id typed", `{ model | items = mapItem id (\\it -> { it | qty = typed }) model.items }`);
   upd("ToggleActive id isOn", `{ model | items = mapItem id (\\it -> { it | active = isOn }) model.items }`);
   upd("SetNote id typed", `{ model | items = mapItem id (\\it -> { it | note = typed }) model.items }`);
   upd("Remove id", `{ model | items = List.filter (\\it -> it.id /= id) model.items }`);
-  upd("ServerInputs values", `readInputs values model`);
+  upd("ServerInputs values", `readInputs values { model${epochBump.replace(", ", " | ")} }`.replace("{ model }", "model"));
   upd("ServerItems upsert gone", `{ model\n    | items = mergeItems upsert gone model.items\n    , nextId = List.foldl (\\it n -> max n (it.id + 1)) model.nextId upsert\n}`);
-  upd("Snapshot values markup items nextId rng", `readInputs values { model | markup = markup, items = items, nextId = nextId, rng = rng }`);
-  upd("Event json", `case Decode.decodeValue eventDecoder json of\n    Ok event ->\n        update event model\n\n    Err _ ->\n        model`);
-  out.push(`update : Msg -> Model -> Model
+  upd("Snapshot values markup items nextId rng", `readInputs values { model | markup = markup, items = items, nextId = nextId, rng = rng${epochBump} }`);
+  if (mode === "model") {
+    // The state is updated as usual; the derived record is recomputed only when a message can
+    // have changed what the formulas read, and the state did change.
+    upd("Event _", `model`);
+    out.push(`step : Msg -> State -> State
+step msg model =
+    case msg of
+${pad(branches.join("\n\n"), 8)}`);
+    out.push(`changesFormulas : Msg -> Bool
+changesFormulas msg =
+    case msg of
+        SetMarkup _ ->
+            False
+
+        SetNote _ _ ->
+            False
+
+        Event _ ->
+            False
+
+        _ ->
+            True`);
+    out.push(`update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        Event json ->
+            case Decode.decodeValue eventDecoder json of
+                Ok event ->
+                    update event model
+
+                Err _ ->
+                    model
+
+        _ ->
+            let
+                state =
+                    step msg model.state
+            in
+            if changesFormulas msg && state /= model.state then
+                { state = state, derived = derive state }
+
+            else
+                { model | state = state }`);
+  } else {
+    upd("Event json", `case Decode.decodeValue eventDecoder json of\n    Ok event ->\n        update event model\n\n    Err _ ->\n        model`);
+    out.push(`update : Msg -> Model -> Model
 update msg model =
     case msg of
 ${pad(branches.join("\n\n"), 8)}`);
+  }
 
   // ---- the external events
   U("field"); U("itemDecoder");
   out.push(inputs.length === 0
-    ? `readInputs : Dict String Decode.Value -> Model -> Model
+    ? `readInputs : Dict String Decode.Value -> ${S} -> ${S}
 readInputs _ model =
     model`
-    : `readInputs : Dict String Decode.Value -> Model -> Model
+    : `readInputs : Dict String Decode.Value -> ${S} -> ${S}
 readInputs values model =
     { model
 ${inputs.map((c, i) => `        ${i === 0 ? "|" : ","} ${c.name} = field ${decoderOf(c)} ${elm(c.name)} values model.${c.name}`).join("\n")}
@@ -611,21 +700,21 @@ eventDecoder =
                         Decode.fail ("unknown event: " ++ kind)
             )`);
 
-  // ---- the sheet's view: first the let, with every formula (and what an \`if\` needs) in order
-  const keyFns = new Map();
-  const defs = g.formulas.flatMap((f) => {
+  // ---- the sheet: the formulas' bindings (what an \`if\` needs included), in order
+  let keyFns = new Map();
+  const formulaDefs = (f) => {
     const ctx = newCtx(f.name);
     const main = { head: f.name, body: body(f.expr, g, ctx) };
     if (ctx.keyFn) keyFns.set(f.name, ctx.keyFn);
     return [...ctx.defs, main];
-  });
+  };
   const node = (n) => {
     switch (n.el) {
       case "text": {
         const pieces = n.parts.map((p) => {
           if (typeof p === "string") return elm(p);
           const c = g.cells.get(p[1]);
-          const ref = c.kind === "input" ? `model.${c.name}` : c.name;
+          const ref = c.kind === "input" ? g.inputRef(c.name) : c.name;
           if (p[0] === "count") return shownElm("plain", `List.length ${ref}`);
           if (p[0] === "at") { U("at"); return shownElm(c.format, `at ${elm(p[2])} ${ref}`); }
           if (c.type === "bool") return (U("words"), shownElm(null, ref, c.words));
@@ -650,8 +739,8 @@ eventDecoder =
       }
       case "input": {
         const m = g.messages.get(n.msg), c = g.cells.get(m.cell);
-        attrs.add("type_"); attrs.add("value"); events.add("onInput"); H("label"); H("input"); H("text");
-        return `label [] [ text ${elm(n.label)}, input [ type_ "number", role ${elm(n.msg)}, value (String.fromInt model.${c.name}), onInput ${msgName(m)} ] [] ]`;
+        attrs.add("type_"); attrs.add("value"); U("onNumber"); H("label"); H("input"); H("text");
+        return `label [] [ text ${elm(n.label)}, input [ type_ "number", role ${elm(n.msg)}, value (String.fromInt ${g.inputRef(c.name)}), onNumber ${c.min} ${c.max} ${msgName(m)} ] [] ]`;
       }
       case "button": {
         const m = g.messages.get(n.msg);
@@ -661,21 +750,24 @@ eventDecoder =
       case "check": {
         const m = g.messages.get(n.msg), c = g.cells.get(m.cell);
         attrs.add("type_"); attrs.add("checked"); events.add("onCheck"); H("label"); H("input"); H("text");
-        return `label [] [ input [ type_ "checkbox", role ${elm(n.msg)}, checked model.${c.name}, onCheck ${msgName(m)} ] [], text ${elm(n.label)} ]`;
+        return `label [] [ input [ type_ "checkbox", role ${elm(n.msg)}, checked ${g.inputRef(c.name)}, onCheck ${msgName(m)} ] [], text ${elm(n.label)} ]`;
       }
       case "select": {
         const m = g.messages.get(n.msg), c = g.cells.get(m.cell);
         events.add("onInput"); H("label"); H("select"); H("text"); U("options");
         const list = c.categories ? "categories" : stringList(c.options);
         if (c.categories) U("categories");
-        return `label [] [ text ${elm(n.label)}, select [ role ${elm(n.msg)}, onInput ${msgName(m)} ] (options ${list} model.${c.name}) ]`;
+        return `label [] [ text ${elm(n.label)}, select [ role ${elm(n.msg)}, onInput ${msgName(m)} ] (options ${list} ${g.inputRef(c.name)}) ]`;
       }
       case "top": {
         const c = g.cells.get(n.cell);
         H("li"); H("text");
+        const li = (shown) => `li [ dataKey (String.fromInt it.id), role ${elm(n.cell + "Item")} ] [ text (it.name ++ ": " ++ ${shown}) ]`;
+        if (mode === "model") {
+          return `Keyed.${n.tag} [ role ${elm(n.cell)} ] (List.map2 (\\it key -> ( String.fromInt it.id, ${li(shownElm(c.format, "key"))} )) ${n.cell} ${n.cell}Keys)`;
+        }
         const key = keyFns.has(c.name) ? `${keyFns.get(c.name)} it` : elmExpr(c.expr[2], g, newCtx(c.name)).s;
-        const shown = shownElm(c.format, key);
-        return `Keyed.${n.tag} [ role ${elm(n.cell)} ] (List.map (\\it -> ( String.fromInt it.id, li [ dataKey (String.fromInt it.id), role ${elm(n.cell + "Item")} ] [ text (it.name ++ ": " ++ ${shown}) ] )) ${n.cell})`;
+        return `Keyed.${n.tag} [ role ${elm(n.cell)} ] (List.map (\\it -> ( String.fromInt it.id, ${li(shownElm(c.format, key))} )) ${n.cell})`;
       }
       case "groups": {
         const c = g.cells.get(n.cell);
@@ -686,43 +778,122 @@ eventDecoder =
     }
     throw new Error(`unknown view node ${n.el}`);
   };
-
-  const lets = defs.map(defText);
-  const unitDivs = spec.units.map((u) => {
-    const kids = u.view.map(node);
+  const unitList = (u) => {
     H("div");
-    return `${kids.map((k, i) => `${i === 0 ? "[ " : ", "}${k}`).join("\n")}\n]`;
-  });
-  // formulas are used by name; util helpers by their imports
-  for (const f of g.formulas) usedHelpers(f.expr, U);
-  for (const n of g.nodes) if (n.node.el === "top") usedHelpers(g.cells.get(n.node.cell).expr, U);
-  util.add("money"); util.add("grouped");
+    return u.view.map((k, i) => `${i === 0 ? "[ " : ", "}${node(k)}`).join("\n") + "\n]";
+  };
   H("h2"); H("section"); H("text");
-  out.push(`viewSheet : Model -> Html Msg
+  const sheetHead = `section [ dataKey "sheet", role "sheet" ]`;
+
+  if (mode === "view") {
+    const lets = g.formulas.flatMap(formulaDefs).map(defText);
+    const unitDivs = spec.units.map(unitList);
+    out.push(`viewSheet : Model -> Html Msg
 viewSheet model =
     let
 ${pad(lets.join("\n\n"), 8)}
     in
-    section [ dataKey "sheet", role "sheet" ]
+    ${sheetHead}
         [ h2 [] [ text ${elm(spec.title)} ]
 ${unitDivs.map((d) => `        , div []\n${pad(d, 12)}`).join("\n")}
         ]`);
+  } else if (mode === "model") {
+    // derive: every formula, once, from the state; the view destructures the result.
+    const defs = g.formulas.flatMap((f) => {
+      const ds = formulaDefs(f);
+      if (f.type !== "top") return ds;
+      const key = keyFns.has(f.name) ? keyFns.get(f.name) : `(\\it -> ${elmExpr(f.expr[2], g, newCtx(f.name)).s})`;
+      return [...ds, { head: `${f.name}Keys`, body: `List.map ${key} ${f.name}` }];
+    });
+    const lets = defs.map(defText);
+    out.push(`derive : State -> Derived
+derive model =
+    let
+${pad(lets.join("\n\n"), 8)}
+    in
+    { ${derivedFields.map((n) => `${n.split(" : ")[0]} = ${n.split(" : ")[0]}`).join("\n    , ")}
+    }`);
+    const unitDivs = spec.units.map(unitList);
+    out.push(`viewSheet : State -> Derived -> Html Msg
+viewSheet model derived =
+    let
+        { ${derivedFields.map((n) => n.split(" : ")[0]).join(", ")} } =
+            derived
+    in
+    ${sheetHead}
+        [ h2 [] [ text ${elm(spec.title)} ]
+${unitDivs.map((d) => `        , div []\n${pad(d, 12)}`).join("\n")}
+        ]`);
+  } else {
+    // lazy: a function per unit taking only what the unit's displays and formulas read, down to
+    // the inputs and the items, and computing the formulas it shows (and the ones they read)
+    // itself; Html.Lazy skips the unit when none of those changed.
+    const fSet = new Map(g.formulas.map((f) => [f.name, f]));
+    const lazyNames = ["lazy", "lazy2", "lazy3", "lazy4", "lazy5", "lazy6", "lazy7", "lazy8"];
+    g.inputRef = (name) => name;
+    g.itemsRef = "items";
+    const units = spec.units.map((u) => {
+      const need = new Set(u.view.flatMap((n) => {
+        const nr = g.nodes.find((x) => x.unit === u.index && x.node === n).reads;
+        const m = n.msg && g.messages.get(n.msg);
+        return [...nr, ...(m ? [m.cell] : [])];
+      }));
+      // every formula those cells depend on, and every input they read
+      const closure = new Set(), ins = new Set();
+      let usesItems = false;
+      const visit = (name) => {
+        const c = g.cells.get(name);
+        if (c.kind === "input") { ins.add(name); return; }
+        if (closure.has(name)) return;
+        closure.add(name);
+        if (readsItems(c.expr)) usesItems = true;
+        for (const d of g.deps.get(name)) visit(d);
+      };
+      for (const n of need) visit(n);
+      const args = [...inputs.filter((c) => ins.has(c.name)).map((c) => ({ name: c.name, type: typeOf(c), value: `model.${c.name}` })), ...(usesItems ? [{ name: "items", type: "List Item", value: "model.items" }] : []), ...(u.view.some((n) => n.el === "input") ? [{ name: "epoch", type: "Int", value: "model.epoch" }] : [])];
+      keyFns = new Map();
+      const defs = g.formulas.filter((f) => closure.has(f.name)).flatMap(formulaDefs);
+      const list = unitList(u);
+      const fn = `viewUnit${u.index}`;
+      const lazyCall = args.length >= 1 && args.length <= 8
+        ? `${(lazy.add(lazyNames[args.length - 1]), lazyNames[args.length - 1])} ${fn} ${args.map((a) => a.value).join(" ")}`
+        : `${fn} ${args.map((a) => a.value).join(" ")}`;
+      out.push(`${fn} : ${[...args.map((a) => a.type), "Html Msg"].join(" -> ")}
+${fn} ${args.map((a) => a.name).join(" ")} =
+${defs.length ? `    let\n${pad(defs.map(defText).join("\n\n"), 8)}\n    in\n` : ""}    div []
+${pad(list, 8)}`);
+      return lazyCall;
+    });
+    out.push(`viewSheet : Model -> Html Msg
+viewSheet model =
+    ${sheetHead}
+        [ h2 [] [ text ${elm(spec.title)} ]
+${units.map((c) => `        , ${c}`).join("\n")}
+        ]`);
+    g.inputRef = (name) => `model.${name}`;
+    g.itemsRef = "model.items";
+  }
+  // formulas are used by name; util helpers by their imports
+  for (const f of g.formulas) usedHelpers(f.expr, U);
+  for (const n of g.nodes) if (n.node.el === "top") usedHelpers(g.cells.get(n.node.cell).expr, U);
+  util.add("money"); util.add("grouped");
 
   // ---- the items' view
   for (const n of ["button", "div", "h2", "input", "label", "li", "section", "table", "tbody", "td", "text", "th", "thead", "tr"]) H(n);
   for (const a of ["checked", "placeholder", "type_", "value"]) attrs.add(a);
   for (const e of ["onCheck", "onClick", "onInput"]) events.add(e);
+  util.add("onNumber");
   lazy.add("lazy2");
   util.add("fdiv"); util.add("money");
   const headers = ["Item", "Category", "Qty", "Price", "Line", "With markup", "Active", "Note", ""];
-  out.push(`viewItems : Model -> Html Msg
+  out.push(`viewItems : ${S} -> Html Msg
 viewItems model =
     section [ dataKey "items", role "items" ]
         [ h2 [] [ text ${elm(spec.itemsTitle)} ]
         , div []
             [ button [ role "load", onClick Load ] [ text ${elm(spec.loadText)} ]
             , button [ role "addItem", onClick AddItem ] [ text "Add item" ]
-            , label [] [ text "Markup %", input [ type_ "number", role "markup", value (String.fromInt model.markup), onInput SetMarkup ] [] ]
+            , label [] [ text "Markup %", input [ type_ "number", role "markup", value (String.fromInt model.markup), onNumber 0 100 SetMarkup ] [] ]
             ]
         , table []
             [ thead [] [ tr [] [ ${headers.map((h) => `th [] [${h ? ` text ${elm(h)} ` : ""}]`).join(", ")} ] ]
@@ -734,7 +905,7 @@ viewRow markup it =
     tr [ dataKey (String.fromInt it.id), role "item" ]
         [ td [] [ text it.name ]
         , td [] [ text it.category ]
-        , td [] [ input [ type_ "number", role "qty", value (String.fromInt it.qty), onInput (SetQty it.id) ] [] ]
+        , td [] [ input [ type_ "number", role "qty", value (String.fromInt it.qty), onNumber 0 999 (SetQty it.id) ] [] ]
         , td [] [ text (money it.price) ]
         , td [] [ text (money (it.qty * it.price)) ]
         , td [] [ text (money (fdiv (it.qty * it.price * (100 + markup)) 100)) ]
@@ -742,7 +913,11 @@ viewRow markup it =
         , td [] [ input [ type_ "text", role "note", placeholder "Note", value it.note, onInput (SetNote it.id) ] [] ]
         , td [] [ button [ role "remove", onClick (Remove it.id) ] [ text "×" ] ]
         ]`);
-  out.push(`view : Model -> Html Msg
+  out.push(mode === "model"
+    ? `view : Model -> Html Msg
+view model =
+    div [ role "page" ] [ viewSheet model.state model.derived, viewItems model.state ]`
+    : `view : Model -> Html Msg
 view model =
     div [ role "page" ] [ viewSheet model, viewItems model ]`);
 
@@ -757,13 +932,10 @@ main =
         , subscriptions = \\_ -> events Event
         }`);
 
-  // The user-visible helpers a sheet uses.
-  for (const name of ["groupSum", "sumBy"]) void name;
-
   const imports = [
     ["Browser", "import Browser"],
     ["Dict", "import Dict exposing (Dict)"],
-    ["Html", `import Html exposing (${exposing(html)})`.replace("(Html,", "(Html,")],
+    ["Html", `import Html exposing (${exposing(html)})`],
     ["Html.Attributes", `import Html.Attributes exposing (${exposing(attrs)})`],
     ["Html.Events", `import Html.Events exposing (${exposing(events)})`],
     ["Html.Keyed", "import Html.Keyed as Keyed"],
@@ -789,7 +961,8 @@ function usedHelpers(e, U) {
   for (let k = 1; k < e.length; k++) usedHelpers(e[k], U);
 }
 
-export function emit(spec) {
+export function emit(spec, options = {}) {
+  const mode = options.derived ?? "view";
   const g = readGraph(spec);
   const template = templateFiles({ title: spec.title });
   const elmJson = JSON.parse(template["elm.json"]);
@@ -798,16 +971,20 @@ export function emit(spec) {
     ...template,
     "elm.json": JSON.stringify(elmJson, null, 4) + "\n",
     "src/Util.elm": utilModule(spec),
-    "src/Main.elm": mainModule(spec, g),
+    "src/Main.elm": mainModule(spec, g, mode),
   };
   return {
     files,
     style: {
       architecture: "TEA with Browser.element: one Model (a record field per input, items, markup, nextId, rng), one Msg (a constructor per control and per item control), one update (a case branch per message as record updates), one view",
-      derived: "computed in view: viewSheet opens with a let binding every formula, in dependency order, to its own expression over model and the formulas above it, so each is computed once per view; the model caches nothing, update stays one-field record updates; every event recomputes every formula (Html.Lazy skips rows, not formulas)",
+      derived: {
+        view: "naive TEA: computed in view. viewSheet opens with a let binding every formula, in dependency order, to its own expression over model and the formulas above it, so each is computed once per view; the model caches nothing, update stays one-field record updates; every event recomputes every formula (Html.Lazy skips rows, not formulas)",
+        model: "cached in the model: the Model holds the State (inputs, items, ...) and a Derived record of every formula; update steps the State as usual and runs derive (one let in dependency order) only when the message can change what formulas read (not a note or the markup) and the State actually changed; view only reads the record",
+        lazy: "lazy sections: a viewUnit<i> per unit taking only the inputs (and the items) its displays and formulas transitively read, computing the formulas it shows and the ones they read itself, wrapped in Html.Lazy.lazy<N> (a unit reading more than 8 values is called directly)",
+      }[mode],
       rows: "Html.Keyed.node \"tbody\" with ( String.fromInt item.id, lazy2 viewRow model.markup item ); items replaced, never mutated, by mapItem id (a missing id is a no-op)",
       lists: "top-k lists and group sums as Html.Keyed lists (by item id, by category)",
-      numbers: "Int throughout; division is floor (toFloat a / toFloat b) (fdiv), never // (32-bit); number input text applied by onInt only while an integer in range",
+      numbers: "Int throughout; division is floor (toFloat a / toFloat b) (fdiv), never // (32-bit); number input messages come from onNumber, an input decoder that fails (no message, no redraw) unless the text is an integer in range",
       externalEvents: "one incoming port events : (Value -> msg) -> Sub msg, decoded with Json.Decode into ServerInputs (Dict String Value, read per input by readInputs), ServerItems and Snapshot",
       helpers: "src/Util.elm (app code): Item, PRNG step and word pools, formatters, sumBy/avgBy/maxBy/minBy/topBy/groupSum, decoders, attribute helpers",
       formatting: "as elm-format 0.8.8 writes it (an if is a whole binding body, or bound to a name of its own); elm.json lists only the dependencies the app imports",
