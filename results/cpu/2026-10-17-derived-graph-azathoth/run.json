@@ -1,0 +1,253 @@
+{
+  "scenario": "derived-graph",
+  "kind": "cpu",
+  "date": "2026-10-17",
+  "started": "2026-10-17T02:57:04.766Z",
+  "finished": "2026-10-17T03:04:05.984Z",
+  "sizes": [
+    64
+  ],
+  "seeds": [
+    1
+  ],
+  "sessions": 1,
+  "quick": false,
+  "aa": false,
+  "workers": [
+    "1-2,7-8",
+    "3-4,9-10"
+  ],
+  "scenarioOptions": {
+    "rows": 2000,
+    "fanout": "mid"
+  },
+  "method": {
+    "warmup": 3,
+    "minReps": 10,
+    "maxReps": 20,
+    "chunk": 10,
+    "tol": 0.05,
+    "loads": 5,
+    "sessions": 1,
+    "waitMs": 40,
+    "maxLoad": 4,
+    "throttling": 1,
+    "chromeFlags": [
+      "--disable-background-networking",
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--disable-backgrounding-occluded-windows",
+      "--disable-gpu",
+      "--enable-precise-memory-info",
+      "--window-size=1280,1000"
+    ],
+    "rule": "js-framework-benchmark timeline.ts (via beni bench/ui/lib/trace.mjs), per rep between user-timing marks; see harness/bench/README.md"
+  },
+  "variants": {
+    "digest": {
+      "emitter": "digest",
+      "framework": "digest",
+      "label": "digest (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      },
+      "excluded": "fails the locality rule here (calls per local event grow 17x from N=16 to 256); timed for reference only"
+    },
+    "solid": {
+      "emitter": "solid",
+      "framework": "solid",
+      "label": "Solid 1",
+      "track": "framework",
+      "emitterOptions": {},
+      "versions": {
+        "solid-js": "1.9.17",
+        "babel-preset-solid": "1.9.16",
+        "babel-plugin-jsx-dom-expressions": "0.40.11",
+        "@babel/core": "7.29.7",
+        "vite-plugin-solid": "2.11.14",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-dirtybits": {
+      "emitter": "tea-dirtybits",
+      "framework": "tea-dirtybits",
+      "label": "TEA + dirty bits (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "versions": {
+        "tea-dirtybits runtime": "prototype (frameworks/tea-dirtybits/template)",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-inline": {
+      "emitter": "tea-inline",
+      "framework": "tea-inline",
+      "label": "TEA inline (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-local": {
+      "emitter": "tea-local",
+      "framework": "tea-local",
+      "label": "tea-local (prototype)",
+      "track": "prototype",
+      "emitterOptions": {
+        "quiet": "analysed"
+      },
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "vanilla": {
+      "emitter": "vanilla",
+      "framework": "vanilla",
+      "label": "vanilla",
+      "track": "real",
+      "emitterOptions": {
+        "derived": "waves"
+      },
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    }
+  },
+  "skipped": [
+    {
+      "variant": "beni-direct",
+      "size": 64,
+      "seed": 1,
+      "why": "fails ./rr check's script check"
+    },
+    {
+      "variant": "beni-tea",
+      "size": 64,
+      "seed": 1,
+      "why": "fails ./rr check's script check"
+    },
+    {
+      "variant": "elm",
+      "size": 64,
+      "seed": 1,
+      "why": "check could not run: timed out waiting for window.rrPanel && window.rrPanel.ready === true"
+    },
+    {
+      "variant": "marko",
+      "size": 64,
+      "seed": 1,
+      "why": "check could not run: timed out waiting for window.rrPanel && window.rrPanel.ready === true"
+    }
+  ],
+  "batches": [
+    {
+      "variant": "digest",
+      "size": 64,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 1.9,
+      "loadAfter": 1.63,
+      "seconds": 57.334,
+      "kept": true,
+      "at": "2026-10-17T03:02:11.869Z"
+    },
+    {
+      "variant": "solid",
+      "size": 64,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 1.9,
+      "loadAfter": 1.63,
+      "seconds": 60.916,
+      "kept": true,
+      "at": "2026-10-17T03:02:15.468Z"
+    },
+    {
+      "variant": "tea-dirtybits",
+      "size": 64,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 1.63,
+      "loadAfter": 1.7,
+      "seconds": 55.913,
+      "kept": true,
+      "at": "2026-10-17T03:03:07.802Z"
+    },
+    {
+      "variant": "tea-inline",
+      "size": 64,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 1.63,
+      "loadAfter": 1.7,
+      "seconds": 55.355,
+      "kept": true,
+      "at": "2026-10-17T03:03:10.843Z"
+    },
+    {
+      "variant": "tea-local",
+      "size": 64,
+      "seed": 1,
+      "session": 1,
+      "worker": 0,
+      "attempt": 0,
+      "loadBefore": 1.7,
+      "loadAfter": 1.76,
+      "seconds": 54.514,
+      "kept": true,
+      "at": "2026-10-17T03:04:02.335Z"
+    },
+    {
+      "variant": "vanilla",
+      "size": 64,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 1.7,
+      "loadAfter": 1.76,
+      "seconds": 55.083,
+      "kept": true,
+      "at": "2026-10-17T03:04:05.941Z"
+    }
+  ],
+  "machine": {
+    "hostname": "azathoth",
+    "cpu": "Intel(R) Xeon(R) E-2386G CPU @ 3.50GHz",
+    "threads": 12,
+    "memoryGB": 34,
+    "kernel": "Linux 6.18.55 x64",
+    "governor": "performance",
+    "noTurbo": "0",
+    "boost": null,
+    "taskset": "1-5,7-11"
+  },
+  "versions": {
+    "node": "v26.11.1",
+    "chrome": "Chrome/154.0.8037.97",
+    "chromeBin": "/nix/store/ds7933z0wp7872ic6zqzrwsbpj0m8g6l-google-chrome-154.0.8037.97/bin/google-chrome",
+    "chromeVersionLine": "Google Chrome 154.0.8037.97",
+    "git": {
+      "commit": "fcbdf5f80fb85aa002c3bdedd294ffdac6ec6f94",
+      "dirty": false
+    }
+  },
+  "wallSeconds": 421.306
+}

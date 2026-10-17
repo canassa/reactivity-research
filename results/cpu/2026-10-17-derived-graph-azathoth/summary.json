@@ -1,0 +1,5563 @@
+{
+ "events": [
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "chain input: type a number (3 closed formulas downstream)",
+   "half": "chain input: type a number (3 closed formulas downstream)",
+   "scope": "local",
+   "script": {
+    "median": 1094.5,
+    "p25": 971.8,
+    "p75": 1354.8,
+    "n": 20,
+    "ci": [
+     1000.5,
+     1295.5
+    ]
+   },
+   "total": {
+    "median": 21.201,
+    "p25": 19.937,
+    "p75": 26.248,
+    "n": 20,
+    "ci": [
+     19.989,
+     25.707
+    ]
+   },
+   "seeds": {
+    "1": 1094.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "chain input: type a number (3 closed formulas downstream)",
+   "half": "chain input: type a number (3 closed formulas downstream) (back)",
+   "scope": "local",
+   "script": {
+    "median": 1061,
+    "p25": 1025.5,
+    "p75": 1236.5,
+    "n": 20,
+    "ci": [
+     1034,
+     1208
+    ]
+   },
+   "total": {
+    "median": 22.816,
+    "p25": 19.414,
+    "p75": 29.043,
+    "n": 20,
+    "ci": [
+     19.634,
+     28.683
+    ]
+   },
+   "seeds": {
+    "1": 1061
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "cut-off input: type a number that leaves its bool unchanged",
+   "half": "cut-off input: type a number that leaves its bool unchanged",
+   "scope": "local",
+   "script": {
+    "median": 1062.5,
+    "p25": 953,
+    "p75": 1136.5,
+    "n": 20,
+    "ci": [
+     956.5,
+     1103.5
+    ]
+   },
+   "total": {
+    "median": 18.202,
+    "p25": 16.705,
+    "p75": 20.32,
+    "n": 20,
+    "ci": [
+     16.898,
+     19.738
+    ]
+   },
+   "seeds": {
+    "1": 1062.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "cut-off input: type a number that leaves its bool unchanged",
+   "half": "cut-off input: type a number that leaves its bool unchanged (back)",
+   "scope": "local",
+   "script": {
+    "median": 1002,
+    "p25": 935.3,
+    "p75": 1134.3,
+    "n": 20,
+    "ci": [
+     939,
+     1091.5
+    ]
+   },
+   "total": {
+    "median": 20.055,
+    "p25": 18.305,
+    "p75": 23.929,
+    "n": 20,
+    "ci": [
+     18.379,
+     23.815
+    ]
+   },
+   "seeds": {
+    "1": 1002
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "cut-off input: type a number that flips its bool",
+   "half": "cut-off input: type a number that flips its bool",
+   "scope": "local",
+   "script": {
+    "median": 982.5,
+    "p25": 942.5,
+    "p75": 1117.3,
+    "n": 20,
+    "ci": [
+     951,
+     1057
+    ]
+   },
+   "total": {
+    "median": 19.342,
+    "p25": 18.815,
+    "p75": 21.932,
+    "n": 20,
+    "ci": [
+     18.935,
+     21.033
+    ]
+   },
+   "seeds": {
+    "1": 982.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "cut-off input: type a number that flips its bool",
+   "half": "cut-off input: type a number that flips its bool (back)",
+   "scope": "local",
+   "script": {
+    "median": 971.5,
+    "p25": 934.8,
+    "p75": 996.3,
+    "n": 20,
+    "ci": [
+     939.5,
+     993.5
+    ]
+   },
+   "total": {
+    "median": 18.857,
+    "p25": 18.208,
+    "p75": 19.403,
+    "n": 20,
+    "ci": [
+     18.347,
+     19.384
+    ]
+   },
+   "seeds": {
+    "1": 971.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "filter select: pick another category (re-filters the items)",
+   "half": "filter select: pick another category (re-filters the items)",
+   "scope": "local",
+   "script": {
+    "median": 2668,
+    "p25": 2488.5,
+    "p75": 3006.8,
+    "n": 20,
+    "ci": [
+     2502.5,
+     2934
+    ]
+   },
+   "total": {
+    "median": 20.505,
+    "p25": 17.251,
+    "p75": 24.236,
+    "n": 20,
+    "ci": [
+     17.596,
+     23.402
+    ]
+   },
+   "seeds": {
+    "1": 2668
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "filter select: pick another category (re-filters the items)",
+   "half": "filter select: pick another category (re-filters the items) (back)",
+   "scope": "local",
+   "script": {
+    "median": 2672,
+    "p25": 2508.3,
+    "p75": 2931,
+    "n": 20,
+    "ci": [
+     2531,
+     2868
+    ]
+   },
+   "total": {
+    "median": 19.599,
+    "p25": 17.133,
+    "p75": 26.181,
+    "n": 20,
+    "ci": [
+     17.566,
+     25.601
+    ]
+   },
+   "seeds": {
+    "1": 2672
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "toggle: flip a bool (one formula over the filtered items)",
+   "half": "toggle: flip a bool (one formula over the filtered items)",
+   "scope": "local",
+   "script": {
+    "median": 1900,
+    "p25": 1711,
+    "p75": 2073.5,
+    "n": 20,
+    "ci": [
+     1724,
+     2064
+    ]
+   },
+   "total": {
+    "median": 18.557,
+    "p25": 17.307,
+    "p75": 19.318,
+    "n": 20,
+    "ci": [
+     17.575,
+     19.165
+    ]
+   },
+   "seeds": {
+    "1": 1900
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "toggle: flip a bool (one formula over the filtered items)",
+   "half": "toggle: flip a bool (one formula over the filtered items) (back)",
+   "scope": "local",
+   "script": {
+    "median": 1781,
+    "p25": 1705,
+    "p75": 1885.5,
+    "n": 20,
+    "ci": [
+     1719.5,
+     1835.5
+    ]
+   },
+   "total": {
+    "median": 18.341,
+    "p25": 17.394,
+    "p75": 19.165,
+    "n": 20,
+    "ci": [
+     17.795,
+     19.066
+    ]
+   },
+   "seeds": {
+    "1": 1781
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "half": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "scope": "local",
+   "script": {
+    "median": 1081,
+    "p25": 1047.5,
+    "p75": 1193.8,
+    "n": 20,
+    "ci": [
+     1058.5,
+     1163
+    ]
+   },
+   "total": {
+    "median": 22.363,
+    "p25": 19.362,
+    "p75": 25.582,
+    "n": 20,
+    "ci": [
+     19.873,
+     24.852
+    ]
+   },
+   "seeds": {
+    "1": 1081
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "half": "threshold: type a number (re-filters and sorts the items for a top 5) (back)",
+   "scope": "local",
+   "script": {
+    "median": 999,
+    "p25": 965.8,
+    "p75": 1054.5,
+    "n": 20,
+    "ci": [
+     968.5,
+     1051
+    ]
+   },
+   "total": {
+    "median": 20.101,
+    "p25": 18.517,
+    "p75": 23.845,
+    "n": 20,
+    "ci": [
+     18.862,
+     23.019
+    ]
+   },
+   "seeds": {
+    "1": 999
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "markup: type a number (every row's markup cell)",
+   "half": "markup: type a number (every row's markup cell)",
+   "scope": "local",
+   "script": {
+    "median": 6767,
+    "p25": 6347.5,
+    "p75": 7237.8,
+    "n": 20,
+    "ci": [
+     6382.5,
+     7204
+    ]
+   },
+   "total": {
+    "median": 70.566,
+    "p25": 68.413,
+    "p75": 74.655,
+    "n": 20,
+    "ci": [
+     68.595,
+     74.441
+    ]
+   },
+   "seeds": {
+    "1": 6767
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "markup: type a number (every row's markup cell)",
+   "half": "markup: type a number (every row's markup cell) (back)",
+   "scope": "local",
+   "script": {
+    "median": 6496,
+    "p25": 6344.3,
+    "p75": 7092.3,
+    "n": 20,
+    "ci": [
+     6367,
+     6857.5
+    ]
+   },
+   "total": {
+    "median": 68.493,
+    "p25": 67.941,
+    "p75": 70.127,
+    "n": 20,
+    "ci": [
+     68.133,
+     69.704
+    ]
+   },
+   "seeds": {
+    "1": 6496
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "item: type a note character (nothing reads it)",
+   "half": "item: type a note character (nothing reads it)",
+   "scope": "local",
+   "script": {
+    "median": 67.5,
+    "p25": 63,
+    "p75": 83.8,
+    "n": 20,
+    "ci": [
+     64,
+     78.5
+    ]
+   },
+   "total": {
+    "median": 44.546,
+    "p25": 43.53,
+    "p75": 45.675,
+    "n": 20,
+    "ci": [
+     43.56,
+     45.51
+    ]
+   },
+   "seeds": {
+    "1": 67.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "item: type a note character (nothing reads it)",
+   "half": "item: delete the note character",
+   "scope": "local",
+   "script": {
+    "median": 75.5,
+    "p25": 68,
+    "p75": 77.3,
+    "n": 20,
+    "ci": [
+     70.5,
+     77
+    ]
+   },
+   "total": {
+    "median": 53.072,
+    "p25": 52.178,
+    "p75": 54.165,
+    "n": 20,
+    "ci": [
+     52.31,
+     53.757
+    ]
+   },
+   "seeds": {
+    "1": 75.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: serverInputs of the closed inputs",
+   "half": "dispatch: serverInputs of the closed inputs",
+   "scope": "local",
+   "script": {
+    "median": 1139,
+    "p25": 1071,
+    "p75": 1276,
+    "n": 20,
+    "ci": [
+     1074,
+     1266
+    ]
+   },
+   "total": {
+    "median": 23.008,
+    "p25": 22.247,
+    "p75": 25.977,
+    "n": 20,
+    "ci": [
+     22.355,
+     24.239
+    ]
+   },
+   "seeds": {
+    "1": 1139
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: serverInputs of the closed inputs",
+   "half": "dispatch: serverInputs of the closed inputs (back)",
+   "scope": "local",
+   "script": {
+    "median": 1163,
+    "p25": 1126.8,
+    "p75": 1439.5,
+    "n": 20,
+    "ci": [
+     1131.5,
+     1430.5
+    ]
+   },
+   "total": {
+    "median": 22.188,
+    "p25": 20.718,
+    "p75": 24.076,
+    "n": 20,
+    "ci": [
+     20.834,
+     23.515
+    ]
+   },
+   "seeds": {
+    "1": 1163
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "hub input: raise (the hub and tax read by many)",
+   "half": "hub input: raise (the hub and tax read by many)",
+   "scope": "global",
+   "script": {
+    "median": 1144,
+    "p25": 1066.5,
+    "p75": 1369.8,
+    "n": 20,
+    "ci": [
+     1073.5,
+     1296.5
+    ]
+   },
+   "total": {
+    "median": 19.548,
+    "p25": 17.764,
+    "p75": 20.222,
+    "n": 20,
+    "ci": [
+     18.293,
+     20.105
+    ]
+   },
+   "seeds": {
+    "1": 1144
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "hub input: raise (the hub and tax read by many)",
+   "half": "hub input: lower",
+   "scope": "global",
+   "script": {
+    "median": 1123,
+    "p25": 1105.3,
+    "p75": 1269.3,
+    "n": 20,
+    "ci": [
+     1110,
+     1228.5
+    ]
+   },
+   "total": {
+    "median": 19.39,
+    "p25": 18.207,
+    "p75": 19.885,
+    "n": 20,
+    "ci": [
+     18.234,
+     19.868
+    ]
+   },
+   "seeds": {
+    "1": 1123
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "item: type a quantity (every aggregate over qty)",
+   "half": "item: type a quantity (every aggregate over qty)",
+   "scope": "global",
+   "script": {
+    "median": 1285,
+    "p25": 1149.8,
+    "p75": 1456,
+    "n": 20,
+    "ci": [
+     1151,
+     1415
+    ]
+   },
+   "total": {
+    "median": 47.62,
+    "p25": 47.075,
+    "p75": 48.621,
+    "n": 20,
+    "ci": [
+     47.128,
+     48.434
+    ]
+   },
+   "seeds": {
+    "1": 1285
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "item: type a quantity (every aggregate over qty)",
+   "half": "item: type a quantity (every aggregate over qty) (back)",
+   "scope": "global",
+   "script": {
+    "median": 1204.5,
+    "p25": 1168,
+    "p75": 1310.5,
+    "n": 20,
+    "ci": [
+     1171.5,
+     1283.5
+    ]
+   },
+   "total": {
+    "median": 47.188,
+    "p25": 46.474,
+    "p75": 47.894,
+    "n": 20,
+    "ci": [
+     46.499,
+     47.829
+    ]
+   },
+   "seeds": {
+    "1": 1204.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "item: toggle active",
+   "half": "item: toggle active",
+   "scope": "global",
+   "script": {
+    "median": 1960,
+    "p25": 1834.5,
+    "p75": 2248.5,
+    "n": 20,
+    "ci": [
+     1841.5,
+     2191
+    ]
+   },
+   "total": {
+    "median": 24.181,
+    "p25": 22.283,
+    "p75": 24.664,
+    "n": 20,
+    "ci": [
+     22.716,
+     24.606
+    ]
+   },
+   "seeds": {
+    "1": 1960
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "item: toggle active",
+   "half": "item: toggle active (back)",
+   "scope": "global",
+   "script": {
+    "median": 1959.5,
+    "p25": 1837.8,
+    "p75": 2126,
+    "n": 20,
+    "ci": [
+     1845.5,
+     2098.5
+    ]
+   },
+   "total": {
+    "median": 23.968,
+    "p25": 21.833,
+    "p75": 24.544,
+    "n": 20,
+    "ci": [
+     21.941,
+     24.5
+    ]
+   },
+   "seeds": {
+    "1": 1959.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "item: add one, remove it",
+   "half": "item: add one",
+   "scope": "global",
+   "script": {
+    "median": 5789.5,
+    "p25": 5214.8,
+    "p75": 6472.5,
+    "n": 20,
+    "ci": [
+     5303.5,
+     6301.5
+    ]
+   },
+   "total": {
+    "median": 42.695,
+    "p25": 41.372,
+    "p75": 43.579,
+    "n": 20,
+    "ci": [
+     41.529,
+     43.505
+    ]
+   },
+   "seeds": {
+    "1": 5789.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "item: add one, remove it",
+   "half": "item: remove the new one",
+   "scope": "global",
+   "script": {
+    "median": 5799.5,
+    "p25": 4611,
+    "p75": 7031.8,
+    "n": 20,
+    "ci": [
+     4618.5,
+     6784.5
+    ]
+   },
+   "total": {
+    "median": 44.096,
+    "p25": 42.422,
+    "p75": 44.777,
+    "n": 20,
+    "ci": [
+     43.045,
+     44.509
+    ]
+   },
+   "seeds": {
+    "1": 5799.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: serverItems (one price)",
+   "half": "dispatch: serverItems (one price)",
+   "scope": "global",
+   "script": {
+    "median": 4652.5,
+    "p25": 4502.8,
+    "p75": 5044.8,
+    "n": 20,
+    "ci": [
+     4536.5,
+     4965.5
+    ]
+   },
+   "total": {
+    "median": 36.531,
+    "p25": 35.979,
+    "p75": 37.789,
+    "n": 20,
+    "ci": [
+     36.12,
+     37.277
+    ]
+   },
+   "seeds": {
+    "1": 4652.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: serverItems (one price)",
+   "half": "dispatch: serverItems (the price back)",
+   "scope": "global",
+   "script": {
+    "median": 4747,
+    "p25": 4546.3,
+    "p75": 5079.3,
+    "n": 20,
+    "ci": [
+     4581.5,
+     4946.5
+    ]
+   },
+   "total": {
+    "median": 36.536,
+    "p25": 36.107,
+    "p75": 37.399,
+    "n": 20,
+    "ci": [
+     36.176,
+     37.272
+    ]
+   },
+   "seeds": {
+    "1": 4747
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 11726,
+    "p25": 11188.8,
+    "p75": 12563.3,
+    "n": 20,
+    "ci": [
+     11219,
+     12350.5
+    ]
+   },
+   "total": {
+    "median": 113.007,
+    "p25": 110.267,
+    "p75": 115.13,
+    "n": 20,
+    "ci": [
+     110.589,
+     114.828
+    ]
+   },
+   "seeds": {
+    "1": 11726
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 11340.5,
+    "p25": 10770.8,
+    "p75": 11814.5,
+    "n": 20,
+    "ci": [
+     10833.5,
+     11755.5
+    ]
+   },
+   "total": {
+    "median": 113.08,
+    "p25": 109.943,
+    "p75": 121.386,
+    "n": 20,
+    "ci": [
+     110.303,
+     119.299
+    ]
+   },
+   "seeds": {
+    "1": 11340.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "chain input: type a number (3 closed formulas downstream)",
+   "half": "chain input: type a number (3 closed formulas downstream)",
+   "scope": "local",
+   "script": {
+    "median": 180,
+    "p25": 149,
+    "p75": 204,
+    "n": 20,
+    "ci": [
+     152.5,
+     201.5
+    ]
+   },
+   "total": {
+    "median": 19.976,
+    "p25": 18.769,
+    "p75": 23.235,
+    "n": 20,
+    "ci": [
+     19.017,
+     23.002
+    ]
+   },
+   "seeds": {
+    "1": 180
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "chain input: type a number (3 closed formulas downstream)",
+   "half": "chain input: type a number (3 closed formulas downstream) (back)",
+   "scope": "local",
+   "script": {
+    "median": 179.5,
+    "p25": 140,
+    "p75": 196.5,
+    "n": 20,
+    "ci": [
+     145,
+     192.5
+    ]
+   },
+   "total": {
+    "median": 19.104,
+    "p25": 18.263,
+    "p75": 21.385,
+    "n": 20,
+    "ci": [
+     18.378,
+     20.498
+    ]
+   },
+   "seeds": {
+    "1": 179.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "cut-off input: type a number that leaves its bool unchanged",
+   "half": "cut-off input: type a number that leaves its bool unchanged",
+   "scope": "local",
+   "script": {
+    "median": 119,
+    "p25": 106.3,
+    "p75": 139.5,
+    "n": 20,
+    "ci": [
+     107.5,
+     137
+    ]
+   },
+   "total": {
+    "median": 17.91,
+    "p25": 16.305,
+    "p75": 20.059,
+    "n": 20,
+    "ci": [
+     16.415,
+     19.434
+    ]
+   },
+   "seeds": {
+    "1": 119
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "cut-off input: type a number that leaves its bool unchanged",
+   "half": "cut-off input: type a number that leaves its bool unchanged (back)",
+   "scope": "local",
+   "script": {
+    "median": 123,
+    "p25": 101.8,
+    "p75": 130,
+    "n": 20,
+    "ci": [
+     105.5,
+     130
+    ]
+   },
+   "total": {
+    "median": 17.304,
+    "p25": 16.18,
+    "p75": 24.734,
+    "n": 20,
+    "ci": [
+     16.41,
+     23.798
+    ]
+   },
+   "seeds": {
+    "1": 123
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "cut-off input: type a number that flips its bool",
+   "half": "cut-off input: type a number that flips its bool",
+   "scope": "local",
+   "script": {
+    "median": 181,
+    "p25": 167.5,
+    "p75": 207.5,
+    "n": 20,
+    "ci": [
+     169,
+     203.5
+    ]
+   },
+   "total": {
+    "median": 19.76,
+    "p25": 17.477,
+    "p75": 22.846,
+    "n": 20,
+    "ci": [
+     17.911,
+     22.807
+    ]
+   },
+   "seeds": {
+    "1": 181
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "cut-off input: type a number that flips its bool",
+   "half": "cut-off input: type a number that flips its bool (back)",
+   "scope": "local",
+   "script": {
+    "median": 366.5,
+    "p25": 354.8,
+    "p75": 400.5,
+    "n": 20,
+    "ci": [
+     358,
+     396
+    ]
+   },
+   "total": {
+    "median": 18.931,
+    "p25": 17.709,
+    "p75": 20.606,
+    "n": 20,
+    "ci": [
+     17.857,
+     20.338
+    ]
+   },
+   "seeds": {
+    "1": 366.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "filter select: pick another category (re-filters the items)",
+   "half": "filter select: pick another category (re-filters the items)",
+   "scope": "local",
+   "script": {
+    "median": 4377,
+    "p25": 4167.8,
+    "p75": 4567.8,
+    "n": 20,
+    "ci": [
+     4241.5,
+     4542.5
+    ]
+   },
+   "total": {
+    "median": 20.115,
+    "p25": 18.206,
+    "p75": 22.942,
+    "n": 20,
+    "ci": [
+     18.287,
+     22.475
+    ]
+   },
+   "seeds": {
+    "1": 4377
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "filter select: pick another category (re-filters the items)",
+   "half": "filter select: pick another category (re-filters the items) (back)",
+   "scope": "local",
+   "script": {
+    "median": 4498.5,
+    "p25": 4209,
+    "p75": 4637.5,
+    "n": 20,
+    "ci": [
+     4246,
+     4612.5
+    ]
+   },
+   "total": {
+    "median": 20.036,
+    "p25": 17.989,
+    "p75": 23.251,
+    "n": 20,
+    "ci": [
+     18.016,
+     22.805
+    ]
+   },
+   "seeds": {
+    "1": 4498.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "toggle: flip a bool (one formula over the filtered items)",
+   "half": "toggle: flip a bool (one formula over the filtered items)",
+   "scope": "local",
+   "script": {
+    "median": 174.5,
+    "p25": 165,
+    "p75": 178.8,
+    "n": 20,
+    "ci": [
+     166,
+     178
+    ]
+   },
+   "total": {
+    "median": 16.621,
+    "p25": 14.844,
+    "p75": 17.184,
+    "n": 20,
+    "ci": [
+     15.019,
+     17.037
+    ]
+   },
+   "seeds": {
+    "1": 174.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "toggle: flip a bool (one formula over the filtered items)",
+   "half": "toggle: flip a bool (one formula over the filtered items) (back)",
+   "scope": "local",
+   "script": {
+    "median": 348,
+    "p25": 340.5,
+    "p75": 382.8,
+    "n": 20,
+    "ci": [
+     341.5,
+     374.5
+    ]
+   },
+   "total": {
+    "median": 16.414,
+    "p25": 15.472,
+    "p75": 17.678,
+    "n": 20,
+    "ci": [
+     15.555,
+     17.47
+    ]
+   },
+   "seeds": {
+    "1": 348
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "half": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "scope": "local",
+   "script": {
+    "median": 2765.5,
+    "p25": 2603.5,
+    "p75": 2965.8,
+    "n": 20,
+    "ci": [
+     2643.5,
+     2878
+    ]
+   },
+   "total": {
+    "median": 25.536,
+    "p25": 22.455,
+    "p75": 29.605,
+    "n": 20,
+    "ci": [
+     22.621,
+     29.502
+    ]
+   },
+   "seeds": {
+    "1": 2765.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "half": "threshold: type a number (re-filters and sorts the items for a top 5) (back)",
+   "scope": "local",
+   "script": {
+    "median": 2067,
+    "p25": 1993.3,
+    "p75": 2335.8,
+    "n": 20,
+    "ci": [
+     2012,
+     2286
+    ]
+   },
+   "total": {
+    "median": 27.789,
+    "p25": 22.443,
+    "p75": 29.048,
+    "n": 20,
+    "ci": [
+     23.352,
+     28.801
+    ]
+   },
+   "seeds": {
+    "1": 2067
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "markup: type a number (every row's markup cell)",
+   "half": "markup: type a number (every row's markup cell)",
+   "scope": "local",
+   "script": {
+    "median": 4739.5,
+    "p25": 4535.8,
+    "p75": 4927,
+    "n": 20,
+    "ci": [
+     4549.5,
+     4860.5
+    ]
+   },
+   "total": {
+    "median": 65.926,
+    "p25": 64.894,
+    "p75": 67.611,
+    "n": 20,
+    "ci": [
+     65.096,
+     66.898
+    ]
+   },
+   "seeds": {
+    "1": 4739.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "markup: type a number (every row's markup cell)",
+   "half": "markup: type a number (every row's markup cell) (back)",
+   "scope": "local",
+   "script": {
+    "median": 4725.5,
+    "p25": 4446.8,
+    "p75": 4981.8,
+    "n": 20,
+    "ci": [
+     4468,
+     4898
+    ]
+   },
+   "total": {
+    "median": 65.114,
+    "p25": 64.32,
+    "p75": 67.613,
+    "n": 20,
+    "ci": [
+     64.438,
+     66.755
+    ]
+   },
+   "seeds": {
+    "1": 4725.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "item: type a note character (nothing reads it)",
+   "half": "item: type a note character (nothing reads it)",
+   "scope": "local",
+   "script": {
+    "median": 126,
+    "p25": 122.8,
+    "p75": 135.8,
+    "n": 20,
+    "ci": [
+     123.5,
+     133
+    ]
+   },
+   "total": {
+    "median": 42.806,
+    "p25": 41.984,
+    "p75": 45.806,
+    "n": 20,
+    "ci": [
+     42.052,
+     44.934
+    ]
+   },
+   "seeds": {
+    "1": 126
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "item: type a note character (nothing reads it)",
+   "half": "item: delete the note character",
+   "scope": "local",
+   "script": {
+    "median": 133.5,
+    "p25": 117.3,
+    "p75": 146,
+    "n": 20,
+    "ci": [
+     118,
+     144
+    ]
+   },
+   "total": {
+    "median": 55.97,
+    "p25": 54.691,
+    "p75": 57.095,
+    "n": 20,
+    "ci": [
+     54.752,
+     56.74
+    ]
+   },
+   "seeds": {
+    "1": 133.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "dispatch: serverInputs of the closed inputs",
+   "half": "dispatch: serverInputs of the closed inputs",
+   "scope": "local",
+   "script": {
+    "median": 3544,
+    "p25": 3446.3,
+    "p75": 3774.5,
+    "n": 20,
+    "ci": [
+     3461,
+     3685
+    ]
+   },
+   "total": {
+    "median": 24.651,
+    "p25": 24.106,
+    "p75": 25.476,
+    "n": 20,
+    "ci": [
+     24.325,
+     25.201
+    ]
+   },
+   "seeds": {
+    "1": 3544
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "dispatch: serverInputs of the closed inputs",
+   "half": "dispatch: serverInputs of the closed inputs (back)",
+   "scope": "local",
+   "script": {
+    "median": 4102.5,
+    "p25": 4001.5,
+    "p75": 4196.3,
+    "n": 20,
+    "ci": [
+     4012,
+     4174
+    ]
+   },
+   "total": {
+    "median": 24.064,
+    "p25": 23.495,
+    "p75": 25.38,
+    "n": 20,
+    "ci": [
+     23.613,
+     25.245
+    ]
+   },
+   "seeds": {
+    "1": 4102.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "hub input: raise (the hub and tax read by many)",
+   "half": "hub input: raise (the hub and tax read by many)",
+   "scope": "global",
+   "script": {
+    "median": 4933,
+    "p25": 4619.3,
+    "p75": 5110.3,
+    "n": 20,
+    "ci": [
+     4675,
+     5083.5
+    ]
+   },
+   "total": {
+    "median": 23.938,
+    "p25": 22.828,
+    "p75": 24.446,
+    "n": 20,
+    "ci": [
+     22.947,
+     24.432
+    ]
+   },
+   "seeds": {
+    "1": 4933
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "hub input: raise (the hub and tax read by many)",
+   "half": "hub input: lower",
+   "scope": "global",
+   "script": {
+    "median": 4813,
+    "p25": 4521.5,
+    "p75": 5062,
+    "n": 20,
+    "ci": [
+     4581.5,
+     5044
+    ]
+   },
+   "total": {
+    "median": 24.149,
+    "p25": 22.969,
+    "p75": 24.493,
+    "n": 20,
+    "ci": [
+     23.105,
+     24.472
+    ]
+   },
+   "seeds": {
+    "1": 4813
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "item: type a quantity (every aggregate over qty)",
+   "half": "item: type a quantity (every aggregate over qty)",
+   "scope": "global",
+   "script": {
+    "median": 11883.5,
+    "p25": 11513.3,
+    "p75": 12319.8,
+    "n": 20,
+    "ci": [
+     11583,
+     12272
+    ]
+   },
+   "total": {
+    "median": 58.612,
+    "p25": 57.919,
+    "p75": 59.841,
+    "n": 20,
+    "ci": [
+     58.131,
+     59.639
+    ]
+   },
+   "seeds": {
+    "1": 11883.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "item: type a quantity (every aggregate over qty)",
+   "half": "item: type a quantity (every aggregate over qty) (back)",
+   "scope": "global",
+   "script": {
+    "median": 12037.5,
+    "p25": 11898.3,
+    "p75": 12861,
+    "n": 20,
+    "ci": [
+     11944,
+     12567
+    ]
+   },
+   "total": {
+    "median": 60.345,
+    "p25": 58.671,
+    "p75": 61.418,
+    "n": 20,
+    "ci": [
+     58.98,
+     61.072
+    ]
+   },
+   "seeds": {
+    "1": 12037.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "item: toggle active",
+   "half": "item: toggle active",
+   "scope": "global",
+   "script": {
+    "median": 6325.5,
+    "p25": 6154,
+    "p75": 6813.8,
+    "n": 20,
+    "ci": [
+     6164.5,
+     6768
+    ]
+   },
+   "total": {
+    "median": 29.132,
+    "p25": 28,
+    "p75": 29.747,
+    "n": 20,
+    "ci": [
+     28.201,
+     29.61
+    ]
+   },
+   "seeds": {
+    "1": 6325.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "item: toggle active",
+   "half": "item: toggle active (back)",
+   "scope": "global",
+   "script": {
+    "median": 6391,
+    "p25": 6153.8,
+    "p75": 6707.3,
+    "n": 20,
+    "ci": [
+     6174.5,
+     6676
+    ]
+   },
+   "total": {
+    "median": 29.064,
+    "p25": 27.245,
+    "p75": 29.405,
+    "n": 20,
+    "ci": [
+     27.679,
+     29.38
+    ]
+   },
+   "seeds": {
+    "1": 6391
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "item: add one, remove it",
+   "half": "item: add one",
+   "scope": "global",
+   "script": {
+    "median": 17907,
+    "p25": 17249,
+    "p75": 19858.8,
+    "n": 20,
+    "ci": [
+     17287.5,
+     19310
+    ]
+   },
+   "total": {
+    "median": 57.117,
+    "p25": 54.291,
+    "p75": 60.5,
+    "n": 20,
+    "ci": [
+     55.318,
+     59.751
+    ]
+   },
+   "seeds": {
+    "1": 17907
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "item: add one, remove it",
+   "half": "item: remove the new one",
+   "scope": "global",
+   "script": {
+    "median": 22127,
+    "p25": 21178.3,
+    "p75": 23176,
+    "n": 20,
+    "ci": [
+     21547.5,
+     22923.5
+    ]
+   },
+   "total": {
+    "median": 59.337,
+    "p25": 58.349,
+    "p75": 60.903,
+    "n": 20,
+    "ci": [
+     58.576,
+     60.276
+    ]
+   },
+   "seeds": {
+    "1": 22127
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "dispatch: serverItems (one price)",
+   "half": "dispatch: serverItems (one price)",
+   "scope": "global",
+   "script": {
+    "median": 15892.5,
+    "p25": 15564.3,
+    "p75": 18733.5,
+    "n": 20,
+    "ci": [
+     15600.5,
+     18153
+    ]
+   },
+   "total": {
+    "median": 47.813,
+    "p25": 46.872,
+    "p75": 51.273,
+    "n": 20,
+    "ci": [
+     46.951,
+     50.629
+    ]
+   },
+   "seeds": {
+    "1": 15892.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "dispatch: serverItems (one price)",
+   "half": "dispatch: serverItems (the price back)",
+   "scope": "global",
+   "script": {
+    "median": 15714.5,
+    "p25": 15510,
+    "p75": 16147.5,
+    "n": 20,
+    "ci": [
+     15525,
+     16023
+    ]
+   },
+   "total": {
+    "median": 47.385,
+    "p25": 46.729,
+    "p75": 48.392,
+    "n": 20,
+    "ci": [
+     46.82,
+     48.259
+    ]
+   },
+   "seeds": {
+    "1": 15714.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 34253.5,
+    "p25": 32915.3,
+    "p75": 37081.8,
+    "n": 18,
+    "ci": [
+     32943,
+     36965.5
+    ]
+   },
+   "total": {
+    "median": 135.429,
+    "p25": 131.372,
+    "p75": 141.975,
+    "n": 18,
+    "ci": [
+     131.454,
+     141.028
+    ]
+   },
+   "seeds": {
+    "1": 34253.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 34157.5,
+    "p25": 33429.5,
+    "p75": 35120.3,
+    "n": 16,
+    "ci": [
+     33382,
+     35411.5
+    ]
+   },
+   "total": {
+    "median": 136.914,
+    "p25": 130.213,
+    "p75": 139.919,
+    "n": 16,
+    "ci": [
+     131.465,
+     139.869
+    ]
+   },
+   "seeds": {
+    "1": 34157.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "chain input: type a number (3 closed formulas downstream)",
+   "half": "chain input: type a number (3 closed formulas downstream)",
+   "scope": "local",
+   "script": {
+    "median": 134,
+    "p25": 123.8,
+    "p75": 148.5,
+    "n": 20,
+    "ci": [
+     124,
+     145.5
+    ]
+   },
+   "total": {
+    "median": 19.422,
+    "p25": 18.313,
+    "p75": 20.537,
+    "n": 20,
+    "ci": [
+     18.546,
+     20.306
+    ]
+   },
+   "seeds": {
+    "1": 134
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "chain input: type a number (3 closed formulas downstream)",
+   "half": "chain input: type a number (3 closed formulas downstream) (back)",
+   "scope": "local",
+   "script": {
+    "median": 120.5,
+    "p25": 113,
+    "p75": 128.3,
+    "n": 20,
+    "ci": [
+     115.5,
+     125.5
+    ]
+   },
+   "total": {
+    "median": 19.047,
+    "p25": 18.59,
+    "p75": 19.552,
+    "n": 20,
+    "ci": [
+     18.606,
+     19.456
+    ]
+   },
+   "seeds": {
+    "1": 120.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "cut-off input: type a number that leaves its bool unchanged",
+   "half": "cut-off input: type a number that leaves its bool unchanged",
+   "scope": "local",
+   "script": {
+    "median": 66.5,
+    "p25": 58.8,
+    "p75": 82.3,
+    "n": 20,
+    "ci": [
+     60.5,
+     78.5
+    ]
+   },
+   "total": {
+    "median": 19.04,
+    "p25": 17.071,
+    "p75": 22.56,
+    "n": 20,
+    "ci": [
+     17.335,
+     22.142
+    ]
+   },
+   "seeds": {
+    "1": 66.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "cut-off input: type a number that leaves its bool unchanged",
+   "half": "cut-off input: type a number that leaves its bool unchanged (back)",
+   "scope": "local",
+   "script": {
+    "median": 74.5,
+    "p25": 57.8,
+    "p75": 82,
+    "n": 20,
+    "ci": [
+     60.5,
+     81.5
+    ]
+   },
+   "total": {
+    "median": 18.078,
+    "p25": 16.161,
+    "p75": 27.897,
+    "n": 20,
+    "ci": [
+     16.659,
+     26.7
+    ]
+   },
+   "seeds": {
+    "1": 74.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "cut-off input: type a number that flips its bool",
+   "half": "cut-off input: type a number that flips its bool",
+   "scope": "local",
+   "script": {
+    "median": 110.5,
+    "p25": 96,
+    "p75": 122.5,
+    "n": 20,
+    "ci": [
+     98,
+     117.5
+    ]
+   },
+   "total": {
+    "median": 19.666,
+    "p25": 18.432,
+    "p75": 24.181,
+    "n": 20,
+    "ci": [
+     18.533,
+     22.941
+    ]
+   },
+   "seeds": {
+    "1": 110.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "cut-off input: type a number that flips its bool",
+   "half": "cut-off input: type a number that flips its bool (back)",
+   "scope": "local",
+   "script": {
+    "median": 130.5,
+    "p25": 121,
+    "p75": 156,
+    "n": 20,
+    "ci": [
+     124,
+     151.5
+    ]
+   },
+   "total": {
+    "median": 20.686,
+    "p25": 18.177,
+    "p75": 24.925,
+    "n": 20,
+    "ci": [
+     18.489,
+     24.531
+    ]
+   },
+   "seeds": {
+    "1": 130.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "filter select: pick another category (re-filters the items)",
+   "half": "filter select: pick another category (re-filters the items)",
+   "scope": "local",
+   "script": {
+    "median": 1739.5,
+    "p25": 1639,
+    "p75": 1812,
+    "n": 20,
+    "ci": [
+     1673.5,
+     1782
+    ]
+   },
+   "total": {
+    "median": 17.83,
+    "p25": 16.461,
+    "p75": 22.821,
+    "n": 20,
+    "ci": [
+     16.721,
+     22.188
+    ]
+   },
+   "seeds": {
+    "1": 1739.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "filter select: pick another category (re-filters the items)",
+   "half": "filter select: pick another category (re-filters the items) (back)",
+   "scope": "local",
+   "script": {
+    "median": 1724.5,
+    "p25": 1569.8,
+    "p75": 1760.5,
+    "n": 20,
+    "ci": [
+     1572,
+     1757
+    ]
+   },
+   "total": {
+    "median": 17.648,
+    "p25": 16.312,
+    "p75": 25.881,
+    "n": 20,
+    "ci": [
+     16.684,
+     23.159
+    ]
+   },
+   "seeds": {
+    "1": 1724.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "toggle: flip a bool (one formula over the filtered items)",
+   "half": "toggle: flip a bool (one formula over the filtered items)",
+   "scope": "local",
+   "script": {
+    "median": 86.5,
+    "p25": 82.8,
+    "p75": 93,
+    "n": 20,
+    "ci": [
+     83.5,
+     93
+    ]
+   },
+   "total": {
+    "median": 16.56,
+    "p25": 15.789,
+    "p75": 17.693,
+    "n": 20,
+    "ci": [
+     15.876,
+     17.199
+    ]
+   },
+   "seeds": {
+    "1": 86.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "toggle: flip a bool (one formula over the filtered items)",
+   "half": "toggle: flip a bool (one formula over the filtered items) (back)",
+   "scope": "local",
+   "script": {
+    "median": 114.5,
+    "p25": 101.5,
+    "p75": 121.3,
+    "n": 20,
+    "ci": [
+     102,
+     120
+    ]
+   },
+   "total": {
+    "median": 16.626,
+    "p25": 15.113,
+    "p75": 17.107,
+    "n": 20,
+    "ci": [
+     15.434,
+     16.974
+    ]
+   },
+   "seeds": {
+    "1": 114.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "half": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "scope": "local",
+   "script": {
+    "median": 390.5,
+    "p25": 381.3,
+    "p75": 410.8,
+    "n": 20,
+    "ci": [
+     382.5,
+     407.5
+    ]
+   },
+   "total": {
+    "median": 19.12,
+    "p25": 18.73,
+    "p75": 19.646,
+    "n": 20,
+    "ci": [
+     18.733,
+     19.562
+    ]
+   },
+   "seeds": {
+    "1": 390.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "half": "threshold: type a number (re-filters and sorts the items for a top 5) (back)",
+   "scope": "local",
+   "script": {
+    "median": 305,
+    "p25": 287.3,
+    "p75": 330.3,
+    "n": 20,
+    "ci": [
+     288,
+     327.5
+    ]
+   },
+   "total": {
+    "median": 18.759,
+    "p25": 17.421,
+    "p75": 19.273,
+    "n": 20,
+    "ci": [
+     17.84,
+     19.108
+    ]
+   },
+   "seeds": {
+    "1": 305
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "markup: type a number (every row's markup cell)",
+   "half": "markup: type a number (every row's markup cell)",
+   "scope": "local",
+   "script": {
+    "median": 4046,
+    "p25": 3788.3,
+    "p75": 4437,
+    "n": 20,
+    "ci": [
+     3842,
+     4382
+    ]
+   },
+   "total": {
+    "median": 65.221,
+    "p25": 64.495,
+    "p75": 67.714,
+    "n": 20,
+    "ci": [
+     64.594,
+     67.245
+    ]
+   },
+   "seeds": {
+    "1": 4046
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "markup: type a number (every row's markup cell)",
+   "half": "markup: type a number (every row's markup cell) (back)",
+   "scope": "local",
+   "script": {
+    "median": 4086.5,
+    "p25": 3851.8,
+    "p75": 4428.3,
+    "n": 20,
+    "ci": [
+     3907.5,
+     4311
+    ]
+   },
+   "total": {
+    "median": 65.851,
+    "p25": 63.561,
+    "p75": 66.453,
+    "n": 20,
+    "ci": [
+     63.944,
+     66.291
+    ]
+   },
+   "seeds": {
+    "1": 4086.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "item: type a note character (nothing reads it)",
+   "half": "item: type a note character (nothing reads it)",
+   "scope": "local",
+   "script": {
+    "median": 99,
+    "p25": 89.8,
+    "p75": 110.3,
+    "n": 20,
+    "ci": [
+     92,
+     109
+    ]
+   },
+   "total": {
+    "median": 45.589,
+    "p25": 44.238,
+    "p75": 47.145,
+    "n": 20,
+    "ci": [
+     44.591,
+     47.047
+    ]
+   },
+   "seeds": {
+    "1": 99
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "item: type a note character (nothing reads it)",
+   "half": "item: delete the note character",
+   "scope": "local",
+   "script": {
+    "median": 104,
+    "p25": 95.8,
+    "p75": 126.3,
+    "n": 20,
+    "ci": [
+     97,
+     123
+    ]
+   },
+   "total": {
+    "median": 55.804,
+    "p25": 54.502,
+    "p75": 57.485,
+    "n": 20,
+    "ci": [
+     54.745,
+     57.137
+    ]
+   },
+   "seeds": {
+    "1": 104
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: serverInputs of the closed inputs",
+   "half": "dispatch: serverInputs of the closed inputs",
+   "scope": "local",
+   "script": {
+    "median": 341.5,
+    "p25": 329,
+    "p75": 397.3,
+    "n": 20,
+    "ci": [
+     331.5,
+     369
+    ]
+   },
+   "total": {
+    "median": 21.766,
+    "p25": 20.627,
+    "p75": 26.518,
+    "n": 20,
+    "ci": [
+     20.882,
+     24.927
+    ]
+   },
+   "seeds": {
+    "1": 341.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: serverInputs of the closed inputs",
+   "half": "dispatch: serverInputs of the closed inputs (back)",
+   "scope": "local",
+   "script": {
+    "median": 398,
+    "p25": 359.5,
+    "p75": 450.5,
+    "n": 20,
+    "ci": [
+     367,
+     442.5
+    ]
+   },
+   "total": {
+    "median": 21.571,
+    "p25": 20.973,
+    "p75": 25.889,
+    "n": 20,
+    "ci": [
+     21.037,
+     24.685
+    ]
+   },
+   "seeds": {
+    "1": 398
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "hub input: raise (the hub and tax read by many)",
+   "half": "hub input: raise (the hub and tax read by many)",
+   "scope": "global",
+   "script": {
+    "median": 496,
+    "p25": 466,
+    "p75": 508.5,
+    "n": 20,
+    "ci": [
+     472,
+     507
+    ]
+   },
+   "total": {
+    "median": 18.146,
+    "p25": 17.286,
+    "p75": 18.851,
+    "n": 20,
+    "ci": [
+     17.381,
+     18.725
+    ]
+   },
+   "seeds": {
+    "1": 496
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "hub input: raise (the hub and tax read by many)",
+   "half": "hub input: lower",
+   "scope": "global",
+   "script": {
+    "median": 504,
+    "p25": 465.8,
+    "p75": 550.5,
+    "n": 20,
+    "ci": [
+     472.5,
+     532
+    ]
+   },
+   "total": {
+    "median": 18.271,
+    "p25": 17.701,
+    "p75": 19.001,
+    "n": 20,
+    "ci": [
+     17.731,
+     18.92
+    ]
+   },
+   "seeds": {
+    "1": 504
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "item: type a quantity (every aggregate over qty)",
+   "half": "item: type a quantity (every aggregate over qty)",
+   "scope": "global",
+   "script": {
+    "median": 1074.5,
+    "p25": 1039.5,
+    "p75": 1324,
+    "n": 20,
+    "ci": [
+     1042,
+     1261
+    ]
+   },
+   "total": {
+    "median": 47.113,
+    "p25": 46.166,
+    "p75": 50.194,
+    "n": 20,
+    "ci": [
+     46.283,
+     50.035
+    ]
+   },
+   "seeds": {
+    "1": 1074.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "item: type a quantity (every aggregate over qty)",
+   "half": "item: type a quantity (every aggregate over qty) (back)",
+   "scope": "global",
+   "script": {
+    "median": 1096,
+    "p25": 1024.8,
+    "p75": 1314.3,
+    "n": 20,
+    "ci": [
+     1037.5,
+     1284
+    ]
+   },
+   "total": {
+    "median": 46.695,
+    "p25": 46.377,
+    "p75": 47.566,
+    "n": 20,
+    "ci": [
+     46.536,
+     47.506
+    ]
+   },
+   "seeds": {
+    "1": 1096
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "item: toggle active",
+   "half": "item: toggle active",
+   "scope": "global",
+   "script": {
+    "median": 611,
+    "p25": 573,
+    "p75": 654.3,
+    "n": 20,
+    "ci": [
+     582,
+     649
+    ]
+   },
+   "total": {
+    "median": 22.774,
+    "p25": 21.834,
+    "p75": 23.126,
+    "n": 20,
+    "ci": [
+     22.164,
+     23.045
+    ]
+   },
+   "seeds": {
+    "1": 611
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "item: toggle active",
+   "half": "item: toggle active (back)",
+   "scope": "global",
+   "script": {
+    "median": 615.5,
+    "p25": 579.8,
+    "p75": 657.8,
+    "n": 20,
+    "ci": [
+     580.5,
+     649
+    ]
+   },
+   "total": {
+    "median": 23.132,
+    "p25": 21.941,
+    "p75": 23.347,
+    "n": 20,
+    "ci": [
+     22.144,
+     23.314
+    ]
+   },
+   "seeds": {
+    "1": 615.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "item: add one, remove it",
+   "half": "item: add one",
+   "scope": "global",
+   "script": {
+    "median": 1415.5,
+    "p25": 1294,
+    "p75": 1589.8,
+    "n": 20,
+    "ci": [
+     1323.5,
+     1528.5
+    ]
+   },
+   "total": {
+    "median": 38.881,
+    "p25": 36.495,
+    "p75": 41.052,
+    "n": 20,
+    "ci": [
+     36.703,
+     40.755
+    ]
+   },
+   "seeds": {
+    "1": 1415.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "item: add one, remove it",
+   "half": "item: remove the new one",
+   "scope": "global",
+   "script": {
+    "median": 5249,
+    "p25": 4853.5,
+    "p75": 5687.8,
+    "n": 20,
+    "ci": [
+     4869,
+     5645.5
+    ]
+   },
+   "total": {
+    "median": 40.439,
+    "p25": 38.585,
+    "p75": 42.283,
+    "n": 20,
+    "ci": [
+     38.869,
+     42.253
+    ]
+   },
+   "seeds": {
+    "1": 5249
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: serverItems (one price)",
+   "half": "dispatch: serverItems (one price)",
+   "scope": "global",
+   "script": {
+    "median": 1720,
+    "p25": 1604.8,
+    "p75": 1858,
+    "n": 20,
+    "ci": [
+     1624.5,
+     1827
+    ]
+   },
+   "total": {
+    "median": 34.079,
+    "p25": 33.407,
+    "p75": 36.448,
+    "n": 20,
+    "ci": [
+     33.634,
+     35.258
+    ]
+   },
+   "seeds": {
+    "1": 1720
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: serverItems (one price)",
+   "half": "dispatch: serverItems (the price back)",
+   "scope": "global",
+   "script": {
+    "median": 1687.5,
+    "p25": 1597.5,
+    "p75": 2003.8,
+    "n": 20,
+    "ci": [
+     1608.5,
+     1961
+    ]
+   },
+   "total": {
+    "median": 33.519,
+    "p25": 32.392,
+    "p75": 34.339,
+    "n": 20,
+    "ci": [
+     32.561,
+     34.109
+    ]
+   },
+   "seeds": {
+    "1": 1687.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 11531,
+    "p25": 11023.5,
+    "p75": 12357.8,
+    "n": 20,
+    "ci": [
+     11046,
+     12204
+    ]
+   },
+   "total": {
+    "median": 113.49,
+    "p25": 110.175,
+    "p75": 119.566,
+    "n": 20,
+    "ci": [
+     110.989,
+     117.471
+    ]
+   },
+   "seeds": {
+    "1": 11531
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 11386,
+    "p25": 11141.5,
+    "p75": 12108.3,
+    "n": 20,
+    "ci": [
+     11183,
+     11965
+    ]
+   },
+   "total": {
+    "median": 112.566,
+    "p25": 108.653,
+    "p75": 117.236,
+    "n": 20,
+    "ci": [
+     109.294,
+     116.372
+    ]
+   },
+   "seeds": {
+    "1": 11386
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "chain input: type a number (3 closed formulas downstream)",
+   "half": "chain input: type a number (3 closed formulas downstream)",
+   "scope": "local",
+   "script": {
+    "median": 164,
+    "p25": 130.5,
+    "p75": 183.5,
+    "n": 20,
+    "ci": [
+     134,
+     179.5
+    ]
+   },
+   "total": {
+    "median": 18.781,
+    "p25": 17.365,
+    "p75": 24.182,
+    "n": 20,
+    "ci": [
+     17.541,
+     23.169
+    ]
+   },
+   "seeds": {
+    "1": 164
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "chain input: type a number (3 closed formulas downstream)",
+   "half": "chain input: type a number (3 closed formulas downstream) (back)",
+   "scope": "local",
+   "script": {
+    "median": 141.5,
+    "p25": 131,
+    "p75": 150.8,
+    "n": 20,
+    "ci": [
+     132,
+     148.5
+    ]
+   },
+   "total": {
+    "median": 18.034,
+    "p25": 17.47,
+    "p75": 18.8,
+    "n": 20,
+    "ci": [
+     17.503,
+     18.622
+    ]
+   },
+   "seeds": {
+    "1": 141.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "cut-off input: type a number that leaves its bool unchanged",
+   "half": "cut-off input: type a number that leaves its bool unchanged",
+   "scope": "local",
+   "script": {
+    "median": 77,
+    "p25": 67.8,
+    "p75": 86.3,
+    "n": 20,
+    "ci": [
+     68,
+     84.5
+    ]
+   },
+   "total": {
+    "median": 19.217,
+    "p25": 16.501,
+    "p75": 22.135,
+    "n": 20,
+    "ci": [
+     16.655,
+     21.368
+    ]
+   },
+   "seeds": {
+    "1": 77
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "cut-off input: type a number that leaves its bool unchanged",
+   "half": "cut-off input: type a number that leaves its bool unchanged (back)",
+   "scope": "local",
+   "script": {
+    "median": 77.5,
+    "p25": 67.5,
+    "p75": 82.5,
+    "n": 20,
+    "ci": [
+     68.5,
+     81.5
+    ]
+   },
+   "total": {
+    "median": 17.603,
+    "p25": 16.913,
+    "p75": 19.598,
+    "n": 20,
+    "ci": [
+     16.947,
+     19.168
+    ]
+   },
+   "seeds": {
+    "1": 77.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "cut-off input: type a number that flips its bool",
+   "half": "cut-off input: type a number that flips its bool",
+   "scope": "local",
+   "script": {
+    "median": 93.5,
+    "p25": 88.3,
+    "p75": 111.3,
+    "n": 20,
+    "ci": [
+     90,
+     108.5
+    ]
+   },
+   "total": {
+    "median": 18.171,
+    "p25": 16.447,
+    "p75": 19.374,
+    "n": 20,
+    "ci": [
+     17.184,
+     19.125
+    ]
+   },
+   "seeds": {
+    "1": 93.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "cut-off input: type a number that flips its bool",
+   "half": "cut-off input: type a number that flips its bool (back)",
+   "scope": "local",
+   "script": {
+    "median": 130.5,
+    "p25": 121,
+    "p75": 140,
+    "n": 20,
+    "ci": [
+     122.5,
+     137
+    ]
+   },
+   "total": {
+    "median": 18.481,
+    "p25": 17.132,
+    "p75": 20.168,
+    "n": 20,
+    "ci": [
+     17.454,
+     19.618
+    ]
+   },
+   "seeds": {
+    "1": 130.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "filter select: pick another category (re-filters the items)",
+   "half": "filter select: pick another category (re-filters the items)",
+   "scope": "local",
+   "script": {
+    "median": 1729,
+    "p25": 1578,
+    "p75": 1783,
+    "n": 20,
+    "ci": [
+     1608.5,
+     1771
+    ]
+   },
+   "total": {
+    "median": 17.097,
+    "p25": 15.273,
+    "p75": 24.99,
+    "n": 20,
+    "ci": [
+     15.413,
+     24.383
+    ]
+   },
+   "seeds": {
+    "1": 1729
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "filter select: pick another category (re-filters the items)",
+   "half": "filter select: pick another category (re-filters the items) (back)",
+   "scope": "local",
+   "script": {
+    "median": 1746,
+    "p25": 1614.8,
+    "p75": 1790.5,
+    "n": 20,
+    "ci": [
+     1624.5,
+     1781
+    ]
+   },
+   "total": {
+    "median": 17.072,
+    "p25": 15.642,
+    "p75": 18.939,
+    "n": 20,
+    "ci": [
+     15.979,
+     17.474
+    ]
+   },
+   "seeds": {
+    "1": 1746
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "toggle: flip a bool (one formula over the filtered items)",
+   "half": "toggle: flip a bool (one formula over the filtered items)",
+   "scope": "local",
+   "script": {
+    "median": 96,
+    "p25": 93,
+    "p75": 103.3,
+    "n": 20,
+    "ci": [
+     93,
+     102
+    ]
+   },
+   "total": {
+    "median": 16.681,
+    "p25": 16.175,
+    "p75": 18.25,
+    "n": 20,
+    "ci": [
+     16.235,
+     17.893
+    ]
+   },
+   "seeds": {
+    "1": 96
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "toggle: flip a bool (one formula over the filtered items)",
+   "half": "toggle: flip a bool (one formula over the filtered items) (back)",
+   "scope": "local",
+   "script": {
+    "median": 119.5,
+    "p25": 115.3,
+    "p75": 123.3,
+    "n": 20,
+    "ci": [
+     117,
+     123
+    ]
+   },
+   "total": {
+    "median": 16.808,
+    "p25": 16.113,
+    "p75": 18.182,
+    "n": 20,
+    "ci": [
+     16.254,
+     17.752
+    ]
+   },
+   "seeds": {
+    "1": 119.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "half": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "scope": "local",
+   "script": {
+    "median": 408.5,
+    "p25": 384.5,
+    "p75": 452.5,
+    "n": 20,
+    "ci": [
+     385,
+     449
+    ]
+   },
+   "total": {
+    "median": 19.795,
+    "p25": 19.26,
+    "p75": 21.048,
+    "n": 20,
+    "ci": [
+     19.364,
+     20.556
+    ]
+   },
+   "seeds": {
+    "1": 408.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "half": "threshold: type a number (re-filters and sorts the items for a top 5) (back)",
+   "scope": "local",
+   "script": {
+    "median": 309,
+    "p25": 293.5,
+    "p75": 337,
+    "n": 20,
+    "ci": [
+     294.5,
+     333.5
+    ]
+   },
+   "total": {
+    "median": 19.5,
+    "p25": 18.671,
+    "p75": 22.059,
+    "n": 20,
+    "ci": [
+     18.693,
+     20.578
+    ]
+   },
+   "seeds": {
+    "1": 309
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "markup: type a number (every row's markup cell)",
+   "half": "markup: type a number (every row's markup cell)",
+   "scope": "local",
+   "script": {
+    "median": 4569.5,
+    "p25": 4403.3,
+    "p75": 4687.5,
+    "n": 20,
+    "ci": [
+     4417,
+     4674
+    ]
+   },
+   "total": {
+    "median": 66.904,
+    "p25": 64.941,
+    "p75": 69.603,
+    "n": 20,
+    "ci": [
+     65.273,
+     68.774
+    ]
+   },
+   "seeds": {
+    "1": 4569.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "markup: type a number (every row's markup cell)",
+   "half": "markup: type a number (every row's markup cell) (back)",
+   "scope": "local",
+   "script": {
+    "median": 4802.5,
+    "p25": 4401.8,
+    "p75": 4960,
+    "n": 20,
+    "ci": [
+     4409.5,
+     4921.5
+    ]
+   },
+   "total": {
+    "median": 66.281,
+    "p25": 64.765,
+    "p75": 67.66,
+    "n": 20,
+    "ci": [
+     64.869,
+     67.509
+    ]
+   },
+   "seeds": {
+    "1": 4802.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "item: type a note character (nothing reads it)",
+   "half": "item: type a note character (nothing reads it)",
+   "scope": "local",
+   "script": {
+    "median": 48,
+    "p25": 43,
+    "p75": 56,
+    "n": 20,
+    "ci": [
+     43.5,
+     55
+    ]
+   },
+   "total": {
+    "median": 44.425,
+    "p25": 42.855,
+    "p75": 46.334,
+    "n": 20,
+    "ci": [
+     43.144,
+     46.165
+    ]
+   },
+   "seeds": {
+    "1": 48
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "item: type a note character (nothing reads it)",
+   "half": "item: delete the note character",
+   "scope": "local",
+   "script": {
+    "median": 54,
+    "p25": 47.8,
+    "p75": 63,
+    "n": 20,
+    "ci": [
+     48.5,
+     59.5
+    ]
+   },
+   "total": {
+    "median": 55.619,
+    "p25": 54.491,
+    "p75": 56.868,
+    "n": 20,
+    "ci": [
+     54.626,
+     56.449
+    ]
+   },
+   "seeds": {
+    "1": 54
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: serverInputs of the closed inputs",
+   "half": "dispatch: serverInputs of the closed inputs",
+   "scope": "local",
+   "script": {
+    "median": 356,
+    "p25": 331.3,
+    "p75": 388.5,
+    "n": 20,
+    "ci": [
+     337,
+     382.5
+    ]
+   },
+   "total": {
+    "median": 20.892,
+    "p25": 20.099,
+    "p75": 23.304,
+    "n": 20,
+    "ci": [
+     20.2,
+     21.963
+    ]
+   },
+   "seeds": {
+    "1": 356
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: serverInputs of the closed inputs",
+   "half": "dispatch: serverInputs of the closed inputs (back)",
+   "scope": "local",
+   "script": {
+    "median": 423,
+    "p25": 372.3,
+    "p75": 472.8,
+    "n": 20,
+    "ci": [
+     374,
+     465
+    ]
+   },
+   "total": {
+    "median": 21.389,
+    "p25": 19.826,
+    "p75": 23.034,
+    "n": 20,
+    "ci": [
+     19.963,
+     22.662
+    ]
+   },
+   "seeds": {
+    "1": 423
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "hub input: raise (the hub and tax read by many)",
+   "half": "hub input: raise (the hub and tax read by many)",
+   "scope": "global",
+   "script": {
+    "median": 488.5,
+    "p25": 470.8,
+    "p75": 516.5,
+    "n": 20,
+    "ci": [
+     472.5,
+     514
+    ]
+   },
+   "total": {
+    "median": 19.199,
+    "p25": 18.048,
+    "p75": 19.535,
+    "n": 20,
+    "ci": [
+     18.248,
+     19.346
+    ]
+   },
+   "seeds": {
+    "1": 488.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "hub input: raise (the hub and tax read by many)",
+   "half": "hub input: lower",
+   "scope": "global",
+   "script": {
+    "median": 503.5,
+    "p25": 483.8,
+    "p75": 537,
+    "n": 20,
+    "ci": [
+     485.5,
+     533.5
+    ]
+   },
+   "total": {
+    "median": 19.05,
+    "p25": 18.257,
+    "p75": 19.32,
+    "n": 20,
+    "ci": [
+     18.351,
+     19.237
+    ]
+   },
+   "seeds": {
+    "1": 503.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "item: type a quantity (every aggregate over qty)",
+   "half": "item: type a quantity (every aggregate over qty)",
+   "scope": "global",
+   "script": {
+    "median": 999,
+    "p25": 942.8,
+    "p75": 1179.5,
+    "n": 20,
+    "ci": [
+     953,
+     1167
+    ]
+   },
+   "total": {
+    "median": 46.475,
+    "p25": 45.544,
+    "p75": 47.605,
+    "n": 20,
+    "ci": [
+     45.563,
+     47.207
+    ]
+   },
+   "seeds": {
+    "1": 999
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "item: type a quantity (every aggregate over qty)",
+   "half": "item: type a quantity (every aggregate over qty) (back)",
+   "scope": "global",
+   "script": {
+    "median": 939.5,
+    "p25": 911.5,
+    "p75": 1007.3,
+    "n": 20,
+    "ci": [
+     914.5,
+     995.5
+    ]
+   },
+   "total": {
+    "median": 46.631,
+    "p25": 45.579,
+    "p75": 47.148,
+    "n": 20,
+    "ci": [
+     45.63,
+     46.916
+    ]
+   },
+   "seeds": {
+    "1": 939.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "item: toggle active",
+   "half": "item: toggle active",
+   "scope": "global",
+   "script": {
+    "median": 543,
+    "p25": 516.8,
+    "p75": 567.8,
+    "n": 20,
+    "ci": [
+     519,
+     562
+    ]
+   },
+   "total": {
+    "median": 22.706,
+    "p25": 21.887,
+    "p75": 23.046,
+    "n": 20,
+    "ci": [
+     22.245,
+     22.97
+    ]
+   },
+   "seeds": {
+    "1": 543
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "item: toggle active",
+   "half": "item: toggle active (back)",
+   "scope": "global",
+   "script": {
+    "median": 556,
+    "p25": 515.8,
+    "p75": 600,
+    "n": 20,
+    "ci": [
+     520,
+     594.5
+    ]
+   },
+   "total": {
+    "median": 23.237,
+    "p25": 22.694,
+    "p75": 23.408,
+    "n": 20,
+    "ci": [
+     22.775,
+     23.396
+    ]
+   },
+   "seeds": {
+    "1": 556
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "item: add one, remove it",
+   "half": "item: add one",
+   "scope": "global",
+   "script": {
+    "median": 1357,
+    "p25": 1268.8,
+    "p75": 1572.5,
+    "n": 20,
+    "ci": [
+     1278.5,
+     1542
+    ]
+   },
+   "total": {
+    "median": 39.327,
+    "p25": 36.963,
+    "p75": 40.365,
+    "n": 20,
+    "ci": [
+     37.209,
+     40.149
+    ]
+   },
+   "seeds": {
+    "1": 1357
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "item: add one, remove it",
+   "half": "item: remove the new one",
+   "scope": "global",
+   "script": {
+    "median": 1498.5,
+    "p25": 1372.5,
+    "p75": 2043.8,
+    "n": 20,
+    "ci": [
+     1385,
+     1874.5
+    ]
+   },
+   "total": {
+    "median": 39.819,
+    "p25": 37.985,
+    "p75": 42.224,
+    "n": 20,
+    "ci": [
+     38.459,
+     41.937
+    ]
+   },
+   "seeds": {
+    "1": 1498.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: serverItems (one price)",
+   "half": "dispatch: serverItems (one price)",
+   "scope": "global",
+   "script": {
+    "median": 1656.5,
+    "p25": 1598.3,
+    "p75": 1765,
+    "n": 20,
+    "ci": [
+     1611,
+     1747.5
+    ]
+   },
+   "total": {
+    "median": 33.599,
+    "p25": 32.379,
+    "p75": 34.753,
+    "n": 20,
+    "ci": [
+     32.761,
+     34.388
+    ]
+   },
+   "seeds": {
+    "1": 1656.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: serverItems (one price)",
+   "half": "dispatch: serverItems (the price back)",
+   "scope": "global",
+   "script": {
+    "median": 1713.5,
+    "p25": 1629.5,
+    "p75": 1816.5,
+    "n": 20,
+    "ci": [
+     1660,
+     1789
+    ]
+   },
+   "total": {
+    "median": 32.973,
+    "p25": 32.409,
+    "p75": 34.486,
+    "n": 20,
+    "ci": [
+     32.58,
+     34.392
+    ]
+   },
+   "seeds": {
+    "1": 1713.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 13247,
+    "p25": 12608.3,
+    "p75": 14819.5,
+    "n": 20,
+    "ci": [
+     12688.5,
+     13751
+    ]
+   },
+   "total": {
+    "median": 115.774,
+    "p25": 110.539,
+    "p75": 123.601,
+    "n": 20,
+    "ci": [
+     111.096,
+     121.08
+    ]
+   },
+   "seeds": {
+    "1": 13247
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 13113,
+    "p25": 12713.3,
+    "p75": 13967,
+    "n": 20,
+    "ci": [
+     12723,
+     13874
+    ]
+   },
+   "total": {
+    "median": 116.102,
+    "p25": 110.635,
+    "p75": 119.94,
+    "n": 20,
+    "ci": [
+     112.329,
+     119.739
+    ]
+   },
+   "seeds": {
+    "1": 13113
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "chain input: type a number (3 closed formulas downstream)",
+   "half": "chain input: type a number (3 closed formulas downstream)",
+   "scope": "local",
+   "script": {
+    "median": 130.5,
+    "p25": 119.8,
+    "p75": 148.5,
+    "n": 20,
+    "ci": [
+     120.5,
+     146
+    ]
+   },
+   "total": {
+    "median": 18.071,
+    "p25": 17.38,
+    "p75": 20.725,
+    "n": 20,
+    "ci": [
+     17.456,
+     20.391
+    ]
+   },
+   "seeds": {
+    "1": 130.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "chain input: type a number (3 closed formulas downstream)",
+   "half": "chain input: type a number (3 closed formulas downstream) (back)",
+   "scope": "local",
+   "script": {
+    "median": 126.5,
+    "p25": 117.3,
+    "p75": 136,
+    "n": 20,
+    "ci": [
+     120,
+     132.5
+    ]
+   },
+   "total": {
+    "median": 20.031,
+    "p25": 17.952,
+    "p75": 22.667,
+    "n": 20,
+    "ci": [
+     18.526,
+     21.7
+    ]
+   },
+   "seeds": {
+    "1": 126.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "cut-off input: type a number that leaves its bool unchanged",
+   "half": "cut-off input: type a number that leaves its bool unchanged",
+   "scope": "local",
+   "script": {
+    "median": 68.5,
+    "p25": 58.3,
+    "p75": 83.8,
+    "n": 20,
+    "ci": [
+     59,
+     80
+    ]
+   },
+   "total": {
+    "median": 22.773,
+    "p25": 17.341,
+    "p75": 27.008,
+    "n": 20,
+    "ci": [
+     17.459,
+     26.672
+    ]
+   },
+   "seeds": {
+    "1": 68.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "cut-off input: type a number that leaves its bool unchanged",
+   "half": "cut-off input: type a number that leaves its bool unchanged (back)",
+   "scope": "local",
+   "script": {
+    "median": 65,
+    "p25": 56.8,
+    "p75": 75,
+    "n": 20,
+    "ci": [
+     59,
+     73
+    ]
+   },
+   "total": {
+    "median": 19.354,
+    "p25": 17.053,
+    "p75": 26.165,
+    "n": 20,
+    "ci": [
+     17.239,
+     25.261
+    ]
+   },
+   "seeds": {
+    "1": 65
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "cut-off input: type a number that flips its bool",
+   "half": "cut-off input: type a number that flips its bool",
+   "scope": "local",
+   "script": {
+    "median": 109,
+    "p25": 93.5,
+    "p75": 119.5,
+    "n": 20,
+    "ci": [
+     94.5,
+     118.5
+    ]
+   },
+   "total": {
+    "median": 18.74,
+    "p25": 18.051,
+    "p75": 21.68,
+    "n": 20,
+    "ci": [
+     18.286,
+     20.954
+    ]
+   },
+   "seeds": {
+    "1": 109
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "cut-off input: type a number that flips its bool",
+   "half": "cut-off input: type a number that flips its bool (back)",
+   "scope": "local",
+   "script": {
+    "median": 141.5,
+    "p25": 133.8,
+    "p75": 167,
+    "n": 20,
+    "ci": [
+     136,
+     162
+    ]
+   },
+   "total": {
+    "median": 18.476,
+    "p25": 17.202,
+    "p75": 19.527,
+    "n": 20,
+    "ci": [
+     17.393,
+     19.081
+    ]
+   },
+   "seeds": {
+    "1": 141.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "filter select: pick another category (re-filters the items)",
+   "half": "filter select: pick another category (re-filters the items)",
+   "scope": "local",
+   "script": {
+    "median": 1651.5,
+    "p25": 1555,
+    "p75": 1792,
+    "n": 20,
+    "ci": [
+     1555.5,
+     1746
+    ]
+   },
+   "total": {
+    "median": 17.267,
+    "p25": 16.087,
+    "p75": 21.641,
+    "n": 20,
+    "ci": [
+     16.178,
+     20.97
+    ]
+   },
+   "seeds": {
+    "1": 1651.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "filter select: pick another category (re-filters the items)",
+   "half": "filter select: pick another category (re-filters the items) (back)",
+   "scope": "local",
+   "script": {
+    "median": 1746.5,
+    "p25": 1589.8,
+    "p75": 1798.8,
+    "n": 20,
+    "ci": [
+     1608,
+     1773.5
+    ]
+   },
+   "total": {
+    "median": 17.324,
+    "p25": 15.54,
+    "p75": 24.049,
+    "n": 20,
+    "ci": [
+     15.604,
+     23.63
+    ]
+   },
+   "seeds": {
+    "1": 1746.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "toggle: flip a bool (one formula over the filtered items)",
+   "half": "toggle: flip a bool (one formula over the filtered items)",
+   "scope": "local",
+   "script": {
+    "median": 94.5,
+    "p25": 88.5,
+    "p75": 102,
+    "n": 20,
+    "ci": [
+     89.5,
+     99.5
+    ]
+   },
+   "total": {
+    "median": 16.394,
+    "p25": 15.236,
+    "p75": 17.893,
+    "n": 20,
+    "ci": [
+     15.676,
+     17.175
+    ]
+   },
+   "seeds": {
+    "1": 94.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "toggle: flip a bool (one formula over the filtered items)",
+   "half": "toggle: flip a bool (one formula over the filtered items) (back)",
+   "scope": "local",
+   "script": {
+    "median": 112.5,
+    "p25": 107,
+    "p75": 130.8,
+    "n": 20,
+    "ci": [
+     107.5,
+     129
+    ]
+   },
+   "total": {
+    "median": 16.795,
+    "p25": 16.077,
+    "p75": 19.174,
+    "n": 20,
+    "ci": [
+     16.142,
+     18.757
+    ]
+   },
+   "seeds": {
+    "1": 112.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "half": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "scope": "local",
+   "script": {
+    "median": 398.5,
+    "p25": 374,
+    "p75": 420,
+    "n": 20,
+    "ci": [
+     377,
+     406.5
+    ]
+   },
+   "total": {
+    "median": 19.284,
+    "p25": 18.091,
+    "p75": 22.498,
+    "n": 20,
+    "ci": [
+     18.232,
+     21.008
+    ]
+   },
+   "seeds": {
+    "1": 398.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "half": "threshold: type a number (re-filters and sorts the items for a top 5) (back)",
+   "scope": "local",
+   "script": {
+    "median": 325,
+    "p25": 302.8,
+    "p75": 341.3,
+    "n": 20,
+    "ci": [
+     309,
+     335.5
+    ]
+   },
+   "total": {
+    "median": 19.955,
+    "p25": 18.3,
+    "p75": 25.267,
+    "n": 20,
+    "ci": [
+     18.613,
+     24.66
+    ]
+   },
+   "seeds": {
+    "1": 325
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "markup: type a number (every row's markup cell)",
+   "half": "markup: type a number (every row's markup cell)",
+   "scope": "local",
+   "script": {
+    "median": 3903,
+    "p25": 3697.3,
+    "p75": 4073.8,
+    "n": 20,
+    "ci": [
+     3701.5,
+     4040
+    ]
+   },
+   "total": {
+    "median": 63.266,
+    "p25": 60.878,
+    "p75": 65.34,
+    "n": 20,
+    "ci": [
+     61.204,
+     64.923
+    ]
+   },
+   "seeds": {
+    "1": 3903
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "markup: type a number (every row's markup cell)",
+   "half": "markup: type a number (every row's markup cell) (back)",
+   "scope": "local",
+   "script": {
+    "median": 3710,
+    "p25": 3644.3,
+    "p75": 3828.8,
+    "n": 20,
+    "ci": [
+     3659.5,
+     3799
+    ]
+   },
+   "total": {
+    "median": 61.373,
+    "p25": 59.771,
+    "p75": 62.885,
+    "n": 20,
+    "ci": [
+     60.061,
+     62.566
+    ]
+   },
+   "seeds": {
+    "1": 3710
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "item: type a note character (nothing reads it)",
+   "half": "item: type a note character (nothing reads it)",
+   "scope": "local",
+   "script": {
+    "median": 397,
+    "p25": 385,
+    "p75": 449.3,
+    "n": 20,
+    "ci": [
+     388,
+     445.5
+    ]
+   },
+   "total": {
+    "median": 45.125,
+    "p25": 43.298,
+    "p75": 47.422,
+    "n": 20,
+    "ci": [
+     43.359,
+     46.992
+    ]
+   },
+   "seeds": {
+    "1": 397
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "item: type a note character (nothing reads it)",
+   "half": "item: delete the note character",
+   "scope": "local",
+   "script": {
+    "median": 449.5,
+    "p25": 401,
+    "p75": 508.8,
+    "n": 20,
+    "ci": [
+     409,
+     499.5
+    ]
+   },
+   "total": {
+    "median": 56.232,
+    "p25": 55.491,
+    "p75": 57.343,
+    "n": 20,
+    "ci": [
+     55.65,
+     57.197
+    ]
+   },
+   "seeds": {
+    "1": 449.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "dispatch: serverInputs of the closed inputs",
+   "half": "dispatch: serverInputs of the closed inputs",
+   "scope": "local",
+   "script": {
+    "median": 362.5,
+    "p25": 313.8,
+    "p75": 412.8,
+    "n": 20,
+    "ci": [
+     315,
+     407
+    ]
+   },
+   "total": {
+    "median": 21.641,
+    "p25": 21.363,
+    "p75": 31.695,
+    "n": 20,
+    "ci": [
+     21.374,
+     26.669
+    ]
+   },
+   "seeds": {
+    "1": 362.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "dispatch: serverInputs of the closed inputs",
+   "half": "dispatch: serverInputs of the closed inputs (back)",
+   "scope": "local",
+   "script": {
+    "median": 406,
+    "p25": 379,
+    "p75": 432.8,
+    "n": 20,
+    "ci": [
+     380.5,
+     429
+    ]
+   },
+   "total": {
+    "median": 20.705,
+    "p25": 20.309,
+    "p75": 22.354,
+    "n": 20,
+    "ci": [
+     20.366,
+     22.098
+    ]
+   },
+   "seeds": {
+    "1": 406
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "hub input: raise (the hub and tax read by many)",
+   "half": "hub input: raise (the hub and tax read by many)",
+   "scope": "global",
+   "script": {
+    "median": 534.5,
+    "p25": 501.5,
+    "p75": 558.8,
+    "n": 20,
+    "ci": [
+     503,
+     556
+    ]
+   },
+   "total": {
+    "median": 18.522,
+    "p25": 17.393,
+    "p75": 19.066,
+    "n": 20,
+    "ci": [
+     17.502,
+     18.986
+    ]
+   },
+   "seeds": {
+    "1": 534.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "hub input: raise (the hub and tax read by many)",
+   "half": "hub input: lower",
+   "scope": "global",
+   "script": {
+    "median": 551.5,
+    "p25": 523.3,
+    "p75": 710.5,
+    "n": 20,
+    "ci": [
+     524,
+     684.5
+    ]
+   },
+   "total": {
+    "median": 18.615,
+    "p25": 16.481,
+    "p75": 19.294,
+    "n": 20,
+    "ci": [
+     16.659,
+     19.235
+    ]
+   },
+   "seeds": {
+    "1": 551.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "item: type a quantity (every aggregate over qty)",
+   "half": "item: type a quantity (every aggregate over qty)",
+   "scope": "global",
+   "script": {
+    "median": 1666,
+    "p25": 1521.8,
+    "p75": 1877,
+    "n": 20,
+    "ci": [
+     1529,
+     1847.5
+    ]
+   },
+   "total": {
+    "median": 46.279,
+    "p25": 45.494,
+    "p75": 47.619,
+    "n": 20,
+    "ci": [
+     45.584,
+     47.545
+    ]
+   },
+   "seeds": {
+    "1": 1666
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "item: type a quantity (every aggregate over qty)",
+   "half": "item: type a quantity (every aggregate over qty) (back)",
+   "scope": "global",
+   "script": {
+    "median": 1653,
+    "p25": 1535.5,
+    "p75": 1751.5,
+    "n": 20,
+    "ci": [
+     1544,
+     1732
+    ]
+   },
+   "total": {
+    "median": 47.42,
+    "p25": 46.007,
+    "p75": 48.082,
+    "n": 20,
+    "ci": [
+     46.134,
+     48.024
+    ]
+   },
+   "seeds": {
+    "1": 1653
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "item: toggle active",
+   "half": "item: toggle active",
+   "scope": "global",
+   "script": {
+    "median": 1532,
+    "p25": 1481.8,
+    "p75": 1691.5,
+    "n": 20,
+    "ci": [
+     1494.5,
+     1661.5
+    ]
+   },
+   "total": {
+    "median": 23.735,
+    "p25": 23.437,
+    "p75": 24.422,
+    "n": 20,
+    "ci": [
+     23.483,
+     23.987
+    ]
+   },
+   "seeds": {
+    "1": 1532
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "item: toggle active",
+   "half": "item: toggle active (back)",
+   "scope": "global",
+   "script": {
+    "median": 1562.5,
+    "p25": 1463.8,
+    "p75": 1699.5,
+    "n": 20,
+    "ci": [
+     1479,
+     1695
+    ]
+   },
+   "total": {
+    "median": 23.47,
+    "p25": 22.061,
+    "p75": 23.973,
+    "n": 20,
+    "ci": [
+     22.127,
+     23.958
+    ]
+   },
+   "seeds": {
+    "1": 1562.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "item: add one, remove it",
+   "half": "item: add one",
+   "scope": "global",
+   "script": {
+    "median": 1859.5,
+    "p25": 1581.8,
+    "p75": 2184.3,
+    "n": 20,
+    "ci": [
+     1655,
+     2138
+    ]
+   },
+   "total": {
+    "median": 39.297,
+    "p25": 37.006,
+    "p75": 41.983,
+    "n": 20,
+    "ci": [
+     37.286,
+     41.08
+    ]
+   },
+   "seeds": {
+    "1": 1859.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "item: add one, remove it",
+   "half": "item: remove the new one",
+   "scope": "global",
+   "script": {
+    "median": 1931,
+    "p25": 1738.3,
+    "p75": 2298.5,
+    "n": 20,
+    "ci": [
+     1755,
+     2210.5
+    ]
+   },
+   "total": {
+    "median": 38.034,
+    "p25": 37.368,
+    "p75": 38.817,
+    "n": 20,
+    "ci": [
+     37.573,
+     38.444
+    ]
+   },
+   "seeds": {
+    "1": 1931
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "dispatch: serverItems (one price)",
+   "half": "dispatch: serverItems (one price)",
+   "scope": "global",
+   "script": {
+    "median": 1831.5,
+    "p25": 1702.8,
+    "p75": 2007.8,
+    "n": 20,
+    "ci": [
+     1721,
+     1976.5
+    ]
+   },
+   "total": {
+    "median": 33.728,
+    "p25": 33.339,
+    "p75": 35.234,
+    "n": 20,
+    "ci": [
+     33.559,
+     34.491
+    ]
+   },
+   "seeds": {
+    "1": 1831.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "dispatch: serverItems (one price)",
+   "half": "dispatch: serverItems (the price back)",
+   "scope": "global",
+   "script": {
+    "median": 1879,
+    "p25": 1787.5,
+    "p75": 2113.3,
+    "n": 20,
+    "ci": [
+     1811,
+     2067.5
+    ]
+   },
+   "total": {
+    "median": 33.802,
+    "p25": 32.869,
+    "p75": 34.687,
+    "n": 20,
+    "ci": [
+     32.948,
+     34.439
+    ]
+   },
+   "seeds": {
+    "1": 1879
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 13705,
+    "p25": 12753.8,
+    "p75": 14948.5,
+    "n": 20,
+    "ci": [
+     12775.5,
+     14458.5
+    ]
+   },
+   "total": {
+    "median": 112.768,
+    "p25": 111.072,
+    "p75": 121.185,
+    "n": 20,
+    "ci": [
+     111.489,
+     119.611
+    ]
+   },
+   "seeds": {
+    "1": 13705
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 13285.5,
+    "p25": 12540.3,
+    "p75": 14945.5,
+    "n": 20,
+    "ci": [
+     12556.5,
+     14036
+    ]
+   },
+   "total": {
+    "median": 111.256,
+    "p25": 106.897,
+    "p75": 114.725,
+    "n": 20,
+    "ci": [
+     108.304,
+     113.274
+    ]
+   },
+   "seeds": {
+    "1": 13285.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "chain input: type a number (3 closed formulas downstream)",
+   "half": "chain input: type a number (3 closed formulas downstream)",
+   "scope": "local",
+   "script": {
+    "median": 115,
+    "p25": 103.8,
+    "p75": 120,
+    "n": 20,
+    "ci": [
+     107,
+     119
+    ]
+   },
+   "total": {
+    "median": 18.956,
+    "p25": 18.492,
+    "p75": 22.046,
+    "n": 20,
+    "ci": [
+     18.771,
+     21.02
+    ]
+   },
+   "seeds": {
+    "1": 115
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "chain input: type a number (3 closed formulas downstream)",
+   "half": "chain input: type a number (3 closed formulas downstream) (back)",
+   "scope": "local",
+   "script": {
+    "median": 97,
+    "p25": 87,
+    "p75": 116.5,
+    "n": 20,
+    "ci": [
+     89.5,
+     114
+    ]
+   },
+   "total": {
+    "median": 19.225,
+    "p25": 17.857,
+    "p75": 23.731,
+    "n": 20,
+    "ci": [
+     18.194,
+     23.07
+    ]
+   },
+   "seeds": {
+    "1": 97
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "cut-off input: type a number that leaves its bool unchanged",
+   "half": "cut-off input: type a number that leaves its bool unchanged",
+   "scope": "local",
+   "script": {
+    "median": 59,
+    "p25": 52.8,
+    "p75": 67.8,
+    "n": 20,
+    "ci": [
+     53.5,
+     66
+    ]
+   },
+   "total": {
+    "median": 17.063,
+    "p25": 16.519,
+    "p75": 18.073,
+    "n": 20,
+    "ci": [
+     16.691,
+     17.944
+    ]
+   },
+   "seeds": {
+    "1": 59
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "cut-off input: type a number that leaves its bool unchanged",
+   "half": "cut-off input: type a number that leaves its bool unchanged (back)",
+   "scope": "local",
+   "script": {
+    "median": 57.5,
+    "p25": 47,
+    "p75": 67.3,
+    "n": 20,
+    "ci": [
+     47.5,
+     66.5
+    ]
+   },
+   "total": {
+    "median": 16.933,
+    "p25": 15.413,
+    "p75": 18.272,
+    "n": 20,
+    "ci": [
+     15.911,
+     17.687
+    ]
+   },
+   "seeds": {
+    "1": 57.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "cut-off input: type a number that flips its bool",
+   "half": "cut-off input: type a number that flips its bool",
+   "scope": "local",
+   "script": {
+    "median": 82,
+    "p25": 79.5,
+    "p75": 94.5,
+    "n": 20,
+    "ci": [
+     80,
+     91
+    ]
+   },
+   "total": {
+    "median": 18.648,
+    "p25": 16.513,
+    "p75": 23.191,
+    "n": 20,
+    "ci": [
+     17.365,
+     22.942
+    ]
+   },
+   "seeds": {
+    "1": 82
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "cut-off input: type a number that flips its bool",
+   "half": "cut-off input: type a number that flips its bool (back)",
+   "scope": "local",
+   "script": {
+    "median": 113.5,
+    "p25": 103,
+    "p75": 126.5,
+    "n": 20,
+    "ci": [
+     103.5,
+     125.5
+    ]
+   },
+   "total": {
+    "median": 18.191,
+    "p25": 17.277,
+    "p75": 19.865,
+    "n": 20,
+    "ci": [
+     17.408,
+     19.157
+    ]
+   },
+   "seeds": {
+    "1": 113.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "filter select: pick another category (re-filters the items)",
+   "half": "filter select: pick another category (re-filters the items)",
+   "scope": "local",
+   "script": {
+    "median": 3136.5,
+    "p25": 2780.5,
+    "p75": 3313.3,
+    "n": 20,
+    "ci": [
+     2802.5,
+     3284.5
+    ]
+   },
+   "total": {
+    "median": 19.176,
+    "p25": 18.402,
+    "p75": 25.536,
+    "n": 20,
+    "ci": [
+     18.477,
+     24.397
+    ]
+   },
+   "seeds": {
+    "1": 3136.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "filter select: pick another category (re-filters the items)",
+   "half": "filter select: pick another category (re-filters the items) (back)",
+   "scope": "local",
+   "script": {
+    "median": 3139,
+    "p25": 2821.3,
+    "p75": 3169.8,
+    "n": 20,
+    "ci": [
+     2839,
+     3166
+    ]
+   },
+   "total": {
+    "median": 18.92,
+    "p25": 17.776,
+    "p75": 22.558,
+    "n": 20,
+    "ci": [
+     17.973,
+     22.464
+    ]
+   },
+   "seeds": {
+    "1": 3139
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "toggle: flip a bool (one formula over the filtered items)",
+   "half": "toggle: flip a bool (one formula over the filtered items)",
+   "scope": "local",
+   "script": {
+    "median": 88.5,
+    "p25": 85,
+    "p75": 99.5,
+    "n": 20,
+    "ci": [
+     85.5,
+     98
+    ]
+   },
+   "total": {
+    "median": 17.252,
+    "p25": 16.059,
+    "p75": 19.609,
+    "n": 20,
+    "ci": [
+     16.218,
+     19.155
+    ]
+   },
+   "seeds": {
+    "1": 88.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "toggle: flip a bool (one formula over the filtered items)",
+   "half": "toggle: flip a bool (one formula over the filtered items) (back)",
+   "scope": "local",
+   "script": {
+    "median": 115,
+    "p25": 105,
+    "p75": 120.5,
+    "n": 20,
+    "ci": [
+     105.5,
+     119
+    ]
+   },
+   "total": {
+    "median": 17.609,
+    "p25": 16.478,
+    "p75": 20.014,
+    "n": 20,
+    "ci": [
+     16.79,
+     19.181
+    ]
+   },
+   "seeds": {
+    "1": 115
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "half": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "scope": "local",
+   "script": {
+    "median": 369.5,
+    "p25": 351.3,
+    "p75": 395,
+    "n": 20,
+    "ci": [
+     353.5,
+     391
+    ]
+   },
+   "total": {
+    "median": 18.812,
+    "p25": 18.513,
+    "p75": 21.876,
+    "n": 20,
+    "ci": [
+     18.52,
+     21.079
+    ]
+   },
+   "seeds": {
+    "1": 369.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "threshold: type a number (re-filters and sorts the items for a top 5)",
+   "half": "threshold: type a number (re-filters and sorts the items for a top 5) (back)",
+   "scope": "local",
+   "script": {
+    "median": 307,
+    "p25": 287.8,
+    "p75": 335,
+    "n": 20,
+    "ci": [
+     291.5,
+     329.5
+    ]
+   },
+   "total": {
+    "median": 19.185,
+    "p25": 18.689,
+    "p75": 27.518,
+    "n": 20,
+    "ci": [
+     18.755,
+     24.801
+    ]
+   },
+   "seeds": {
+    "1": 307
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "markup: type a number (every row's markup cell)",
+   "half": "markup: type a number (every row's markup cell)",
+   "scope": "local",
+   "script": {
+    "median": 4198.5,
+    "p25": 4011.5,
+    "p75": 4818,
+    "n": 20,
+    "ci": [
+     4034,
+     4734
+    ]
+   },
+   "total": {
+    "median": 66.855,
+    "p25": 64.714,
+    "p75": 70.715,
+    "n": 20,
+    "ci": [
+     65.429,
+     69.744
+    ]
+   },
+   "seeds": {
+    "1": 4198.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "markup: type a number (every row's markup cell)",
+   "half": "markup: type a number (every row's markup cell) (back)",
+   "scope": "local",
+   "script": {
+    "median": 4446,
+    "p25": 4196.5,
+    "p75": 4736.5,
+    "n": 20,
+    "ci": [
+     4203.5,
+     4635
+    ]
+   },
+   "total": {
+    "median": 66.858,
+    "p25": 64.655,
+    "p75": 67.947,
+    "n": 20,
+    "ci": [
+     64.93,
+     67.589
+    ]
+   },
+   "seeds": {
+    "1": 4446
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "item: type a note character (nothing reads it)",
+   "half": "item: type a note character (nothing reads it)",
+   "scope": "local",
+   "script": {
+    "median": 60,
+    "p25": 51.5,
+    "p75": 66.8,
+    "n": 20,
+    "ci": [
+     53,
+     65.5
+    ]
+   },
+   "total": {
+    "median": 43.744,
+    "p25": 43.241,
+    "p75": 45.44,
+    "n": 20,
+    "ci": [
+     43.264,
+     45.305
+    ]
+   },
+   "seeds": {
+    "1": 60
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "item: type a note character (nothing reads it)",
+   "half": "item: delete the note character",
+   "scope": "local",
+   "script": {
+    "median": 56.5,
+    "p25": 53.8,
+    "p75": 68.5,
+    "n": 20,
+    "ci": [
+     54,
+     66
+    ]
+   },
+   "total": {
+    "median": 54.424,
+    "p25": 53.251,
+    "p75": 56.88,
+    "n": 20,
+    "ci": [
+     53.353,
+     56.387
+    ]
+   },
+   "seeds": {
+    "1": 56.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "dispatch: serverInputs of the closed inputs",
+   "half": "dispatch: serverInputs of the closed inputs",
+   "scope": "local",
+   "script": {
+    "median": 297.5,
+    "p25": 286.8,
+    "p75": 320.3,
+    "n": 20,
+    "ci": [
+     287,
+     318.5
+    ]
+   },
+   "total": {
+    "median": 21.499,
+    "p25": 20.385,
+    "p75": 23.723,
+    "n": 20,
+    "ci": [
+     20.773,
+     22.77
+    ]
+   },
+   "seeds": {
+    "1": 297.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "dispatch: serverInputs of the closed inputs",
+   "half": "dispatch: serverInputs of the closed inputs (back)",
+   "scope": "local",
+   "script": {
+    "median": 370,
+    "p25": 358,
+    "p75": 380,
+    "n": 20,
+    "ci": [
+     360,
+     377.5
+    ]
+   },
+   "total": {
+    "median": 21.458,
+    "p25": 20.446,
+    "p75": 24.629,
+    "n": 20,
+    "ci": [
+     20.606,
+     21.778
+    ]
+   },
+   "seeds": {
+    "1": 370
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "hub input: raise (the hub and tax read by many)",
+   "half": "hub input: raise (the hub and tax read by many)",
+   "scope": "global",
+   "script": {
+    "median": 458,
+    "p25": 425,
+    "p75": 481.8,
+    "n": 20,
+    "ci": [
+     430,
+     479
+    ]
+   },
+   "total": {
+    "median": 19.2,
+    "p25": 18.547,
+    "p75": 19.644,
+    "n": 20,
+    "ci": [
+     18.798,
+     19.577
+    ]
+   },
+   "seeds": {
+    "1": 458
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "hub input: raise (the hub and tax read by many)",
+   "half": "hub input: lower",
+   "scope": "global",
+   "script": {
+    "median": 462,
+    "p25": 435,
+    "p75": 508,
+    "n": 20,
+    "ci": [
+     441.5,
+     496
+    ]
+   },
+   "total": {
+    "median": 18.975,
+    "p25": 18.371,
+    "p75": 19.382,
+    "n": 20,
+    "ci": [
+     18.664,
+     19.285
+    ]
+   },
+   "seeds": {
+    "1": 462
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "item: type a quantity (every aggregate over qty)",
+   "half": "item: type a quantity (every aggregate over qty)",
+   "scope": "global",
+   "script": {
+    "median": 1062.5,
+    "p25": 979.3,
+    "p75": 1341.5,
+    "n": 20,
+    "ci": [
+     1001.5,
+     1283.5
+    ]
+   },
+   "total": {
+    "median": 46.942,
+    "p25": 45.934,
+    "p75": 47.817,
+    "n": 20,
+    "ci": [
+     46.019,
+     47.737
+    ]
+   },
+   "seeds": {
+    "1": 1062.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "item: type a quantity (every aggregate over qty)",
+   "half": "item: type a quantity (every aggregate over qty) (back)",
+   "scope": "global",
+   "script": {
+    "median": 1007,
+    "p25": 959.3,
+    "p75": 1053.8,
+    "n": 20,
+    "ci": [
+     964.5,
+     1047.5
+    ]
+   },
+   "total": {
+    "median": 46.639,
+    "p25": 45.788,
+    "p75": 47.837,
+    "n": 20,
+    "ci": [
+     45.912,
+     47.752
+    ]
+   },
+   "seeds": {
+    "1": 1007
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "item: toggle active",
+   "half": "item: toggle active",
+   "scope": "global",
+   "script": {
+    "median": 543,
+    "p25": 523.3,
+    "p75": 562.8,
+    "n": 20,
+    "ci": [
+     527,
+     559
+    ]
+   },
+   "total": {
+    "median": 23.428,
+    "p25": 22.526,
+    "p75": 23.846,
+    "n": 20,
+    "ci": [
+     22.79,
+     23.736
+    ]
+   },
+   "seeds": {
+    "1": 543
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "item: toggle active",
+   "half": "item: toggle active (back)",
+   "scope": "global",
+   "script": {
+    "median": 537.5,
+    "p25": 525.3,
+    "p75": 589,
+    "n": 20,
+    "ci": [
+     528,
+     586
+    ]
+   },
+   "total": {
+    "median": 23.235,
+    "p25": 22.796,
+    "p75": 23.523,
+    "n": 20,
+    "ci": [
+     22.937,
+     23.444
+    ]
+   },
+   "seeds": {
+    "1": 537.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "item: add one, remove it",
+   "half": "item: add one",
+   "scope": "global",
+   "script": {
+    "median": 1739,
+    "p25": 1571.3,
+    "p75": 1807.3,
+    "n": 20,
+    "ci": [
+     1599,
+     1789.5
+    ]
+   },
+   "total": {
+    "median": 39.749,
+    "p25": 37.176,
+    "p75": 41.484,
+    "n": 20,
+    "ci": [
+     37.427,
+     41.178
+    ]
+   },
+   "seeds": {
+    "1": 1739
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "item: add one, remove it",
+   "half": "item: remove the new one",
+   "scope": "global",
+   "script": {
+    "median": 1521.5,
+    "p25": 1364.8,
+    "p75": 1881.8,
+    "n": 20,
+    "ci": [
+     1375,
+     1738.5
+    ]
+   },
+   "total": {
+    "median": 39.659,
+    "p25": 38.198,
+    "p75": 40.28,
+    "n": 20,
+    "ci": [
+     38.446,
+     40.092
+    ]
+   },
+   "seeds": {
+    "1": 1521.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "dispatch: serverItems (one price)",
+   "half": "dispatch: serverItems (one price)",
+   "scope": "global",
+   "script": {
+    "median": 1685.5,
+    "p25": 1523,
+    "p75": 1972,
+    "n": 20,
+    "ci": [
+     1532,
+     1809
+    ]
+   },
+   "total": {
+    "median": 34.056,
+    "p25": 32.857,
+    "p75": 36.314,
+    "n": 20,
+    "ci": [
+     32.976,
+     36.089
+    ]
+   },
+   "seeds": {
+    "1": 1685.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "dispatch: serverItems (one price)",
+   "half": "dispatch: serverItems (the price back)",
+   "scope": "global",
+   "script": {
+    "median": 1668.5,
+    "p25": 1564.8,
+    "p75": 1841.8,
+    "n": 20,
+    "ci": [
+     1609.5,
+     1823
+    ]
+   },
+   "total": {
+    "median": 33.106,
+    "p25": 32.528,
+    "p75": 34.19,
+    "n": 20,
+    "ci": [
+     32.581,
+     33.848
+    ]
+   },
+   "seeds": {
+    "1": 1668.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 9918,
+    "p25": 9505.5,
+    "p75": 10849.5,
+    "n": 20,
+    "ci": [
+     9584.5,
+     10611
+    ]
+   },
+   "total": {
+    "median": 107.586,
+    "p25": 102.084,
+    "p75": 119.456,
+    "n": 20,
+    "ci": [
+     102.319,
+     117.242
+    ]
+   },
+   "seeds": {
+    "1": 9918
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 9831,
+    "p25": 9500.8,
+    "p75": 10889,
+    "n": 20,
+    "ci": [
+     9534,
+     10825
+    ]
+   },
+   "total": {
+    "median": 103.485,
+    "p25": 101.494,
+    "p75": 113.474,
+    "n": 20,
+    "ci": [
+     101.945,
+     112.538
+    ]
+   },
+   "seeds": {
+    "1": 9831
+   }
+  }
+ ],
+ "startup": [
+  {
+   "variant": "digest",
+   "size": 64,
+   "script": {
+    "median": 5.727,
+    "p25": 5.303,
+    "p75": 6.886,
+    "n": 5,
+    "ci": [
+     4.998,
+     8.523
+    ]
+   },
+   "total": {
+    "median": 30.88,
+    "p25": 30.81,
+    "p75": 31.18,
+    "n": 5,
+    "ci": [
+     28.82,
+     120.81
+    ]
+   },
+   "compileMs": 0.157,
+   "heapBytes": 826896
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "script": {
+    "median": 10.957,
+    "p25": 9.344,
+    "p75": 11.018,
+    "n": 5,
+    "ci": [
+     9.342,
+     13.168
+    ]
+   },
+   "total": {
+    "median": 39.11,
+    "p25": 36.15,
+    "p75": 39.8,
+    "n": 5,
+    "ci": [
+     34.61,
+     99
+    ]
+   },
+   "compileMs": 0.21,
+   "heapBytes": 1094228
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "script": {
+    "median": 6.195,
+    "p25": 6.186,
+    "p75": 6.419,
+    "n": 5,
+    "ci": [
+     6.139,
+     7.718
+    ]
+   },
+   "total": {
+    "median": 32.36,
+    "p25": 30.05,
+    "p75": 32.43,
+    "n": 5,
+    "ci": [
+     29.86,
+     33.59
+    ]
+   },
+   "compileMs": 0.13,
+   "heapBytes": 826324
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "script": {
+    "median": 8.017,
+    "p25": 7.457,
+    "p75": 8.15,
+    "n": 5,
+    "ci": [
+     6.175,
+     8.577
+    ]
+   },
+   "total": {
+    "median": 39.81,
+    "p25": 33.9,
+    "p75": 43.87,
+    "n": 5,
+    "ci": [
+     31.74,
+     45.57
+    ]
+   },
+   "compileMs": 0.183,
+   "heapBytes": 784244
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "script": {
+    "median": 7.323,
+    "p25": 6.922,
+    "p75": 7.855,
+    "n": 5,
+    "ci": [
+     6.817,
+     8.529
+    ]
+   },
+   "total": {
+    "median": 32.26,
+    "p25": 30.4,
+    "p75": 32.84,
+    "n": 5,
+    "ci": [
+     29.49,
+     33.12
+    ]
+   },
+   "compileMs": 0.12,
+   "heapBytes": 869880
+  },
+  {
+   "variant": "vanilla",
+   "size": 64,
+   "script": {
+    "median": 5.019,
+    "p25": 4.798,
+    "p75": 5.49,
+    "n": 5,
+    "ci": [
+     4.705,
+     5.565
+    ]
+   },
+   "total": {
+    "median": 31.23,
+    "p25": 30.82,
+    "p75": 32.7,
+    "n": 5,
+    "ci": [
+     30.1,
+     33.43
+    ]
+   },
+   "compileMs": 0.146,
+   "heapBytes": 811356
+  }
+ ],
+ "growth": {}
+}

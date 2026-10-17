@@ -1,0 +1,4389 @@
+{
+ "events": [
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "button: add to an int",
+   "half": "button: add to an int",
+   "scope": "local",
+   "script": {
+    "median": 134.5,
+    "p25": 116.8,
+    "p75": 168.8,
+    "n": 20,
+    "ci": [
+     118.5,
+     157
+    ]
+   },
+   "total": {
+    "median": 7.376,
+    "p25": 4.621,
+    "p75": 12.897,
+    "n": 20,
+    "ci": [
+     4.727,
+     12.574
+    ]
+   },
+   "seeds": {
+    "1": 134.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: type a character",
+   "scope": "local",
+   "script": {
+    "median": 120,
+    "p25": 100.8,
+    "p75": 136.3,
+    "n": 20,
+    "ci": [
+     102,
+     135
+    ]
+   },
+   "total": {
+    "median": 1.49,
+    "p25": 1.452,
+    "p75": 7.209,
+    "n": 20,
+    "ci": [
+     1.46,
+     4.513
+    ]
+   },
+   "seeds": {
+    "1": 120
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: delete it",
+   "scope": "local",
+   "script": {
+    "median": 135.5,
+    "p25": 119,
+    "p75": 155.5,
+    "n": 20,
+    "ci": [
+     122,
+     152
+    ]
+   },
+   "total": {
+    "median": 1.715,
+    "p25": 1.629,
+    "p75": 6.116,
+    "n": 20,
+    "ci": [
+     1.632,
+     4.737
+    ]
+   },
+   "seeds": {
+    "1": 135.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: type in the draft",
+   "scope": "local",
+   "script": {
+    "median": 126.5,
+    "p25": 106.3,
+    "p75": 153.5,
+    "n": 20,
+    "ci": [
+     108.5,
+     149.5
+    ]
+   },
+   "total": {
+    "median": 7.849,
+    "p25": 3.542,
+    "p75": 13.571,
+    "n": 20,
+    "ci": [
+     4.557,
+     13.246
+    ]
+   },
+   "seeds": {
+    "1": 126.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: push the draft",
+   "scope": "local",
+   "script": {
+    "median": 279.5,
+    "p25": 222.5,
+    "p75": 349.8,
+    "n": 20,
+    "ci": [
+     225,
+     338
+    ]
+   },
+   "total": {
+    "median": 10.591,
+    "p25": 6.707,
+    "p75": 14.535,
+    "n": 20,
+    "ci": [
+     7.202,
+     13.17
+    ]
+   },
+   "seeds": {
+    "1": 279.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: remove the pushed item",
+   "scope": "local",
+   "script": {
+    "median": 223,
+    "p25": 193.8,
+    "p75": 272.3,
+    "n": 20,
+    "ci": [
+     195,
+     265.5
+    ]
+   },
+   "total": {
+    "median": 10.125,
+    "p25": 5.358,
+    "p75": 14.13,
+    "n": 20,
+    "ci": [
+     7.159,
+     13.353
+    ]
+   },
+   "seeds": {
+    "1": 223
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle (a conditional section reads it)",
+   "scope": "local",
+   "script": {
+    "median": 163,
+    "p25": 127,
+    "p75": 204.5,
+    "n": 20,
+    "ci": [
+     130.5,
+     200
+    ]
+   },
+   "total": {
+    "median": 9.349,
+    "p25": 3.777,
+    "p75": 13.991,
+    "n": 20,
+    "ci": [
+     5.162,
+     13.29
+    ]
+   },
+   "seeds": {
+    "1": 163
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle back",
+   "scope": "local",
+   "script": {
+    "median": 135.5,
+    "p25": 118.8,
+    "p75": 146.8,
+    "n": 20,
+    "ci": [
+     119.5,
+     143
+    ]
+   },
+   "total": {
+    "median": 9.124,
+    "p25": 5.41,
+    "p75": 14.12,
+    "n": 20,
+    "ci": [
+     6.567,
+     13.949
+    ]
+   },
+   "seeds": {
+    "1": 135.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "enum: select or cycle",
+   "half": "enum: cycle",
+   "scope": "local",
+   "script": {
+    "median": 130,
+    "p25": 114.5,
+    "p75": 148,
+    "n": 20,
+    "ci": [
+     115.5,
+     146.5
+    ]
+   },
+   "total": {
+    "median": 8.712,
+    "p25": 4.482,
+    "p75": 13.368,
+    "n": 20,
+    "ci": [
+     4.568,
+     13.029
+    ]
+   },
+   "seeds": {
+    "1": 130
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: type a digit (a derived value reads it)",
+   "scope": "local",
+   "script": {
+    "median": 151,
+    "p25": 123.8,
+    "p75": 189.5,
+    "n": 20,
+    "ci": [
+     126.5,
+     185
+    ]
+   },
+   "total": {
+    "median": 11.44,
+    "p25": 6.109,
+    "p75": 14.358,
+    "n": 20,
+    "ci": [
+     6.571,
+     14.069
+    ]
+   },
+   "seeds": {
+    "1": 151
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: delete it",
+   "scope": "local",
+   "script": {
+    "median": 155.5,
+    "p25": 132.8,
+    "p75": 174.8,
+    "n": 20,
+    "ci": [
+     141.5,
+     173.5
+    ]
+   },
+   "total": {
+    "median": 7.348,
+    "p25": 4.654,
+    "p75": 14.2,
+    "n": 20,
+    "ci": [
+     5.058,
+     13.715
+    ]
+   },
+   "seeds": {
+    "1": 155.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: tick (one field running)",
+   "half": "dispatch: tick (one field running)",
+   "scope": "local",
+   "script": {
+    "median": 187.5,
+    "p25": 176.8,
+    "p75": 227,
+    "n": 20,
+    "ci": [
+     180,
+     221
+    ]
+   },
+   "total": {
+    "median": 1.159,
+    "p25": 1.11,
+    "p75": 5.828,
+    "n": 20,
+    "ci": [
+     1.124,
+     3.511
+    ]
+   },
+   "seeds": {
+    "1": 187.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion",
+   "scope": "local",
+   "script": {
+    "median": 122,
+    "p25": 117.5,
+    "p75": 148.8,
+    "n": 20,
+    "ci": [
+     118,
+     139.5
+    ]
+   },
+   "total": {
+    "median": 1.247,
+    "p25": 1.059,
+    "p75": 6.94,
+    "n": 20,
+    "ci": [
+     1.068,
+     6.844
+    ]
+   },
+   "seeds": {
+    "1": 122
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion (again)",
+   "scope": "local",
+   "script": {
+    "median": 121,
+    "p25": 117.5,
+    "p75": 130.5,
+    "n": 20,
+    "ci": [
+     118.5,
+     127
+    ]
+   },
+   "total": {
+    "median": 1.22,
+    "p25": 1.09,
+    "p75": 10.921,
+    "n": 20,
+    "ci": [
+     1.093,
+     8.702
+    ]
+   },
+   "seeds": {
+    "1": 121
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "dispatch: notify the feed",
+   "scope": "local",
+   "script": {
+    "median": 293.5,
+    "p25": 254,
+    "p75": 371,
+    "n": 20,
+    "ci": [
+     258,
+     363
+    ]
+   },
+   "total": {
+    "median": 2.25,
+    "p25": 1.95,
+    "p75": 3.119,
+    "n": 20,
+    "ci": [
+     1.956,
+     2.95
+    ]
+   },
+   "seeds": {
+    "1": 293.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "feed: dismiss the new entry",
+   "scope": "local",
+   "script": {
+    "median": 244.5,
+    "p25": 201,
+    "p75": 307.5,
+    "n": 20,
+    "ci": [
+     201.5,
+     303.5
+    ]
+   },
+   "total": {
+    "median": 8.586,
+    "p25": 3.214,
+    "p75": 13.199,
+    "n": 20,
+    "ci": [
+     3.394,
+     12.796
+    ]
+   },
+   "seeds": {
+    "1": 244.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component",
+   "scope": "global",
+   "script": {
+    "median": 662,
+    "p25": 617.8,
+    "p75": 686.8,
+    "n": 20,
+    "ci": [
+     623.5,
+     685
+    ]
+   },
+   "total": {
+    "median": 3.595,
+    "p25": 3.136,
+    "p75": 7.161,
+    "n": 20,
+    "ci": [
+     3.164,
+     6.258
+    ]
+   },
+   "seeds": {
+    "1": 662
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component (again)",
+   "scope": "global",
+   "script": {
+    "median": 668.5,
+    "p25": 659.5,
+    "p75": 711.5,
+    "n": 20,
+    "ci": [
+     661.5,
+     708.5
+    ]
+   },
+   "total": {
+    "median": 3.185,
+    "p25": 2.976,
+    "p75": 10.212,
+    "n": 20,
+    "ci": [
+     3.002,
+     7.784
+    ]
+   },
+   "seeds": {
+    "1": 668.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 582,
+    "p25": 509.8,
+    "p75": 618.3,
+    "n": 20,
+    "ci": [
+     514,
+     608
+    ]
+   },
+   "total": {
+    "median": 3.414,
+    "p25": 3.218,
+    "p75": 7.38,
+    "n": 20,
+    "ci": [
+     3.262,
+     7.094
+    ]
+   },
+   "seeds": {
+    "1": 582
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 741.5,
+    "p25": 691.8,
+    "p75": 826.5,
+    "n": 20,
+    "ci": [
+     695,
+     798.5
+    ]
+   },
+   "total": {
+    "median": 3.805,
+    "p25": 3.467,
+    "p75": 6.014,
+    "n": 20,
+    "ci": [
+     3.488,
+     5.411
+    ]
+   },
+   "seeds": {
+    "1": 741.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "button: add to an int",
+   "half": "button: add to an int",
+   "scope": "local",
+   "script": {
+    "median": 671,
+    "p25": 607,
+    "p75": 767.8,
+    "n": 20,
+    "ci": [
+     613.5,
+     759
+    ]
+   },
+   "total": {
+    "median": 30.961,
+    "p25": 30.528,
+    "p75": 31.25,
+    "n": 20,
+    "ci": [
+     30.544,
+     31.217
+    ]
+   },
+   "seeds": {
+    "1": 671
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: type a character",
+   "scope": "local",
+   "script": {
+    "median": 377,
+    "p25": 333,
+    "p75": 442.3,
+    "n": 20,
+    "ci": [
+     343.5,
+     440
+    ]
+   },
+   "total": {
+    "median": 15.864,
+    "p25": 15.501,
+    "p75": 16.175,
+    "n": 20,
+    "ci": [
+     15.586,
+     16.109
+    ]
+   },
+   "seeds": {
+    "1": 377
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: delete it",
+   "scope": "local",
+   "script": {
+    "median": 396.5,
+    "p25": 350.5,
+    "p75": 433.3,
+    "n": 20,
+    "ci": [
+     360,
+     425
+    ]
+   },
+   "total": {
+    "median": 15.544,
+    "p25": 15.467,
+    "p75": 15.847,
+    "n": 20,
+    "ci": [
+     15.482,
+     15.755
+    ]
+   },
+   "seeds": {
+    "1": 396.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: type in the draft",
+   "scope": "local",
+   "script": {
+    "median": 336.5,
+    "p25": 295.3,
+    "p75": 364.5,
+    "n": 20,
+    "ci": [
+     300,
+     360.5
+    ]
+   },
+   "total": {
+    "median": 15.354,
+    "p25": 14.869,
+    "p75": 15.586,
+    "n": 20,
+    "ci": [
+     14.937,
+     15.53
+    ]
+   },
+   "seeds": {
+    "1": 336.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: push the draft",
+   "scope": "local",
+   "script": {
+    "median": 604,
+    "p25": 569.3,
+    "p75": 698.8,
+    "n": 20,
+    "ci": [
+     593,
+     687
+    ]
+   },
+   "total": {
+    "median": 30.553,
+    "p25": 30.096,
+    "p75": 30.923,
+    "n": 20,
+    "ci": [
+     30.123,
+     30.904
+    ]
+   },
+   "seeds": {
+    "1": 604
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: remove the pushed item",
+   "scope": "local",
+   "script": {
+    "median": 663.5,
+    "p25": 607,
+    "p75": 738.5,
+    "n": 20,
+    "ci": [
+     613.5,
+     734
+    ]
+   },
+   "total": {
+    "median": 30.769,
+    "p25": 30.646,
+    "p75": 31.048,
+    "n": 20,
+    "ci": [
+     30.66,
+     30.978
+    ]
+   },
+   "seeds": {
+    "1": 663.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle (a conditional section reads it)",
+   "scope": "local",
+   "script": {
+    "median": 617,
+    "p25": 487.5,
+    "p75": 680,
+    "n": 20,
+    "ci": [
+     503.5,
+     676.5
+    ]
+   },
+   "total": {
+    "median": 30.855,
+    "p25": 30.436,
+    "p75": 31.138,
+    "n": 20,
+    "ci": [
+     30.511,
+     31.069
+    ]
+   },
+   "seeds": {
+    "1": 617
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle back",
+   "scope": "local",
+   "script": {
+    "median": 541.5,
+    "p25": 461.3,
+    "p75": 608.3,
+    "n": 20,
+    "ci": [
+     489,
+     590.5
+    ]
+   },
+   "total": {
+    "median": 31.172,
+    "p25": 31.028,
+    "p75": 31.512,
+    "n": 20,
+    "ci": [
+     31.069,
+     31.397
+    ]
+   },
+   "seeds": {
+    "1": 541.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "enum: select or cycle",
+   "half": "enum: cycle",
+   "scope": "local",
+   "script": {
+    "median": 572.5,
+    "p25": 468.5,
+    "p75": 684.8,
+    "n": 20,
+    "ci": [
+     476.5,
+     666
+    ]
+   },
+   "total": {
+    "median": 31.188,
+    "p25": 30.758,
+    "p75": 31.415,
+    "n": 20,
+    "ci": [
+     30.856,
+     31.412
+    ]
+   },
+   "seeds": {
+    "1": 572.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: type a digit (a derived value reads it)",
+   "scope": "local",
+   "script": {
+    "median": 373,
+    "p25": 327,
+    "p75": 405.5,
+    "n": 20,
+    "ci": [
+     334.5,
+     399
+    ]
+   },
+   "total": {
+    "median": 15.667,
+    "p25": 15.463,
+    "p75": 15.915,
+    "n": 20,
+    "ci": [
+     15.474,
+     15.896
+    ]
+   },
+   "seeds": {
+    "1": 373
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: delete it",
+   "scope": "local",
+   "script": {
+    "median": 371.5,
+    "p25": 321,
+    "p75": 427,
+    "n": 20,
+    "ci": [
+     330,
+     421
+    ]
+   },
+   "total": {
+    "median": 15.588,
+    "p25": 15.313,
+    "p75": 15.89,
+    "n": 20,
+    "ci": [
+     15.359,
+     15.764
+    ]
+   },
+   "seeds": {
+    "1": 371.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "dispatch: tick (one field running)",
+   "half": "dispatch: tick (one field running)",
+   "scope": "local",
+   "script": {
+    "median": 659,
+    "p25": 540.8,
+    "p75": 729.5,
+    "n": 20,
+    "ci": [
+     565,
+     721
+    ]
+   },
+   "total": {
+    "median": 32.172,
+    "p25": 31.972,
+    "p75": 32.512,
+    "n": 20,
+    "ci": [
+     31.981,
+     32.472
+    ]
+   },
+   "seeds": {
+    "1": 659
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion",
+   "scope": "local",
+   "script": {
+    "median": 609.5,
+    "p25": 553.8,
+    "p75": 681.3,
+    "n": 20,
+    "ci": [
+     566,
+     662.5
+    ]
+   },
+   "total": {
+    "median": 32.092,
+    "p25": 31.83,
+    "p75": 32.235,
+    "n": 20,
+    "ci": [
+     31.92,
+     32.215
+    ]
+   },
+   "seeds": {
+    "1": 609.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion (again)",
+   "scope": "local",
+   "script": {
+    "median": 622.5,
+    "p25": 585.5,
+    "p75": 650.5,
+    "n": 20,
+    "ci": [
+     603.5,
+     645
+    ]
+   },
+   "total": {
+    "median": 32.069,
+    "p25": 31.993,
+    "p75": 32.259,
+    "n": 20,
+    "ci": [
+     32.003,
+     32.236
+    ]
+   },
+   "seeds": {
+    "1": 622.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "dispatch: notify the feed",
+   "scope": "local",
+   "script": {
+    "median": 647.5,
+    "p25": 606.8,
+    "p75": 792.5,
+    "n": 20,
+    "ci": [
+     607,
+     749
+    ]
+   },
+   "total": {
+    "median": 32.769,
+    "p25": 32.645,
+    "p75": 32.887,
+    "n": 20,
+    "ci": [
+     32.658,
+     32.861
+    ]
+   },
+   "seeds": {
+    "1": 647.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "feed: dismiss the new entry",
+   "scope": "local",
+   "script": {
+    "median": 646,
+    "p25": 605.8,
+    "p75": 743.8,
+    "n": 20,
+    "ci": [
+     618.5,
+     720
+    ]
+   },
+   "total": {
+    "median": 30.385,
+    "p25": 30.26,
+    "p75": 30.584,
+    "n": 20,
+    "ci": [
+     30.27,
+     30.576
+    ]
+   },
+   "seeds": {
+    "1": 646
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component",
+   "scope": "global",
+   "script": {
+    "median": 1198,
+    "p25": 1077.8,
+    "p75": 1304.3,
+    "n": 20,
+    "ci": [
+     1105.5,
+     1257.5
+    ]
+   },
+   "total": {
+    "median": 31.98,
+    "p25": 31.929,
+    "p75": 32.137,
+    "n": 20,
+    "ci": [
+     31.932,
+     32.1
+    ]
+   },
+   "seeds": {
+    "1": 1198
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component (again)",
+   "scope": "global",
+   "script": {
+    "median": 1213.5,
+    "p25": 929.8,
+    "p75": 1275,
+    "n": 20,
+    "ci": [
+     1024.5,
+     1257
+    ]
+   },
+   "total": {
+    "median": 32.034,
+    "p25": 31.933,
+    "p75": 32.17,
+    "n": 20,
+    "ci": [
+     31.953,
+     32.147
+    ]
+   },
+   "seeds": {
+    "1": 1213.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 1076.5,
+    "p25": 944,
+    "p75": 1219,
+    "n": 20,
+    "ci": [
+     947.5,
+     1211.5
+    ]
+   },
+   "total": {
+    "median": 32.711,
+    "p25": 32.559,
+    "p75": 33.083,
+    "n": 20,
+    "ci": [
+     32.594,
+     32.982
+    ]
+   },
+   "seeds": {
+    "1": 1076.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 1208,
+    "p25": 1137.5,
+    "p75": 1272.8,
+    "n": 20,
+    "ci": [
+     1156,
+     1250
+    ]
+   },
+   "total": {
+    "median": 32.758,
+    "p25": 32.664,
+    "p75": 32.91,
+    "n": 20,
+    "ci": [
+     32.669,
+     32.869
+    ]
+   },
+   "seeds": {
+    "1": 1208
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "button: add to an int",
+   "half": "button: add to an int",
+   "scope": "local",
+   "script": {
+    "median": 152.5,
+    "p25": 135.8,
+    "p75": 176.5,
+    "n": 20,
+    "ci": [
+     139,
+     176
+    ]
+   },
+   "total": {
+    "median": 14.724,
+    "p25": 14.438,
+    "p75": 14.87,
+    "n": 20,
+    "ci": [
+     14.528,
+     14.829
+    ]
+   },
+   "seeds": {
+    "1": 152.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: type a character",
+   "scope": "local",
+   "script": {
+    "median": 123,
+    "p25": 102.8,
+    "p75": 131.8,
+    "n": 20,
+    "ci": [
+     103.5,
+     131
+    ]
+   },
+   "total": {
+    "median": 15.678,
+    "p25": 15.406,
+    "p75": 15.833,
+    "n": 20,
+    "ci": [
+     15.422,
+     15.813
+    ]
+   },
+   "seeds": {
+    "1": 123
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: delete it",
+   "scope": "local",
+   "script": {
+    "median": 123.5,
+    "p25": 115,
+    "p75": 144.3,
+    "n": 20,
+    "ci": [
+     116,
+     139.5
+    ]
+   },
+   "total": {
+    "median": 15.694,
+    "p25": 15.488,
+    "p75": 15.889,
+    "n": 20,
+    "ci": [
+     15.551,
+     15.847
+    ]
+   },
+   "seeds": {
+    "1": 123.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: type in the draft",
+   "scope": "local",
+   "script": {
+    "median": 116.5,
+    "p25": 96.8,
+    "p75": 127.3,
+    "n": 20,
+    "ci": [
+     98.5,
+     124
+    ]
+   },
+   "total": {
+    "median": 15.157,
+    "p25": 14.963,
+    "p75": 15.469,
+    "n": 20,
+    "ci": [
+     15.005,
+     15.401
+    ]
+   },
+   "seeds": {
+    "1": 116.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: push the draft",
+   "scope": "local",
+   "script": {
+    "median": 220.5,
+    "p25": 207.5,
+    "p75": 237,
+    "n": 20,
+    "ci": [
+     208,
+     233.5
+    ]
+   },
+   "total": {
+    "median": 14.715,
+    "p25": 14.442,
+    "p75": 15.128,
+    "n": 20,
+    "ci": [
+     14.445,
+     15.051
+    ]
+   },
+   "seeds": {
+    "1": 220.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: remove the pushed item",
+   "scope": "local",
+   "script": {
+    "median": 349,
+    "p25": 326,
+    "p75": 376.3,
+    "n": 20,
+    "ci": [
+     326.5,
+     371.5
+    ]
+   },
+   "total": {
+    "median": 15.385,
+    "p25": 15.149,
+    "p75": 15.654,
+    "n": 20,
+    "ci": [
+     15.241,
+     15.588
+    ]
+   },
+   "seeds": {
+    "1": 349
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle (a conditional section reads it)",
+   "scope": "local",
+   "script": {
+    "median": 180,
+    "p25": 165.8,
+    "p75": 195.3,
+    "n": 20,
+    "ci": [
+     169,
+     190.5
+    ]
+   },
+   "total": {
+    "median": 14.649,
+    "p25": 14.376,
+    "p75": 14.771,
+    "n": 20,
+    "ci": [
+     14.387,
+     14.753
+    ]
+   },
+   "seeds": {
+    "1": 180
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle back",
+   "scope": "local",
+   "script": {
+    "median": 163.5,
+    "p25": 155.8,
+    "p75": 173.5,
+    "n": 20,
+    "ci": [
+     156.5,
+     172
+    ]
+   },
+   "total": {
+    "median": 15.602,
+    "p25": 15.366,
+    "p75": 15.994,
+    "n": 20,
+    "ci": [
+     15.415,
+     15.951
+    ]
+   },
+   "seeds": {
+    "1": 163.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "enum: select or cycle",
+   "half": "enum: cycle",
+   "scope": "local",
+   "script": {
+    "median": 124,
+    "p25": 115.8,
+    "p75": 130.8,
+    "n": 20,
+    "ci": [
+     117,
+     129
+    ]
+   },
+   "total": {
+    "median": 14.626,
+    "p25": 14.364,
+    "p75": 14.807,
+    "n": 20,
+    "ci": [
+     14.378,
+     14.762
+    ]
+   },
+   "seeds": {
+    "1": 124
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: type a digit (a derived value reads it)",
+   "scope": "local",
+   "script": {
+    "median": 137,
+    "p25": 127.3,
+    "p75": 150.8,
+    "n": 20,
+    "ci": [
+     129,
+     145
+    ]
+   },
+   "total": {
+    "median": 15.485,
+    "p25": 15.234,
+    "p75": 15.782,
+    "n": 20,
+    "ci": [
+     15.262,
+     15.737
+    ]
+   },
+   "seeds": {
+    "1": 137
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: delete it",
+   "scope": "local",
+   "script": {
+    "median": 133.5,
+    "p25": 118.8,
+    "p75": 144,
+    "n": 20,
+    "ci": [
+     122.5,
+     142.5
+    ]
+   },
+   "total": {
+    "median": 15.512,
+    "p25": 15.334,
+    "p75": 15.95,
+    "n": 20,
+    "ci": [
+     15.356,
+     15.916
+    ]
+   },
+   "seeds": {
+    "1": 133.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "dispatch: tick (one field running)",
+   "half": "dispatch: tick (one field running)",
+   "scope": "local",
+   "script": {
+    "median": 175.5,
+    "p25": 164.8,
+    "p75": 186.5,
+    "n": 20,
+    "ci": [
+     166,
+     186
+    ]
+   },
+   "total": {
+    "median": 16.243,
+    "p25": 16.166,
+    "p75": 16.301,
+    "n": 20,
+    "ci": [
+     16.193,
+     16.295
+    ]
+   },
+   "seeds": {
+    "1": 175.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion",
+   "scope": "local",
+   "script": {
+    "median": 199,
+    "p25": 180.5,
+    "p75": 216.8,
+    "n": 20,
+    "ci": [
+     186.5,
+     214
+    ]
+   },
+   "total": {
+    "median": 16.386,
+    "p25": 16.037,
+    "p75": 16.505,
+    "n": 20,
+    "ci": [
+     16.045,
+     16.503
+    ]
+   },
+   "seeds": {
+    "1": 199
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion (again)",
+   "scope": "local",
+   "script": {
+    "median": 204,
+    "p25": 177.5,
+    "p75": 234.5,
+    "n": 20,
+    "ci": [
+     182.5,
+     232.5
+    ]
+   },
+   "total": {
+    "median": 16.218,
+    "p25": 16.133,
+    "p75": 16.498,
+    "n": 20,
+    "ci": [
+     16.145,
+     16.411
+    ]
+   },
+   "seeds": {
+    "1": 204
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "dispatch: notify the feed",
+   "scope": "local",
+   "script": {
+    "median": 240,
+    "p25": 227.3,
+    "p75": 259,
+    "n": 20,
+    "ci": [
+     231.5,
+     256.5
+    ]
+   },
+   "total": {
+    "median": 17.343,
+    "p25": 17.16,
+    "p75": 17.52,
+    "n": 20,
+    "ci": [
+     17.177,
+     17.495
+    ]
+   },
+   "seeds": {
+    "1": 240
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "feed: dismiss the new entry",
+   "scope": "local",
+   "script": {
+    "median": 343.5,
+    "p25": 326.5,
+    "p75": 368.3,
+    "n": 20,
+    "ci": [
+     330,
+     363.5
+    ]
+   },
+   "total": {
+    "median": 15.087,
+    "p25": 14.803,
+    "p75": 15.376,
+    "n": 20,
+    "ci": [
+     14.871,
+     15.316
+    ]
+   },
+   "seeds": {
+    "1": 343.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component",
+   "scope": "global",
+   "script": {
+    "median": 792,
+    "p25": 765.3,
+    "p75": 871.3,
+    "n": 20,
+    "ci": [
+     772,
+     871
+    ]
+   },
+   "total": {
+    "median": 16.867,
+    "p25": 16.7,
+    "p75": 16.999,
+    "n": 20,
+    "ci": [
+     16.741,
+     16.972
+    ]
+   },
+   "seeds": {
+    "1": 792
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component (again)",
+   "scope": "global",
+   "script": {
+    "median": 819.5,
+    "p25": 775.3,
+    "p75": 896.8,
+    "n": 20,
+    "ci": [
+     781.5,
+     875
+    ]
+   },
+   "total": {
+    "median": 16.661,
+    "p25": 16.311,
+    "p75": 16.9,
+    "n": 20,
+    "ci": [
+     16.444,
+     16.832
+    ]
+   },
+   "seeds": {
+    "1": 819.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 782.5,
+    "p25": 743,
+    "p75": 845.5,
+    "n": 20,
+    "ci": [
+     755,
+     829.5
+    ]
+   },
+   "total": {
+    "median": 17.11,
+    "p25": 16.498,
+    "p75": 17.408,
+    "n": 20,
+    "ci": [
+     16.615,
+     17.403
+    ]
+   },
+   "seeds": {
+    "1": 782.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 765,
+    "p25": 701.5,
+    "p75": 802.8,
+    "n": 20,
+    "ci": [
+     713,
+     798.5
+    ]
+   },
+   "total": {
+    "median": 16.896,
+    "p25": 16.587,
+    "p75": 17.355,
+    "n": 20,
+    "ci": [
+     16.656,
+     17.245
+    ]
+   },
+   "seeds": {
+    "1": 765
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "button: add to an int",
+   "half": "button: add to an int",
+   "scope": "local",
+   "script": {
+    "median": 157,
+    "p25": 131.3,
+    "p75": 190.8,
+    "n": 20,
+    "ci": [
+     136,
+     187.5
+    ]
+   },
+   "total": {
+    "median": 8.107,
+    "p25": 5.413,
+    "p75": 14.028,
+    "n": 20,
+    "ci": [
+     5.503,
+     13.896
+    ]
+   },
+   "seeds": {
+    "1": 157
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: type a character",
+   "scope": "local",
+   "script": {
+    "median": 98.5,
+    "p25": 89.8,
+    "p75": 115,
+    "n": 20,
+    "ci": [
+     91,
+     113
+    ]
+   },
+   "total": {
+    "median": 1.656,
+    "p25": 1.416,
+    "p75": 9.298,
+    "n": 20,
+    "ci": [
+     1.421,
+     7.379
+    ]
+   },
+   "seeds": {
+    "1": 98.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: delete it",
+   "scope": "local",
+   "script": {
+    "median": 108,
+    "p25": 102,
+    "p75": 115.3,
+    "n": 20,
+    "ci": [
+     102,
+     114.5
+    ]
+   },
+   "total": {
+    "median": 1.767,
+    "p25": 1.637,
+    "p75": 9.315,
+    "n": 20,
+    "ci": [
+     1.656,
+     8.272
+    ]
+   },
+   "seeds": {
+    "1": 108
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: type in the draft",
+   "scope": "local",
+   "script": {
+    "median": 102,
+    "p25": 91.3,
+    "p75": 111,
+    "n": 20,
+    "ci": [
+     94.5,
+     110
+    ]
+   },
+   "total": {
+    "median": 8.392,
+    "p25": 4.509,
+    "p75": 13.526,
+    "n": 20,
+    "ci": [
+     5.264,
+     13.241
+    ]
+   },
+   "seeds": {
+    "1": 102
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: push the draft",
+   "scope": "local",
+   "script": {
+    "median": 339,
+    "p25": 299.8,
+    "p75": 381.8,
+    "n": 20,
+    "ci": [
+     307,
+     367.5
+    ]
+   },
+   "total": {
+    "median": 8.695,
+    "p25": 6.393,
+    "p75": 14.88,
+    "n": 20,
+    "ci": [
+     6.596,
+     14.116
+    ]
+   },
+   "seeds": {
+    "1": 339
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: remove the pushed item",
+   "scope": "local",
+   "script": {
+    "median": 402.5,
+    "p25": 292.5,
+    "p75": 431.3,
+    "n": 20,
+    "ci": [
+     305.5,
+     427.5
+    ]
+   },
+   "total": {
+    "median": 8.59,
+    "p25": 3.65,
+    "p75": 10.703,
+    "n": 20,
+    "ci": [
+     3.847,
+     10.652
+    ]
+   },
+   "seeds": {
+    "1": 402.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle (a conditional section reads it)",
+   "scope": "local",
+   "script": {
+    "median": 164,
+    "p25": 142,
+    "p75": 185.8,
+    "n": 20,
+    "ci": [
+     146.5,
+     182.5
+    ]
+   },
+   "total": {
+    "median": 10.312,
+    "p25": 5.098,
+    "p75": 14.496,
+    "n": 20,
+    "ci": [
+     5.496,
+     13.412
+    ]
+   },
+   "seeds": {
+    "1": 164
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle back",
+   "scope": "local",
+   "script": {
+    "median": 154,
+    "p25": 135.5,
+    "p75": 170.5,
+    "n": 20,
+    "ci": [
+     138,
+     166.5
+    ]
+   },
+   "total": {
+    "median": 10.41,
+    "p25": 6.273,
+    "p75": 12.729,
+    "n": 20,
+    "ci": [
+     6.489,
+     12.355
+    ]
+   },
+   "seeds": {
+    "1": 154
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "enum: select or cycle",
+   "half": "enum: cycle",
+   "scope": "local",
+   "script": {
+    "median": 120,
+    "p25": 105.8,
+    "p75": 137.8,
+    "n": 20,
+    "ci": [
+     108,
+     135
+    ]
+   },
+   "total": {
+    "median": 9.059,
+    "p25": 2.79,
+    "p75": 10.941,
+    "n": 20,
+    "ci": [
+     5.028,
+     10.814
+    ]
+   },
+   "seeds": {
+    "1": 120
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: type a digit (a derived value reads it)",
+   "scope": "local",
+   "script": {
+    "median": 116,
+    "p25": 97.5,
+    "p75": 143,
+    "n": 20,
+    "ci": [
+     99.5,
+     141
+    ]
+   },
+   "total": {
+    "median": 7.312,
+    "p25": 4.123,
+    "p75": 11.695,
+    "n": 20,
+    "ci": [
+     4.703,
+     11.627
+    ]
+   },
+   "seeds": {
+    "1": 116
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: delete it",
+   "scope": "local",
+   "script": {
+    "median": 112,
+    "p25": 100.5,
+    "p75": 124.5,
+    "n": 20,
+    "ci": [
+     104.5,
+     121
+    ]
+   },
+   "total": {
+    "median": 9.492,
+    "p25": 4.1,
+    "p75": 12.205,
+    "n": 20,
+    "ci": [
+     5.268,
+     11.631
+    ]
+   },
+   "seeds": {
+    "1": 112
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "dispatch: tick (one field running)",
+   "half": "dispatch: tick (one field running)",
+   "scope": "local",
+   "script": {
+    "median": 126.5,
+    "p25": 120,
+    "p75": 159,
+    "n": 20,
+    "ci": [
+     120.5,
+     157.5
+    ]
+   },
+   "total": {
+    "median": 1.33,
+    "p25": 1.091,
+    "p75": 6.781,
+    "n": 20,
+    "ci": [
+     1.121,
+     5.721
+    ]
+   },
+   "seeds": {
+    "1": 126.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion",
+   "scope": "local",
+   "script": {
+    "median": 178,
+    "p25": 155.5,
+    "p75": 188,
+    "n": 20,
+    "ci": [
+     159.5,
+     185
+    ]
+   },
+   "total": {
+    "median": 1.698,
+    "p25": 1.166,
+    "p75": 8.204,
+    "n": 20,
+    "ci": [
+     1.182,
+     7.213
+    ]
+   },
+   "seeds": {
+    "1": 178
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion (again)",
+   "scope": "local",
+   "script": {
+    "median": 171.5,
+    "p25": 163.8,
+    "p75": 184.3,
+    "n": 20,
+    "ci": [
+     165,
+     182.5
+    ]
+   },
+   "total": {
+    "median": 1.275,
+    "p25": 1.152,
+    "p75": 7.241,
+    "n": 20,
+    "ci": [
+     1.162,
+     6.193
+    ]
+   },
+   "seeds": {
+    "1": 171.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "dispatch: notify the feed",
+   "scope": "local",
+   "script": {
+    "median": 201.5,
+    "p25": 197.5,
+    "p75": 217.3,
+    "n": 20,
+    "ci": [
+     199,
+     213.5
+    ]
+   },
+   "total": {
+    "median": 2.156,
+    "p25": 2.009,
+    "p75": 2.639,
+    "n": 20,
+    "ci": [
+     2.022,
+     2.266
+    ]
+   },
+   "seeds": {
+    "1": 201.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "feed: dismiss the new entry",
+   "scope": "local",
+   "script": {
+    "median": 362.5,
+    "p25": 338,
+    "p75": 425.5,
+    "n": 20,
+    "ci": [
+     338,
+     414.5
+    ]
+   },
+   "total": {
+    "median": 9.481,
+    "p25": 6.974,
+    "p75": 14.452,
+    "n": 20,
+    "ci": [
+     7.554,
+     13.458
+    ]
+   },
+   "seeds": {
+    "1": 362.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component",
+   "scope": "global",
+   "script": {
+    "median": 952,
+    "p25": 876.3,
+    "p75": 1007.3,
+    "n": 20,
+    "ci": [
+     881.5,
+     1000
+    ]
+   },
+   "total": {
+    "median": 4.14,
+    "p25": 3.557,
+    "p75": 9.551,
+    "n": 20,
+    "ci": [
+     3.607,
+     8.315
+    ]
+   },
+   "seeds": {
+    "1": 952
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component (again)",
+   "scope": "global",
+   "script": {
+    "median": 900,
+    "p25": 844,
+    "p75": 937.8,
+    "n": 20,
+    "ci": [
+     856.5,
+     927
+    ]
+   },
+   "total": {
+    "median": 3.507,
+    "p25": 3.44,
+    "p75": 8.201,
+    "n": 20,
+    "ci": [
+     3.452,
+     6.967
+    ]
+   },
+   "seeds": {
+    "1": 900
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 820,
+    "p25": 789.3,
+    "p75": 887.8,
+    "n": 20,
+    "ci": [
+     791.5,
+     876
+    ]
+   },
+   "total": {
+    "median": 4.483,
+    "p25": 3.82,
+    "p75": 9.712,
+    "n": 20,
+    "ci": [
+     3.869,
+     8.101
+    ]
+   },
+   "seeds": {
+    "1": 820
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 869,
+    "p25": 812.8,
+    "p75": 951.3,
+    "n": 20,
+    "ci": [
+     817,
+     932.5
+    ]
+   },
+   "total": {
+    "median": 4.449,
+    "p25": 3.675,
+    "p75": 8.965,
+    "n": 20,
+    "ci": [
+     3.697,
+     6.949
+    ]
+   },
+   "seeds": {
+    "1": 869
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "button: add to an int",
+   "half": "button: add to an int",
+   "scope": "local",
+   "script": {
+    "median": 106,
+    "p25": 90,
+    "p75": 121.3,
+    "n": 20,
+    "ci": [
+     91.5,
+     120
+    ]
+   },
+   "total": {
+    "median": 9.264,
+    "p25": 4.907,
+    "p75": 12.905,
+    "n": 20,
+    "ci": [
+     5.763,
+     11.634
+    ]
+   },
+   "seeds": {
+    "1": 106
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: type a character",
+   "scope": "local",
+   "script": {
+    "median": 72.5,
+    "p25": 65.5,
+    "p75": 91.5,
+    "n": 20,
+    "ci": [
+     68,
+     87.5
+    ]
+   },
+   "total": {
+    "median": 1.534,
+    "p25": 1.451,
+    "p75": 8.706,
+    "n": 20,
+    "ci": [
+     1.468,
+     8.218
+    ]
+   },
+   "seeds": {
+    "1": 72.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: delete it",
+   "scope": "local",
+   "script": {
+    "median": 73.5,
+    "p25": 66.5,
+    "p75": 89.5,
+    "n": 20,
+    "ci": [
+     68,
+     85.5
+    ]
+   },
+   "total": {
+    "median": 1.73,
+    "p25": 1.579,
+    "p75": 6.638,
+    "n": 20,
+    "ci": [
+     1.598,
+     6.31
+    ]
+   },
+   "seeds": {
+    "1": 73.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: type in the draft",
+   "scope": "local",
+   "script": {
+    "median": 66.5,
+    "p25": 55.5,
+    "p75": 71.5,
+    "n": 20,
+    "ci": [
+     58,
+     71
+    ]
+   },
+   "total": {
+    "median": 9.591,
+    "p25": 5.027,
+    "p75": 13.977,
+    "n": 20,
+    "ci": [
+     5.522,
+     13.527
+    ]
+   },
+   "seeds": {
+    "1": 66.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: push the draft",
+   "scope": "local",
+   "script": {
+    "median": 201,
+    "p25": 174.8,
+    "p75": 265.3,
+    "n": 20,
+    "ci": [
+     175,
+     264.5
+    ]
+   },
+   "total": {
+    "median": 8.626,
+    "p25": 5.49,
+    "p75": 12.663,
+    "n": 20,
+    "ci": [
+     5.834,
+     12.264
+    ]
+   },
+   "seeds": {
+    "1": 201
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: remove the pushed item",
+   "scope": "local",
+   "script": {
+    "median": 162.5,
+    "p25": 148.8,
+    "p75": 179.8,
+    "n": 20,
+    "ci": [
+     149,
+     173.5
+    ]
+   },
+   "total": {
+    "median": 11.716,
+    "p25": 5.577,
+    "p75": 13.712,
+    "n": 20,
+    "ci": [
+     6.033,
+     13.592
+    ]
+   },
+   "seeds": {
+    "1": 162.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle (a conditional section reads it)",
+   "scope": "local",
+   "script": {
+    "median": 105,
+    "p25": 92.8,
+    "p75": 115.8,
+    "n": 20,
+    "ci": [
+     94.5,
+     113
+    ]
+   },
+   "total": {
+    "median": 8.061,
+    "p25": 2.753,
+    "p75": 13.206,
+    "n": 20,
+    "ci": [
+     3.354,
+     12.389
+    ]
+   },
+   "seeds": {
+    "1": 105
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle back",
+   "scope": "local",
+   "script": {
+    "median": 87.5,
+    "p25": 81.8,
+    "p75": 91,
+    "n": 20,
+    "ci": [
+     83,
+     90
+    ]
+   },
+   "total": {
+    "median": 10.163,
+    "p25": 6.131,
+    "p75": 12.583,
+    "n": 20,
+    "ci": [
+     6.301,
+     12.296
+    ]
+   },
+   "seeds": {
+    "1": 87.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "enum: select or cycle",
+   "half": "enum: cycle",
+   "scope": "local",
+   "script": {
+    "median": 66,
+    "p25": 63,
+    "p75": 78.5,
+    "n": 20,
+    "ci": [
+     63.5,
+     75.5
+    ]
+   },
+   "total": {
+    "median": 9.674,
+    "p25": 6.014,
+    "p75": 13.566,
+    "n": 20,
+    "ci": [
+     6.576,
+     13.355
+    ]
+   },
+   "seeds": {
+    "1": 66
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: type a digit (a derived value reads it)",
+   "scope": "local",
+   "script": {
+    "median": 88,
+    "p25": 79.8,
+    "p75": 98,
+    "n": 20,
+    "ci": [
+     80.5,
+     97
+    ]
+   },
+   "total": {
+    "median": 8.297,
+    "p25": 2.721,
+    "p75": 12.67,
+    "n": 20,
+    "ci": [
+     3.384,
+     11.806
+    ]
+   },
+   "seeds": {
+    "1": 88
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: delete it",
+   "scope": "local",
+   "script": {
+    "median": 98,
+    "p25": 91.8,
+    "p75": 104.3,
+    "n": 20,
+    "ci": [
+     92.5,
+     102.5
+    ]
+   },
+   "total": {
+    "median": 8.839,
+    "p25": 6.367,
+    "p75": 13.785,
+    "n": 20,
+    "ci": [
+     6.534,
+     13.331
+    ]
+   },
+   "seeds": {
+    "1": 98
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: tick (one field running)",
+   "half": "dispatch: tick (one field running)",
+   "scope": "local",
+   "script": {
+    "median": 124.5,
+    "p25": 110,
+    "p75": 138.3,
+    "n": 20,
+    "ci": [
+     114,
+     134.5
+    ]
+   },
+   "total": {
+    "median": 1.863,
+    "p25": 1.166,
+    "p75": 10.443,
+    "n": 20,
+    "ci": [
+     1.168,
+     8.573
+    ]
+   },
+   "seeds": {
+    "1": 124.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion",
+   "scope": "local",
+   "script": {
+    "median": 130,
+    "p25": 115.3,
+    "p75": 146.5,
+    "n": 20,
+    "ci": [
+     116.5,
+     145.5
+    ]
+   },
+   "total": {
+    "median": 1.308,
+    "p25": 1.217,
+    "p75": 12.361,
+    "n": 20,
+    "ci": [
+     1.223,
+     11.356
+    ]
+   },
+   "seeds": {
+    "1": 130
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion (again)",
+   "scope": "local",
+   "script": {
+    "median": 124.5,
+    "p25": 107.5,
+    "p75": 161.3,
+    "n": 20,
+    "ci": [
+     108.5,
+     153.5
+    ]
+   },
+   "total": {
+    "median": 2.111,
+    "p25": 1.226,
+    "p75": 7.307,
+    "n": 20,
+    "ci": [
+     1.242,
+     6.912
+    ]
+   },
+   "seeds": {
+    "1": 124.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "dispatch: notify the feed",
+   "scope": "local",
+   "script": {
+    "median": 209,
+    "p25": 196,
+    "p75": 239,
+    "n": 20,
+    "ci": [
+     197.5,
+     235.5
+    ]
+   },
+   "total": {
+    "median": 8.779,
+    "p25": 6.901,
+    "p75": 9.535,
+    "n": 20,
+    "ci": [
+     7.304,
+     9.465
+    ]
+   },
+   "seeds": {
+    "1": 209
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "feed: dismiss the new entry",
+   "scope": "local",
+   "script": {
+    "median": 175,
+    "p25": 165,
+    "p75": 184.5,
+    "n": 20,
+    "ci": [
+     167,
+     183.5
+    ]
+   },
+   "total": {
+    "median": 15.993,
+    "p25": 14.095,
+    "p75": 16.822,
+    "n": 20,
+    "ci": [
+     14.983,
+     16.739
+    ]
+   },
+   "seeds": {
+    "1": 175
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component",
+   "scope": "global",
+   "script": {
+    "median": 738,
+    "p25": 710.5,
+    "p75": 788.8,
+    "n": 20,
+    "ci": [
+     711.5,
+     777
+    ]
+   },
+   "total": {
+    "median": 3.566,
+    "p25": 3.266,
+    "p75": 4.154,
+    "n": 20,
+    "ci": [
+     3.274,
+     4.134
+    ]
+   },
+   "seeds": {
+    "1": 738
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component (again)",
+   "scope": "global",
+   "script": {
+    "median": 746.5,
+    "p25": 709.8,
+    "p75": 778.8,
+    "n": 20,
+    "ci": [
+     715.5,
+     776.5
+    ]
+   },
+   "total": {
+    "median": 3.435,
+    "p25": 3.148,
+    "p75": 3.758,
+    "n": 20,
+    "ci": [
+     3.197,
+     3.685
+    ]
+   },
+   "seeds": {
+    "1": 746.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 588,
+    "p25": 558.8,
+    "p75": 610.8,
+    "n": 20,
+    "ci": [
+     567.5,
+     603
+    ]
+   },
+   "total": {
+    "median": 4.243,
+    "p25": 3.48,
+    "p75": 9.101,
+    "n": 20,
+    "ci": [
+     3.528,
+     7.294
+    ]
+   },
+   "seeds": {
+    "1": 588
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 744.5,
+    "p25": 723,
+    "p75": 810.5,
+    "n": 20,
+    "ci": [
+     727.5,
+     804.5
+    ]
+   },
+   "total": {
+    "median": 4.214,
+    "p25": 3.577,
+    "p75": 15.132,
+    "n": 20,
+    "ci": [
+     3.606,
+     11.101
+    ]
+   },
+   "seeds": {
+    "1": 744.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "button: add to an int",
+   "half": "button: add to an int",
+   "scope": "local",
+   "script": {
+    "median": 81.5,
+    "p25": 73,
+    "p75": 103,
+    "n": 20,
+    "ci": [
+     73,
+     98
+    ]
+   },
+   "total": {
+    "median": 6.749,
+    "p25": 2.92,
+    "p75": 11.136,
+    "n": 20,
+    "ci": [
+     3.883,
+     10.598
+    ]
+   },
+   "seeds": {
+    "1": 81.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: type a character",
+   "scope": "local",
+   "script": {
+    "median": 65.5,
+    "p25": 57.8,
+    "p75": 70,
+    "n": 20,
+    "ci": [
+     58,
+     69.5
+    ]
+   },
+   "total": {
+    "median": 2.911,
+    "p25": 1.351,
+    "p75": 10.564,
+    "n": 20,
+    "ci": [
+     1.372,
+     9.717
+    ]
+   },
+   "seeds": {
+    "1": 65.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: delete it",
+   "scope": "local",
+   "script": {
+    "median": 74,
+    "p25": 65.3,
+    "p75": 80.3,
+    "n": 20,
+    "ci": [
+     67,
+     79.5
+    ]
+   },
+   "total": {
+    "median": 1.785,
+    "p25": 1.558,
+    "p75": 7.227,
+    "n": 20,
+    "ci": [
+     1.592,
+     5.761
+    ]
+   },
+   "seeds": {
+    "1": 74
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: type in the draft",
+   "scope": "local",
+   "script": {
+    "median": 52,
+    "p25": 43,
+    "p75": 57.8,
+    "n": 20,
+    "ci": [
+     44,
+     55.5
+    ]
+   },
+   "total": {
+    "median": 9.709,
+    "p25": 4.927,
+    "p75": 12.756,
+    "n": 20,
+    "ci": [
+     5.626,
+     12.627
+    ]
+   },
+   "seeds": {
+    "1": 52
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: push the draft",
+   "scope": "local",
+   "script": {
+    "median": 128.5,
+    "p25": 110.5,
+    "p75": 163.3,
+    "n": 20,
+    "ci": [
+     112,
+     159.5
+    ]
+   },
+   "total": {
+    "median": 8.817,
+    "p25": 4.756,
+    "p75": 13.339,
+    "n": 20,
+    "ci": [
+     5.114,
+     13.06
+    ]
+   },
+   "seeds": {
+    "1": 128.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: remove the pushed item",
+   "scope": "local",
+   "script": {
+    "median": 143.5,
+    "p25": 125.5,
+    "p75": 161.8,
+    "n": 20,
+    "ci": [
+     129,
+     158
+    ]
+   },
+   "total": {
+    "median": 10.291,
+    "p25": 5.263,
+    "p75": 13.581,
+    "n": 20,
+    "ci": [
+     5.364,
+     13.107
+    ]
+   },
+   "seeds": {
+    "1": 143.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle (a conditional section reads it)",
+   "scope": "local",
+   "script": {
+    "median": 78,
+    "p25": 73.8,
+    "p75": 95.8,
+    "n": 20,
+    "ci": [
+     74.5,
+     92
+    ]
+   },
+   "total": {
+    "median": 7.439,
+    "p25": 4.829,
+    "p75": 10.825,
+    "n": 20,
+    "ci": [
+     4.971,
+     9.834
+    ]
+   },
+   "seeds": {
+    "1": 78
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle back",
+   "scope": "local",
+   "script": {
+    "median": 72.5,
+    "p25": 66.5,
+    "p75": 79.3,
+    "n": 20,
+    "ci": [
+     67.5,
+     78.5
+    ]
+   },
+   "total": {
+    "median": 12.835,
+    "p25": 9.384,
+    "p75": 14.996,
+    "n": 20,
+    "ci": [
+     9.896,
+     14.788
+    ]
+   },
+   "seeds": {
+    "1": 72.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "enum: select or cycle",
+   "half": "enum: cycle",
+   "scope": "local",
+   "script": {
+    "median": 65.5,
+    "p25": 56.5,
+    "p75": 71,
+    "n": 20,
+    "ci": [
+     57,
+     69.5
+    ]
+   },
+   "total": {
+    "median": 9.055,
+    "p25": 4.801,
+    "p75": 12.594,
+    "n": 20,
+    "ci": [
+     5.626,
+     11.748
+    ]
+   },
+   "seeds": {
+    "1": 65.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: type a digit (a derived value reads it)",
+   "scope": "local",
+   "script": {
+    "median": 83,
+    "p25": 75.5,
+    "p75": 99.5,
+    "n": 20,
+    "ci": [
+     77,
+     97
+    ]
+   },
+   "total": {
+    "median": 9.979,
+    "p25": 4.978,
+    "p75": 13.876,
+    "n": 20,
+    "ci": [
+     5.459,
+     12.671
+    ]
+   },
+   "seeds": {
+    "1": 83
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: delete it",
+   "scope": "local",
+   "script": {
+    "median": 85,
+    "p25": 66.8,
+    "p75": 99.5,
+    "n": 20,
+    "ci": [
+     71.5,
+     95
+    ]
+   },
+   "total": {
+    "median": 10.173,
+    "p25": 5.06,
+    "p75": 13.813,
+    "n": 20,
+    "ci": [
+     6.382,
+     13.371
+    ]
+   },
+   "seeds": {
+    "1": 85
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: tick (one field running)",
+   "half": "dispatch: tick (one field running)",
+   "scope": "local",
+   "script": {
+    "median": 107,
+    "p25": 99.8,
+    "p75": 115.3,
+    "n": 20,
+    "ci": [
+     101.5,
+     113
+    ]
+   },
+   "total": {
+    "median": 1.167,
+    "p25": 1.047,
+    "p75": 5.842,
+    "n": 20,
+    "ci": [
+     1.065,
+     5.574
+    ]
+   },
+   "seeds": {
+    "1": 107
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion",
+   "scope": "local",
+   "script": {
+    "median": 148,
+    "p25": 139.5,
+    "p75": 156.5,
+    "n": 20,
+    "ci": [
+     143,
+     154
+    ]
+   },
+   "total": {
+    "median": 1.203,
+    "p25": 1.127,
+    "p75": 8.223,
+    "n": 20,
+    "ci": [
+     1.132,
+     6.084
+    ]
+   },
+   "seeds": {
+    "1": 148
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion (again)",
+   "scope": "local",
+   "script": {
+    "median": 141.5,
+    "p25": 129.8,
+    "p75": 147.5,
+    "n": 20,
+    "ci": [
+     130.5,
+     146
+    ]
+   },
+   "total": {
+    "median": 1.136,
+    "p25": 1.093,
+    "p75": 10.433,
+    "n": 20,
+    "ci": [
+     1.097,
+     9.5
+    ]
+   },
+   "seeds": {
+    "1": 141.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "dispatch: notify the feed",
+   "scope": "local",
+   "script": {
+    "median": 156,
+    "p25": 131,
+    "p75": 164.3,
+    "n": 20,
+    "ci": [
+     134.5,
+     162.5
+    ]
+   },
+   "total": {
+    "median": 2.024,
+    "p25": 1.826,
+    "p75": 4.662,
+    "n": 20,
+    "ci": [
+     1.853,
+     3.613
+    ]
+   },
+   "seeds": {
+    "1": 156
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "feed: dismiss the new entry",
+   "scope": "local",
+   "script": {
+    "median": 143.5,
+    "p25": 131.8,
+    "p75": 160.8,
+    "n": 20,
+    "ci": [
+     134,
+     157
+    ]
+   },
+   "total": {
+    "median": 8.105,
+    "p25": 4.195,
+    "p75": 12.532,
+    "n": 20,
+    "ci": [
+     4.643,
+     11.862
+    ]
+   },
+   "seeds": {
+    "1": 143.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component",
+   "scope": "global",
+   "script": {
+    "median": 648,
+    "p25": 621.8,
+    "p75": 711.3,
+    "n": 20,
+    "ci": [
+     622.5,
+     697.5
+    ]
+   },
+   "total": {
+    "median": 3.75,
+    "p25": 3.177,
+    "p75": 5.213,
+    "n": 20,
+    "ci": [
+     3.229,
+     4.559
+    ]
+   },
+   "seeds": {
+    "1": 648
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component (again)",
+   "scope": "global",
+   "script": {
+    "median": 642,
+    "p25": 612,
+    "p75": 666.8,
+    "n": 20,
+    "ci": [
+     615,
+     665
+    ]
+   },
+   "total": {
+    "median": 3.303,
+    "p25": 3.129,
+    "p75": 10.011,
+    "n": 20,
+    "ci": [
+     3.142,
+     6.595
+    ]
+   },
+   "seeds": {
+    "1": 642
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 616,
+    "p25": 589.5,
+    "p75": 696,
+    "n": 20,
+    "ci": [
+     595,
+     687.5
+    ]
+   },
+   "total": {
+    "median": 4.037,
+    "p25": 3.551,
+    "p75": 15.418,
+    "n": 20,
+    "ci": [
+     3.615,
+     11.604
+    ]
+   },
+   "seeds": {
+    "1": 616
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 652.5,
+    "p25": 608.8,
+    "p75": 771,
+    "n": 20,
+    "ci": [
+     609,
+     739.5
+    ]
+   },
+   "total": {
+    "median": 4.976,
+    "p25": 3.508,
+    "p75": 6.56,
+    "n": 20,
+    "ci": [
+     3.592,
+     6.426
+    ]
+   },
+   "seeds": {
+    "1": 652.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "button: add to an int",
+   "half": "button: add to an int",
+   "scope": "local",
+   "script": {
+    "median": 89,
+    "p25": 75,
+    "p75": 112.5,
+    "n": 20,
+    "ci": [
+     79,
+     111
+    ]
+   },
+   "total": {
+    "median": 9.84,
+    "p25": 5.437,
+    "p75": 13.114,
+    "n": 20,
+    "ci": [
+     6.328,
+     12.786
+    ]
+   },
+   "seeds": {
+    "1": 89
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: type a character",
+   "scope": "local",
+   "script": {
+    "median": 56,
+    "p25": 49,
+    "p75": 70.8,
+    "n": 20,
+    "ci": [
+     49.5,
+     69
+    ]
+   },
+   "total": {
+    "median": 1.403,
+    "p25": 1.338,
+    "p75": 7.312,
+    "n": 20,
+    "ci": [
+     1.346,
+     6.556
+    ]
+   },
+   "seeds": {
+    "1": 56
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "input: type a character",
+   "half": "input: delete it",
+   "scope": "local",
+   "script": {
+    "median": 68,
+    "p25": 52.8,
+    "p75": 77.3,
+    "n": 20,
+    "ci": [
+     54.5,
+     73
+    ]
+   },
+   "total": {
+    "median": 1.69,
+    "p25": 1.553,
+    "p75": 7.297,
+    "n": 20,
+    "ci": [
+     1.556,
+     6.323
+    ]
+   },
+   "seeds": {
+    "1": 68
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: type in the draft",
+   "scope": "local",
+   "script": {
+    "median": 82.5,
+    "p25": 64.5,
+    "p75": 97.3,
+    "n": 20,
+    "ci": [
+     67,
+     95.5
+    ]
+   },
+   "total": {
+    "median": 9.174,
+    "p25": 4.207,
+    "p75": 12.652,
+    "n": 20,
+    "ci": [
+     4.754,
+     12.278
+    ]
+   },
+   "seeds": {
+    "1": 82.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: push the draft",
+   "scope": "local",
+   "script": {
+    "median": 158.5,
+    "p25": 140.3,
+    "p75": 212.5,
+    "n": 20,
+    "ci": [
+     145,
+     203
+    ]
+   },
+   "total": {
+    "median": 11.06,
+    "p25": 4.708,
+    "p75": 13.008,
+    "n": 20,
+    "ci": [
+     5.262,
+     12.339
+    ]
+   },
+   "seeds": {
+    "1": 158.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "list: type, push, remove",
+   "half": "list: remove the pushed item",
+   "scope": "local",
+   "script": {
+    "median": 155,
+    "p25": 123.8,
+    "p75": 163.5,
+    "n": 20,
+    "ci": [
+     126.5,
+     161
+    ]
+   },
+   "total": {
+    "median": 9.408,
+    "p25": 4.442,
+    "p75": 13.038,
+    "n": 20,
+    "ci": [
+     4.613,
+     12.77
+    ]
+   },
+   "seeds": {
+    "1": 155
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle (a conditional section reads it)",
+   "scope": "local",
+   "script": {
+    "median": 103.5,
+    "p25": 92.8,
+    "p75": 123.3,
+    "n": 20,
+    "ci": [
+     93,
+     121
+    ]
+   },
+   "total": {
+    "median": 9.053,
+    "p25": 6.832,
+    "p75": 14.174,
+    "n": 20,
+    "ci": [
+     7.105,
+     13.735
+    ]
+   },
+   "seeds": {
+    "1": 103.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "bool: toggle (a conditional section reads it)",
+   "half": "bool: toggle back",
+   "scope": "local",
+   "script": {
+    "median": 82,
+    "p25": 78,
+    "p75": 90.3,
+    "n": 20,
+    "ci": [
+     78.5,
+     89.5
+    ]
+   },
+   "total": {
+    "median": 8.532,
+    "p25": 3.534,
+    "p75": 12.719,
+    "n": 20,
+    "ci": [
+     3.934,
+     12.694
+    ]
+   },
+   "seeds": {
+    "1": 82
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "enum: select or cycle",
+   "half": "enum: cycle",
+   "scope": "local",
+   "script": {
+    "median": 51.5,
+    "p25": 47.8,
+    "p75": 59.8,
+    "n": 20,
+    "ci": [
+     48.5,
+     59
+    ]
+   },
+   "total": {
+    "median": 9.368,
+    "p25": 5.547,
+    "p75": 12.888,
+    "n": 20,
+    "ci": [
+     5.991,
+     12.041
+    ]
+   },
+   "seeds": {
+    "1": 51.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: type a digit (a derived value reads it)",
+   "scope": "local",
+   "script": {
+    "median": 82.5,
+    "p25": 78.8,
+    "p75": 91.3,
+    "n": 20,
+    "ci": [
+     79.5,
+     90
+    ]
+   },
+   "total": {
+    "median": 8.236,
+    "p25": 4.587,
+    "p75": 12.414,
+    "n": 20,
+    "ci": [
+     5.128,
+     11.142
+    ]
+   },
+   "seeds": {
+    "1": 82.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "number: type a digit (a derived value reads it)",
+   "half": "number: delete it",
+   "scope": "local",
+   "script": {
+    "median": 81.5,
+    "p25": 74,
+    "p75": 86.3,
+    "n": 20,
+    "ci": [
+     74.5,
+     84.5
+    ]
+   },
+   "total": {
+    "median": 8.742,
+    "p25": 5.001,
+    "p75": 13.015,
+    "n": 20,
+    "ci": [
+     5.544,
+     12.578
+    ]
+   },
+   "seeds": {
+    "1": 81.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "dispatch: tick (one field running)",
+   "half": "dispatch: tick (one field running)",
+   "scope": "local",
+   "script": {
+    "median": 125,
+    "p25": 115.3,
+    "p75": 137.3,
+    "n": 20,
+    "ci": [
+     118.5,
+     133
+    ]
+   },
+   "total": {
+    "median": 2.907,
+    "p25": 1.28,
+    "p75": 10.818,
+    "n": 20,
+    "ci": [
+     1.307,
+     9.936
+    ]
+   },
+   "seeds": {
+    "1": 125
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion",
+   "scope": "local",
+   "script": {
+    "median": 117.5,
+    "p25": 111.3,
+    "p75": 142.8,
+    "n": 20,
+    "ci": [
+     112.5,
+     134.5
+    ]
+   },
+   "total": {
+    "median": 1.264,
+    "p25": 1.11,
+    "p75": 8.545,
+    "n": 20,
+    "ci": [
+     1.148,
+     5.138
+    ]
+   },
+   "seeds": {
+    "1": 117.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "dispatch: serverSet the companion",
+   "half": "dispatch: serverSet the companion (again)",
+   "scope": "local",
+   "script": {
+    "median": 104.5,
+    "p25": 100,
+    "p75": 117.3,
+    "n": 20,
+    "ci": [
+     100,
+     116
+    ]
+   },
+   "total": {
+    "median": 1.189,
+    "p25": 1.057,
+    "p75": 9.596,
+    "n": 20,
+    "ci": [
+     1.061,
+     9.179
+    ]
+   },
+   "seeds": {
+    "1": 104.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "dispatch: notify the feed",
+   "scope": "local",
+   "script": {
+    "median": 152,
+    "p25": 140.3,
+    "p75": 174.5,
+    "n": 20,
+    "ci": [
+     144.5,
+     167.5
+    ]
+   },
+   "total": {
+    "median": 2.084,
+    "p25": 1.975,
+    "p75": 2.661,
+    "n": 20,
+    "ci": [
+     1.989,
+     2.132
+    ]
+   },
+   "seeds": {
+    "1": 152
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "notify, dismiss",
+   "half": "feed: dismiss the new entry",
+   "scope": "local",
+   "script": {
+    "median": 153.5,
+    "p25": 138,
+    "p75": 165.3,
+    "n": 20,
+    "ci": [
+     138.5,
+     163
+    ]
+   },
+   "total": {
+    "median": 8.143,
+    "p25": 2.595,
+    "p75": 11.463,
+    "n": 20,
+    "ci": [
+     4.355,
+     10.798
+    ]
+   },
+   "seeds": {
+    "1": 153.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component",
+   "scope": "global",
+   "script": {
+    "median": 604,
+    "p25": 568.3,
+    "p75": 630.5,
+    "n": 20,
+    "ci": [
+     571,
+     624
+    ]
+   },
+   "total": {
+    "median": 4.795,
+    "p25": 3.223,
+    "p75": 14.552,
+    "n": 20,
+    "ci": [
+     3.297,
+     10.642
+    ]
+   },
+   "seeds": {
+    "1": 604
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "dispatch: serverSet the whole component",
+   "half": "dispatch: serverSet the whole component (again)",
+   "scope": "global",
+   "script": {
+    "median": 589,
+    "p25": 569.8,
+    "p75": 623.3,
+    "n": 20,
+    "ci": [
+     573.5,
+     620.5
+    ]
+   },
+   "total": {
+    "median": 5.418,
+    "p25": 3.003,
+    "p75": 14.824,
+    "n": 20,
+    "ci": [
+     3.026,
+     14.171
+    ]
+   },
+   "seeds": {
+    "1": 589
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 531.5,
+    "p25": 496.5,
+    "p75": 561.5,
+    "n": 20,
+    "ci": [
+     499,
+     559
+    ]
+   },
+   "total": {
+    "median": 4.495,
+    "p25": 3.512,
+    "p75": 10.487,
+    "n": 20,
+    "ci": [
+     3.543,
+     9.785
+    ]
+   },
+   "seeds": {
+    "1": 531.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 618,
+    "p25": 577.3,
+    "p75": 669.3,
+    "n": 20,
+    "ci": [
+     588,
+     656
+    ]
+   },
+   "total": {
+    "median": 3.329,
+    "p25": 3.236,
+    "p75": 3.379,
+    "n": 20,
+    "ci": [
+     3.245,
+     3.366
+    ]
+   },
+   "seeds": {
+    "1": 618
+   }
+  }
+ ],
+ "startup": [
+  {
+   "variant": "digest",
+   "size": 64,
+   "script": {
+    "median": 4.344,
+    "p25": 3.929,
+    "p75": 6.122,
+    "n": 5,
+    "ci": [
+     3.856,
+     8.675
+    ]
+   },
+   "total": {
+    "median": 25.6,
+    "p25": 23.61,
+    "p75": 29.07,
+    "n": 5,
+    "ci": [
+     23.35,
+     67.17
+    ]
+   },
+   "compileMs": 0.168,
+   "heapBytes": 680224
+  },
+  {
+   "variant": "elm",
+   "size": 64,
+   "script": {
+    "median": 6.391,
+    "p25": 6.182,
+    "p75": 6.787,
+    "n": 5,
+    "ci": [
+     6.12,
+     13.244
+    ]
+   },
+   "total": {
+    "median": 42.39,
+    "p25": 39.07,
+    "p75": 43.31,
+    "n": 5,
+    "ci": [
+     28.18,
+     61.23
+    ]
+   },
+   "compileMs": 0.111,
+   "heapBytes": 891848
+  },
+  {
+   "variant": "marko",
+   "size": 64,
+   "script": {
+    "median": 7.217,
+    "p25": 7.124,
+    "p75": 7.583,
+    "n": 5,
+    "ci": [
+     6.627,
+     7.728
+    ]
+   },
+   "total": {
+    "median": 31.24,
+    "p25": 30.01,
+    "p75": 31.42,
+    "n": 5,
+    "ci": [
+     29.9,
+     44.36
+    ]
+   },
+   "compileMs": 0.125,
+   "heapBytes": 945016
+  },
+  {
+   "variant": "solid",
+   "size": 64,
+   "script": {
+    "median": 7.053,
+    "p25": 6.863,
+    "p75": 7.351,
+    "n": 5,
+    "ci": [
+     6.483,
+     7.969
+    ]
+   },
+   "total": {
+    "median": 28.94,
+    "p25": 28.27,
+    "p75": 29.1,
+    "n": 5,
+    "ci": [
+     26.69,
+     30.26
+    ]
+   },
+   "compileMs": 0.127,
+   "heapBytes": 900884
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 64,
+   "script": {
+    "median": 4.036,
+    "p25": 3.855,
+    "p75": 4.057,
+    "n": 5,
+    "ci": [
+     3.695,
+     4.239
+    ]
+   },
+   "total": {
+    "median": 24.83,
+    "p25": 24.59,
+    "p75": 25.59,
+    "n": 5,
+    "ci": [
+     23.98,
+     26.37
+    ]
+   },
+   "compileMs": 0.125,
+   "heapBytes": 654004
+  },
+  {
+   "variant": "tea-inline",
+   "size": 64,
+   "script": {
+    "median": 4.686,
+    "p25": 4.595,
+    "p75": 4.838,
+    "n": 5,
+    "ci": [
+     4.256,
+     4.957
+    ]
+   },
+   "total": {
+    "median": 25.57,
+    "p25": 25.42,
+    "p75": 25.68,
+    "n": 5,
+    "ci": [
+     23.21,
+     26.26
+    ]
+   },
+   "compileMs": 0.126,
+   "heapBytes": 695272
+  },
+  {
+   "variant": "tea-local",
+   "size": 64,
+   "script": {
+    "median": 5.792,
+    "p25": 5.783,
+    "p75": 6.709,
+    "n": 5,
+    "ci": [
+     5.644,
+     7.581
+    ]
+   },
+   "total": {
+    "median": 27.43,
+    "p25": 27.41,
+    "p75": 28.26,
+    "n": 5,
+    "ci": [
+     26.5,
+     28.99
+    ]
+   },
+   "compileMs": 0.16,
+   "heapBytes": 727976
+  }
+ ],
+ "growth": {}
+}
