@@ -574,6 +574,11 @@ function compileComponent(env, kind, comp, parent) {
   lines.push(...cx.patch.map((l) => "  " + l), `};`);
   lines.push(`// type Msg = ${Array.from({ length: next + own.arms.length }, (_, i) => names[i] ?? `Msg${i}`).join(" | ")}`);
   lines.push(`const ${cx.self} = component([${sources.join(", ")}], ${initCode}, ${table(arms, next + own.arms.length)}, patch${cmdKeys.length ? `, {\n${cmdKeys.map((k) => indent(`${k}: ${cmds[k]},`, 4)).join("\n")}\n  }` : ""});`);
+  // A message to an instance that the model has already replaced (its slot's key moved on, but the
+  // flush that destroys it has not run) does nothing: its node is as good as gone.
+  if (kind === "page") lines.push(`const gen = shell.m.gen;`, `self.stale = () => shell.m.gen !== gen;`);
+  else if (kind === "tab") lines.push(`const tk = self.m.tk;`, `me.stale = () => self.stale() || self.m.tk !== tk;`);
+  else lines.push(`const mid = self.m.mid;`, `me.stale = () => self.stale() || self.m.mid !== mid || !self.m.modal;`);
   lines.push(`const ${cx.el} = frame(${host}, ${q(trim(root + cx.html))}, ${cx.self});`);
   lines.push(...cx.create, ...body);
   if (timed) lines.push(`${cx.self}.every(${tickTag}, ${timed.every});`);
@@ -584,7 +589,7 @@ function compileComponent(env, kind, comp, parent) {
 
 // ---------------------------------------------------------------------------------------------
 
-const FRAME_FILE = `import { wire } from "./runtime.js";
+const FRAME_FILE = `import { wire } from "./routed.js";
 
 // A property write, skipped if unchanged: a form control's value, unless \`key\` names another.
 export function setProp(node, value, key = "value") {
