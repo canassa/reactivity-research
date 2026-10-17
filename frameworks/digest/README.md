@@ -1046,26 +1046,49 @@ then digests the list the control belongs to plus whatever `up` added. Links, na
 entries and tab buttons share one handler each, which reads the target's `data-key`. `pagePush`
 reaches the page shown through the subscription it registered, which the page's cleanup drops.
 
-**Sizes** (`./rr measure`, brotli, seeds 1-3, adapter excluded, not committed): N=1 1,869 to 1,948 B;
-N=16 7,531 to 8,485; N=64 20,364 to 23,028; N=256 61,469 to 63,986. Fit over all sizes: 3,823 B +
-237.6 B per page (R² 0.990). The runtime is 774 to 854 B at N=1 and 1,099 to 1,103 B from N=8; a page
-is about the size of two dashboard widgets.
+**Sizes** (`./rr measure`, brotli, seeds 1-3, adapter excluded, not committed): N=1 1,860 to 1,949 B;
+N=16 7,618 to 8,613; N=64 20,707 to 23,390; N=256 62,373 to 64,874. Fit over all sizes: 3,866 B +
+241.2 B per page (R² 0.990). The runtime is 746 to 776 B at N=1 and 1,006 B from N=8; the rest is app
+code and a page is about the size of two dashboard widgets.
+
+**After the review** (before 3,823 + 237.6, runtime 1,099 to 1,103 B at N >= 8): the scenario's helpers
+left the runtime (`add`, the cycle `nx`, and `L` and `C`, which encoded the item shape and a done
+bit-mask) and became app code; initial lists are plain object literals
+(`[{ id: 1, text: "Desk lamp" }, …]`) instead of `L(...)` and `C(mask, ...)`; pages and tab panels are
+found through an object keyed by id (`pages[k]`, `{ t1, t2 }[$tab]`), not by slicing the id. The
+runtime is 93 B smaller (1,006 B) and the app code larger, so the total grew 43 B at the baseline and
+3.6 B per page (+1.5% at N=256). The 238 B per page is therefore 241 B per page, the honest figure.
 
 **Work** (`./rr work`, seed 1, calls, N=16 to N=256): a page event 23 (add to an int, type a
 character), `serverSet` of a global the page does not read 7 and of one it reads 26, `notify` 23,
-`pagePush` to a page not shown 3 and to the page shown 38, navigation 77 to 234 (the page's size, not
-N), a tab switch 92 and 129, a clock tick 25, the modal opened 57 and closed 10, the global snapshot
-53, dispose 16, mount of the shell and p1 99. All 1.00x. Only opening the menu, which lists every
-page, grows (42 to 282, one call per page), and is global by nature.
+`pagePush` to a page not shown 3 and to the page shown 38, navigation 77 to 228 (the page's size, not
+N), a tab switch 92 and 126, a clock tick 25, the modal opened 57 and closed 12, the global snapshot
+53, dispose 16, mount of the shell and p1 93. All 1.00x. Only opening the menu, which lists every
+page, grows (58 to 538, a call per page), and is global by nature.
+
+**The sets are a static reader registry, not signals.** Which global fields a component reads is a
+compile-time fact. The component registers its list in those fields' sets when it mounts, and the
+handler that writes a field names the set to digest. Nothing is tracked while a binding runs, no
+binding subscribes by what it happened to read, and a binding still checks itself against its last
+value. It is `dep` of the other digest runtimes with a mount and an unmount.
+
+**Reopening a modal that is open** resets its fields in place (the modal registers a reset function
+with its cleanups; the open handler calls it and digests the modal's list), so its node survives,
+as in the reference.
 
 **Honest limits.**
 - The lifetime machinery (`widget`'s list and cleanups, `join`, `end`, `leave`, `every`, `feed`) is
-  in the runtime's 1.1 kB, and the sets add one `join(...)` and one `up(...)` per component that
+  in the runtime's 1 kB, and the sets add one `join(...)` and one `up(...)` per component that
   reads or writes a global: those are the "unjoin on unmount" bytes.
-- The first run of a binding happens at registration, so a list item's bindings take over the
-  runtime's `B`, `E` and `P` for a moment (`list` saves and restores them).
-- A modal opened while open is rebuilt (fresh state, a new node), where the reference keeps its
-  node. The script never does it.
+- There is one global `B`, `E` and `P` (the list, elements and position being made). A component
+  must register all its own bindings before it mounts another, because mounting overwrites them; a
+  page therefore mounts its first tab last, and `list` saves and restores the three while it makes
+  an item. A binding that ran later than its component's function (a timer, say) never touches them.
+- A binding runs once when it is registered, so a component is complete when its function returns.
+- A global field no component reads has no variable-set and no setter, and a `serverSet` of it is
+  ignored: the compiler dropped state that nothing shows (e.g. `online` when no page reads it).
+  Fields only written still get a variable.
 - `aria-current`, `aria-expanded` and `aria-selected` are written through the DOM's ARIA
   reflection properties (`ariaCurrent`, `ariaExpanded`, `ariaSelected`), which every current
+  browser has.
   browser has.

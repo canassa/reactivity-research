@@ -34,3 +34,16 @@ and left at `end`; navigation ends everything but the shell. Details in `framewo
 - No convergence: the lists are still whole components digested by a handler, not per-field groups.
   A page has a handful of bindings, so what a digest runs is bounded by the page, and a write to a
   global adds only the mounted readers.
+
+## After the code review
+
+- The scenario's helpers (`add`, `nx`, `L`, `C`) left `runtime-routed.js` and are emitted into
+  `app.js` when used; initial lists are plain object literals; routes and tabs are found by an object
+  keyed by id; the menu escapes titles and is wired through `widget` like the rest; `end` is
+  idempotent (`K.delete(b) && …`); `receive` switches on `snapshot` explicitly; opening a modal that
+  is open resets its fields in place (`B.r`) and keeps its node.
+- Split, seeds 1-3: runtime 1,099-1,103 B → 1,006 B from N=8 (774-854 → 746-776 at N=1). Fit 3,823 +
+  237.6 → 3,866 + 241.2 B per page; N=256 61.5-64.0 → 62.4-64.9 kB (+1.5%).
+- Re-run: `./rr check routed-app digest` sizes 1, 4, 16, 64 × seeds 1-3 with locality (1.0x), the other
+  scenarios' digest checks (big-component still fails locality, as documented), `./rr work` all
+  local actions 1.00x (menu open 58 → 538).
