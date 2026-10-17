@@ -1,1 +1,0 @@
-../beni/beni.js
