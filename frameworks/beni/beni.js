@@ -1,5 +1,6 @@
-// beni, as it ships: what the beni-tea and beni-direct setups share (each links this file into
-// its own directory, so a change here changes both setups' measurement hash). See README.md.
+// beni, as it ships: what the beni-tea, beni-direct and beni-inline setups share (each links this
+// file into its own directory, so a change here changes every setup's measurement hash). See
+// README.md.
 //
 // The compiler is a pinned commit of beni (an unreleased compiler, written in Zig), built by
 // install.sh into compiler/<commit>/ (gitignored). An app is built with beni's own production
@@ -23,15 +24,16 @@ import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 
-export const COMMIT = "6a1b567fad5410fe80c8bc4e0a1f6733279fd908";
+export const COMMIT = "ca8b52fb0d3ac96b30a75eab687879524b81c2b1";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const COMPILER = path.join(HERE, "compiler", COMMIT.slice(0, 12), "zig-out", "bin", "beni");
 const UNMAPPED = "beni:///(unmapped)";
 
-// Files every beni app gets unchanged, for one of beni's two browser platforms
-// ("browser-tea" or "browser-direct"): the project file, the page, the adapter, and the
-// project's platform layer over the shipped platform (template/Push.beni).
+// Files every beni app gets unchanged, for one of beni's browser platforms ("browser-tea",
+// "browser-direct" or "browser-inline", whose setup replaces the adapter with its own): the
+// project file, the page, the adapter, and the project's platform layer over the shipped platform
+// (template/Push.beni).
 export function templateFiles(platform, { name, title }) {
   const read = (f) => fs.readFileSync(path.join(HERE, "template", f), "utf8");
   const project = { name, html: "index.html", build: { platform: "./platform", paths: ["src"], out: "dist", base: "./" } };

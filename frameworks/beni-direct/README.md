@@ -5,7 +5,7 @@ Architecture program, compiled instead of run. There is no `view` at run time: t
 with every constant baked in, each message key is one JavaScript function that runs its `update`
 arm and writes exactly the DOM nodes its write set can reach, lists are edited in place, and a
 keyed reconciler ships only for lists a message replaces or permutes. beni is unreleased; the
-compiler is pinned to commit `6a1b567fa` and built from source: see
+compiler is pinned to commit `ca8b52fb0` and built from source: see
 [`../beni/README.md`](../beni/README.md) for the pin, the build, the adapter and the byte
 attribution, shared with [`beni-tea`](../beni-tea/).
 

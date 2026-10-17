@@ -1,26 +1,31 @@
-# beni (shared by beni-tea and beni-direct)
+# beni (shared by beni-tea, beni-direct and beni-inline)
 
 [beni](https://github.com/canassa/beni) is a statically typed ML-family language (Elm's
 architecture and guarantees, JSX markup, no currying) whose compiler, written in Zig, emits
 JavaScript. It is **unreleased** (pre-1.0, changing daily), but it is a real compiler with its
-own production build, so both setups are on the `framework` track. It has two browser
+own production build, so every setup is on the `framework` track. It has three browser
 platforms, measured separately from **one source**:
 
 - [`beni-tea`](../beni-tea/): `browser-tea`, The Elm Architecture over compiled templates;
 - [`beni-direct`](../beni-direct/): `browser-direct`, the same TEA program compiled to direct
-  DOM writes, one function per message.
+  DOM writes, one function per message;
+- [`beni-inline`](../beni-inline/): `browser-inline`, the same program compiled whole at its
+  constructor's call, with no task kernel (in progress: its first slice compiles only the
+  minimal view).
 
-This directory holds what both setups share for every scenario. Each links these files into its
-own directory (`beni.js`, `template/*`), so a change here changes both setups' measurement hash.
+This directory holds what the setups share for every scenario. Each links these files into its
+own directory (`beni.js`, `template/*`; beni-inline has an adapter of its own), so a change here
+changes every setup's measurement hash.
 The dashboard's source, also shared, is `scenarios/shared-components/shared/beni.js`.
 
 ## The pinned compiler
 
-- **Commit:** `6a1b567fad5410fe80c8bc4e0a1f6733279fd908`, beni's `origin/master` on
-  2026-10-16 (`COMMIT` in `beni.js`).
+- **Commit:** `ca8b52fb0d3ac96b30a75eab687879524b81c2b1`, beni's `master` on 2026-10-17, the
+  merge of `browser-inline`'s first slice (`COMMIT` in `beni.js`). It was `6a1b567fa` before;
+  the results of 2026-10-16 and earlier were measured with that.
 - **Build:** beni's own instructions (`docs/getting-started.md`): its flake's dev shell
   (Zig 0.17.0, Node 24, pinned by its `flake.lock`) and `zig build -Doptimize=ReleaseFast`.
-- **Identity:** `beni version` prints `beni 0.1.0-m1 ee040d874c1f0f73e43a0e7ef109007d`, a build
+- **Identity:** `beni version` prints `beni 0.1.0-m1 413cf0a70977a86b0211218aa3ffa166`, a build
   id derived from the compiler's sources; `versions()` records it with the binary's sha256.
 
 Build it once (needs the network once, for the sources and beni's Nix toolchain):
@@ -30,8 +35,8 @@ frameworks/beni/install.sh                       # sources from GitHub
 BENI_REPO=~/src/beni frameworks/beni/install.sh  # or fetched from a local clone, which it leaves alone
 ```
 
-It clones exactly that commit into `compiler/6a1b567fad54/` (gitignored, and named so the
-measurement hash never reads it) and builds `compiler/6a1b567fad54/zig-out/bin/beni`. To move
+It clones exactly that commit into `compiler/ca8b52fb0d3a/` (gitignored, and named so the
+measurement hash never reads it) and builds `compiler/ca8b52fb0d3a/zig-out/bin/beni`. To move
 to another commit, change `COMMIT` in `beni.js` and run it again. After that every app builds
 offline.
 
@@ -58,7 +63,7 @@ parallel (beni's output is the same for every `--jobs`). Then the build:
 
 - **`Push.beni`, the project's platform layer.** beni has no ports (withdrawn, `boundary.md`
   §3.1): a binding the shipped platform lacks is written as the project's own platform layered on
-  it. The layer (`platform/beni.json`, `"platforms": ["browser-tea"]` or `["browser-direct"]`)
+  it. The layer (`platform/beni.json`, `"platforms": ["browser-tea"]`, `["browser-direct"]` or `["browser-inline"]`)
   has one module, a subscription to a `window` event:
 
   ```elm
@@ -101,6 +106,6 @@ described at its top and in each setup's README. Every generated module is laid 
 `beni fmt` writes it:
 
 ```sh
-cp -r generated/shared-components/n16-s1/beni-tea/src /tmp/src && frameworks/beni/compiler/6a1b567fad54/zig-out/bin/beni fmt /tmp/src
+cp -r generated/shared-components/n16-s1/beni-tea/src /tmp/src && frameworks/beni/compiler/ca8b52fb0d3a/zig-out/bin/beni fmt /tmp/src
 diff -r generated/shared-components/n16-s1/beni-tea/src /tmp/src   # no output
 ```

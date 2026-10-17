@@ -3,7 +3,7 @@
 beni's `browser-tea` platform: The Elm Architecture written in beni over the `browser` platform,
 whose markup lowering compiles each `view` site to a template that is cloned once and patched
 where a value changed (a port of dom-expressions' compiler), rendering once per task on a
-microtask. beni is unreleased; the compiler is pinned to commit `6a1b567fa` and built from
+microtask. beni is unreleased; the compiler is pinned to commit `ca8b52fb0` and built from
 source: see [`../beni/README.md`](../beni/README.md) for the pin, the build, the adapter and the
 byte attribution, which this setup shares with [`beni-direct`](../beni-direct/).
 
