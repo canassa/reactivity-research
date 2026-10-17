@@ -52,15 +52,11 @@ let GL;
 // still open, so they change nothing.
 const open = (html) => html.replace(/(<\/\w+>)+$/, "");
 
-// A field's initial value: as it is; a list's items as their texts when their ids are 1, 2, …,
-// after a bit mask of which are done for a checkable list with done items.
+// A field's initial value, as a plain literal; a list's items as object literals.
 function initial(f, v) {
   if (f.type !== "list") return lit(v);
-  if (v.every((it, i) => it.id === i + 1) && v.length < 31) {
-    const texts = v.map((it) => lit(it.text));
-    return f.checkable && v.some((it) => it.done) ? `C(${[v.reduce((m, it, i) => m | (it.done ? 1 << i : 0), 0), ...texts].join(", ")})` : `L(${texts.join(", ")})`;
-  }
-  return lit(v);
+  const item = (it) => `{ id: ${it.id}, text: ${lit(it.text)}${f.checkable ? `, done: ${!!it.done}` : ""} }`;
+  return `[${v.map(item).join(", ")}]`;
 }
 
 // Compile one component (a page, a tab panel or a modal) of `page`. Returns its template, the
@@ -143,8 +139,8 @@ function compile(kind, comp, page, ctx) {
       case "reset": return { e: `${L} = ${initial(f, f.initial)}` };
       case "cycle": return { e: `${L} = nx(${[L, ...f.options.map(lit)].join(", ")})` };
       case "copy": return { e: `${L} = ${name(o[2])}` };
-      case "push": return { e: `(t = ${name(o[2])}.trim()) && (add(${L}, t), ${name(o[2])} = "")`, t: 1 };
-      case "pushText": return { e: `add(${L}, ${lit(o[2])})` };
+      case "push": return { e: `(t = ${name(o[2])}.trim()) && (add(${L}, t${f.checkable ? ", false" : ""}), ${name(o[2])} = "")`, t: 1 };
+      case "pushText": return { e: `add(${L}, ${lit(o[2])}${f.checkable ? ", false" : ""})` };
       case "pop": return { e: `${L}.pop()` };
       case "shift": return { e: `${L}.shift()` };
       case "clear": return { e: `${L} = []` };
@@ -182,7 +178,7 @@ function compile(kind, comp, page, ctx) {
         const e = m.op === "remove" ? `${L} = ${L}.filter((i) => i != r.i)` : `r.i.done = X.checked`;
         return `() => ${u.length ? `(${[e, ...u].join(", ")})` : e}`;
       }
-      case "open": return `() => (end(M), M = md())`;
+      case "open": return page.modal.fields.length ? `() => M ? (M.r(), up([M])) : (M = md())` : `() => M || (M = md())`;
       case "close": return `() => end(M)`;
     }
     throw new Error(`digest: unknown message kind ${m.kind}`);
@@ -341,6 +337,11 @@ function pageCode(page, ctx) {
     if (comp.fields.length) lines.push(`let ${decl(comp).join(", ")};`);
     lines.push(`${kind === "tab" ? "tn.after" : "pg.append"}(widget(\`${tpl(c.html)}\`${handlers(c.ctl)}));`);
     lines.push(...c.binds, ...joins(c, c.reads.p));
+    // The modal clears `M` when it ends, and opening it while open resets its fields in place.
+    if (kind === "modal") {
+      lines.push("cleanup(() => M = 0);");
+      if (comp.fields.length) lines.push(`B.r = () => (${comp.fields.map((f) => `$${f.name} = ${initial(f, f.initial)}`).join(", ")});`);
+    }
     for (const f of comp.fields) if (f.every) lines.push(`every(${f.every}, () => $${f.name} = Math.min(${f.max}, $${f.name} + ${f.by}));`);
     lines.push("return B;");
     return `const ${fn} = () => {\n${indent(lines.join("\n"))}\n};`;
@@ -352,7 +353,7 @@ function pageCode(page, ctx) {
   if (ctx.shared.size) lines.push("const Ps = new Set();");
   tabs.forEach((t, i) => lines.push(subFn("tab", t, subs[i], `t${i + 1}`)));
   if (page.modal) lines.push(subFn("modal", page.modal, subs[tabs.length], "md"));
-  if (tabs.length) lines.push(`const sel = () => X.dataset.key != $tab && (end(T), ($tab = X.dataset.key), (T = [${tabs.map((_, i) => `t${i + 1}`).join(", ")}][$tab.slice(1) - 1]()));`);
+  if (tabs.length) lines.push(`const sel = () => X.dataset.key != $tab && (end(T), ($tab = X.dataset.key), (T = { ${tabs.map((_, i) => `t${i + 1}`).join(", ")} }[$tab]()));`);
   const make = `widget(\`${tpl(own.html)}\`${handlers(own.ctl)})`;
   lines.push(page.modal ? `const pg = ${make};\nA.append(pg);` : `A.append(${make});`);
   lines.push(...own.binds, ...joins(own, ctx.shared));
@@ -409,8 +410,7 @@ ${indent(shellBinds.join("\n"))}
 
 // The menu lists every page: it is built when opened and ends with navigation.
 const menuList = () => {
-  const n = widget(\`<nav data-role=menuList>\${TT.map((t, i) => \`<button data-key=p\${i + 1} data-role=menuLink>\${t}\`).join("")}\`);
-  for (const c of n.children) (c.h = go), (c.b = B);
+  const n = widget(\`<nav data-role=menuList>\${TT.map((t, i) => \`<button data-key=p\${i + 1} data-role=menuLink>\${t}</button>\`).join("")}\`, ...TT.map(() => go));
   A.firstChild.after(n);
   return B;
 };
@@ -419,7 +419,7 @@ const toggle = () => ((menu = !menu) ? (M0 = menuList()) : end(M0), up([SB]));
 // Navigate: end every component but the shell (the page, its tab panel and modal, the menu) and
 // mount the new page.
 const go = (k = X.dataset.key) => {
-  k == route ? menu && end(M0) : (leave(SB), (route = k), pages[k.slice(1) - 1]());
+  k == route ? menu && end(M0) : (leave(SB), (route = k), pages[k]());
   menu = false;
   up([SB]);
 };`;
@@ -438,7 +438,7 @@ ${hasFeed ? '  if (m.type == "pagePush") return m.page == route && Fd && Fd({ ..
     if (m.type == "deepLink") go(m.route);
     else if (m.type == "notify") $notices.push({ ...m.item }), up(r$notices);
     else if (m.type == "serverSet") SET[m.field]?.(m.value);
-    else for (const k in SET) SET[k](structuredClone(m.global[k]));
+    else if (m.type == "snapshot") for (const k in SET) SET[k](structuredClone(m.global[k]));
   });
 };`;
 
@@ -449,13 +449,13 @@ const ${liveList.map((g) => `r$${g} = new Set()`).join(", ")};
 // The shell's state: the route, whether the menu is open, the shell's list, the menu's list.
 let route, menu, SB, M0;
 // The pages' titles, for the menu.
-const TT = [${spec.pages.map((p) => lit(p.title)).join(", ")}];
+const TT = [${spec.pages.map((p) => lit(esc(p.title))).join(", ")}];
 
 ${pages.map((p) => p.code).join("\n\n")}
 
 ${shell}
 
-const pages = [${spec.pages.map((p) => p.id).join(", ")}];
+const pages = { ${spec.pages.map((p) => p.id).join(", ")} };
 
 // What a server sets or replaces, by field: the new value, and the readers digested.
 const SET = {
@@ -466,11 +466,18 @@ ${start}
 
 ${receive}
 `;
-  const names = ["A", "B", "X", "Fd", "act", "up", "widget", "bind", "text", "show", "list", "at", "end", "join", "every", "feed", "leave", "nx", "add", "L", "C"]
+  const names = ["A", "B", "X", "Fd", "act", "up", "widget", "bind", "text", "show", "list", "at", "end", "join", "every", "feed", "leave", "cleanup"]
     .filter((x) => new RegExp(`(^|[^\\w.$])${x}\\b`, "m").test(body.replace(/`[^`]*`/g, "")));
+  // The scenario's own helpers are app code: the cycle op and adding an item.
+  const code = body.replace(/`[^`]*`/g, "");
+  const used = (x) => new RegExp(`(^|[^\\w.$])${x}\\(`, "m").test(code);
+  const helpers = [
+    used("nx") && "// The option after v (the first after the last).\nconst nx = (v, ...a) => a[(a.indexOf(v) + 1) % a.length];",
+    used("add") && "// A new item gets the next id.\nconst add = (l, text, done) => l.push({ id: Math.max(0, ...l.map((i) => i.id)) + 1, text, done });",
+  ].filter(Boolean);
   return `// Generated by scenarios/routed-app/digest.js. Do not edit.
 import { app, ${names.join(", ")} } from "./runtime.js";
-
+${helpers.length ? "\n" + helpers.join("\n") + "\n" : ""}
 ${body}
 // One page at a time: \`start\` mounts the shell and the first page.
 export default app(start, receive);

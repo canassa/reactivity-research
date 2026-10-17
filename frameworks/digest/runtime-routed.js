@@ -104,16 +104,6 @@ export const list = (d, items, role, html, make, p = E[(P += d)], map = new Map(
     }
   });
 
-// Small helpers for handlers.
-// The option after v (the first after the last), the options as arguments.
-export const nx = (v, ...a) => a[(a.indexOf(v) + 1) % a.length];
-// A new item gets the next id and is not done.
-export const add = (l, text) => l.push({ id: Math.max(0, ...l.map((i) => i.id)) + 1, text, done: false });
-// A list from its items' texts, as arguments; the ids are 1, 2, …
-export const L = (...a) => a.map((text, i) => ({ id: i + 1, text }));
-// A checkable list from a bit mask of the done items (bit i: item i), then its items' texts.
-export const C = (m, ...a) => a.map((text, i) => ({ id: i + 1, text, done: !!(m & (1 << i)) }));
-
 // Create a component from its template and the handlers of its controls (in document order) and
 // make it the one being made: the bindings that follow refer to its elements by position (0 is
 // the first element below the root). The caller puts the root node in the page.
@@ -148,7 +138,7 @@ export const feed = (f, b = B) => {
 };
 
 // End a component (none: nothing).
-export const end = (b) => b && (K.delete(b), b.n.remove(), (b.length = 0), b.u.forEach((f) => f()));
+export const end = (b) => b && K.delete(b) && (b.n.remove(), (b.length = 0), b.u.forEach((f) => f()));
 // End every mounted component but `keep`.
 export const leave = (keep) => {
   for (const b of K) b == keep || end(b);
