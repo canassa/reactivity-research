@@ -269,7 +269,10 @@ async function gate(scenario, plan, chromeBin, skipped) {
       const server = await listen(serveHandler(scenario, spec, new Map(group.map((p) => [p.variant, p.dist]))), 0);
       const base = `http://127.0.0.1:${server.address().port}`;
       try {
-        const results = await Promise.all(group.map((p) => scriptCheck(chrome, `${base}/${p.variant}/`, { timeout: 180000 }).catch((err) => ({ error: err.message }))));
+        // One app at a time: checked together in one Chrome, the heavy pages (big-table's 1,000
+        // rows, derived-graph's 2,000 items) timed out waiting for the panel on a slower machine.
+        const results = [];
+        for (const p of group) results.push(await scriptCheck(chrome, `${base}/${p.variant}/`, { timeout: 180000 }).catch((err) => ({ error: err.message })));
         group.forEach((p, i) => {
           const r = results[i];
           if (r.error) { skipped.push({ variant: p.variant, size: p.size, seed: p.seed, why: `check could not run: ${r.error}` }); return; }
