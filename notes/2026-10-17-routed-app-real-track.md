@@ -14,8 +14,8 @@
   idempotent `render()` per page (`setText`/`setValue` write only what differs); delegated listeners on the page's
   `<main>`; a keyed `sync` helper (the only runtime); conditional sections after comment anchors; tab panels and the
   modal built when selected or opened. `go(route)` disposes the old page and mounts the new one.
-- **Solid 1:** an in-app `route` signal with `<Dynamic>` over a table of page components (`<Switch>`/`<Match>`
-  built N matches per mount and per navigation, 40x more work from N=16 to 256); a store created inside each page,
+- **Solid 1:** an in-app `route` signal with `<Dynamic>` over a table of page components (a `switch` variant with
+  `<Switch>`/`<Match>` is also recorded, see below); a store created inside each page,
   tab panel and modal component, so state resets on remount; `setInterval` with `onCleanup`; a `pagePush`
   subscription registered by the page and removed with it.
 - **Elm:** `Browser.element`; a `Page` custom type holding the shown page's model (its `init` runs on every
