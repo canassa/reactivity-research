@@ -1,6 +1,7 @@
-// beni, as it ships: what the beni-tea, beni-direct and beni-inline setups share (each links this
-// file into its own directory, so a change here changes every setup's measurement hash). See
-// README.md.
+// beni, as it ships: what every beni setup shares (each links this file into its own directory,
+// so a change here changes every setup's measurement hash). Today there is one, beni-inline;
+// beni-tea and beni-direct were measured here until 2026-10-17 and dropped when the direct
+// platform's rewrite began (their results stay in results/). See README.md.
 //
 // The compiler is a pinned commit of beni (an unreleased compiler, written in Zig), built by
 // install.sh into compiler/<commit>/ (gitignored). An app is built with beni's own production
@@ -30,10 +31,9 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const COMPILER = path.join(HERE, "compiler", COMMIT.slice(0, 12), "zig-out", "bin", "beni");
 const UNMAPPED = "beni:///(unmapped)";
 
-// Files every beni app gets unchanged, for one of beni's browser platforms ("browser-tea",
-// "browser-direct" or "browser-inline", whose setup replaces the adapter with its own): the
-// project file, the page, the adapter, and the project's platform layer over the shipped platform
-// (template/Push.beni).
+// Files every beni app gets unchanged, for one of beni's browser platforms: the project file,
+// the page, and the project's platform layer over the shipped platform (template/Push.beni).
+// The contract adapter is the setup's own (frameworks/<setup>/template/adapter.js).
 export function templateFiles(platform, { name, title }) {
   const read = (f) => fs.readFileSync(path.join(HERE, "template", f), "utf8");
   const project = { name, html: "index.html", build: { platform: "./platform", paths: ["src"], out: "dist", base: "./" } };
@@ -46,7 +46,6 @@ export function templateFiles(platform, { name, title }) {
   return {
     "beni.json": JSON.stringify(project, null, 2) + "\n",
     "index.html": read("index.html").replace("%TITLE%", title),
-    "adapter.js": read("adapter.js"),
     "platform/beni.json": JSON.stringify(layer, null, 2) + "\n",
     "platform/Push.beni": read("Push.beni"),
   };

@@ -1,8 +1,6 @@
-// The unique-components scenario written in beni: one source for both of beni's browser
-// platforms (browser-tea and browser-direct; browser-direct's `Tea` is "the API of browser-tea's
-// Tea, so one source builds on both"). The two emitters (scenarios/unique-components/beni-tea.js
-// and beni-direct.js) call `emitApp` with their own framework's template files. It lives in the
-// scenario's shared folder, which every measurement's inputs hash covers.
+// The unique-components scenario written in beni, for its browser-inline platform (frameworks/beni-inline/):
+// the emitter (scenarios/unique-components/beni-inline.js) calls `emitApp` with the framework's template
+// files. It lives in the scenario's shared folder, which every measurement's inputs hash covers.
 //
 // Style (recorded in every generated app's rr.json), following beni's README, its getting-started
 // guide and its Conduit example (elm-spa-example's structure, in beni), and the same architecture
@@ -31,8 +29,8 @@
 //   subscription; beni has no ports, frameworks/beni/template/Push.beni) as host values. `update`
 //   reads one with a `schema` declaration (`Event`, tagged on "type") and hands the widget it names
 //   its new state, which the widget reads with a derived codec. A list read from the host is
-//   copied (`List.copy`) where the model takes it, as beni's ownership checker asks (browser-direct
-//   edits lists in place); decoding in `update`, rather than in the subscription's function, is
+//   copied (`List.copy`) where the model takes it, as beni's ownership checker asks (lists
+//   are edited in place); decoding in `update`, rather than in the subscription's function, is
 //   also what that checker accepts.
 // - Production build: `beni build --release --source-maps` (frameworks/beni/beni.js).
 

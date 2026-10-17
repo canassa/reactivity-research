@@ -1,8 +1,6 @@
-// The big-table scenario written in beni: one source for both of beni's browser platforms
-// (browser-tea and browser-direct; browser-direct's `Tea` is "the API of browser-tea's Tea, so
-// one source builds on both"). The two emitters (scenarios/big-table/beni-tea.js and
-// beni-direct.js) call `emitApp` with their own framework's template files. It lives in the
-// scenario's shared folder, which every measurement's inputs hash covers.
+// The big-table scenario written in beni, for its browser-inline platform (frameworks/beni-inline/):
+// the emitter (scenarios/big-table/beni-inline.js) calls `emitApp` with the framework's template
+// files. It lives in the scenario's shared folder, which every measurement's inputs hash covers.
 //
 // Style (recorded in every generated app's rr.json), following beni's own js-framework-benchmark
 // app (beni/bench/ui/apps/beni/Main.beni and bench/jfb/frameworks/keyed/beni-*), beni's README
@@ -33,8 +31,8 @@
 //   subscription; beni has no ports, frameworks/beni/template/Push.beni) as host values. `update`
 //   reads one with a `schema` declaration (`Event`, tagged on "type") and hands the table it names
 //   its part, which the table reads with a derived codec. A list read from the host is copied
-//   (`List.copy`) where the model takes it, as beni's ownership checker asks (browser-direct
-//   edits lists in place); decoding in `update`, rather than in the subscription's function, is
+//   (`List.copy`) where the model takes it, as beni's ownership checker asks (lists
+//   are edited in place); decoding in `update`, rather than in the subscription's function, is
 //   also what that checker accepts.
 // - ARIA (a dead end for now, counted at N=1 only): the language and both lowerings support a
 //   `Maybe String` attribute, removed on `Nothing` (beni docs/design/language.md, Rt.beni, Direct.beni),

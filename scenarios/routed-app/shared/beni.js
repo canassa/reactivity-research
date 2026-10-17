@@ -1,8 +1,6 @@
-// The routed-app scenario written in beni: one source for both of beni's browser platforms
-// (browser-tea and browser-direct; browser-direct's `Tea` is "the API of browser-tea's Tea, so
-// one source builds on both"). The two emitters (scenarios/routed-app/beni-tea.js and
-// beni-direct.js) call `emitApp` with their own framework's template files. It lives in the
-// scenario's shared folder, which every measurement's inputs hash covers.
+// The routed-app scenario written in beni, for its browser-inline platform (frameworks/beni-inline/):
+// the emitter (scenarios/routed-app/beni-inline.js) calls `emitApp` with the framework's template
+// files. It lives in the scenario's shared folder, which every measurement's inputs hash covers.
 //
 // Style (recorded in every generated app's rr.json), following beni's README and getting-started
 // guide, its Conduit example (elm-spa-example's structure, in beni: the model is the page the
@@ -47,7 +45,7 @@
 //   shipped vocabulary has `aria-*` only as a `String` attribute that is never removed. The
 //   button of a page entering or leaving the nav bar's current mark is therefore replaced.
 // - A list read from the host is copied (`List.copy`) where the model takes it, as beni's
-//   ownership checker asks (browser-direct edits lists in place).
+//   ownership checker asks (lists are edited in place).
 // - Production build: `beni build --release --source-maps` (frameworks/beni/beni.js).
 
 import { beniString, beniValue } from "../../shared-components/shared/beni.js";

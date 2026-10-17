@@ -5,20 +5,20 @@ Architecture program, compiled whole where its constructor (`Tea.element`) is ca
 task kernel, no `Dict` and no run-time renderer to fall back on. What it cannot compile exactly
 is a build error, never a fallback. beni is unreleased; the compiler is pinned to commit
 `ca8b52fb0` and built from source: see [`../beni/README.md`](../beni/README.md) for the pin, the
-build and the byte attribution, shared with [`beni-tea`](../beni-tea/) and
-[`beni-direct`](../beni-direct/).
+build and the byte attribution. (beni's earlier platforms, `browser-tea` and `browser-direct`,
+were measured here as `beni-tea` and `beni-direct` until 2026-10-17; their results stay in
+`results/`, their setups were dropped when the rewrite began.)
 
 ## How the app is written
 
-Exactly as for beni-tea, from the same generators (`scenarios/<scenario>/shared/beni.js`):
-`browser-inline`'s `Tea` keeps `browser-tea`'s signatures, so one source builds on all three
-platforms. The page (`index.html`) and the project's platform layer (`Push.beni`,
-`"platforms": ["browser-inline"]`) are the shared ones.
+From the generators in `scenarios/<scenario>/shared/beni.js`, one beni source per scenario:
+`browser-inline`'s `Tea` keeps `browser-tea`'s signatures, so the source written for the earlier
+platforms builds unchanged. The page (`index.html`) and the project's platform layer
+(`Push.beni`, `"platforms": ["browser-inline"]`) are the shared ones.
 
-## The adapter (`template/adapter.js`, its own)
+## The adapter (`template/adapter.js`)
 
-- `mount` imports the module, as for the other two (a second mount under a query string, a
-  fresh module record);
+- `mount` imports the module (a second mount under a query string, a fresh module record);
 - `dispatch` fires `rr-push` on `window`;
 - `settled` resolves once the module has loaded: the platform writes the DOM synchronously inside
   each dispatch, so there is nothing to flush or wait for;

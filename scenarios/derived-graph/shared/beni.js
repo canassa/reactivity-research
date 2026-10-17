@@ -1,8 +1,6 @@
-// The derived-graph scenario written in beni: one source for both of beni's browser platforms
-// (browser-tea and browser-direct; browser-direct's `Tea` is "the API of browser-tea's Tea, so one
-// source builds on both"). The two emitters (scenarios/derived-graph/beni-tea.js and
-// beni-direct.js) call `emitApp` with their own framework's template files. It lives in the
-// scenario's shared folder, which every measurement's inputs hash covers.
+// The derived-graph scenario written in beni, for its browser-inline platform (frameworks/beni-inline/):
+// the emitter (scenarios/derived-graph/beni-inline.js) calls `emitApp` with the framework's template
+// files. It lives in the scenario's shared folder, which every measurement's inputs hash covers.
 //
 // Style (recorded in every generated app's rr.json), following beni's README and getting-started
 // guide, its language reference's rule for a `view`'s constant `let`s (docs/design/language.md
@@ -13,9 +11,9 @@
 // - **Derived values are computed in the view, not cached in the model.** Each formula is one
 //   constant `let` of `view`, written as the expression the spec describes, in dependency order:
 //   `dutyOwed = Num.pct grossSales model.inputs.taxRate`. beni treats a `let` that only markup
-//   reads as a derived value (docs/design/browser-direct.md §5.4: a slot recomputed only by the
-//   messages whose write set reaches what the `let` reads, in dependency order; browser-tea
-//   guards each by the values it read). So every formula is computed once per change of its
+//   reads as a derived value (beni's docs/design/browser-direct.md §5.4: a slot recomputed only
+//   by the messages whose write set reaches what the `let` reads, in dependency order). So
+//   every formula is computed once per change of its
 //   inputs and read by as many displays as show it, with no cache for the program to keep in step
 //   (a model field per formula would have to be recomputed by every `update` arm that can reach
 //   it: N fields, N chains of calls). The model holds only state: the inputs and the items.

@@ -1,7 +1,7 @@
 {
   "$comment": "The predefined runs of ./rr report: per scenario, per emitter, the sizes, seeds and options. A list in options measures every value as its own variant. Sizes and seeds live only here, per framework.",
   "shared-components": {
-    "$bench": { "$comment": "./rr bench: one app per framework, at the largest size every framework builds in every scenario (beni-direct has no 128 or 256 in unique-components).", "sizes": [64], "seeds": [1] },
+    "$bench": { "$comment": "./rr bench: one app per framework, at the largest size every framework builds in every scenario.", "sizes": [64], "seeds": [1] },
     "solid": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3]
@@ -24,15 +24,6 @@
     },
     "digest": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
-      "seeds": [1, 2, 3]
-    },
-    "beni-tea": {
-      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
-      "seeds": [1, 2, 3]
-    },
-    "beni-direct": {
-      "$comment": "No 256: beni's ownership checker (its 64-path width cap) refuses the N=256 app on browser-direct, every seed; see frameworks/beni-direct/README.md.",
-      "sizes": [1, 2, 4, 8, 16, 32, 64, 128],
       "seeds": [1, 2, 3]
     },
     "marko": {
@@ -70,15 +61,6 @@
     "tea-inline": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3]
-    },
-    "beni-tea": {
-      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
-      "seeds": [1, 2, 3]
-    },
-    "beni-direct": {
-      "$comment": "No 32, 128 or 256: beni's ownership checker (its 64-path width cap; every widget adds list paths to the one update summary) refuses the app with LIST MAY BE SHARED: N=32 for seed 3, N=96, 128 and 256 for every seed tried; see frameworks/beni-direct/README.md and notes/2026-10-16-beni-unique-components.md.",
-      "sizes": [1, 2, 4, 8, 16, 64],
-      "seeds": [1, 2, 3]
     }
   },
   "big-component": {
@@ -97,14 +79,6 @@
       "seeds": [1, 2, 3]
     },
     "tea-inline": {
-      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
-      "seeds": [1, 2, 3]
-    },
-    "beni-tea": {
-      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
-      "seeds": [1, 2, 3]
-    },
-    "beni-direct": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3]
     },
@@ -151,16 +125,6 @@
     "marko": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3]
-    },
-    "beni-tea": {
-      "$comment": "Only N=1: from N=2 (seed 2) up, tables whose selection marker is aria-selected replace the selected <tr> instead of updating it, because the shipped vocabulary declares aria-* as a plain String, so beni cannot omit it (an upstream pub attribute \"aria-selected\" : Maybe String would fix it); that fails the node-identity rule, so those sizes do not count. N=1 (table 1 is js-framework-benchmark, marked by class) passes and is kept for the CPU bench. See notes/2026-10-16-beni-big-table.md.",
-      "sizes": [1],
-      "seeds": [1, 2, 3]
-    },
-    "beni-direct": {
-      "$comment": "Only N=1: from N=2 (seed 2) up, tables whose selection marker is aria-selected replace the selected <tr> instead of updating it, because the shipped vocabulary declares aria-* as a plain String, so beni cannot omit it (an upstream pub attribute \"aria-selected\" : Maybe String would fix it); that fails the node-identity rule, so those sizes do not count. N=1 (table 1 is js-framework-benchmark, marked by class) passes and is kept for the CPU bench. See notes/2026-10-16-beni-big-table.md. Its ownership checker also refuses N=16 and up.",
-      "sizes": [1],
-      "seeds": [1, 2, 3]
     }
   },
   "routed-app": {
@@ -192,16 +156,6 @@
     },
     "tea-local": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
-      "seeds": [1, 2, 3]
-    },
-    "beni-tea": {
-      "$comment": "Only N=1: from N=4 up the nav bar replaces the pinned buttons whose aria-current changes, because beni's shipped HTML vocabulary types aria-* as String (never removed); that fails the node-identity rule. Upstream fix: pub attribute \"aria-current\" : Maybe String. See notes/2026-10-17-routed-app-beni.md.",
-      "sizes": [1],
-      "seeds": [1, 2, 3]
-    },
-    "beni-direct": {
-      "$comment": "Only N=1: from N=4 up the nav bar replaces the pinned buttons whose aria-current changes, because beni's shipped HTML vocabulary types aria-* as String (never removed); that fails the node-identity rule. Upstream fix: pub attribute \"aria-current\" : Maybe String. See notes/2026-10-17-routed-app-beni.md.",
-      "sizes": [1],
       "seeds": [1, 2, 3]
     },
     "marko": {
@@ -245,17 +199,6 @@
     },
     "tea-dirtybits": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
-      "seeds": [1, 2, 3],
-      "options": { "fanout": ["low", "mid", "high"] }
-    },
-    "beni-tea": {
-      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
-      "seeds": [1, 2, 3],
-      "options": { "fanout": ["low", "mid", "high"] }
-    },
-    "beni-direct": {
-      "$comment": "Sizes 1 to 128 only: browser-direct's compiler memory and time grow steeply with N on this app (every handler re-runs the whole derived block, so the JavaScript grows about with N squared: 368 kB at N=64, 1.16 MB at 128): 3.9 GB and 39 s at N=128, 8.1 GB and 83 s at N=160, and the build is killed (SIGTERM, no diagnostic) past 12 GB at N=192 and 256. See notes/2026-10-17-beni-derived-graph.md.",
-      "sizes": [1, 2, 4, 8, 16, 32, 64, 128],
       "seeds": [1, 2, 3],
       "options": { "fanout": ["low", "mid", "high"] }
     }

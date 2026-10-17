@@ -1,21 +1,24 @@
-# beni (shared by beni-tea, beni-direct and beni-inline)
+# beni (shared by every beni setup)
 
 [beni](https://github.com/canassa/beni) is a statically typed ML-family language (Elm's
 architecture and guarantees, JSX markup, no currying) whose compiler, written in Zig, emits
 JavaScript. It is **unreleased** (pre-1.0, changing daily), but it is a real compiler with its
-own production build, so every setup is on the `framework` track. It has three browser
-platforms, measured separately from **one source**:
+own production build, so its setups are on the `framework` track. One browser platform is
+measured today:
 
-- [`beni-tea`](../beni-tea/): `browser-tea`, The Elm Architecture over compiled templates;
-- [`beni-direct`](../beni-direct/): `browser-direct`, the same TEA program compiled to direct
-  DOM writes, one function per message;
-- [`beni-inline`](../beni-inline/): `browser-inline`, the same program compiled whole at its
-  constructor's call, with no task kernel (in progress: its first slice compiles only the
-  minimal view).
+- [`beni-inline`](../beni-inline/): `browser-inline`, The Elm Architecture program compiled
+  whole at its constructor's call, with no task kernel (in progress: its first slice compiles
+  only the minimal view).
+
+Two earlier platforms, `browser-tea` (TEA over compiled templates, rendered once per task) and
+`browser-direct` (the same program compiled to direct DOM writes, one function per message),
+were measured here as `beni-tea` and `beni-direct` until 2026-10-17, at the pin `6a1b567fa`.
+Their setups were dropped when the direct platform's rewrite began; their results stay in
+`results/` and their notes in `notes/`.
 
 This directory holds what the setups share for every scenario. Each links these files into its
-own directory (`beni.js`, `template/*`; beni-inline has an adapter of its own), so a change here
-changes every setup's measurement hash.
+own directory (`beni.js`, `template/*`; the contract adapter is each setup's own), so a change
+here changes every setup's measurement hash.
 The dashboard's source, also shared, is `scenarios/shared-components/shared/beni.js`.
 
 ## The pinned compiler
@@ -63,8 +66,8 @@ parallel (beni's output is the same for every `--jobs`). Then the build:
 
 - **`Push.beni`, the project's platform layer.** beni has no ports (withdrawn, `boundary.md`
   §3.1): a binding the shipped platform lacks is written as the project's own platform layered on
-  it. The layer (`platform/beni.json`, `"platforms": ["browser-tea"]`, `["browser-direct"]` or `["browser-inline"]`)
-  has one module, a subscription to a `window` event:
+  it. The layer (`platform/beni.json`, `"platforms"` naming the setup's platform) has one
+  module, a subscription to a `window` event:
 
   ```elm
   pub onPush : (Value → msg) → Sub msg
@@ -73,20 +76,9 @@ parallel (beni's output is the same for every `--jobs`). Then the build:
 
 - **`index.html`**, beni's page (`beni.json`'s `"html"`), with `{{entry}}` where the program's
   script goes, here in the adapter's `data-entry`.
-- **`adapter.js`**, the contract (`window.rr`), not counted in the app's size:
-  - `mount` imports the module (a beni program starts when its module is evaluated, mounting at
-    `Browser.mountAt … "root"`); a second mount imports it again under a query string, a new
-    module record, so it is a fresh program;
-  - `dispatch` fires `rr-push` on `window`;
-  - `settled` calls the module's exported `flush` ("render every program with a message
-    waiting, now"; browser-direct writes while it handles an event and exports none), then
-    waits one macrotask, for the zero-delay timeout with which beni puts a clicked checkbox back
-    to the model;
-  - `dispose`: **beni has no unmount** (`boundary.md` §9.8.14, "W51, unmount: not now"; a stopped
-    page leaves its listeners on the document, inert). So the adapter does what that unmount
-    would: it records the listeners the program adds to `window` and `document` while mounted
-    and removes them, empties the root and clears the runtime's mark on it (`$$root`). This is
-    the one place where the adapter reaches past beni's own API.
+- The contract adapter (`window.rr`, not counted in the app's size) is **each setup's own**
+  (`frameworks/<setup>/template/adapter.js`), because what `settled` and `dispose` have to do
+  depends on the platform: see the setup's README.
 
 ## Byte attribution
 
@@ -99,13 +91,13 @@ its own file and bucket.
 
 ## The dashboard source
 
-One generator, `scenarios/shared-components/shared/beni.js`, writes the app for both platforms
-(`browser-direct`'s `Tea` is `browser-tea`'s API, "so one source builds on both"); the emitters
-`scenarios/shared-components/beni-tea.js` and `beni-direct.js` only pick the framework. Its style is
-described at its top and in each setup's README. Every generated module is laid out exactly as
-`beni fmt` writes it:
+One generator, `scenarios/shared-components/shared/beni.js`, writes the app (every beni browser
+platform keeps `Tea`'s signatures, so one source builds on each); the emitter
+`scenarios/shared-components/beni-inline.js` only picks the framework. Its style is described at
+its top and in the setup's README. Every generated module is laid out exactly as `beni fmt`
+writes it:
 
 ```sh
-cp -r generated/shared-components/n16-s1/beni-tea/src /tmp/src && frameworks/beni/compiler/ca8b52fb0d3a/zig-out/bin/beni fmt /tmp/src
-diff -r generated/shared-components/n16-s1/beni-tea/src /tmp/src   # no output
+cp -r generated/shared-components/n16-s1/beni-inline/src /tmp/src && frameworks/beni/compiler/ca8b52fb0d3a/zig-out/bin/beni fmt /tmp/src
+diff -r generated/shared-components/n16-s1/beni-inline/src /tmp/src   # no output
 ```
