@@ -219,14 +219,14 @@ const TEMPLATES = {
 
   amount: () => ({
     body: `
-  const [amount, set] = useWidget(props.id);
+  const [amount, set, epoch] = useWidget(props.id);
   return (
     <section data-key={props.id} data-role="widget-amount">
       <h2>{props.label}</h2>
       <input
         type="number"
         data-role="input"
-        value={amount.value}
+        value={(epoch(), amount.value)}
         onInput={(e) => {
           const value = e.currentTarget.valueAsNumber;
           if (!Number.isNaN(value)) set("value", value);
@@ -384,11 +384,12 @@ function needsFormatNumber(spec) {
 
 function storeFile(spec) {
   const widgets = spec.widgets.filter((w) => w.kind !== "summary");
+  const hasAmount = widgets.some((w) => w.kind === "amount");
   const clocks = widgets.filter((w) => w.kind === "clock").map((w) => w.id);
   const hasFeed = widgets.some((w) => w.kind === "feed");
   const cases = [
     `      case "serverSet":
-        setState("widgets", msg.widget, reconcile(msg.state, { key: "id" }));
+        setState("widgets", msg.widget, reconcile(msg.state, { key: "id" }));${hasAmount ? "\n        bump();" : ""}
         break;`,
   ];
   if (clocks.length) {
@@ -406,17 +407,20 @@ function storeFile(spec) {
         break;`);
   }
   cases.push(`      case "snapshot":
-        setState("widgets", reconcile(msg.state.widgets, { key: "id" }));
+        setState("widgets", reconcile(msg.state.widgets, { key: "id" }));${hasAmount ? "\n        bump();" : ""}
         break;`);
   const initial = literal(spec.initialState, "  ");
-  return `import { ${clocks.length ? "batch, " : ""}createContext, useContext } from "solid-js";
+  return `import { ${[clocks.length && "batch", "createContext", hasAmount && "createSignal", "useContext"].filter(Boolean).join(", ")} } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 
 export const AppContext = createContext();
 
 // The whole dashboard's state, one slice per widget. \`receive\` applies external events.
 export function createAppStore() {
-  const [state, setState] = createStore(${initial});
+  const [state, setState] = createStore(${initial});${hasAmount ? `
+  // Bumped by a whole-state replacement, which may leave a value as it was: the number input binds
+  // it, so a text typed into it that was never sent is replaced by the value.
+  const [epoch, bump] = createSignal(undefined, { equals: false });` : ""}
 
   function receive(msg) {
     switch (msg.type) {
@@ -424,13 +428,13 @@ ${cases.join("\n")}
     }
   }
 
-  return { state, setState, receive };
+  return { state, setState, ${hasAmount ? "epoch, " : ""}receive };
 }
 
-// A widget's slice of the store and a setter scoped to it.
+// A widget's slice of the store and a setter scoped to it${hasAmount ? ", then the epoch signal" : ""}.
 export function useWidget(id) {
-  const { state, setState } = useContext(AppContext);
-  return [state.widgets[id], (...path) => setState("widgets", id, ...path)];
+  const { state, setState${hasAmount ? ", epoch" : ""} } = useContext(AppContext);
+  return [state.widgets[id], (...path) => setState("widgets", id, ...path)${hasAmount ? ", epoch" : ""}];
 }
 ${spec.widgets.some((w) => w.kind === "summary") ? `
 export function useAppState() {

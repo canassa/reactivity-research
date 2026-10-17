@@ -97,6 +97,8 @@ function opStatements(w, op) {
   throw new Error(`unknown op ${kind}`);
 }
 
+const hasInt = (w) => w.messages.some((m) => m.kind === "input" && w.fields.find((x) => x.name === m.field).type === "int");
+
 function handler(w, m, needs) {
   const f = m.field && w.fields.find((x) => x.name === m.field);
   switch (m.kind) {
@@ -104,7 +106,9 @@ function handler(w, m, needs) {
       needs.produce = true;
       const body = m.ops.flatMap((op) => opStatements(w, op));
       if (body.some((l) => l.includes("nextId("))) needs.nextId = true;
-      return `  const ${m.name} = () =>\n    set(\n      produce((s) => {\n${body.map((l) => `        ${l}`).join("\n")}\n      }),\n    );`;
+      const run = `set(\n      produce((s) => {\n${body.map((l) => `        ${l}`).join("\n")}\n      }),\n    )`;
+      // A step at a limit leaves the value as it was: bump so a number input shows it again.
+      return hasInt(w) ? `  const ${m.name} = () => {\n    ${run};\n    bump();\n  };` : `  const ${m.name} = () =>\n    ${run};`;
     }
     case "input":
       if (f.type === "int") {
@@ -151,7 +155,7 @@ function view(w, n, ind, needs) {
     case "input": {
       const f = field(msg(n.msg).field);
       const attrs = f.type === "int"
-        ? `type="number" data-role="${n.msg}" value={s.${f.name}} onInput={${n.msg}}`
+        ? `type="number" data-role="${n.msg}" value={(epoch(), s.${f.name})} onInput={${n.msg}}`
         : `type="text" data-role="${n.msg}"${n.placeholder ? ` placeholder=${jsxAttr(n.placeholder)}` : ""} value={s.${f.name}} onInput={${n.msg}}`;
       const lines = [];
       if (n.label) lines.push(`${pad}<label>${jsxText(n.label)}<input ${attrs} /></label>`);
@@ -239,7 +243,7 @@ function component(w) {
     .filter((f) => f.type === "enum" && w.messages.some((m) => m.kind === "click" && m.ops.some((op) => op[0] === "cycle" && op[1] === f.name)))
     .map((f) => `  const ${f.name}Options = ${literal(f.options)};`);
 
-  const setup = [`  const [s, set] = useWidget("${w.id}");`];
+  const setup = [`  const [s, set${hasInt(w) ? ", epoch, bump" : ""}] = useWidget("${w.id}");`];
   for (const id of [...other].sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)))) setup.push(`  const [${id}] = useWidget("${id}");`);
 
   return `${imports.join("\n")}
@@ -262,9 +266,10 @@ ${body.join("\n")}
 function storeFile(spec) {
   const timed = spec.widgets.flatMap((w) => w.fields.filter((f) => f.tick).map((f) => ({ w, f })));
   const hasFeed = spec.widgets.some((w) => w.fields.some((f) => f.feed));
+  const hasInts = spec.widgets.some(hasInt);
   const cases = [
     `      case "serverSet":
-        setState("widgets", msg.widget, reconcile(msg.state, { key: "id" }));
+        setState("widgets", msg.widget, reconcile(msg.state, { key: "id" }));${hasInts ? "\n        bump();" : ""}
         break;`,
   ];
   if (timed.length) {
@@ -280,16 +285,20 @@ ${timed.map(({ w, f }) => `          if (state.widgets.${w.id}.${f.tickWhen}) se
         break;`);
   }
   cases.push(`      case "snapshot":
-        setState("widgets", reconcile(msg.state.widgets, { key: "id" }));
+        setState("widgets", reconcile(msg.state.widgets, { key: "id" }));${hasInts ? "\n        bump();" : ""}
         break;`);
-  return `import { ${timed.length ? "batch, " : ""}createContext, useContext } from "solid-js";
+  return `import { ${[timed.length && "batch", "createContext", hasInts && "createSignal", "useContext"].filter(Boolean).join(", ")} } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 
 export const AppContext = createContext();
 
 // The whole page's state, one slice per widget. \`receive\` applies external events.
 export function createAppStore() {
-  const [state, setState] = createStore(${literal(spec.initialState, "  ")});
+  const [state, setState] = createStore(${literal(spec.initialState, "  ")});${hasInts ? `
+  // Bumped by every write that may leave a value as it was (a whole-state replacement, a step at
+  // a limit): a number input binds it, so a text typed into it that was never sent is replaced by
+  // the value.
+  const [epoch, bump] = createSignal(undefined, { equals: false });` : ""}
 
   function receive(msg) {
     switch (msg.type) {
@@ -297,13 +306,13 @@ ${cases.join("\n")}
     }
   }
 
-  return { state, setState, receive };
+  return { state, setState, ${hasInts ? "epoch, bump, " : ""}receive };
 }
 
 // A widget's slice of the store and a setter scoped to it.
 export function useWidget(id) {
-  const { state, setState } = useContext(AppContext);
-  return [state.widgets[id], (...path) => setState("widgets", id, ...path)];
+  const { state, setState${hasInts ? ", epoch, bump" : ""} } = useContext(AppContext);
+  return [state.widgets[id], (...path) => setState("widgets", id, ...path)${hasInts ? ", epoch, bump" : ""}];
 }
 `;
 }
