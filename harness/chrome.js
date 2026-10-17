@@ -23,9 +23,10 @@ export function findChrome(explicit) {
 
 // Profiles of ours left behind by a run that was killed or crashed (close() removes them
 // otherwise). /tmp is a small RAM disk shared with everything else, and each one is 20–150 MB.
-// No launch lives an hour, so a profile last touched more than an hour ago is a leftover.
+// No launch lives 20 minutes, so a profile last touched longer ago is a leftover (a dozen
+// parallel checks leaking a 150 MB profile each fill the RAM disk well within an hour).
 function sweepProfiles(prefix) {
-  const cutoff = Date.now() - 60 * 60 * 1000;
+  const cutoff = Date.now() - 20 * 60 * 1000;
   let names = [];
   try { names = fs.readdirSync(os.tmpdir()).filter((n) => n.startsWith(prefix)); } catch { return; }
   for (const n of names) {
