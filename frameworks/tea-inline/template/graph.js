@@ -42,16 +42,20 @@ export function paint(...displays) {
 }
 
 function drain() {
-  while (queued.length) {
-    const f = queued.shift();
-    f.q = false;
-    f();
+  try {
+    while (queued.length) {
+      const f = queued.shift();
+      f.q = false;
+      f();
+    }
+    for (const d of painted) {
+      painted.delete(d);
+      d();
+    }
+  } finally {
+    // After a throw too: the graph must not stay armed with stale flags, or it never flushes again.
+    reset();
   }
-  for (const d of painted) {
-    painted.delete(d);
-    d();
-  }
-  armed = false;
 }
 
 // Drop pending work (on unmount).

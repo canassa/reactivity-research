@@ -356,21 +356,23 @@ and `template/sheet.js` (formatters, collection helpers, the typed-number handle
 counted as app code), plus `rows.js` for the items table. The other scenarios' output is
 byte-identical.
 
-**Derived values: compile-time memoization with an equality cut-off.** The compiler has the whole
-graph, so each formula is a node, `const calcTax = node(() => { const x = …; if (x === tax) return;
+**Derived values: static edges and memoization, with a runtime rank-ordered flush, and an equality
+cut-off.** The compiler has the whole graph, so the edges (who reads whom) are static, and each formula is a node, `const calcTax = node(() => { const x = …; if (x === tax) return;
 tax = x; …displays…; queue(readers); paint(multi-cell displays); })`. A node runs at most once per
-flush: `queue` keeps the pending nodes sorted by rank (their creation order, which is a topological
-order because a formula reads only earlier cells), then the displays that read several cells run
+flush: `queue` keeps the pending nodes sorted by rank (assigned when the module runs, in node creation
+order, which is a topological order because a formula reads only earlier cells; the order is drained
+from a sorted queue at runtime, not emitted as constants), then the displays that read several cells run
 once, after every formula. A hub is therefore computed once per change, not once per reader, and a
 formula reading both ends of a diamond runs after both. The alternative, recomputing a formula
 inside each binding that shows it, would compute `tax` 24 times and re-sum 2,000 items per reader
 when `total` is inlined, and it spells the formula's chain at every read; memoization spends one
 variable and one node per formula. The reader lists are written into the writer's code at build
-time, so nothing registers at mount.
+time, so nothing registers at mount. The flush survives a throwing node or display: it drops the
+queued work and its flags and stays usable.
 
 **Unchanged cut-off: yes.** A formula whose value is the same queues no reader and paints nothing
 (a list or a group compares its items in order). The cut-off input that leaves its bool unchanged
-costs 10 calls at every N, and the flip costs 21: `toggleCell` runs only when the bool changes. A
+costs 11 calls at every N, and the flip costs 22: `toggleCell` runs only when the bool changes. A
 top-k list always repaints its keyed list (an item in it may have changed in place) but cuts off
 its readers.
 
@@ -383,14 +385,22 @@ one static HTML string (labels and options left out).
 (applied exactly like the initial state) all call it. **Item edits** write the item in place and
 queue the formulas that read the field written (`byQty`, `byActive`) or, for a change to the set
 of items, every formula that reads the items or a field of them (`byItems`). No aggregate is
-incremental: each affected formula re-reads the items.
+incremental: each affected formula re-reads the items. A row's handlers find the current item (a
+server push may have replaced it before the flush) through an id to item `Map`, built on the first
+edit after the set of items changes and dropped whenever it changes. An expert would not scan the
+items on every keystroke; the cost is that the first edit after a Load, add, remove or server push
+builds the index (O(rows)), later edits are O(1). Remove is O(rows) anyway (`indexOf` and `splice`),
+and so is every aggregate an item edit queues. A number input is written before its action's
+equality return, so text the action refused is replaced when the same value arrives again (a server
+push, a step clamped at its limit).
 
-**Locality.** Flat: median 44 calls for the closed chain input, 10 and 21 for the cut-off, 7 for a
-note, 14 for the toggle, at N=16 and at 256 (ratio 1.00 for every local action). Global actions
-grow by nature: the hub raise 2,157 → 56,177 calls (N=16 → 256, 2,000 rows), a quantity 32,395 →
-257,015. Rows (N=64, 1,000 → 10,000): flat for the chain, cut-off, toggle and note; proportional
-for the filter select (1,221 → 12,048), threshold (6,503 → 83,414) and markup (7,004 → 70,004);
-the hub raise is not flat (9,011 → 86,205): `tax` is computed once, but every aggregate that reads
+**Locality.** Flat: 45 calls for the closed chain input, 11 and 22 for the cut-off, 15 for the toggle,
+at N=16 and at 256 (ratio 1.00 for every local action). The first note keystroke after a Load is
+2,003 calls (the index build; O(rows)), and only the first. Global actions grow by nature: the hub
+raise 2,158 → 56,178 calls (N=16 → 256, 2,000 rows), a quantity 32,391 → 257,011. Rows (N=64,
+1,000 → 10,000): flat for the chain, cut-off and toggle; proportional for the filter select (1,222 →
+12,049), threshold (6,504 → 83,415), markup (7,004 → 70,004) and the first note edit (1,003 →
+10,003); the hub raise is not flat (9,012 → 86,206): `tax` is computed once, but every aggregate that reads
 it re-sums the items.
 
 **Size.** See `notes/2026-10-17-derived-graph-tea-inline.md`.

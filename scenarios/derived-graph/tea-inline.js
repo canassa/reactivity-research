@@ -8,13 +8,14 @@
 //   cells it reads, stops there when the value is the same as before (the equality cut-off: a
 //   list or a group compares its items), and otherwise writes the displays that show it, queues
 //   the formulas that read it and collects the displays that read several values. Nobody
-//   registers at mount: the reader lists are in the writer's code, resolved at compile time.
+//   registers at mount: the edges (who reads whom) are static, written into the writer's code at build time.
 // - A display that reads one cell is part of that cell's code (no function, no subscription).
 //   A display that reads several is a function `show…` that each of its cells collects.
 // - The formulas run once per flush, in dependency order (the graph is a DAG; the queue is sorted
 //   by rank, which is the creation order of the nodes), and the collected displays run after
 //   them, so no formula sees a stale value and no display sees a half-updated graph. This is
-//   compile-time memoization: a derived value read by many bindings is computed once per change.
+//   memoization over static edges, with a rank-ordered flush at runtime (ranks are assigned when the
+//   module runs, in node creation order, and a sorted queue drains them): a derived value read by many bindings is computed once per change.
 //   The alternative, recomputing a formula inside each binding that shows it, would compute a hub
 //   once per reader and re-sum 2,000 items per reader when `total` is inlined; it also makes
 //   every read cost the formula's chain in bytes. Memoization costs one variable and one node
@@ -31,7 +32,7 @@
 // Style choices (also in `style` below): the whole sheet is one static HTML string parsed once and
 // every element is `E[n]`, its place in document order (labels and options left out); cells are
 // local variables, formulas are written as expressions over them; formula nodes with an equality
-// cut-off and compile-time reader lists; collection helpers take the formula's own code as a
+// cut-off and static reader lists; collection helpers take the formula's own code as a
 // function (sheet.js); items as in big-table (a row template cloned per row, keyed list, rows
 // edited in place).
 
@@ -117,7 +118,7 @@ function appFile(spec) {
   const order = [];
   const info = (c) => {
     if (RESERVED.has(c.name)) throw new Error(`cell name ${c.name} is a name the generated code uses`);
-    const i = { c, input: c.kind === "input", inl: [], fq: [], mq: [], always: [], calc: `calc${cap(c.name)}` };
+    const i = { c, input: c.kind === "input", ctl: [], inl: [], fq: [], mq: [], always: [], calc: `calc${cap(c.name)}` };
     cell.set(c.name, i);
     order.push(i);
     return i;
@@ -206,7 +207,7 @@ function appFile(spec) {
           html += escText(n.label);
           control[n.msg] = open("input", { type: "number", "data-role": n.msg });
           html += "</label>";
-          cell.get(m.cell).inl.push(`prop(E[${control[n.msg]}], String(x));`);
+          cell.get(m.cell).ctl.push(`prop(E[${control[n.msg]}], String(x));`);
           break;
         }
         case "button": {
@@ -218,7 +219,7 @@ function appFile(spec) {
           open("label");
           control[n.msg] = open("input", { type: "checkbox", "data-role": n.msg });
           html += `${escText(n.label)}</label>`;
-          cell.get(m.cell).inl.push(`prop(E[${control[n.msg]}], x, "checked");`);
+          cell.get(m.cell).ctl.push(`prop(E[${control[n.msg]}], x, "checked");`);
           break;
         }
         case "select": {
@@ -232,7 +233,7 @@ function appFile(spec) {
             html += escText(o);
           }
           html += "</select></label>";
-          cell.get(m.cell).inl.push(`prop(E[${control[n.msg]}], x);`);
+          cell.get(m.cell).ctl.push(`prop(E[${control[n.msg]}], x);`);
           break;
         }
         case "top": {
@@ -292,6 +293,7 @@ function appFile(spec) {
     if (i.input) continue;
     const r = reads(i.c.expr);
     for (const n of r.cells) cell.get(n).fq.push(i.calc);
+    if (r.fields.has("note")) throw new Error(`formula ${i.c.name} reads an item's note: the note handler schedules no formula`);
     if (r.items || r.fields.size) byItems.push(i.calc);
     if (r.fields.has("qty")) byQty.push(i.calc);
     if (r.fields.has("active")) byActive.push(i.calc);
@@ -311,7 +313,8 @@ function appFile(spec) {
   out(`root.insertAdjacentHTML("beforeend", "<div data-role=page>");`);
   out("const board = root.lastChild;");
   out(`const E = part(board, ${str(html)});`);
-  out("const s = { items: [], markup: 0, nextId: 1, rng: 0 };");
+  out("const s = { items: [], markup: 0, nextId: 1, rng: 0 };",
+  "let byId; // the items by id, built on first use and dropped whenever the set of items changes");
   const names = order.map((i) => i.c.name);
   out(names.length ? `let ${names.join(", ")};` : "");
 
@@ -356,11 +359,13 @@ function appFile(spec) {
   if (showDefs.length) out("", "// Displays of several cells.", ...showDefs);
   if (topLists.length) out("", "// Keyed lists of items.", ...topLists);
 
-  // The inputs' actions.
+  // The inputs' actions. A control is written before the equality return: the same value sent again
+  // (a server push, a step clamped at its limit) still replaces text typed into the control that the
+  // action refused.
   const inputs = order.filter((i) => i.input);
   out("", "// The inputs: one action each, by name (the controls call them; so do external events).", "const P = {");
   for (const i of inputs) {
-    out(`  ${i.c.name}(x) {`, `    if (x === ${i.c.name}) return;`, `    ${i.c.name} = x;`,
+    out(`  ${i.c.name}(x) {`, ...i.ctl.map((t) => "    " + t), `    if (x === ${i.c.name}) return;`, `    ${i.c.name} = x;`,
       ...inlines(i).map((t) => "    " + t), ...queueOf(i.fq).map((t) => "    " + t), ...paintOf(i.mq).map((t) => "    " + t), "  },");
   }
   out("};", "const putInputs = (values) => {", "  for (const k in values) P[k]?.(values[k]);", "};");
@@ -399,7 +404,7 @@ function appFile(spec) {
     "  const tr = row.cloneNode(true);",
     '  const R = tr.querySelectorAll("*");',
     '  tr.setAttribute("data-key", item.id);',
-    "  const own = () => s.items.find((x) => x.id === item.id);",
+    "  const own = () => (byId ||= new Map(s.items.map((x) => [x.id, x]))).get(item.id);",
     `  const mk = () => text(R[6], ${money("Math.floor((item.qty * item.price * (100 + s.markup)) / 100)")});`,
     "  const set = (fresh = item) => {",
     "    item = fresh;",
@@ -414,7 +419,7 @@ function appFile(spec) {
     "  };",
     "  on(R[3], typed((n) => {",
     "    const it = own();",
-    "    if (!it) return;",
+    "    if (!it || it.qty === n) return;",
     "    it.qty = n;",
     "    schedule(set);",
     "    queue(...byQty);",
@@ -434,6 +439,7 @@ function appFile(spec) {
     "    const it = own();",
     "    if (!it) return;",
     "    s.items.splice(s.items.indexOf(it), 1);",
+    "    byId = null;",
     "    L.drop(item.id);",
     "    queue(...byItems);",
     "  });",
@@ -449,6 +455,7 @@ function appFile(spec) {
     `on(E[${addIx}], () => {`,
     "  const added = make(1);",
     "  s.items.push(...added);",
+    "  byId = null;",
     "  L.add(added);",
     "  queue(...byItems);",
     "});",
@@ -462,6 +469,7 @@ function appFile(spec) {
     "const load = ({ inputs, ...state }) => {",
     "  putInputs(inputs);",
     "  Object.assign(s, state);",
+    "  byId = null;",
     `  prop(E[${markupIx}], String(s.markup));`,
     "  schedule(L);",
     "  queue(...byItems);",
@@ -483,6 +491,7 @@ function appFile(spec) {
     "      s.items = s.items.filter((it) => !gone.has(it.id)).map((it) => up.get(it.id) || it);",
     "      for (const it of up.values()) if (!known.has(it.id) && !gone.has(it.id)) s.items.push(it);",
     "      s.nextId = Math.max(s.nextId, ...msg.upsert.map((it) => it.id + 1));",
+    "      byId = null;",
     "      schedule(L);",
     "      queue(...byItems);",
     "      break;",
@@ -534,7 +543,7 @@ export function emit(spec) {
       track: "prototype: no framework implements this strategy",
       components: "no components: the sheet is one static HTML string parsed once, every element is E[n] (its place in document order, labels and options left out); the items are a row template cloned per row",
       messages: "erased for DOM events: each update arm is inlined into the action its control calls (an input's setter P.name, an item's handler in its row)",
-      derivedValues: "compile-time memoization: every formula is a node that recomputes its value once per flush, in dependency order (a sorted queue of nodes ranked by creation order), with an equality cut-off (a list or a group compares its items); the readers of a cell are written into the cell's own code, resolved at build time, so nobody registers at mount",
+      derivedValues: "static edges and memoization, with a runtime rank-ordered flush: every formula is a node that recomputes its value once per flush, in dependency order (a sorted queue of nodes ranked, when the module runs, by creation order), with an equality cut-off (a list or a group compares its items); the readers of a cell are written into the cell's own code, static (written at build time), so nobody registers at mount",
       cutoff: "yes: a formula whose value did not change queues no reader and paints nothing; a top-k list always repaints its keyed list (a field of a listed item may have changed in place) but cuts off its readers",
       displays: "a display that reads one cell is inlined into that cell's code; one that reads several is a function that each of its cells collects and that runs after the formulas",
       itemEdits: "an item edit writes the item in place and queues the formulas that read the field it wrote (by qty, by active) or, for a change to the set of items, every formula that reads the items; no incremental aggregates: each affected formula recomputes over the items",
