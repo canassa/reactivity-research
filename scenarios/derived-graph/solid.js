@@ -43,7 +43,7 @@ const jsxText = (s) => (/[{}<>&]/.test(s) ? `{${str(s)}}` : s);
 
 function storeFile(spec) {
   const s = spec.initialState;
-  return `import { batch, createContext, useContext } from "solid-js";
+  return `import { batch, createContext, createSignal, useContext } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 
 export const AppContext = createContext();
@@ -55,11 +55,18 @@ export function createAppStore() {
   const [inputs, setInputs] = createStore(${literal(s.inputs, "  ")});
   const [items, setItems] = createStore(${literal(s.items, "  ")});
   const [meta, setMeta] = createStore({ markup: ${s.markup}, nextId: ${s.nextId}, rng: ${s.rng} });
+  // Bumped by every write that may leave a store value as it was (an external event, a step at a
+  // limit): a number input binds it, so a text typed into the input that was never sent (and so
+  // never reached the store) is replaced by the value, as the reference render does.
+  const [epoch, bump] = createSignal(undefined, { equals: false });
 
   function receive(msg) {
     switch (msg.type) {
       case "serverInputs":
-        setInputs(msg.values);
+        batch(() => {
+          setInputs(msg.values);
+          bump();
+        });
         break;
       case "serverItems": {
         // Listed ids are replaced in place, new ids appended, listed ids removed.
@@ -69,6 +76,7 @@ export function createAppStore() {
           for (const r of msg.upsert) setItems((it) => it.id === r.id, { ...r });
           setItems((list) => list.filter((it) => !msg.remove.includes(it.id)).concat(fresh.map((r) => ({ ...r }))));
           setMeta("nextId", (id) => msg.upsert.reduce((max, r) => Math.max(max, r.id + 1), id));
+          bump();
         });
         break;
       }
@@ -77,12 +85,13 @@ export function createAppStore() {
           setInputs(reconcile(msg.state.inputs));
           setItems(reconcile(msg.state.items.map((it) => ({ ...it })), { key: "id" }));
           setMeta({ markup: msg.state.markup, nextId: msg.state.nextId, rng: msg.state.rng });
+          bump();
         });
         break;
     }
   }
 
-  return { inputs, setInputs, items, setItems, meta, setMeta, receive };
+  return { inputs, setInputs, items, setItems, meta, setMeta, epoch, bump, receive };
 }
 `;
 }
@@ -105,7 +114,7 @@ function sheetFile(spec, g) {
   const memos = g.formulas.map((f) => `const ${f.name} = createMemo(() => ${jsExpr(f.expr, o)});`);
 
   // Controls.
-  let typed = false;
+  let typed = false, steps = false;
   const unit = (u) => u.view.map((n) => {
     switch (n.el) {
       case "text": return `<${n.tag}>${children(n)}</${n.tag}>`;
@@ -114,13 +123,14 @@ function sheetFile(spec, g) {
         typed = true;
         return `<label>
   ${jsxText(n.label)}
-  <input type="number" data-role="${n.msg}" value={inputs.${c.name}} onInput={typed("${c.name}", ${c.min}, ${c.max})} />
+  <input type="number" data-role="${n.msg}" value={(epoch(), inputs.${c.name})} onInput={typed("${c.name}", ${c.min}, ${c.max})} />
 </label>`;
       }
       case "button": {
         const m = g.messages.get(n.msg), c = g.cells.get(m.cell);
         used.add("clamp");
-        return `<button data-role="${n.msg}" onClick={() => setInputs("${c.name}", (v) => clamp(v ${m.k < 0 ? "-" : "+"} ${Math.abs(m.k)}, ${c.min}, ${c.max}))}>${jsxText(n.text)}</button>`;
+        steps = true;
+        return `<button data-role="${n.msg}" onClick={step("${c.name}", ${m.k}, ${c.min}, ${c.max})}>${jsxText(n.text)}</button>`;
       }
       case "check": {
         const c = g.cells.get(g.messages.get(n.msg).cell);
@@ -179,8 +189,16 @@ import { useApp } from "./store";
 import { ${[...used].sort().join(", ")} } from "./util";
 
 export default function Sheet() {
-  const { ${hasInputs ? "inputs, setInputs, " : ""}items } = useApp();
-${typed ? `
+  const { ${hasInputs ? "inputs, setInputs, " : ""}items${typed ? ", epoch" : ""}${steps ? ", bump" : ""} } = useApp();
+${steps ? `
+  // A step button moves an input by k within its range; at a limit the store does not change, so
+  // the controls are re-asserted by hand.
+  const step = (name, k, min, max) => () => {
+    const v = clamp(inputs[name] + k, min, max);
+    if (v === inputs[name]) bump();
+    else setInputs(name, v);
+  };
+` : ""}${typed ? `
   // A number input writes the store only while it holds an integer in range.
   const typed = (name, min, max) => (e) => {
     if (isInt(e.currentTarget.value, min, max)) setInputs(name, +e.currentTarget.value);
@@ -208,7 +226,7 @@ import { useApp } from "./store";
 import { isInt, makeItems, money } from "./util";
 
 export default function Items() {
-  const { items, setItems, meta, setMeta } = useApp();
+  const { items, setItems, meta, setMeta, epoch } = useApp();
 
   // \`count\` new items from the app's generator.
   const build = (count) => {
@@ -241,7 +259,7 @@ export default function Items() {
         </button>
         <label>
           Markup %
-          <input type="number" data-role="markup" value={meta.markup} onInput={onMarkup} />
+          <input type="number" data-role="markup" value={(epoch(), meta.markup)} onInput={onMarkup} />
         </label>
       </div>
       <table>
@@ -263,7 +281,7 @@ ${headers.map((h) => (h ? `            <th>${h}</th>` : "            <th />")).j
                     <input
                       type="number"
                       data-role="qty"
-                      value={it.qty}
+                      value={(epoch(), it.qty)}
                       onInput={(e) => isInt(e.currentTarget.value, 0, 999) && setItem("qty", +e.currentTarget.value)}
                     />
                   </td>

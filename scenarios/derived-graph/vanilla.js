@@ -31,13 +31,19 @@
 
 import { templateFiles } from "../../frameworks/vanilla/framework.js";
 import {
-  cap, esc, escAttr, fields, formatted, jsExpr, partShown, plan, readGraph, rootsOfField, rootsOfInput, rootsOfItems,
+  cap, esc, escAttr, formatted, jsExpr, partShown, plan, readGraph, rootsOfField, rootsOfInput, rootsOfItems,
   str, topShown, tpl, utilSource,
 } from "./shared/graph.js";
 
 export const framework = "vanilla";
 
-export const params = {};
+export const params = {
+  derived: {
+    default: "waves",
+    choices: ["waves", "recompute"],
+    help: "how a change recomputes the formulas: straight-line code per trigger that runs only what the change feeds (waves, the floor in work), or one recompute() that runs every calc in order and re-shows what changed (recompute, the floor in bytes)",
+  },
+};
 
 const indent = (code, pad) => code.split("\n").map((l) => (l ? pad + l : l)).join("\n");
 
@@ -127,7 +133,7 @@ function nodeHTML(g, n) {
   throw new Error(`unknown view node ${n.el}`);
 }
 
-function sheetFile(spec, g) {
+function sheetFile(spec, g, mode) {
   const used = new Set();
   const o = { ref: (name) => name, items: "state.items", used };
   const lib = new Set();
@@ -202,6 +208,7 @@ function sheetFile(spec, g) {
   // A trigger's straight-line recomputation.
   const flag = (name) => `c${g.index.get(name)}`;
   const wave = (roots) => {
+    if (mode === "recompute") return ["recompute();"];
     const out = [];
     for (const s of plan(g, roots)) {
       const cond = s.parents ? (s.parents.length === 1 ? flag(s.parents[0]) : `(${s.parents.map(flag).join(" || ")})`) : null;
@@ -218,7 +225,11 @@ function sheetFile(spec, g) {
   // The inputs: their variables, the function that changes one and the messages their controls send.
   const clicks = [], inputsCases = [], changes = [];
   const changeFns = g.inputs.map((c) => {
-    const body = [`if (v === ${c.name}) return;`, `${c.name} = v;`];
+    // A value the input already holds still re-asserts its controls: an invalid text typed into
+    // a number input is replaced by the value, as the reference render does.
+    const controls = g.shown.get(c.name).filter((n) => n.node.el === "input" || n.node.el === "check" || n.node.el === "select");
+    const assert = controls.map((n) => (n.node.el === "input" ? `setValue(${control(n)}, ${c.name});` : n.node.el === "check" ? `${control(n)}.checked = ${c.name};` : `${control(n)}.value = ${c.name};`));
+    const body = [`if (v === ${c.name}) {`, ...assert.map((l) => "  " + l), "  return;", "}", `${c.name} = v;`];
     if (shows.has(c.name)) body.push(`show${cap(c.name)}();`);
     body.push(...wave(rootsOfInput(g, c.name)));
     return `function change${cap(c.name)}(v) {\n${indent(body.join("\n"), "  ")}\n}`;
@@ -246,7 +257,9 @@ function sheetFile(spec, g) {
     ["qtyChanged", rootsOfField(g, "qty")],
     ["activeChanged", rootsOfField(g, "active")],
   ].map(([name, roots]) => ({ name, steps: wave(roots) }));
-  const triggerFns = triggers.filter((t) => t.steps.length).map((t) => `function ${t.name}() {\n${indent(t.steps.join("\n"), "  ")}\n}`);
+  // recompute: one function for every trigger, every calc in order, each re-shown if it changed.
+  const recomputeFn = `function recompute() {\n${indent(g.formulas.map((f) => (shows.has(f.name) ? `if (calc${cap(f.name)}()) show${cap(f.name)}();` : `calc${cap(f.name)}();`)).join("\n"), "  ")}\n}`;
+  const triggerFns = mode === "recompute" ? [recomputeFn] : triggers.filter((t) => t.steps.length).map((t) => `function ${t.name}() {\n${indent(t.steps.join("\n"), "  ")}\n}`);
 
   // Variables.
   const initial = (c) => (c.type === "bool" ? String(spec.initialState.inputs[c.name]) : str(spec.initialState.inputs[c.name]));
@@ -305,7 +318,7 @@ function sheetFile(spec, g) {
     ...handlers.map(([name, event]) => `    section.removeEventListener("${event}", ${name});`),
     `  }`,
     ``,
-    `  return { refresh, restore, setInputs, ${triggers.filter((t) => t.steps.length).map((t) => t.name).join(", ")}, stop };`,
+    `  return { refresh, restore, setInputs, ${mode === "recompute" ? "itemsChanged: recompute, qtyChanged: recompute, activeChanged: recompute" : triggers.filter((t) => t.steps.length).map((t) => t.name).join(", ")}, stop };`,
     `}`,
   ].join("\n").replace(/\n{3,}/g, "\n\n");
 
@@ -396,10 +409,12 @@ export function items(page, state, sheet) {
     const c = r.tr.children;
     if (o.name !== r.name) c[0].textContent = r.name;
     if (o.category !== r.category) c[1].textContent = r.category;
-    if (o.qty !== r.qty) setValue(c[2].firstChild, r.qty);
+    // A control is re-asserted even if the record did not change: a typed text that was never sent
+    // is replaced by the value, as the reference render does.
+    setValue(c[2].firstChild, r.qty);
     if (o.price !== r.price) c[3].textContent = money(r.price);
-    if (o.active !== r.active) c[6].firstChild.checked = r.active;
-    if (o.note !== r.note) setValue(c[7].firstChild, r.note);
+    c[6].firstChild.checked = r.active;
+    setValue(c[7].firstChild, r.note);
     if (o.qty !== r.qty || o.price !== r.price) {
       writeLine(r);
       writeMarkup(r);
@@ -569,17 +584,18 @@ export const setValue = (el, v) => {
 };
 `;
 
-export function emit(spec) {
+export function emit(spec, options = {}) {
+  const mode = options.derived ?? "waves";
   const g = readGraph(spec);
   const hooks = {
-    itemsChanged: rootsOfItems(g).length > 0,
-    qtyChanged: rootsOfField(g, "qty").length > 0,
-    activeChanged: rootsOfField(g, "active").length > 0,
+    itemsChanged: mode === "recompute" || rootsOfItems(g).length > 0,
+    qtyChanged: mode === "recompute" || rootsOfField(g, "qty").length > 0,
+    activeChanged: mode === "recompute" || rootsOfField(g, "active").length > 0,
   };
   const files = {
     ...templateFiles({ name: "derived-graph", title: spec.title }),
     "src/app.js": appFile(spec),
-    "src/sheet.js": sheetFile(spec, g),
+    "src/sheet.js": sheetFile(spec, g, mode),
     "src/items.js": itemsFile(spec, g, hooks),
     "src/lib.js": LIB_FILE,
     "src/util.js": utilSource(spec) + UTIL_EXTRA,
@@ -589,7 +605,9 @@ export function emit(spec) {
     style: {
       model: "hand-written style: plain let variables for the inputs and formulas, a state object for the items, records edited in place",
       formulas: "one calcX() per formula, its own expression as JavaScript, returning whether the value changed (=== for numbers, bools and texts; lists and group sums always count as changed)",
-      derived: "a change recomputes what it feeds, in dependency order, as straight-line code per trigger (changeX per input; itemsChanged, qtyChanged, activeChanged for the items); a formula downstream runs only if a formula it reads changed",
+      derived: options.derived === "recompute"
+        ? "recompute: every trigger calls one recompute() that runs every calcX() in order and re-shows what changed (the floor in bytes; work grows with N)"
+        : "waves: a change recomputes what it feeds, in dependency order, as straight-line code per trigger (changeX per input; itemsChanged, qtyChanged, activeChanged for the items); a formula downstream runs only if a formula it reads changed (the floor in work)",
       displays: "one showX() per cell writing the text nodes that read it (textContent); a node reading several cells is a function every one of them calls; found by position in a static markup string",
       lists: "top-k lists through a generic keyed-list helper (src/lib.js, runtime) that keeps the <li> of an item that stays; group rows are static <li>s",
       items: "rows cloned from a <tr> template, records carrying their <tr>; server items and snapshots through the generic keyed reconciler (src/lib.js, runtime), fed copies of the message's items",
