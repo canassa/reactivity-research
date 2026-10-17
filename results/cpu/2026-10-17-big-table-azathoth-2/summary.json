@@ -1,0 +1,4055 @@
+{
+ "events": [
+  {
+   "variant": "digest",
+   "size": 1,
+   "action": "01 create rows",
+   "half": "create 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 4776.5,
+    "p25": 4463.3,
+    "p75": 5272.8,
+    "n": 20,
+    "ci": [
+     4546,
+     5173.5
+    ]
+   },
+   "total": {
+    "median": 32.576,
+    "p25": 31.113,
+    "p75": 34.663,
+    "n": 20,
+    "ci": [
+     31.179,
+     34.12
+    ]
+   },
+   "seeds": {
+    "1": 4776.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 1,
+   "action": "01 create rows",
+   "half": "clear 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 3377.5,
+    "p25": 3279,
+    "p75": 3480,
+    "n": 20,
+    "ci": [
+     3282.5,
+     3477.5
+    ]
+   },
+   "total": {
+    "median": 8.274,
+    "p25": 5.932,
+    "p75": 12.167,
+    "n": 20,
+    "ci": [
+     6.344,
+     11.863
+    ]
+   },
+   "seeds": {
+    "1": 3377.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 1,
+   "action": "02 replace all rows",
+   "half": "replace 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 8124.5,
+    "p25": 7915.5,
+    "p75": 8731.5,
+    "n": 20,
+    "ci": [
+     7974,
+     8624.5
+    ]
+   },
+   "total": {
+    "median": 36.307,
+    "p25": 35.462,
+    "p75": 38.5,
+    "n": 20,
+    "ci": [
+     35.497,
+     37.9
+    ]
+   },
+   "seeds": {
+    "1": 8124.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 1,
+   "action": "03 partial update",
+   "half": "update every 10th row of 10000",
+   "scope": "local",
+   "script": {
+    "median": 4341.5,
+    "p25": 4131.5,
+    "p75": 4888,
+    "n": 20,
+    "ci": [
+     4141,
+     4752
+    ]
+   },
+   "total": {
+    "median": 131.256,
+    "p25": 128.188,
+    "p75": 140.438,
+    "n": 20,
+    "ci": [
+     128.407,
+     137.323
+    ]
+   },
+   "seeds": {
+    "1": 4341.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 1,
+   "action": "04 select row",
+   "half": "select row 3",
+   "scope": "local",
+   "script": {
+    "median": 40,
+    "p25": 39,
+    "p75": 46.3,
+    "n": 10,
+    "ci": [
+     39,
+     48
+    ]
+   },
+   "total": {
+    "median": 6.72,
+    "p25": 4.382,
+    "p75": 11.91,
+    "n": 10,
+    "ci": [
+     3.96,
+     12.32
+    ]
+   },
+   "seeds": {
+    "1": 40
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 1,
+   "action": "04 select row",
+   "half": "select row 2",
+   "scope": "local",
+   "script": {
+    "median": 41.5,
+    "p25": 38,
+    "p75": 46,
+    "n": 8,
+    "ci": [
+     38,
+     46
+    ]
+   },
+   "total": {
+    "median": 9.557,
+    "p25": 6.298,
+    "p75": 11.171,
+    "n": 8,
+    "ci": [
+     5.458,
+     11.813
+    ]
+   },
+   "seeds": {
+    "1": 41.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 1,
+   "action": "05 swap rows",
+   "half": "swap rows",
+   "scope": "local",
+   "script": {
+    "median": 187.5,
+    "p25": 171.5,
+    "p75": 207,
+    "n": 20,
+    "ci": [
+     172.5,
+     205
+    ]
+   },
+   "total": {
+    "median": 10.069,
+    "p25": 5.058,
+    "p75": 14.578,
+    "n": 20,
+    "ci": [
+     5.577,
+     13.373
+    ]
+   },
+   "seeds": {
+    "1": 187.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 1,
+   "action": "05 swap rows",
+   "half": "swap rows back",
+   "scope": "local",
+   "script": {
+    "median": 189,
+    "p25": 173.8,
+    "p75": 214.5,
+    "n": 20,
+    "ci": [
+     174.5,
+     210
+    ]
+   },
+   "total": {
+    "median": 10.185,
+    "p25": 5.406,
+    "p75": 14.052,
+    "n": 20,
+    "ci": [
+     6.938,
+     13.353
+    ]
+   },
+   "seeds": {
+    "1": 189
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 1,
+   "action": "06 remove row",
+   "half": "remove the 4th row",
+   "scope": "local",
+   "script": {
+    "median": 168.5,
+    "p25": 158.3,
+    "p75": 190.5,
+    "n": 20,
+    "ci": [
+     160.5,
+     188.5
+    ]
+   },
+   "total": {
+    "median": 9.195,
+    "p25": 6.368,
+    "p75": 13.202,
+    "n": 20,
+    "ci": [
+     6.528,
+     12.538
+    ]
+   },
+   "seeds": {
+    "1": 168.5
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 1,
+   "action": "07 create many rows",
+   "half": "create 10000 rows",
+   "scope": "local",
+   "script": {
+    "median": 42830,
+    "p25": 41868,
+    "p75": 53991.8,
+    "n": 20,
+    "ci": [
+     41906,
+     50219
+    ]
+   },
+   "total": {
+    "median": 299.727,
+    "p25": 293.044,
+    "p75": 315.521,
+    "n": 20,
+    "ci": [
+     293.616,
+     308.639
+    ]
+   },
+   "seeds": {
+    "1": 42830
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 1,
+   "action": "07 create many rows",
+   "half": "09 clear 10000 rows",
+   "scope": "local",
+   "script": {
+    "median": 36350,
+    "p25": 34886.3,
+    "p75": 40561.3,
+    "n": 20,
+    "ci": [
+     34897.5,
+     39969.5
+    ]
+   },
+   "total": {
+    "median": 37.174,
+    "p25": 35.729,
+    "p75": 41.361,
+    "n": 20,
+    "ci": [
+     35.747,
+     40.792
+    ]
+   },
+   "seeds": {
+    "1": 36350
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 1,
+   "action": "08 append to a large table",
+   "half": "append 1000 rows to 10000",
+   "scope": "local",
+   "script": {
+    "median": 6175,
+    "p25": 6042.8,
+    "p75": 6458.3,
+    "n": 20,
+    "ci": [
+     6051,
+     6349
+    ]
+   },
+   "total": {
+    "median": 78.411,
+    "p25": 77.098,
+    "p75": 82.835,
+    "n": 20,
+    "ci": [
+     77.369,
+     81.913
+    ]
+   },
+   "seeds": {
+    "1": 6175
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 1,
+   "action": "dispatch: serverUpdate of 10 rows",
+   "half": "serverUpdate of 10 rows",
+   "scope": "local",
+   "script": {
+    "median": 140,
+    "p25": 129,
+    "p75": 146.8,
+    "n": 20,
+    "ci": [
+     131,
+     145
+    ]
+   },
+   "total": {
+    "median": 4.975,
+    "p25": 4.544,
+    "p75": 7.724,
+    "n": 20,
+    "ci": [
+     4.57,
+     6.383
+    ]
+   },
+   "seeds": {
+    "1": 140
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 1,
+   "action": "dispatch: serverUpdate of 10 rows",
+   "half": "serverUpdate of 10 rows back",
+   "scope": "local",
+   "script": {
+    "median": 138,
+    "p25": 128.3,
+    "p75": 150.5,
+    "n": 20,
+    "ci": [
+     130.5,
+     148.5
+    ]
+   },
+   "total": {
+    "median": 9.177,
+    "p25": 4.625,
+    "p75": 16.472,
+    "n": 20,
+    "ci": [
+     4.656,
+     15.83
+    ]
+   },
+   "seeds": {
+    "1": 138
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 1,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 2658,
+    "p25": 2548.8,
+    "p75": 2900,
+    "n": 20,
+    "ci": [
+     2581.5,
+     2792
+    ]
+   },
+   "total": {
+    "median": 22.811,
+    "p25": 18.403,
+    "p75": 24.522,
+    "n": 20,
+    "ci": [
+     18.797,
+     24.167
+    ]
+   },
+   "seeds": {
+    "1": 2658
+   }
+  },
+  {
+   "variant": "digest",
+   "size": 1,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 2639,
+    "p25": 2595.8,
+    "p75": 2714.8,
+    "n": 20,
+    "ci": [
+     2607.5,
+     2679
+    ]
+   },
+   "total": {
+    "median": 18.078,
+    "p25": 16.081,
+    "p75": 30.348,
+    "n": 20,
+    "ci": [
+     16.358,
+     30.079
+    ]
+   },
+   "seeds": {
+    "1": 2639
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "action": "01 create rows",
+   "half": "create 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 8448,
+    "p25": 7382.8,
+    "p75": 9776,
+    "n": 20,
+    "ci": [
+     7447.5,
+     9599
+    ]
+   },
+   "total": {
+    "median": 49.545,
+    "p25": 47.657,
+    "p75": 53.194,
+    "n": 20,
+    "ci": [
+     47.969,
+     52.04
+    ]
+   },
+   "seeds": {
+    "1": 8448
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "action": "01 create rows",
+   "half": "clear 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 3437.5,
+    "p25": 3322,
+    "p75": 3705.5,
+    "n": 20,
+    "ci": [
+     3338,
+     3645.5
+    ]
+   },
+   "total": {
+    "median": 30.657,
+    "p25": 30.403,
+    "p75": 30.956,
+    "n": 20,
+    "ci": [
+     30.456,
+     30.849
+    ]
+   },
+   "seeds": {
+    "1": 3437.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "action": "02 replace all rows",
+   "half": "replace 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 12498,
+    "p25": 10628.8,
+    "p75": 13428.8,
+    "n": 20,
+    "ci": [
+     11038,
+     13268
+    ]
+   },
+   "total": {
+    "median": 54.906,
+    "p25": 51.947,
+    "p75": 58.527,
+    "n": 20,
+    "ci": [
+     52.061,
+     58.256
+    ]
+   },
+   "seeds": {
+    "1": 12498
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "action": "03 partial update",
+   "half": "update every 10th row of 10000",
+   "scope": "local",
+   "script": {
+    "median": 10276,
+    "p25": 8109.3,
+    "p75": 14485,
+    "n": 20,
+    "ci": [
+     8395.5,
+     13491.5
+    ]
+   },
+   "total": {
+    "median": 145.781,
+    "p25": 141.638,
+    "p75": 168.212,
+    "n": 20,
+    "ci": [
+     142.287,
+     162.056
+    ]
+   },
+   "seeds": {
+    "1": 10276
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "action": "04 select row",
+   "half": "select row 2",
+   "scope": "local",
+   "script": {
+    "median": 604.5,
+    "p25": 473.5,
+    "p75": 677.8,
+    "n": 20,
+    "ci": [
+     486.5,
+     665
+    ]
+   },
+   "total": {
+    "median": 30.527,
+    "p25": 30.367,
+    "p75": 30.638,
+    "n": 20,
+    "ci": [
+     30.399,
+     30.627
+    ]
+   },
+   "seeds": {
+    "1": 604.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "action": "04 select row",
+   "half": "select row 3",
+   "scope": "local",
+   "script": {
+    "median": 581.5,
+    "p25": 519.5,
+    "p75": 726.8,
+    "n": 20,
+    "ci": [
+     522,
+     715
+    ]
+   },
+   "total": {
+    "median": 30.539,
+    "p25": 30.274,
+    "p75": 30.807,
+    "n": 20,
+    "ci": [
+     30.313,
+     30.752
+    ]
+   },
+   "seeds": {
+    "1": 581.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "action": "05 swap rows",
+   "half": "swap rows",
+   "scope": "local",
+   "script": {
+    "median": 436,
+    "p25": 405.8,
+    "p75": 499,
+    "n": 20,
+    "ci": [
+     411.5,
+     486
+    ]
+   },
+   "total": {
+    "median": 30.645,
+    "p25": 30.351,
+    "p75": 31.076,
+    "n": 20,
+    "ci": [
+     30.377,
+     30.979
+    ]
+   },
+   "seeds": {
+    "1": 436
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "action": "05 swap rows",
+   "half": "swap rows back",
+   "scope": "local",
+   "script": {
+    "median": 465,
+    "p25": 367.5,
+    "p75": 578,
+    "n": 20,
+    "ci": [
+     390,
+     539
+    ]
+   },
+   "total": {
+    "median": 30.8,
+    "p25": 30.74,
+    "p75": 31.121,
+    "n": 20,
+    "ci": [
+     30.757,
+     31.088
+    ]
+   },
+   "seeds": {
+    "1": 465
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "action": "06 remove row",
+   "half": "remove the 4th row",
+   "scope": "local",
+   "script": {
+    "median": 462.5,
+    "p25": 406.5,
+    "p75": 528,
+    "n": 20,
+    "ci": [
+     421,
+     522.5
+    ]
+   },
+   "total": {
+    "median": 29.331,
+    "p25": 28.898,
+    "p75": 29.477,
+    "n": 20,
+    "ci": [
+     28.996,
+     29.469
+    ]
+   },
+   "seeds": {
+    "1": 462.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "action": "07 create many rows",
+   "half": "create 10000 rows",
+   "scope": "local",
+   "script": {
+    "median": 86887.5,
+    "p25": 81695.5,
+    "p75": 90975.3,
+    "n": 20,
+    "ci": [
+     82756,
+     90381.5
+    ]
+   },
+   "total": {
+    "median": 361.441,
+    "p25": 330.369,
+    "p75": 375.992,
+    "n": 20,
+    "ci": [
+     335.661,
+     373.322
+    ]
+   },
+   "seeds": {
+    "1": 86887.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "action": "07 create many rows",
+   "half": "09 clear 10000 rows",
+   "scope": "local",
+   "script": {
+    "median": 38089,
+    "p25": 30289.3,
+    "p75": 69834.8,
+    "n": 20,
+    "ci": [
+     30751.5,
+     59287.5
+    ]
+   },
+   "total": {
+    "median": 46.057,
+    "p25": 37.11,
+    "p75": 76.538,
+    "n": 20,
+    "ci": [
+     38.51,
+     64.719
+    ]
+   },
+   "seeds": {
+    "1": 38089
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "action": "08 append to a large table",
+   "half": "append 1000 rows to 10000",
+   "scope": "local",
+   "script": {
+    "median": 9405,
+    "p25": 8600.8,
+    "p75": 14024.5,
+    "n": 20,
+    "ci": [
+     8682,
+     12012.5
+    ]
+   },
+   "total": {
+    "median": 104.035,
+    "p25": 95.371,
+    "p75": 108.237,
+    "n": 20,
+    "ci": [
+     96.546,
+     107.399
+    ]
+   },
+   "seeds": {
+    "1": 9405
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "action": "dispatch: serverUpdate of 10 rows",
+   "half": "serverUpdate of 10 rows",
+   "scope": "local",
+   "script": {
+    "median": 654,
+    "p25": 589.8,
+    "p75": 838.8,
+    "n": 20,
+    "ci": [
+     603,
+     789
+    ]
+   },
+   "total": {
+    "median": 31.979,
+    "p25": 31.81,
+    "p75": 32.147,
+    "n": 20,
+    "ci": [
+     31.831,
+     32.124
+    ]
+   },
+   "seeds": {
+    "1": 654
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "action": "dispatch: serverUpdate of 10 rows",
+   "half": "serverUpdate of 10 rows back",
+   "scope": "local",
+   "script": {
+    "median": 627,
+    "p25": 611,
+    "p75": 826.3,
+    "n": 20,
+    "ci": [
+     616,
+     772.5
+    ]
+   },
+   "total": {
+    "median": 32.349,
+    "p25": 32.258,
+    "p75": 32.456,
+    "n": 20,
+    "ci": [
+     32.286,
+     32.437
+    ]
+   },
+   "seeds": {
+    "1": 627
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 8933.5,
+    "p25": 8498,
+    "p75": 9562.3,
+    "n": 20,
+    "ci": [
+     8552,
+     9405
+    ]
+   },
+   "total": {
+    "median": 40.034,
+    "p25": 38.602,
+    "p75": 40.942,
+    "n": 20,
+    "ci": [
+     38.667,
+     40.78
+    ]
+   },
+   "seeds": {
+    "1": 8933.5
+   }
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 9378,
+    "p25": 8662.8,
+    "p75": 9703,
+    "n": 20,
+    "ci": [
+     8801,
+     9667.5
+    ]
+   },
+   "total": {
+    "median": 40.91,
+    "p25": 39.847,
+    "p75": 42.285,
+    "n": 20,
+    "ci": [
+     40.048,
+     41.793
+    ]
+   },
+   "seeds": {
+    "1": 9378
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "action": "01 create rows",
+   "half": "create 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 5055.5,
+    "p25": 4804.3,
+    "p75": 5713,
+    "n": 20,
+    "ci": [
+     4825.5,
+     5662.5
+    ]
+   },
+   "total": {
+    "median": 31.786,
+    "p25": 29.906,
+    "p75": 34.827,
+    "n": 20,
+    "ci": [
+     30.022,
+     33.573
+    ]
+   },
+   "seeds": {
+    "1": 5055.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "action": "01 create rows",
+   "half": "clear 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 2966.5,
+    "p25": 2907.5,
+    "p75": 3094,
+    "n": 20,
+    "ci": [
+     2910,
+     3056
+    ]
+   },
+   "total": {
+    "median": 12.14,
+    "p25": 10.896,
+    "p75": 14.184,
+    "n": 20,
+    "ci": [
+     10.998,
+     14.104
+    ]
+   },
+   "seeds": {
+    "1": 2966.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "action": "02 replace all rows",
+   "half": "replace 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 8192,
+    "p25": 7545,
+    "p75": 8516.5,
+    "n": 20,
+    "ci": [
+     7582,
+     8498
+    ]
+   },
+   "total": {
+    "median": 36.121,
+    "p25": 33.856,
+    "p75": 37.344,
+    "n": 20,
+    "ci": [
+     33.981,
+     37.031
+    ]
+   },
+   "seeds": {
+    "1": 8192
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "action": "03 partial update",
+   "half": "update every 10th row of 10000",
+   "scope": "local",
+   "script": {
+    "median": 3075,
+    "p25": 2858.5,
+    "p75": 3745,
+    "n": 20,
+    "ci": [
+     2890.5,
+     3532
+    ]
+   },
+   "total": {
+    "median": 122.884,
+    "p25": 120.439,
+    "p75": 125.704,
+    "n": 20,
+    "ci": [
+     120.523,
+     125.546
+    ]
+   },
+   "seeds": {
+    "1": 3075
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "action": "04 select row",
+   "half": "select row 2",
+   "scope": "local",
+   "script": {
+    "median": 118.5,
+    "p25": 109.8,
+    "p75": 134.5,
+    "n": 20,
+    "ci": [
+     110.5,
+     130.5
+    ]
+   },
+   "total": {
+    "median": 13.904,
+    "p25": 13.705,
+    "p75": 14.067,
+    "n": 20,
+    "ci": [
+     13.756,
+     14.052
+    ]
+   },
+   "seeds": {
+    "1": 118.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "action": "04 select row",
+   "half": "select row 3",
+   "scope": "local",
+   "script": {
+    "median": 121,
+    "p25": 115.5,
+    "p75": 130.3,
+    "n": 20,
+    "ci": [
+     116.5,
+     128
+    ]
+   },
+   "total": {
+    "median": 13.819,
+    "p25": 13.71,
+    "p75": 14.073,
+    "n": 20,
+    "ci": [
+     13.751,
+     13.988
+    ]
+   },
+   "seeds": {
+    "1": 121
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "action": "05 swap rows",
+   "half": "swap rows",
+   "scope": "local",
+   "script": {
+    "median": 445.5,
+    "p25": 396,
+    "p75": 486.3,
+    "n": 20,
+    "ci": [
+     399,
+     480
+    ]
+   },
+   "total": {
+    "median": 15.134,
+    "p25": 15.069,
+    "p75": 15.349,
+    "n": 20,
+    "ci": [
+     15.1,
+     15.323
+    ]
+   },
+   "seeds": {
+    "1": 445.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "action": "05 swap rows",
+   "half": "swap rows back",
+   "scope": "local",
+   "script": {
+    "median": 422.5,
+    "p25": 393.8,
+    "p75": 475.8,
+    "n": 20,
+    "ci": [
+     401.5,
+     455.5
+    ]
+   },
+   "total": {
+    "median": 15.107,
+    "p25": 14.87,
+    "p75": 15.234,
+    "n": 20,
+    "ci": [
+     14.91,
+     15.226
+    ]
+   },
+   "seeds": {
+    "1": 422.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "action": "06 remove row",
+   "half": "remove the 4th row",
+   "scope": "local",
+   "script": {
+    "median": 410,
+    "p25": 362.5,
+    "p75": 519,
+    "n": 20,
+    "ci": [
+     364,
+     490.5
+    ]
+   },
+   "total": {
+    "median": 9.515,
+    "p25": 8.165,
+    "p75": 12.051,
+    "n": 20,
+    "ci": [
+     8.612,
+     11.746
+    ]
+   },
+   "seeds": {
+    "1": 410
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "action": "07 create many rows",
+   "half": "create 10000 rows",
+   "scope": "local",
+   "script": {
+    "median": 45969.5,
+    "p25": 41846,
+    "p75": 58388.8,
+    "n": 20,
+    "ci": [
+     42983.5,
+     52395
+    ]
+   },
+   "total": {
+    "median": 304.128,
+    "p25": 286.83,
+    "p75": 377.299,
+    "n": 20,
+    "ci": [
+     287.687,
+     370.213
+    ]
+   },
+   "seeds": {
+    "1": 45969.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "action": "07 create many rows",
+   "half": "09 clear 10000 rows",
+   "scope": "local",
+   "script": {
+    "median": 29697.5,
+    "p25": 28999.3,
+    "p75": 30359.5,
+    "n": 20,
+    "ci": [
+     29052,
+     30322
+    ]
+   },
+   "total": {
+    "median": 30.503,
+    "p25": 29.843,
+    "p75": 31.252,
+    "n": 20,
+    "ci": [
+     29.941,
+     31.157
+    ]
+   },
+   "seeds": {
+    "1": 29697.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "action": "08 append to a large table",
+   "half": "append 1000 rows to 10000",
+   "scope": "local",
+   "script": {
+    "median": 6603.5,
+    "p25": 6417.5,
+    "p75": 7874.5,
+    "n": 20,
+    "ci": [
+     6428.5,
+     7287
+    ]
+   },
+   "total": {
+    "median": 69.746,
+    "p25": 68.002,
+    "p75": 73.36,
+    "n": 20,
+    "ci": [
+     68.496,
+     71.934
+    ]
+   },
+   "seeds": {
+    "1": 6603.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "action": "dispatch: serverUpdate of 10 rows",
+   "half": "serverUpdate of 10 rows",
+   "scope": "local",
+   "script": {
+    "median": 461.5,
+    "p25": 413.5,
+    "p75": 499,
+    "n": 20,
+    "ci": [
+     417,
+     497
+    ]
+   },
+   "total": {
+    "median": 19.066,
+    "p25": 18.843,
+    "p75": 19.156,
+    "n": 20,
+    "ci": [
+     18.876,
+     19.144
+    ]
+   },
+   "seeds": {
+    "1": 461.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "action": "dispatch: serverUpdate of 10 rows",
+   "half": "serverUpdate of 10 rows back",
+   "scope": "local",
+   "script": {
+    "median": 451.5,
+    "p25": 418.5,
+    "p75": 558.5,
+    "n": 20,
+    "ci": [
+     425,
+     532.5
+    ]
+   },
+   "total": {
+    "median": 18.919,
+    "p25": 18.715,
+    "p75": 19.071,
+    "n": 20,
+    "ci": [
+     18.748,
+     19.048
+    ]
+   },
+   "seeds": {
+    "1": 451.5
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 1841,
+    "p25": 1672.5,
+    "p75": 1984.8,
+    "n": 20,
+    "ci": [
+     1706.5,
+     1950
+    ]
+   },
+   "total": {
+    "median": 19.716,
+    "p25": 15.204,
+    "p75": 26.521,
+    "n": 20,
+    "ci": [
+     15.814,
+     26.385
+    ]
+   },
+   "seeds": {
+    "1": 1841
+   }
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 1871.5,
+    "p25": 1742.5,
+    "p75": 2014.3,
+    "n": 20,
+    "ci": [
+     1762.5,
+     1989.5
+    ]
+   },
+   "total": {
+    "median": 20.54,
+    "p25": 19.624,
+    "p75": 27.223,
+    "n": 20,
+    "ci": [
+     19.992,
+     26.845
+    ]
+   },
+   "seeds": {
+    "1": 1871.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "action": "01 create rows",
+   "half": "create 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 6998.5,
+    "p25": 5980.8,
+    "p75": 8045,
+    "n": 20,
+    "ci": [
+     6025,
+     7804.5
+    ]
+   },
+   "total": {
+    "median": 35.08,
+    "p25": 33.856,
+    "p75": 37.276,
+    "n": 20,
+    "ci": [
+     34.351,
+     36.98
+    ]
+   },
+   "seeds": {
+    "1": 6998.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "action": "01 create rows",
+   "half": "clear 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 3235.5,
+    "p25": 3113,
+    "p75": 3540,
+    "n": 20,
+    "ci": [
+     3148,
+     3422
+    ]
+   },
+   "total": {
+    "median": 6.712,
+    "p25": 4.626,
+    "p75": 11.811,
+    "n": 20,
+    "ci": [
+     4.905,
+     11.02
+    ]
+   },
+   "seeds": {
+    "1": 3235.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "action": "02 replace all rows",
+   "half": "replace 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 11026,
+    "p25": 10294.3,
+    "p75": 11960.8,
+    "n": 20,
+    "ci": [
+     10327,
+     11805
+    ]
+   },
+   "total": {
+    "median": 39.209,
+    "p25": 37.949,
+    "p75": 41.624,
+    "n": 20,
+    "ci": [
+     38.086,
+     41.263
+    ]
+   },
+   "seeds": {
+    "1": 11026
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "action": "03 partial update",
+   "half": "update every 10th row of 10000",
+   "scope": "local",
+   "script": {
+    "median": 4006.5,
+    "p25": 3407.5,
+    "p75": 5960.5,
+    "n": 20,
+    "ci": [
+     3419.5,
+     5677.5
+    ]
+   },
+   "total": {
+    "median": 131.549,
+    "p25": 127.126,
+    "p75": 141.811,
+    "n": 20,
+    "ci": [
+     127.284,
+     138.014
+    ]
+   },
+   "seeds": {
+    "1": 4006.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "action": "04 select row",
+   "half": "select row 3",
+   "scope": "local",
+   "script": {
+    "median": 130,
+    "p25": 111.5,
+    "p75": 135.5,
+    "n": 11,
+    "ci": [
+     99,
+     137
+    ]
+   },
+   "total": {
+    "median": 7.131,
+    "p25": 3.719,
+    "p75": 13.488,
+    "n": 11,
+    "ci": [
+     3.327,
+     14.246
+    ]
+   },
+   "seeds": {
+    "1": 130
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "action": "04 select row",
+   "half": "select row 2",
+   "scope": "local",
+   "script": {
+    "median": 117,
+    "p25": 108.3,
+    "p75": 132.5,
+    "n": 8,
+    "ci": [
+     106,
+     149
+    ]
+   },
+   "total": {
+    "median": 9.399,
+    "p25": 5.94,
+    "p75": 10.404,
+    "n": 8,
+    "ci": [
+     2.028,
+     11.462
+    ]
+   },
+   "seeds": {
+    "1": 117
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "action": "05 swap rows",
+   "half": "swap rows",
+   "scope": "local",
+   "script": {
+    "median": 717,
+    "p25": 665.5,
+    "p75": 787.3,
+    "n": 20,
+    "ci": [
+     669.5,
+     780.5
+    ]
+   },
+   "total": {
+    "median": 8.365,
+    "p25": 5.811,
+    "p75": 12.554,
+    "n": 20,
+    "ci": [
+     6.554,
+     12.3
+    ]
+   },
+   "seeds": {
+    "1": 717
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "action": "05 swap rows",
+   "half": "swap rows back",
+   "scope": "local",
+   "script": {
+    "median": 673,
+    "p25": 645,
+    "p75": 694.3,
+    "n": 20,
+    "ci": [
+     646,
+     690.5
+    ]
+   },
+   "total": {
+    "median": 6.966,
+    "p25": 5.153,
+    "p75": 12.394,
+    "n": 20,
+    "ci": [
+     5.89,
+     11.62
+    ]
+   },
+   "seeds": {
+    "1": 673
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "action": "06 remove row",
+   "half": "remove the 4th row",
+   "scope": "local",
+   "script": {
+    "median": 1249.5,
+    "p25": 1108.3,
+    "p75": 1422.5,
+    "n": 20,
+    "ci": [
+     1115.5,
+     1411.5
+    ]
+   },
+   "total": {
+    "median": 11.254,
+    "p25": 7.971,
+    "p75": 13.808,
+    "n": 20,
+    "ci": [
+     9.083,
+     13.713
+    ]
+   },
+   "seeds": {
+    "1": 1249.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "action": "07 create many rows",
+   "half": "create 10000 rows",
+   "scope": "local",
+   "script": {
+    "median": 64344,
+    "p25": 53398,
+    "p75": 68031.5,
+    "n": 20,
+    "ci": [
+     54368.5,
+     67541
+    ]
+   },
+   "total": {
+    "median": 313.711,
+    "p25": 303.403,
+    "p75": 336.313,
+    "n": 20,
+    "ci": [
+     304.013,
+     329.243
+    ]
+   },
+   "seeds": {
+    "1": 64344
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "action": "07 create many rows",
+   "half": "09 clear 10000 rows",
+   "scope": "local",
+   "script": {
+    "median": 32251,
+    "p25": 31104,
+    "p75": 35622.3,
+    "n": 20,
+    "ci": [
+     31319.5,
+     34427.5
+    ]
+   },
+   "total": {
+    "median": 33.016,
+    "p25": 31.948,
+    "p75": 36.411,
+    "n": 20,
+    "ci": [
+     32.079,
+     35.287
+    ]
+   },
+   "seeds": {
+    "1": 32251
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "action": "08 append to a large table",
+   "half": "append 1000 rows to 10000",
+   "scope": "local",
+   "script": {
+    "median": 17132.5,
+    "p25": 16196.5,
+    "p75": 17935.3,
+    "n": 20,
+    "ci": [
+     16416,
+     17750.5
+    ]
+   },
+   "total": {
+    "median": 83.145,
+    "p25": 81.278,
+    "p75": 84.814,
+    "n": 20,
+    "ci": [
+     81.438,
+     84.782
+    ]
+   },
+   "seeds": {
+    "1": 17132.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "action": "dispatch: serverUpdate of 10 rows",
+   "half": "serverUpdate of 10 rows",
+   "scope": "local",
+   "script": {
+    "median": 194,
+    "p25": 183,
+    "p75": 212,
+    "n": 20,
+    "ci": [
+     184,
+     210.5
+    ]
+   },
+   "total": {
+    "median": 5.104,
+    "p25": 4.715,
+    "p75": 6.032,
+    "n": 20,
+    "ci": [
+     4.799,
+     5.395
+    ]
+   },
+   "seeds": {
+    "1": 194
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "action": "dispatch: serverUpdate of 10 rows",
+   "half": "serverUpdate of 10 rows back",
+   "scope": "local",
+   "script": {
+    "median": 181,
+    "p25": 165.5,
+    "p75": 197.8,
+    "n": 20,
+    "ci": [
+     166.5,
+     191.5
+    ]
+   },
+   "total": {
+    "median": 5.698,
+    "p25": 4.896,
+    "p75": 15.967,
+    "n": 20,
+    "ci": [
+     4.946,
+     15.899
+    ]
+   },
+   "seeds": {
+    "1": 181
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 2994.5,
+    "p25": 2900.8,
+    "p75": 3160.8,
+    "n": 20,
+    "ci": [
+     2922,
+     3120
+    ]
+   },
+   "total": {
+    "median": 16.859,
+    "p25": 15.906,
+    "p75": 20.353,
+    "n": 20,
+    "ci": [
+     15.961,
+     18.92
+    ]
+   },
+   "seeds": {
+    "1": 2994.5
+   }
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 3162,
+    "p25": 2924.5,
+    "p75": 3507.8,
+    "n": 20,
+    "ci": [
+     2969.5,
+     3487
+    ]
+   },
+   "total": {
+    "median": 20.027,
+    "p25": 16.378,
+    "p75": 27.563,
+    "n": 20,
+    "ci": [
+     16.566,
+     26.839
+    ]
+   },
+   "seeds": {
+    "1": 3162
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "action": "01 create rows",
+   "half": "create 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 3852,
+    "p25": 3621.5,
+    "p75": 4164,
+    "n": 20,
+    "ci": [
+     3690,
+     4092.5
+    ]
+   },
+   "total": {
+    "median": 32.632,
+    "p25": 30.904,
+    "p75": 34.11,
+    "n": 20,
+    "ci": [
+     31.115,
+     33.684
+    ]
+   },
+   "seeds": {
+    "1": 3852
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "action": "01 create rows",
+   "half": "clear 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 3050,
+    "p25": 3000,
+    "p75": 3169.8,
+    "n": 20,
+    "ci": [
+     3013.5,
+     3163.5
+    ]
+   },
+   "total": {
+    "median": 9.28,
+    "p25": 5.742,
+    "p75": 13.145,
+    "n": 20,
+    "ci": [
+     6.534,
+     12.503
+    ]
+   },
+   "seeds": {
+    "1": 3050
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "action": "02 replace all rows",
+   "half": "replace 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 7147,
+    "p25": 6675.3,
+    "p75": 7681.3,
+    "n": 20,
+    "ci": [
+     6762,
+     7530
+    ]
+   },
+   "total": {
+    "median": 35.211,
+    "p25": 33.716,
+    "p75": 37.392,
+    "n": 20,
+    "ci": [
+     33.778,
+     36.812
+    ]
+   },
+   "seeds": {
+    "1": 7147
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "action": "03 partial update",
+   "half": "update every 10th row of 10000",
+   "scope": "local",
+   "script": {
+    "median": 2668,
+    "p25": 2390.5,
+    "p75": 2777,
+    "n": 20,
+    "ci": [
+     2435.5,
+     2771.5
+    ]
+   },
+   "total": {
+    "median": 124.913,
+    "p25": 122.614,
+    "p75": 126.607,
+    "n": 20,
+    "ci": [
+     123.113,
+     126.388
+    ]
+   },
+   "seeds": {
+    "1": 2668
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "action": "04 select row",
+   "half": "select row 2",
+   "scope": "local",
+   "script": {
+    "median": 63.5,
+    "p25": 59.5,
+    "p75": 78.8,
+    "n": 10,
+    "ci": [
+     57,
+     83
+    ]
+   },
+   "total": {
+    "median": 5.489,
+    "p25": 3.53,
+    "p75": 12.67,
+    "n": 10,
+    "ci": [
+     2.862,
+     13.431
+    ]
+   },
+   "seeds": {
+    "1": 63.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "action": "04 select row",
+   "half": "select row 3",
+   "scope": "local",
+   "script": {
+    "median": 64,
+    "p25": 55,
+    "p75": 67,
+    "n": 9,
+    "ci": [
+     52,
+     70
+    ]
+   },
+   "total": {
+    "median": 7.846,
+    "p25": 3.109,
+    "p75": 10.644,
+    "n": 9,
+    "ci": [
+     3.032,
+     11.577
+    ]
+   },
+   "seeds": {
+    "1": 64
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "action": "05 swap rows",
+   "half": "swap rows",
+   "scope": "local",
+   "script": {
+    "median": 146,
+    "p25": 125.3,
+    "p75": 160.8,
+    "n": 20,
+    "ci": [
+     126.5,
+     158.5
+    ]
+   },
+   "total": {
+    "median": 7.616,
+    "p25": 6.874,
+    "p75": 8.192,
+    "n": 20,
+    "ci": [
+     6.998,
+     8.031
+    ]
+   },
+   "seeds": {
+    "1": 146
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "action": "05 swap rows",
+   "half": "swap rows back",
+   "scope": "local",
+   "script": {
+    "median": 148.5,
+    "p25": 129.8,
+    "p75": 157.5,
+    "n": 20,
+    "ci": [
+     134,
+     156.5
+    ]
+   },
+   "total": {
+    "median": 7.499,
+    "p25": 6.505,
+    "p75": 8.018,
+    "n": 20,
+    "ci": [
+     6.821,
+     7.954
+    ]
+   },
+   "seeds": {
+    "1": 148.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "action": "06 remove row",
+   "half": "remove the 4th row",
+   "scope": "local",
+   "script": {
+    "median": 107.5,
+    "p25": 100.3,
+    "p75": 125,
+    "n": 20,
+    "ci": [
+     102,
+     120
+    ]
+   },
+   "total": {
+    "median": 9.827,
+    "p25": 6.508,
+    "p75": 13.673,
+    "n": 20,
+    "ci": [
+     6.75,
+     13.297
+    ]
+   },
+   "seeds": {
+    "1": 107.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "action": "07 create many rows",
+   "half": "create 10000 rows",
+   "scope": "local",
+   "script": {
+    "median": 44052.5,
+    "p25": 42504,
+    "p75": 48560,
+    "n": 20,
+    "ci": [
+     42614.5,
+     48056
+    ]
+   },
+   "total": {
+    "median": 303.816,
+    "p25": 286.268,
+    "p75": 356.826,
+    "n": 20,
+    "ci": [
+     287.302,
+     350.446
+    ]
+   },
+   "seeds": {
+    "1": 44052.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "action": "07 create many rows",
+   "half": "09 clear 10000 rows",
+   "scope": "local",
+   "script": {
+    "median": 29274.5,
+    "p25": 28532.3,
+    "p75": 30515,
+    "n": 20,
+    "ci": [
+     28593,
+     29961.5
+    ]
+   },
+   "total": {
+    "median": 30.098,
+    "p25": 29.285,
+    "p75": 31.415,
+    "n": 20,
+    "ci": [
+     29.367,
+     30.843
+    ]
+   },
+   "seeds": {
+    "1": 29274.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "action": "08 append to a large table",
+   "half": "append 1000 rows to 10000",
+   "scope": "local",
+   "script": {
+    "median": 4196,
+    "p25": 4046.8,
+    "p75": 4458.3,
+    "n": 20,
+    "ci": [
+     4088,
+     4447
+    ]
+   },
+   "total": {
+    "median": 67.499,
+    "p25": 66.089,
+    "p75": 68.832,
+    "n": 20,
+    "ci": [
+     66.27,
+     68.731
+    ]
+   },
+   "seeds": {
+    "1": 4196
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "action": "dispatch: serverUpdate of 10 rows",
+   "half": "serverUpdate of 10 rows",
+   "scope": "local",
+   "script": {
+    "median": 175.5,
+    "p25": 153,
+    "p75": 191.5,
+    "n": 20,
+    "ci": [
+     155.5,
+     186.5
+    ]
+   },
+   "total": {
+    "median": 4.336,
+    "p25": 3.809,
+    "p75": 13.427,
+    "n": 20,
+    "ci": [
+     3.819,
+     9.299
+    ]
+   },
+   "seeds": {
+    "1": 175.5
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "action": "dispatch: serverUpdate of 10 rows",
+   "half": "serverUpdate of 10 rows back",
+   "scope": "local",
+   "script": {
+    "median": 186,
+    "p25": 166,
+    "p75": 211.5,
+    "n": 20,
+    "ci": [
+     169,
+     204
+    ]
+   },
+   "total": {
+    "median": 3.953,
+    "p25": 3.735,
+    "p75": 13.292,
+    "n": 20,
+    "ci": [
+     3.757,
+     10.003
+    ]
+   },
+   "seeds": {
+    "1": 186
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 2008,
+    "p25": 1955.3,
+    "p75": 2246,
+    "n": 20,
+    "ci": [
+     1958,
+     2178.5
+    ]
+   },
+   "total": {
+    "median": 15.942,
+    "p25": 14.795,
+    "p75": 19.614,
+    "n": 20,
+    "ci": [
+     15.058,
+     17.63
+    ]
+   },
+   "seeds": {
+    "1": 2008
+   }
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 1957,
+    "p25": 1913.8,
+    "p75": 2029.8,
+    "n": 20,
+    "ci": [
+     1917.5,
+     2023.5
+    ]
+   },
+   "total": {
+    "median": 17.571,
+    "p25": 14.575,
+    "p75": 26.521,
+    "n": 20,
+    "ci": [
+     14.918,
+     26.316
+    ]
+   },
+   "seeds": {
+    "1": 1957
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "action": "01 create rows",
+   "half": "create 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 3937.5,
+    "p25": 3585.5,
+    "p75": 4352,
+    "n": 20,
+    "ci": [
+     3593.5,
+     4307.5
+    ]
+   },
+   "total": {
+    "median": 31.356,
+    "p25": 29.56,
+    "p75": 33.922,
+    "n": 20,
+    "ci": [
+     29.765,
+     33.595
+    ]
+   },
+   "seeds": {
+    "1": 3937.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "action": "01 create rows",
+   "half": "clear 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 2832,
+    "p25": 2769.3,
+    "p75": 2883.5,
+    "n": 20,
+    "ci": [
+     2780,
+     2877
+    ]
+   },
+   "total": {
+    "median": 8.862,
+    "p25": 6.698,
+    "p75": 12.652,
+    "n": 20,
+    "ci": [
+     7.28,
+     11.946
+    ]
+   },
+   "seeds": {
+    "1": 2832
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "action": "02 replace all rows",
+   "half": "replace 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 6943,
+    "p25": 6630,
+    "p75": 7247.8,
+    "n": 20,
+    "ci": [
+     6633,
+     7177.5
+    ]
+   },
+   "total": {
+    "median": 34.794,
+    "p25": 33.827,
+    "p75": 36.726,
+    "n": 20,
+    "ci": [
+     34.088,
+     36.014
+    ]
+   },
+   "seeds": {
+    "1": 6943
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "action": "03 partial update",
+   "half": "update every 10th row of 10000",
+   "scope": "local",
+   "script": {
+    "median": 2784,
+    "p25": 2692,
+    "p75": 2978.3,
+    "n": 20,
+    "ci": [
+     2710.5,
+     2975
+    ]
+   },
+   "total": {
+    "median": 122.698,
+    "p25": 122.184,
+    "p75": 125.57,
+    "n": 20,
+    "ci": [
+     122.254,
+     125.079
+    ]
+   },
+   "seeds": {
+    "1": 2784
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "action": "04 select row",
+   "half": "select row 2",
+   "scope": "local",
+   "script": {
+    "median": 46,
+    "p25": 45,
+    "p75": 49,
+    "n": 9,
+    "ci": [
+     44,
+     62
+    ]
+   },
+   "total": {
+    "median": 6.791,
+    "p25": 4.377,
+    "p75": 10.244,
+    "n": 9,
+    "ci": [
+     4.152,
+     11.366
+    ]
+   },
+   "seeds": {
+    "1": 46
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "action": "04 select row",
+   "half": "select row 3",
+   "scope": "local",
+   "script": {
+    "median": 44,
+    "p25": 44,
+    "p75": 50.8,
+    "n": 10,
+    "ci": [
+     43.5,
+     51
+    ]
+   },
+   "total": {
+    "median": 8.649,
+    "p25": 4.493,
+    "p75": 11.669,
+    "n": 10,
+    "ci": [
+     3.792,
+     11.905
+    ]
+   },
+   "seeds": {
+    "1": 44
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "action": "05 swap rows",
+   "half": "swap rows",
+   "scope": "local",
+   "script": {
+    "median": 120,
+    "p25": 117.3,
+    "p75": 130.3,
+    "n": 20,
+    "ci": [
+     118,
+     127.5
+    ]
+   },
+   "total": {
+    "median": 9.56,
+    "p25": 6.363,
+    "p75": 12.77,
+    "n": 20,
+    "ci": [
+     6.782,
+     11.962
+    ]
+   },
+   "seeds": {
+    "1": 120
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "action": "05 swap rows",
+   "half": "swap rows back",
+   "scope": "local",
+   "script": {
+    "median": 124.5,
+    "p25": 114,
+    "p75": 137,
+    "n": 20,
+    "ci": [
+     115,
+     134.5
+    ]
+   },
+   "total": {
+    "median": 9.755,
+    "p25": 6.723,
+    "p75": 12.971,
+    "n": 20,
+    "ci": [
+     7.49,
+     12.441
+    ]
+   },
+   "seeds": {
+    "1": 124.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "action": "06 remove row",
+   "half": "remove the 4th row",
+   "scope": "local",
+   "script": {
+    "median": 81.5,
+    "p25": 73.5,
+    "p75": 95.5,
+    "n": 20,
+    "ci": [
+     75,
+     93.5
+    ]
+   },
+   "total": {
+    "median": 7.429,
+    "p25": 6.292,
+    "p75": 11.953,
+    "n": 20,
+    "ci": [
+     6.318,
+     10.767
+    ]
+   },
+   "seeds": {
+    "1": 81.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "action": "07 create many rows",
+   "half": "create 10000 rows",
+   "scope": "local",
+   "script": {
+    "median": 42918,
+    "p25": 38542.5,
+    "p75": 47966.8,
+    "n": 20,
+    "ci": [
+     38621,
+     47500.5
+    ]
+   },
+   "total": {
+    "median": 305.332,
+    "p25": 287.844,
+    "p75": 356.812,
+    "n": 20,
+    "ci": [
+     288.642,
+     352.843
+    ]
+   },
+   "seeds": {
+    "1": 42918
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "action": "07 create many rows",
+   "half": "09 clear 10000 rows",
+   "scope": "local",
+   "script": {
+    "median": 28988.5,
+    "p25": 28019.5,
+    "p75": 30634.5,
+    "n": 20,
+    "ci": [
+     28198,
+     30050
+    ]
+   },
+   "total": {
+    "median": 29.848,
+    "p25": 28.956,
+    "p75": 31.511,
+    "n": 20,
+    "ci": [
+     29.166,
+     30.886
+    ]
+   },
+   "seeds": {
+    "1": 28988.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "action": "08 append to a large table",
+   "half": "append 1000 rows to 10000",
+   "scope": "local",
+   "script": {
+    "median": 4603,
+    "p25": 4183.5,
+    "p75": 5027.3,
+    "n": 20,
+    "ci": [
+     4194.5,
+     4912
+    ]
+   },
+   "total": {
+    "median": 69.459,
+    "p25": 68.171,
+    "p75": 71.191,
+    "n": 20,
+    "ci": [
+     68.233,
+     70.928
+    ]
+   },
+   "seeds": {
+    "1": 4603
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "action": "dispatch: serverUpdate of 10 rows",
+   "half": "serverUpdate of 10 rows",
+   "scope": "local",
+   "script": {
+    "median": 179,
+    "p25": 167.5,
+    "p75": 193.3,
+    "n": 20,
+    "ci": [
+     169,
+     192.5
+    ]
+   },
+   "total": {
+    "median": 4.027,
+    "p25": 3.636,
+    "p75": 7.33,
+    "n": 20,
+    "ci": [
+     3.685,
+     6.347
+    ]
+   },
+   "seeds": {
+    "1": 179
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "action": "dispatch: serverUpdate of 10 rows",
+   "half": "serverUpdate of 10 rows back",
+   "scope": "local",
+   "script": {
+    "median": 173.5,
+    "p25": 166,
+    "p75": 192,
+    "n": 20,
+    "ci": [
+     168,
+     187
+    ]
+   },
+   "total": {
+    "median": 9.341,
+    "p25": 3.87,
+    "p75": 15.776,
+    "n": 20,
+    "ci": [
+     3.938,
+     14.425
+    ]
+   },
+   "seeds": {
+    "1": 173.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 2386.5,
+    "p25": 2281.8,
+    "p75": 2424.3,
+    "n": 10,
+    "ci": [
+     2272,
+     2444
+    ]
+   },
+   "total": {
+    "median": 24.445,
+    "p25": 23.024,
+    "p75": 24.801,
+    "n": 10,
+    "ci": [
+     22.927,
+     25.246
+    ]
+   },
+   "seeds": {
+    "1": 2386.5
+   }
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 2371,
+    "p25": 2273,
+    "p75": 2464,
+    "n": 10,
+    "ci": [
+     2256,
+     2466
+    ]
+   },
+   "total": {
+    "median": 16.272,
+    "p25": 15.396,
+    "p75": 17.229,
+    "n": 10,
+    "ci": [
+     15.191,
+     17.501
+    ]
+   },
+   "seeds": {
+    "1": 2371
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "action": "01 create rows",
+   "half": "create 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 3881.5,
+    "p25": 3550.3,
+    "p75": 4479.3,
+    "n": 20,
+    "ci": [
+     3586.5,
+     4362.5
+    ]
+   },
+   "total": {
+    "median": 32.188,
+    "p25": 30.391,
+    "p75": 33.891,
+    "n": 20,
+    "ci": [
+     30.435,
+     33.263
+    ]
+   },
+   "seeds": {
+    "1": 3881.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "action": "01 create rows",
+   "half": "clear 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 3348.5,
+    "p25": 3291.5,
+    "p75": 3569.8,
+    "n": 20,
+    "ci": [
+     3293,
+     3556
+    ]
+   },
+   "total": {
+    "median": 8.051,
+    "p25": 4.341,
+    "p75": 11.658,
+    "n": 20,
+    "ci": [
+     4.457,
+     11.101
+    ]
+   },
+   "seeds": {
+    "1": 3348.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "action": "02 replace all rows",
+   "half": "replace 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 7398.5,
+    "p25": 7036.5,
+    "p75": 7826.3,
+    "n": 20,
+    "ci": [
+     7047,
+     7821
+    ]
+   },
+   "total": {
+    "median": 35.287,
+    "p25": 34.546,
+    "p75": 39.602,
+    "n": 20,
+    "ci": [
+     34.631,
+     37.997
+    ]
+   },
+   "seeds": {
+    "1": 7398.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "action": "03 partial update",
+   "half": "update every 10th row of 10000",
+   "scope": "local",
+   "script": {
+    "median": 4231.5,
+    "p25": 3892.3,
+    "p75": 4402.5,
+    "n": 20,
+    "ci": [
+     3998.5,
+     4352.5
+    ]
+   },
+   "total": {
+    "median": 127.58,
+    "p25": 123.618,
+    "p75": 129.154,
+    "n": 20,
+    "ci": [
+     124.006,
+     128.981
+    ]
+   },
+   "seeds": {
+    "1": 4231.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "action": "04 select row",
+   "half": "select row 3",
+   "scope": "local",
+   "script": {
+    "median": 59,
+    "p25": 56,
+    "p75": 68.5,
+    "n": 11,
+    "ci": [
+     55,
+     71
+    ]
+   },
+   "total": {
+    "median": 6.663,
+    "p25": 4.877,
+    "p75": 12.893,
+    "n": 11,
+    "ci": [
+     4.225,
+     14.237
+    ]
+   },
+   "seeds": {
+    "1": 59
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "action": "04 select row",
+   "half": "select row 2",
+   "scope": "local",
+   "script": {
+    "median": 57.5,
+    "p25": 51.8,
+    "p75": 66,
+    "n": 10,
+    "ci": [
+     51,
+     68
+    ]
+   },
+   "total": {
+    "median": 9.127,
+    "p25": 2.956,
+    "p75": 11.852,
+    "n": 10,
+    "ci": [
+     2.14,
+     11.937
+    ]
+   },
+   "seeds": {
+    "1": 57.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "action": "05 swap rows",
+   "half": "swap rows",
+   "scope": "local",
+   "script": {
+    "median": 313.5,
+    "p25": 293.5,
+    "p75": 373.3,
+    "n": 20,
+    "ci": [
+     295,
+     360
+    ]
+   },
+   "total": {
+    "median": 9.265,
+    "p25": 5.627,
+    "p75": 13.639,
+    "n": 20,
+    "ci": [
+     5.989,
+     12.757
+    ]
+   },
+   "seeds": {
+    "1": 313.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "action": "05 swap rows",
+   "half": "swap rows back",
+   "scope": "local",
+   "script": {
+    "median": 320.5,
+    "p25": 303.8,
+    "p75": 337.8,
+    "n": 20,
+    "ci": [
+     306,
+     337
+    ]
+   },
+   "total": {
+    "median": 9.07,
+    "p25": 5.29,
+    "p75": 12.597,
+    "n": 20,
+    "ci": [
+     5.354,
+     12.17
+    ]
+   },
+   "seeds": {
+    "1": 320.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "action": "06 remove row",
+   "half": "remove the 4th row",
+   "scope": "local",
+   "script": {
+    "median": 273.5,
+    "p25": 252,
+    "p75": 305.8,
+    "n": 20,
+    "ci": [
+     257.5,
+     298.5
+    ]
+   },
+   "total": {
+    "median": 9.503,
+    "p25": 7.193,
+    "p75": 13.014,
+    "n": 20,
+    "ci": [
+     7.425,
+     12.703
+    ]
+   },
+   "seeds": {
+    "1": 273.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "action": "07 create many rows",
+   "half": "create 10000 rows",
+   "scope": "local",
+   "script": {
+    "median": 52033.5,
+    "p25": 50600.3,
+    "p75": 56654.8,
+    "n": 20,
+    "ci": [
+     50744.5,
+     55384.5
+    ]
+   },
+   "total": {
+    "median": 316.809,
+    "p25": 297.372,
+    "p75": 366.42,
+    "n": 20,
+    "ci": [
+     297.708,
+     362.16
+    ]
+   },
+   "seeds": {
+    "1": 52033.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "action": "07 create many rows",
+   "half": "09 clear 10000 rows",
+   "scope": "local",
+   "script": {
+    "median": 32978,
+    "p25": 32138,
+    "p75": 35175.5,
+    "n": 20,
+    "ci": [
+     32407.5,
+     34769.5
+    ]
+   },
+   "total": {
+    "median": 33.764,
+    "p25": 32.998,
+    "p75": 36.057,
+    "n": 20,
+    "ci": [
+     33.223,
+     35.663
+    ]
+   },
+   "seeds": {
+    "1": 32978
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "action": "08 append to a large table",
+   "half": "append 1000 rows to 10000",
+   "scope": "local",
+   "script": {
+    "median": 5348,
+    "p25": 4899.5,
+    "p75": 6125.5,
+    "n": 20,
+    "ci": [
+     4923,
+     5957
+    ]
+   },
+   "total": {
+    "median": 72.41,
+    "p25": 68.487,
+    "p75": 76.799,
+    "n": 20,
+    "ci": [
+     68.846,
+     75.889
+    ]
+   },
+   "seeds": {
+    "1": 5348
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "action": "dispatch: serverUpdate of 10 rows",
+   "half": "serverUpdate of 10 rows",
+   "scope": "local",
+   "script": {
+    "median": 372,
+    "p25": 345.3,
+    "p75": 414,
+    "n": 20,
+    "ci": [
+     349,
+     409
+    ]
+   },
+   "total": {
+    "median": 4.147,
+    "p25": 3.964,
+    "p75": 9.572,
+    "n": 20,
+    "ci": [
+     4.029,
+     7.099
+    ]
+   },
+   "seeds": {
+    "1": 372
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "action": "dispatch: serverUpdate of 10 rows",
+   "half": "serverUpdate of 10 rows back",
+   "scope": "local",
+   "script": {
+    "median": 376.5,
+    "p25": 323.5,
+    "p75": 408.5,
+    "n": 20,
+    "ci": [
+     333.5,
+     404
+    ]
+   },
+   "total": {
+    "median": 4.12,
+    "p25": 3.85,
+    "p75": 10.173,
+    "n": 20,
+    "ci": [
+     3.872,
+     9.348
+    ]
+   },
+   "seeds": {
+    "1": 376.5
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 1948,
+    "p25": 1850.3,
+    "p75": 2253.5,
+    "n": 20,
+    "ci": [
+     1859,
+     2187
+    ]
+   },
+   "total": {
+    "median": 16.95,
+    "p25": 14.064,
+    "p75": 22.115,
+    "n": 20,
+    "ci": [
+     14.415,
+     22.097
+    ]
+   },
+   "seeds": {
+    "1": 1948
+   }
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 1999.5,
+    "p25": 1867.5,
+    "p75": 2212.3,
+    "n": 20,
+    "ci": [
+     1888,
+     2187
+    ]
+   },
+   "total": {
+    "median": 21.449,
+    "p25": 14.596,
+    "p75": 25.944,
+    "n": 20,
+    "ci": [
+     14.942,
+     25.439
+    ]
+   },
+   "seeds": {
+    "1": 1999.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "action": "01 create rows",
+   "half": "create 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 3872.5,
+    "p25": 3438.3,
+    "p75": 4239.5,
+    "n": 20,
+    "ci": [
+     3512,
+     4164.5
+    ]
+   },
+   "total": {
+    "median": 31.647,
+    "p25": 29.623,
+    "p75": 34.186,
+    "n": 20,
+    "ci": [
+     30.219,
+     33.58
+    ]
+   },
+   "seeds": {
+    "1": 3872.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "action": "01 create rows",
+   "half": "clear 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 2903.5,
+    "p25": 2851.8,
+    "p75": 2983.3,
+    "n": 20,
+    "ci": [
+     2852.5,
+     2960
+    ]
+   },
+   "total": {
+    "median": 6.864,
+    "p25": 4.021,
+    "p75": 9.41,
+    "n": 20,
+    "ci": [
+     4.651,
+     8.869
+    ]
+   },
+   "seeds": {
+    "1": 2903.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "action": "02 replace all rows",
+   "half": "replace 1000 rows",
+   "scope": "local",
+   "script": {
+    "median": 6535.5,
+    "p25": 6448.8,
+    "p75": 6611.5,
+    "n": 10,
+    "ci": [
+     6425,
+     6620
+    ]
+   },
+   "total": {
+    "median": 34.041,
+    "p25": 32.586,
+    "p75": 35.903,
+    "n": 10,
+    "ci": [
+     32.312,
+     36.435
+    ]
+   },
+   "seeds": {
+    "1": 6535.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "action": "03 partial update",
+   "half": "update every 10th row of 10000",
+   "scope": "local",
+   "script": {
+    "median": 1542.5,
+    "p25": 1491,
+    "p75": 1657.5,
+    "n": 20,
+    "ci": [
+     1498.5,
+     1641
+    ]
+   },
+   "total": {
+    "median": 118.039,
+    "p25": 116.203,
+    "p75": 119.52,
+    "n": 20,
+    "ci": [
+     116.468,
+     119.269
+    ]
+   },
+   "seeds": {
+    "1": 1542.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "action": "04 select row",
+   "half": "select row 3",
+   "scope": "local",
+   "script": {
+    "median": 38,
+    "p25": 37,
+    "p75": 43,
+    "n": 9,
+    "ci": [
+     37,
+     47
+    ]
+   },
+   "total": {
+    "median": 7.322,
+    "p25": 3.922,
+    "p75": 11.089,
+    "n": 9,
+    "ci": [
+     3.024,
+     11.286
+    ]
+   },
+   "seeds": {
+    "1": 38
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "action": "04 select row",
+   "half": "select row 2",
+   "scope": "local",
+   "script": {
+    "median": 40,
+    "p25": 40,
+    "p75": 44,
+    "n": 9,
+    "ci": [
+     39,
+     45
+    ]
+   },
+   "total": {
+    "median": 5.109,
+    "p25": 2.455,
+    "p75": 10.47,
+    "n": 9,
+    "ci": [
+     1.118,
+     12.436
+    ]
+   },
+   "seeds": {
+    "1": 40
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "action": "05 swap rows",
+   "half": "swap rows",
+   "scope": "local",
+   "script": {
+    "median": 75.5,
+    "p25": 68,
+    "p75": 93.3,
+    "n": 20,
+    "ci": [
+     69,
+     87
+    ]
+   },
+   "total": {
+    "median": 9.564,
+    "p25": 4.212,
+    "p75": 11.298,
+    "n": 20,
+    "ci": [
+     4.416,
+     11.063
+    ]
+   },
+   "seeds": {
+    "1": 75.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "action": "05 swap rows",
+   "half": "swap rows back",
+   "scope": "local",
+   "script": {
+    "median": 74,
+    "p25": 69.5,
+    "p75": 85,
+    "n": 20,
+    "ci": [
+     70.5,
+     82
+    ]
+   },
+   "total": {
+    "median": 8.889,
+    "p25": 6.764,
+    "p75": 15.021,
+    "n": 20,
+    "ci": [
+     6.86,
+     14.518
+    ]
+   },
+   "seeds": {
+    "1": 74
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "action": "06 remove row",
+   "half": "remove the 4th row",
+   "scope": "local",
+   "script": {
+    "median": 70.5,
+    "p25": 69,
+    "p75": 72.8,
+    "n": 10,
+    "ci": [
+     68.5,
+     73
+    ]
+   },
+   "total": {
+    "median": 7.547,
+    "p25": 6.145,
+    "p75": 11.603,
+    "n": 10,
+    "ci": [
+     6.117,
+     13.205
+    ]
+   },
+   "seeds": {
+    "1": 70.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "action": "07 create many rows",
+   "half": "create 10000 rows",
+   "scope": "local",
+   "script": {
+    "median": 34285.5,
+    "p25": 32545.5,
+    "p75": 38568.8,
+    "n": 20,
+    "ci": [
+     32851.5,
+     37714
+    ]
+   },
+   "total": {
+    "median": 283.596,
+    "p25": 277.021,
+    "p75": 333.704,
+    "n": 20,
+    "ci": [
+     278.336,
+     315.939
+    ]
+   },
+   "seeds": {
+    "1": 34285.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "action": "07 create many rows",
+   "half": "09 clear 10000 rows",
+   "scope": "local",
+   "script": {
+    "median": 28956.5,
+    "p25": 27846.8,
+    "p75": 29687.5,
+    "n": 20,
+    "ci": [
+     27922.5,
+     29646
+    ]
+   },
+   "total": {
+    "median": 29.786,
+    "p25": 28.769,
+    "p75": 30.621,
+    "n": 20,
+    "ci": [
+     28.829,
+     30.614
+    ]
+   },
+   "seeds": {
+    "1": 28956.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "action": "08 append to a large table",
+   "half": "append 1000 rows to 10000",
+   "scope": "local",
+   "script": {
+    "median": 4127,
+    "p25": 3940.8,
+    "p75": 4437.3,
+    "n": 20,
+    "ci": [
+     3957.5,
+     4411
+    ]
+   },
+   "total": {
+    "median": 66.199,
+    "p25": 65.385,
+    "p75": 67.758,
+    "n": 20,
+    "ci": [
+     65.421,
+     67.673
+    ]
+   },
+   "seeds": {
+    "1": 4127
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "action": "dispatch: serverUpdate of 10 rows",
+   "half": "serverUpdate of 10 rows",
+   "scope": "local",
+   "script": {
+    "median": 144,
+    "p25": 137.5,
+    "p75": 162.3,
+    "n": 20,
+    "ci": [
+     139.5,
+     160
+    ]
+   },
+   "total": {
+    "median": 4.965,
+    "p25": 4.486,
+    "p75": 5.329,
+    "n": 20,
+    "ci": [
+     4.494,
+     5.306
+    ]
+   },
+   "seeds": {
+    "1": 144
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "action": "dispatch: serverUpdate of 10 rows",
+   "half": "serverUpdate of 10 rows back",
+   "scope": "local",
+   "script": {
+    "median": 145,
+    "p25": 137,
+    "p75": 164.3,
+    "n": 20,
+    "ci": [
+     139,
+     161
+    ]
+   },
+   "total": {
+    "median": 8.667,
+    "p25": 4.863,
+    "p75": 16.916,
+    "n": 20,
+    "ci": [
+     4.92,
+     15.95
+    ]
+   },
+   "seeds": {
+    "1": 145
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot",
+   "scope": "global",
+   "script": {
+    "median": 1184.5,
+    "p25": 1136,
+    "p75": 1233,
+    "n": 20,
+    "ci": [
+     1140.5,
+     1223
+    ]
+   },
+   "total": {
+    "median": 14.939,
+    "p25": 12.626,
+    "p75": 25.034,
+    "n": 20,
+    "ci": [
+     12.83,
+     23.886
+    ]
+   },
+   "seeds": {
+    "1": 1184.5
+   }
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "action": "dispatch: whole-state snapshot",
+   "half": "dispatch: whole-state snapshot (again)",
+   "scope": "global",
+   "script": {
+    "median": 1155.5,
+    "p25": 1125,
+    "p75": 1211,
+    "n": 20,
+    "ci": [
+     1128.5,
+     1201.5
+    ]
+   },
+   "total": {
+    "median": 13.027,
+    "p25": 12.052,
+    "p75": 23.904,
+    "n": 20,
+    "ci": [
+     12.181,
+     22.828
+    ]
+   },
+   "seeds": {
+    "1": 1155.5
+   }
+  }
+ ],
+ "startup": [
+  {
+   "variant": "digest",
+   "size": 1,
+   "script": {
+    "median": 1.301,
+    "p25": 1.233,
+    "p75": 1.334,
+    "n": 5,
+    "ci": [
+     1.19,
+     1.456
+    ]
+   },
+   "total": {
+    "median": 14.16,
+    "p25": 13.65,
+    "p75": 15.76,
+    "n": 5,
+    "ci": [
+     13.38,
+     64.72
+    ]
+   },
+   "compileMs": 0.123,
+   "heapBytes": 545224
+  },
+  {
+   "variant": "elm",
+   "size": 1,
+   "script": {
+    "median": 3.187,
+    "p25": 3.184,
+    "p75": 3.241,
+    "n": 5,
+    "ci": [
+     2.914,
+     3.8
+    ]
+   },
+   "total": {
+    "median": 38.92,
+    "p25": 21.49,
+    "p75": 40.92,
+    "n": 5,
+    "ci": [
+     15.46,
+     100.85
+    ]
+   },
+   "compileMs": 0.095,
+   "heapBytes": 651768
+  },
+  {
+   "variant": "marko",
+   "size": 1,
+   "script": {
+    "median": 2.547,
+    "p25": 2.529,
+    "p75": 2.81,
+    "n": 5,
+    "ci": [
+     2.52,
+     3.413
+    ]
+   },
+   "total": {
+    "median": 20.98,
+    "p25": 18.44,
+    "p75": 25.77,
+    "n": 5,
+    "ci": [
+     16.04,
+     32.07
+    ]
+   },
+   "compileMs": 0.131,
+   "heapBytes": 591476
+  },
+  {
+   "variant": "solid",
+   "size": 1,
+   "script": {
+    "median": 2.563,
+    "p25": 2.369,
+    "p75": 2.684,
+    "n": 5,
+    "ci": [
+     2.337,
+     2.773
+    ]
+   },
+   "total": {
+    "median": 14.63,
+    "p25": 14.4,
+    "p75": 15.13,
+    "n": 5,
+    "ci": [
+     13.09,
+     16.29
+    ]
+   },
+   "compileMs": 0.119,
+   "heapBytes": 594832
+  },
+  {
+   "variant": "tea-dirtybits",
+   "size": 1,
+   "script": {
+    "median": 1.562,
+    "p25": 1.527,
+    "p75": 1.564,
+    "n": 5,
+    "ci": [
+     1.253,
+     1.612
+    ]
+   },
+   "total": {
+    "median": 14.91,
+    "p25": 14.52,
+    "p75": 15.46,
+    "n": 5,
+    "ci": [
+     13.81,
+     17.29
+    ]
+   },
+   "compileMs": 0.132,
+   "heapBytes": 552820
+  },
+  {
+   "variant": "tea-inline",
+   "size": 1,
+   "script": {
+    "median": 1.352,
+    "p25": 1.225,
+    "p75": 1.566,
+    "n": 5,
+    "ci": [
+     1.198,
+     2.077
+    ]
+   },
+   "total": {
+    "median": 14.04,
+    "p25": 13.55,
+    "p75": 15,
+    "n": 5,
+    "ci": [
+     12.89,
+     17.13
+    ]
+   },
+   "compileMs": 0.155,
+   "heapBytes": 552004
+  },
+  {
+   "variant": "tea-local",
+   "size": 1,
+   "script": {
+    "median": 1.439,
+    "p25": 1.373,
+    "p75": 1.495,
+    "n": 5,
+    "ci": [
+     1.291,
+     1.85
+    ]
+   },
+   "total": {
+    "median": 15.02,
+    "p25": 14.62,
+    "p75": 15.76,
+    "n": 5,
+    "ci": [
+     13.57,
+     16.2
+    ]
+   },
+   "compileMs": 0.133,
+   "heapBytes": 555064
+  },
+  {
+   "variant": "vanilla",
+   "size": 1,
+   "script": {
+    "median": 0.951,
+    "p25": 0.938,
+    "p75": 0.967,
+    "n": 5,
+    "ci": [
+     0.699,
+     1.033
+    ]
+   },
+   "total": {
+    "median": 14.47,
+    "p25": 14,
+    "p75": 14.54,
+    "n": 5,
+    "ci": [
+     13.28,
+     15.41
+    ]
+   },
+   "compileMs": 0.104,
+   "heapBytes": 529508
+  }
+ ],
+ "growth": {}
+}

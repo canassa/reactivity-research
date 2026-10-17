@@ -2,8 +2,8 @@
   "scenario": "derived-graph",
   "kind": "cpu",
   "date": "2026-10-17",
-  "started": "2026-10-17T02:57:04.766Z",
-  "finished": "2026-10-17T03:04:05.984Z",
+  "started": "2026-10-17T03:24:57.996Z",
+  "finished": "2026-10-17T03:33:09.850Z",
   "sizes": [
     64
   ],
@@ -55,6 +55,43 @@
         "rolldown (bundler and Oxc minifier)": "1.2.14"
       },
       "excluded": "fails the locality rule here (calls per local event grow 17x from N=16 to 256); timed for reference only"
+    },
+    "elm": {
+      "emitter": "elm",
+      "framework": "elm",
+      "label": "Elm 0.19.3",
+      "track": "framework",
+      "emitterOptions": {
+        "derived": "view"
+      },
+      "versions": {
+        "elm (compiler, npm installer)": "0.19.3-0",
+        "@elm_binaries/linux_x64": "0.19.3-0",
+        "uglify-js": "3.19.3",
+        "elm/browser": "1.0.2",
+        "elm/core": "1.0.5",
+        "elm/html": "1.0.1",
+        "elm/json": "1.1.4",
+        "elm/regex": "1.0.0",
+        "elm/time": "1.0.0",
+        "elm/url": "1.0.0",
+        "elm/virtual-dom": "1.0.5"
+      }
+    },
+    "marko": {
+      "emitter": "marko",
+      "framework": "marko",
+      "label": "Marko 6",
+      "track": "real",
+      "emitterOptions": {},
+      "versions": {
+        "marko": "6.4.6",
+        "@marko/compiler": "5.42.12",
+        "@marko/vite": "6.1.13",
+        "@babel/core": null,
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
     },
     "solid": {
       "emitter": "solid",
@@ -134,18 +171,6 @@
       "size": 64,
       "seed": 1,
       "why": "fails ./rr check's script check"
-    },
-    {
-      "variant": "elm",
-      "size": 64,
-      "seed": 1,
-      "why": "check could not run: timed out waiting for window.rrPanel && window.rrPanel.ready === true"
-    },
-    {
-      "variant": "marko",
-      "size": 64,
-      "seed": 1,
-      "why": "check could not run: timed out waiting for window.rrPanel && window.rrPanel.ready === true"
     }
   ],
   "batches": [
@@ -154,78 +179,104 @@
       "size": 64,
       "seed": 1,
       "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 1.51,
+      "loadAfter": 2.44,
+      "seconds": 56.605,
+      "kept": true,
+      "at": "2026-10-17T03:30:10.952Z"
+    },
+    {
+      "variant": "elm",
+      "size": 64,
+      "seed": 1,
+      "session": 1,
       "worker": 0,
       "attempt": 0,
-      "loadBefore": 1.9,
-      "loadAfter": 1.63,
-      "seconds": 57.334,
+      "loadBefore": 1.51,
+      "loadAfter": 2.28,
+      "seconds": 67.725,
       "kept": true,
-      "at": "2026-10-17T03:02:11.869Z"
+      "at": "2026-10-17T03:30:22.092Z"
+    },
+    {
+      "variant": "marko",
+      "size": 64,
+      "seed": 1,
+      "session": 1,
+      "worker": 1,
+      "attempt": 0,
+      "loadBefore": 2.44,
+      "loadAfter": 2.17,
+      "seconds": 58.835,
+      "kept": true,
+      "at": "2026-10-17T03:31:09.801Z"
     },
     {
       "variant": "solid",
       "size": 64,
       "seed": 1,
       "session": 1,
-      "worker": 1,
+      "worker": 0,
       "attempt": 0,
-      "loadBefore": 1.9,
-      "loadAfter": 1.63,
-      "seconds": 60.916,
+      "loadBefore": 2.28,
+      "loadAfter": 2.37,
+      "seconds": 57.434,
       "kept": true,
-      "at": "2026-10-17T03:02:15.468Z"
+      "at": "2026-10-17T03:31:19.539Z"
     },
     {
       "variant": "tea-dirtybits",
       "size": 64,
       "seed": 1,
       "session": 1,
-      "worker": 0,
+      "worker": 1,
       "attempt": 0,
-      "loadBefore": 1.63,
-      "loadAfter": 1.7,
-      "seconds": 55.913,
+      "loadBefore": 2.17,
+      "loadAfter": 1.98,
+      "seconds": 54.6,
       "kept": true,
-      "at": "2026-10-17T03:03:07.802Z"
+      "at": "2026-10-17T03:32:04.425Z"
     },
     {
       "variant": "tea-inline",
       "size": 64,
       "seed": 1,
       "session": 1,
-      "worker": 1,
+      "worker": 0,
       "attempt": 0,
-      "loadBefore": 1.63,
-      "loadAfter": 1.7,
-      "seconds": 55.355,
+      "loadBefore": 2.37,
+      "loadAfter": 1.83,
+      "seconds": 55.334,
       "kept": true,
-      "at": "2026-10-17T03:03:10.843Z"
+      "at": "2026-10-17T03:32:14.888Z"
     },
     {
       "variant": "tea-local",
       "size": 64,
       "seed": 1,
       "session": 1,
-      "worker": 0,
+      "worker": 1,
       "attempt": 0,
-      "loadBefore": 1.7,
-      "loadAfter": 1.76,
-      "seconds": 54.514,
+      "loadBefore": 1.98,
+      "loadAfter": 2,
+      "seconds": 55.162,
       "kept": true,
-      "at": "2026-10-17T03:04:02.335Z"
+      "at": "2026-10-17T03:32:59.603Z"
     },
     {
       "variant": "vanilla",
       "size": 64,
       "seed": 1,
       "session": 1,
-      "worker": 1,
+      "worker": 0,
       "attempt": 0,
-      "loadBefore": 1.7,
-      "loadAfter": 1.76,
-      "seconds": 55.083,
+      "loadBefore": 1.83,
+      "loadAfter": 1.85,
+      "seconds": 54.903,
       "kept": true,
-      "at": "2026-10-17T03:04:05.941Z"
+      "at": "2026-10-17T03:33:09.812Z"
     }
   ],
   "machine": {
@@ -245,9 +296,9 @@
     "chromeBin": "/nix/store/ds7933z0wp7872ic6zqzrwsbpj0m8g6l-google-chrome-154.0.8037.97/bin/google-chrome",
     "chromeVersionLine": "Google Chrome 154.0.8037.97",
     "git": {
-      "commit": "fcbdf5f80fb85aa002c3bdedd294ffdac6ec6f94",
+      "commit": "425c3a343e149728bc356062ec6bbfe6b5f2cdfa",
       "dirty": false
     }
   },
-  "wallSeconds": 421.306
+  "wallSeconds": 491.957
 }
