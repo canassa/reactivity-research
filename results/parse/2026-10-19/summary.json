@@ -1,0 +1,3414 @@
+{
+  "points": [
+    {
+      "key": "external/unminified/0",
+      "mode": "external",
+      "form": "unminified",
+      "sizeIndex": 0,
+      "bytes": 26533,
+      "brotliBytes": 6785,
+      "modules": 13,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 0.884,
+        "p25": 0.7525,
+        "p75": 1.1303,
+        "n": 40,
+        "ci": [
+          0.776,
+          1.034
+        ],
+        "precisionPct": 14.59
+      },
+      "compileMainMs": {
+        "median": 0.036,
+        "p25": 0.026,
+        "p75": 0.041,
+        "n": 40,
+        "ci": [
+          0.027,
+          0.039
+        ],
+        "precisionPct": 16.67
+      },
+      "compileBackgroundMs": {
+        "median": 0.8555,
+        "p25": 0.724,
+        "p75": 1.0853,
+        "n": 40,
+        "ci": [
+          0.7495,
+          0.9955
+        ],
+        "precisionPct": 14.38
+      },
+      "evaluateMs": {
+        "median": 0.424,
+        "p25": 0.3318,
+        "p75": 0.5028,
+        "n": 40,
+        "ci": [
+          0.3355,
+          0.482
+        ],
+        "precisionPct": 17.28
+      },
+      "requestToEvaluatedMs": {
+        "median": 3.1185,
+        "p25": 2.4275,
+        "p75": 3.8073,
+        "n": 40,
+        "ci": [
+          2.4785,
+          3.552
+        ],
+        "precisionPct": 17.21
+      }
+    },
+    {
+      "key": "external/unminified/1",
+      "mode": "external",
+      "form": "unminified",
+      "sizeIndex": 1,
+      "bytes": 50373,
+      "brotliBytes": 10165,
+      "modules": 24,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 1.3065,
+        "p25": 1.114,
+        "p75": 1.4525,
+        "n": 40,
+        "ci": [
+          1.1505,
+          1.4075
+        ],
+        "precisionPct": 9.84
+      },
+      "compileMainMs": {
+        "median": 0.0345,
+        "p25": 0.029,
+        "p75": 0.0395,
+        "n": 40,
+        "ci": [
+          0.0305,
+          0.037
+        ],
+        "precisionPct": 9.42
+      },
+      "compileBackgroundMs": {
+        "median": 1.271,
+        "p25": 1.0843,
+        "p75": 1.415,
+        "n": 40,
+        "ci": [
+          1.118,
+          1.371
+        ],
+        "precisionPct": 9.95
+      },
+      "evaluateMs": {
+        "median": 0.4405,
+        "p25": 0.3662,
+        "p75": 0.4993,
+        "n": 40,
+        "ci": [
+          0.4035,
+          0.4885
+        ],
+        "precisionPct": 9.65
+      },
+      "requestToEvaluatedMs": {
+        "median": 3.3735,
+        "p25": 2.936,
+        "p75": 4.0275,
+        "n": 40,
+        "ci": [
+          3.0215,
+          3.8255
+        ],
+        "precisionPct": 11.92
+      }
+    },
+    {
+      "key": "external/unminified/2",
+      "mode": "external",
+      "form": "unminified",
+      "sizeIndex": 2,
+      "bytes": 98803,
+      "brotliBytes": 14504,
+      "modules": 47,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 2.09,
+        "p25": 1.7235,
+        "p75": 2.6875,
+        "n": 40,
+        "ci": [
+          1.781,
+          2.4005
+        ],
+        "precisionPct": 14.82
+      },
+      "compileMainMs": {
+        "median": 0.038,
+        "p25": 0.028,
+        "p75": 0.0445,
+        "n": 40,
+        "ci": [
+          0.03,
+          0.04
+        ],
+        "precisionPct": 13.16
+      },
+      "compileBackgroundMs": {
+        "median": 2.055,
+        "p25": 1.6933,
+        "p75": 2.6365,
+        "n": 40,
+        "ci": [
+          1.752,
+          2.3615
+        ],
+        "precisionPct": 14.83
+      },
+      "evaluateMs": {
+        "median": 0.4435,
+        "p25": 0.3615,
+        "p75": 0.526,
+        "n": 40,
+        "ci": [
+          0.371,
+          0.491
+        ],
+        "precisionPct": 13.53
+      },
+      "requestToEvaluatedMs": {
+        "median": 4.085,
+        "p25": 3.3915,
+        "p75": 5.3848,
+        "n": 40,
+        "ci": [
+          3.562,
+          4.739
+        ],
+        "precisionPct": 14.41
+      }
+    },
+    {
+      "key": "external/unminified/3",
+      "mode": "external",
+      "form": "unminified",
+      "sizeIndex": 3,
+      "bytes": 195327,
+      "brotliBytes": 20720,
+      "modules": 95,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 3.4405,
+        "p25": 2.957,
+        "p75": 4.3855,
+        "n": 40,
+        "ci": [
+          3.109,
+          4.166
+        ],
+        "precisionPct": 15.36
+      },
+      "compileMainMs": {
+        "median": 0.0375,
+        "p25": 0.0308,
+        "p75": 0.048,
+        "n": 40,
+        "ci": [
+          0.034,
+          0.0415
+        ],
+        "precisionPct": 10
+      },
+      "compileBackgroundMs": {
+        "median": 3.4045,
+        "p25": 2.9175,
+        "p75": 4.3395,
+        "n": 40,
+        "ci": [
+          3.0805,
+          4.134
+        ],
+        "precisionPct": 15.47
+      },
+      "evaluateMs": {
+        "median": 0.4305,
+        "p25": 0.3618,
+        "p75": 0.5493,
+        "n": 40,
+        "ci": [
+          0.3845,
+          0.4935
+        ],
+        "precisionPct": 12.66
+      },
+      "requestToEvaluatedMs": {
+        "median": 5.4815,
+        "p25": 4.6575,
+        "p75": 7.0138,
+        "n": 40,
+        "ci": [
+          4.799,
+          6.537
+        ],
+        "precisionPct": 15.85
+      }
+    },
+    {
+      "key": "external/unminified/4",
+      "mode": "external",
+      "form": "unminified",
+      "sizeIndex": 4,
+      "bytes": 387105,
+      "brotliBytes": 32564,
+      "modules": 188,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 6.4235,
+        "p25": 5.249,
+        "p75": 7.976,
+        "n": 40,
+        "ci": [
+          5.5545,
+          7.632
+        ],
+        "precisionPct": 16.17
+      },
+      "compileMainMs": {
+        "median": 0.0405,
+        "p25": 0.0328,
+        "p75": 0.0473,
+        "n": 40,
+        "ci": [
+          0.033,
+          0.045
+        ],
+        "precisionPct": 14.81
+      },
+      "compileBackgroundMs": {
+        "median": 6.381,
+        "p25": 5.2123,
+        "p75": 7.9233,
+        "n": 40,
+        "ci": [
+          5.522,
+          7.584
+        ],
+        "precisionPct": 16.16
+      },
+      "evaluateMs": {
+        "median": 0.487,
+        "p25": 0.442,
+        "p75": 0.5715,
+        "n": 40,
+        "ci": [
+          0.4605,
+          0.5515
+        ],
+        "precisionPct": 9.34
+      },
+      "requestToEvaluatedMs": {
+        "median": 8.6685,
+        "p25": 7.2055,
+        "p75": 10.5495,
+        "n": 40,
+        "ci": [
+          7.506,
+          10.3875
+        ],
+        "precisionPct": 16.62
+      }
+    },
+    {
+      "key": "external/unminified/5",
+      "mode": "external",
+      "form": "unminified",
+      "sizeIndex": 5,
+      "bytes": 766177,
+      "brotliBytes": 52879,
+      "modules": 373,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 12.6555,
+        "p25": 9.8208,
+        "p75": 14.1548,
+        "n": 40,
+        "ci": [
+          10.2415,
+          13.3985
+        ],
+        "precisionPct": 12.47
+      },
+      "compileMainMs": {
+        "median": 0.038,
+        "p25": 0.033,
+        "p75": 0.0483,
+        "n": 40,
+        "ci": [
+          0.035,
+          0.0425
+        ],
+        "precisionPct": 9.87
+      },
+      "compileBackgroundMs": {
+        "median": 12.61,
+        "p25": 9.7878,
+        "p75": 14.1128,
+        "n": 40,
+        "ci": [
+          10.2105,
+          13.358
+        ],
+        "precisionPct": 12.48
+      },
+      "evaluateMs": {
+        "median": 0.542,
+        "p25": 0.4748,
+        "p75": 0.6475,
+        "n": 40,
+        "ci": [
+          0.496,
+          0.5695
+        ],
+        "precisionPct": 6.78
+      },
+      "requestToEvaluatedMs": {
+        "median": 15.641,
+        "p25": 12.3008,
+        "p75": 17.2377,
+        "n": 40,
+        "ci": [
+          12.743,
+          16.2235
+        ],
+        "precisionPct": 11.13
+      }
+    },
+    {
+      "key": "external/unminified/6",
+      "mode": "external",
+      "form": "unminified",
+      "sizeIndex": 6,
+      "bytes": 1515104,
+      "brotliBytes": 89467,
+      "modules": 734,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 22.0065,
+        "p25": 17.8638,
+        "p75": 27.6928,
+        "n": 40,
+        "ci": [
+          18.7905,
+          26.6655
+        ],
+        "precisionPct": 17.89
+      },
+      "compileMainMs": {
+        "median": 0.042,
+        "p25": 0.0348,
+        "p75": 0.051,
+        "n": 40,
+        "ci": [
+          0.0365,
+          0.046
+        ],
+        "precisionPct": 11.31
+      },
+      "compileBackgroundMs": {
+        "median": 21.969,
+        "p25": 17.828,
+        "p75": 27.645,
+        "n": 40,
+        "ci": [
+          18.752,
+          26.615
+        ],
+        "precisionPct": 17.9
+      },
+      "evaluateMs": {
+        "median": 0.7765,
+        "p25": 0.6485,
+        "p75": 0.8768,
+        "n": 40,
+        "ci": [
+          0.6915,
+          0.8495
+        ],
+        "precisionPct": 10.17
+      },
+      "requestToEvaluatedMs": {
+        "median": 25.4505,
+        "p25": 21.0247,
+        "p75": 32.11,
+        "n": 40,
+        "ci": [
+          22.266,
+          30.805
+        ],
+        "precisionPct": 16.78
+      }
+    },
+    {
+      "key": "external/unminified/7",
+      "mode": "external",
+      "form": "unminified",
+      "sizeIndex": 7,
+      "bytes": 3001805,
+      "brotliBytes": 155645,
+      "modules": 1450,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 42.3025,
+        "p25": 35.9425,
+        "p75": 53.0995,
+        "n": 40,
+        "ci": [
+          37.6065,
+          49.38
+        ],
+        "precisionPct": 13.92
+      },
+      "compileMainMs": {
+        "median": 0.0455,
+        "p25": 0.037,
+        "p75": 0.0583,
+        "n": 40,
+        "ci": [
+          0.04,
+          0.0535
+        ],
+        "precisionPct": 14.84
+      },
+      "compileBackgroundMs": {
+        "median": 42.2435,
+        "p25": 35.906,
+        "p75": 53.048,
+        "n": 40,
+        "ci": [
+          37.556,
+          49.324
+        ],
+        "precisionPct": 13.93
+      },
+      "evaluateMs": {
+        "median": 1.023,
+        "p25": 0.8568,
+        "p75": 1.1915,
+        "n": 40,
+        "ci": [
+          0.9135,
+          1.1225
+        ],
+        "precisionPct": 10.22
+      },
+      "requestToEvaluatedMs": {
+        "median": 47.4005,
+        "p25": 40.3133,
+        "p75": 58.9913,
+        "n": 40,
+        "ci": [
+          42.3075,
+          55.1065
+        ],
+        "precisionPct": 13.5
+      }
+    },
+    {
+      "key": "external/esbuild/0",
+      "mode": "external",
+      "form": "esbuild",
+      "sizeIndex": 0,
+      "bytes": 12768,
+      "brotliBytes": 4678,
+      "modules": 13,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 0.7805,
+        "p25": 0.6605,
+        "p75": 0.8995,
+        "n": 40,
+        "ci": [
+          0.703,
+          0.847
+        ],
+        "precisionPct": 9.22
+      },
+      "compileMainMs": {
+        "median": 0.0335,
+        "p25": 0.03,
+        "p75": 0.042,
+        "n": 40,
+        "ci": [
+          0.032,
+          0.037
+        ],
+        "precisionPct": 7.46
+      },
+      "compileBackgroundMs": {
+        "median": 0.746,
+        "p25": 0.6328,
+        "p75": 0.8575,
+        "n": 40,
+        "ci": [
+          0.6705,
+          0.813
+        ],
+        "precisionPct": 9.55
+      },
+      "evaluateMs": {
+        "median": 0.3975,
+        "p25": 0.35,
+        "p75": 0.4782,
+        "n": 40,
+        "ci": [
+          0.363,
+          0.45
+        ],
+        "precisionPct": 10.94
+      },
+      "requestToEvaluatedMs": {
+        "median": 3.0225,
+        "p25": 2.5673,
+        "p75": 3.457,
+        "n": 40,
+        "ci": [
+          2.606,
+          3.393
+        ],
+        "precisionPct": 13.02
+      }
+    },
+    {
+      "key": "external/esbuild/1",
+      "mode": "external",
+      "form": "esbuild",
+      "sizeIndex": 1,
+      "bytes": 24216,
+      "brotliBytes": 6928,
+      "modules": 24,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 1.1695,
+        "p25": 0.9138,
+        "p75": 1.2815,
+        "n": 40,
+        "ci": [
+          0.965,
+          1.236
+        ],
+        "precisionPct": 11.59
+      },
+      "compileMainMs": {
+        "median": 0.0345,
+        "p25": 0.028,
+        "p75": 0.0413,
+        "n": 40,
+        "ci": [
+          0.0295,
+          0.0385
+        ],
+        "precisionPct": 13.04
+      },
+      "compileBackgroundMs": {
+        "median": 1.133,
+        "p25": 0.8855,
+        "p75": 1.2385,
+        "n": 40,
+        "ci": [
+          0.937,
+          1.1965
+        ],
+        "precisionPct": 11.45
+      },
+      "evaluateMs": {
+        "median": 0.408,
+        "p25": 0.3445,
+        "p75": 0.4978,
+        "n": 40,
+        "ci": [
+          0.36,
+          0.48
+        ],
+        "precisionPct": 14.71
+      },
+      "requestToEvaluatedMs": {
+        "median": 3.2595,
+        "p25": 2.5608,
+        "p75": 3.9238,
+        "n": 40,
+        "ci": [
+          2.687,
+          3.773
+        ],
+        "precisionPct": 16.66
+      }
+    },
+    {
+      "key": "external/esbuild/2",
+      "mode": "external",
+      "form": "esbuild",
+      "sizeIndex": 2,
+      "bytes": 46858,
+      "brotliBytes": 9760,
+      "modules": 47,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 1.559,
+        "p25": 1.3405,
+        "p75": 1.9778,
+        "n": 40,
+        "ci": [
+          1.487,
+          1.839
+        ],
+        "precisionPct": 11.29
+      },
+      "compileMainMs": {
+        "median": 0.0355,
+        "p25": 0.029,
+        "p75": 0.0393,
+        "n": 40,
+        "ci": [
+          0.0305,
+          0.038
+        ],
+        "precisionPct": 10.56
+      },
+      "compileBackgroundMs": {
+        "median": 1.528,
+        "p25": 1.31,
+        "p75": 1.9365,
+        "n": 40,
+        "ci": [
+          1.455,
+          1.808
+        ],
+        "precisionPct": 11.55
+      },
+      "evaluateMs": {
+        "median": 0.413,
+        "p25": 0.3562,
+        "p75": 0.468,
+        "n": 40,
+        "ci": [
+          0.3835,
+          0.4545
+        ],
+        "precisionPct": 8.6
+      },
+      "requestToEvaluatedMs": {
+        "median": 3.6015,
+        "p25": 3.1588,
+        "p75": 4.3628,
+        "n": 40,
+        "ci": [
+          3.276,
+          4.0745
+        ],
+        "precisionPct": 11.09
+      }
+    },
+    {
+      "key": "external/esbuild/3",
+      "mode": "external",
+      "form": "esbuild",
+      "sizeIndex": 3,
+      "bytes": 92514,
+      "brotliBytes": 13539,
+      "modules": 95,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 2.601,
+        "p25": 2.1225,
+        "p75": 3.1373,
+        "n": 40,
+        "ci": [
+          2.213,
+          2.8895
+        ],
+        "precisionPct": 13
+      },
+      "compileMainMs": {
+        "median": 0.034,
+        "p25": 0.032,
+        "p75": 0.04,
+        "n": 40,
+        "ci": [
+          0.033,
+          0.0375
+        ],
+        "precisionPct": 6.62
+      },
+      "compileBackgroundMs": {
+        "median": 2.5695,
+        "p25": 2.0895,
+        "p75": 3.0998,
+        "n": 40,
+        "ci": [
+          2.179,
+          2.8465
+        ],
+        "precisionPct": 12.99
+      },
+      "evaluateMs": {
+        "median": 0.4145,
+        "p25": 0.3758,
+        "p75": 0.4588,
+        "n": 40,
+        "ci": [
+          0.3875,
+          0.434
+        ],
+        "precisionPct": 5.61
+      },
+      "requestToEvaluatedMs": {
+        "median": 4.5685,
+        "p25": 3.9113,
+        "p75": 5.3977,
+        "n": 40,
+        "ci": [
+          4.129,
+          5.1825
+        ],
+        "precisionPct": 11.53
+      }
+    },
+    {
+      "key": "external/esbuild/4",
+      "mode": "external",
+      "form": "esbuild",
+      "sizeIndex": 4,
+      "bytes": 185324,
+      "brotliBytes": 20801,
+      "modules": 188,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 4.7695,
+        "p25": 3.894,
+        "p75": 6.1235,
+        "n": 40,
+        "ci": [
+          4.314,
+          5.742
+        ],
+        "precisionPct": 14.97
+      },
+      "compileMainMs": {
+        "median": 0.0365,
+        "p25": 0.031,
+        "p75": 0.0478,
+        "n": 40,
+        "ci": [
+          0.0325,
+          0.045
+        ],
+        "precisionPct": 17.12
+      },
+      "compileBackgroundMs": {
+        "median": 4.735,
+        "p25": 3.8635,
+        "p75": 6.0663,
+        "n": 40,
+        "ci": [
+          4.283,
+          5.7015
+        ],
+        "precisionPct": 14.98
+      },
+      "evaluateMs": {
+        "median": 0.503,
+        "p25": 0.422,
+        "p75": 0.6135,
+        "n": 40,
+        "ci": [
+          0.4415,
+          0.548
+        ],
+        "precisionPct": 10.59
+      },
+      "requestToEvaluatedMs": {
+        "median": 6.9565,
+        "p25": 5.697,
+        "p75": 8.7267,
+        "n": 40,
+        "ci": [
+          6.171,
+          8.231
+        ],
+        "precisionPct": 14.81
+      }
+    },
+    {
+      "key": "external/esbuild/5",
+      "mode": "external",
+      "form": "esbuild",
+      "sizeIndex": 5,
+      "bytes": 365261,
+      "brotliBytes": 33004,
+      "modules": 373,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 9.57,
+        "p25": 7.2628,
+        "p75": 11.5708,
+        "n": 40,
+        "ci": [
+          7.788,
+          11.0865
+        ],
+        "precisionPct": 17.23
+      },
+      "compileMainMs": {
+        "median": 0.041,
+        "p25": 0.035,
+        "p75": 0.0513,
+        "n": 40,
+        "ci": [
+          0.036,
+          0.047
+        ],
+        "precisionPct": 13.41
+      },
+      "compileBackgroundMs": {
+        "median": 9.5255,
+        "p25": 7.2278,
+        "p75": 11.5168,
+        "n": 40,
+        "ci": [
+          7.753,
+          11.0365
+        ],
+        "precisionPct": 17.24
+      },
+      "evaluateMs": {
+        "median": 0.537,
+        "p25": 0.4505,
+        "p75": 0.631,
+        "n": 40,
+        "ci": [
+          0.46,
+          0.6105
+        ],
+        "precisionPct": 14.01
+      },
+      "requestToEvaluatedMs": {
+        "median": 11.9315,
+        "p25": 9.0898,
+        "p75": 14.2755,
+        "n": 40,
+        "ci": [
+          9.7225,
+          13.9415
+        ],
+        "precisionPct": 17.68
+      }
+    },
+    {
+      "key": "external/esbuild/6",
+      "mode": "external",
+      "form": "esbuild",
+      "sizeIndex": 6,
+      "bytes": 724856,
+      "brotliBytes": 54552,
+      "modules": 734,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 17.195,
+        "p25": 13.3035,
+        "p75": 20.3988,
+        "n": 40,
+        "ci": [
+          13.8975,
+          19.812
+        ],
+        "precisionPct": 17.2
+      },
+      "compileMainMs": {
+        "median": 0.037,
+        "p25": 0.032,
+        "p75": 0.046,
+        "n": 40,
+        "ci": [
+          0.033,
+          0.042
+        ],
+        "precisionPct": 12.16
+      },
+      "compileBackgroundMs": {
+        "median": 17.157,
+        "p25": 13.272,
+        "p75": 20.354,
+        "n": 40,
+        "ci": [
+          13.864,
+          19.7695
+        ],
+        "precisionPct": 17.21
+      },
+      "evaluateMs": {
+        "median": 0.7615,
+        "p25": 0.6505,
+        "p75": 0.8715,
+        "n": 40,
+        "ci": [
+          0.686,
+          0.816
+        ],
+        "precisionPct": 8.54
+      },
+      "requestToEvaluatedMs": {
+        "median": 20.1325,
+        "p25": 15.798,
+        "p75": 23.9928,
+        "n": 40,
+        "ci": [
+          16.35,
+          23.0725
+        ],
+        "precisionPct": 16.7
+      }
+    },
+    {
+      "key": "external/esbuild/7",
+      "mode": "external",
+      "form": "esbuild",
+      "sizeIndex": 7,
+      "bytes": 1436827,
+      "brotliBytes": 93143,
+      "modules": 1450,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 32.472,
+        "p25": 26.0243,
+        "p75": 39.5362,
+        "n": 40,
+        "ci": [
+          27.8965,
+          36.414
+        ],
+        "precisionPct": 13.12
+      },
+      "compileMainMs": {
+        "median": 0.0425,
+        "p25": 0.0338,
+        "p75": 0.0523,
+        "n": 40,
+        "ci": [
+          0.037,
+          0.0445
+        ],
+        "precisionPct": 8.82
+      },
+      "compileBackgroundMs": {
+        "median": 32.4305,
+        "p25": 25.9915,
+        "p75": 39.4863,
+        "n": 40,
+        "ci": [
+          27.8585,
+          36.37
+        ],
+        "precisionPct": 13.12
+      },
+      "evaluateMs": {
+        "median": 0.992,
+        "p25": 0.8168,
+        "p75": 1.1957,
+        "n": 40,
+        "ci": [
+          0.8635,
+          1.093
+        ],
+        "precisionPct": 11.57
+      },
+      "requestToEvaluatedMs": {
+        "median": 36.384,
+        "p25": 29.14,
+        "p75": 44.4393,
+        "n": 40,
+        "ci": [
+          31.513,
+          40.819
+        ],
+        "precisionPct": 12.79
+      }
+    },
+    {
+      "key": "external/terser/0",
+      "mode": "external",
+      "form": "terser",
+      "sizeIndex": 0,
+      "bytes": 12586,
+      "brotliBytes": 4361,
+      "modules": 13,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 0.7255,
+        "p25": 0.6658,
+        "p75": 0.9825,
+        "n": 40,
+        "ci": [
+          0.677,
+          0.893
+        ],
+        "precisionPct": 14.89
+      },
+      "compileMainMs": {
+        "median": 0.037,
+        "p25": 0.029,
+        "p75": 0.0432,
+        "n": 40,
+        "ci": [
+          0.0315,
+          0.04
+        ],
+        "precisionPct": 11.49
+      },
+      "compileBackgroundMs": {
+        "median": 0.6925,
+        "p25": 0.632,
+        "p75": 0.932,
+        "n": 40,
+        "ci": [
+          0.642,
+          0.856
+        ],
+        "precisionPct": 15.45
+      },
+      "evaluateMs": {
+        "median": 0.43,
+        "p25": 0.339,
+        "p75": 0.5103,
+        "n": 40,
+        "ci": [
+          0.3655,
+          0.483
+        ],
+        "precisionPct": 13.66
+      },
+      "requestToEvaluatedMs": {
+        "median": 3.168,
+        "p25": 2.4703,
+        "p75": 3.6848,
+        "n": 40,
+        "ci": [
+          2.5595,
+          3.553
+        ],
+        "precisionPct": 15.68
+      }
+    },
+    {
+      "key": "external/terser/1",
+      "mode": "external",
+      "form": "terser",
+      "sizeIndex": 1,
+      "bytes": 23903,
+      "brotliBytes": 6535,
+      "modules": 24,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 1.039,
+        "p25": 0.905,
+        "p75": 1.2383,
+        "n": 40,
+        "ci": [
+          0.963,
+          1.155
+        ],
+        "precisionPct": 9.24
+      },
+      "compileMainMs": {
+        "median": 0.0345,
+        "p25": 0.028,
+        "p75": 0.042,
+        "n": 40,
+        "ci": [
+          0.0295,
+          0.0385
+        ],
+        "precisionPct": 13.04
+      },
+      "compileBackgroundMs": {
+        "median": 0.998,
+        "p25": 0.8788,
+        "p75": 1.1988,
+        "n": 40,
+        "ci": [
+          0.934,
+          1.1235
+        ],
+        "precisionPct": 9.49
+      },
+      "evaluateMs": {
+        "median": 0.432,
+        "p25": 0.346,
+        "p75": 0.5,
+        "n": 40,
+        "ci": [
+          0.3555,
+          0.478
+        ],
+        "precisionPct": 14.18
+      },
+      "requestToEvaluatedMs": {
+        "median": 3.1115,
+        "p25": 2.6425,
+        "p75": 3.7653,
+        "n": 40,
+        "ci": [
+          2.7865,
+          3.628
+        ],
+        "precisionPct": 13.52
+      }
+    },
+    {
+      "key": "external/terser/2",
+      "mode": "external",
+      "form": "terser",
+      "sizeIndex": 2,
+      "bytes": 46261,
+      "brotliBytes": 9238,
+      "modules": 47,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 1.573,
+        "p25": 1.3315,
+        "p75": 1.9015,
+        "n": 40,
+        "ci": [
+          1.38,
+          1.755
+        ],
+        "precisionPct": 11.92
+      },
+      "compileMainMs": {
+        "median": 0.034,
+        "p25": 0.028,
+        "p75": 0.042,
+        "n": 40,
+        "ci": [
+          0.03,
+          0.039
+        ],
+        "precisionPct": 13.24
+      },
+      "compileBackgroundMs": {
+        "median": 1.542,
+        "p25": 1.3043,
+        "p75": 1.8545,
+        "n": 40,
+        "ci": [
+          1.346,
+          1.718
+        ],
+        "precisionPct": 12.06
+      },
+      "evaluateMs": {
+        "median": 0.417,
+        "p25": 0.3318,
+        "p75": 0.48,
+        "n": 40,
+        "ci": [
+          0.345,
+          0.454
+        ],
+        "precisionPct": 13.07
+      },
+      "requestToEvaluatedMs": {
+        "median": 3.536,
+        "p25": 2.9605,
+        "p75": 4.227,
+        "n": 40,
+        "ci": [
+          3.085,
+          4.0495
+        ],
+        "precisionPct": 13.64
+      }
+    },
+    {
+      "key": "external/terser/3",
+      "mode": "external",
+      "form": "terser",
+      "sizeIndex": 3,
+      "bytes": 91388,
+      "brotliBytes": 12790,
+      "modules": 95,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 2.7185,
+        "p25": 2.2065,
+        "p75": 3.3033,
+        "n": 40,
+        "ci": [
+          2.325,
+          2.943
+        ],
+        "precisionPct": 11.37
+      },
+      "compileMainMs": {
+        "median": 0.0375,
+        "p25": 0.031,
+        "p75": 0.0432,
+        "n": 40,
+        "ci": [
+          0.034,
+          0.041
+        ],
+        "precisionPct": 9.33
+      },
+      "compileBackgroundMs": {
+        "median": 2.674,
+        "p25": 2.1723,
+        "p75": 3.2638,
+        "n": 40,
+        "ci": [
+          2.294,
+          2.898
+        ],
+        "precisionPct": 11.29
+      },
+      "evaluateMs": {
+        "median": 0.437,
+        "p25": 0.3878,
+        "p75": 0.5045,
+        "n": 40,
+        "ci": [
+          0.3965,
+          0.48
+        ],
+        "precisionPct": 9.55
+      },
+      "requestToEvaluatedMs": {
+        "median": 4.8965,
+        "p25": 3.9928,
+        "p75": 5.5048,
+        "n": 40,
+        "ci": [
+          4.251,
+          5.285
+        ],
+        "precisionPct": 10.56
+      }
+    },
+    {
+      "key": "external/terser/4",
+      "mode": "external",
+      "form": "terser",
+      "sizeIndex": 4,
+      "bytes": 183188,
+      "brotliBytes": 19879,
+      "modules": 188,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 4.892,
+        "p25": 4.0058,
+        "p75": 5.6453,
+        "n": 40,
+        "ci": [
+          4.1915,
+          5.386
+        ],
+        "precisionPct": 12.21
+      },
+      "compileMainMs": {
+        "median": 0.039,
+        "p25": 0.0328,
+        "p75": 0.044,
+        "n": 40,
+        "ci": [
+          0.035,
+          0.042
+        ],
+        "precisionPct": 8.97
+      },
+      "compileBackgroundMs": {
+        "median": 4.8535,
+        "p25": 3.9738,
+        "p75": 5.6053,
+        "n": 40,
+        "ci": [
+          4.1545,
+          5.3335
+        ],
+        "precisionPct": 12.15
+      },
+      "evaluateMs": {
+        "median": 0.485,
+        "p25": 0.423,
+        "p75": 0.555,
+        "n": 40,
+        "ci": [
+          0.4535,
+          0.524
+        ],
+        "precisionPct": 7.27
+      },
+      "requestToEvaluatedMs": {
+        "median": 7.1335,
+        "p25": 5.862,
+        "p75": 8.0608,
+        "n": 40,
+        "ci": [
+          5.976,
+          7.8485
+        ],
+        "precisionPct": 13.12
+      }
+    },
+    {
+      "key": "external/terser/5",
+      "mode": "external",
+      "form": "terser",
+      "sizeIndex": 5,
+      "bytes": 360887,
+      "brotliBytes": 31753,
+      "modules": 373,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 9.171,
+        "p25": 7.224,
+        "p75": 11.1463,
+        "n": 40,
+        "ci": [
+          7.9515,
+          10.3285
+        ],
+        "precisionPct": 12.96
+      },
+      "compileMainMs": {
+        "median": 0.0375,
+        "p25": 0.033,
+        "p75": 0.0453,
+        "n": 40,
+        "ci": [
+          0.035,
+          0.0405
+        ],
+        "precisionPct": 7.33
+      },
+      "compileBackgroundMs": {
+        "median": 9.1345,
+        "p25": 7.1898,
+        "p75": 11.1047,
+        "n": 40,
+        "ci": [
+          7.9165,
+          10.2845
+        ],
+        "precisionPct": 12.96
+      },
+      "evaluateMs": {
+        "median": 0.5215,
+        "p25": 0.454,
+        "p75": 0.657,
+        "n": 40,
+        "ci": [
+          0.479,
+          0.5645
+        ],
+        "precisionPct": 8.2
+      },
+      "requestToEvaluatedMs": {
+        "median": 11.277,
+        "p25": 8.9913,
+        "p75": 13.7718,
+        "n": 40,
+        "ci": [
+          9.841,
+          13.085
+        ],
+        "precisionPct": 14.38
+      }
+    },
+    {
+      "key": "external/terser/6",
+      "mode": "external",
+      "form": "terser",
+      "sizeIndex": 6,
+      "bytes": 716514,
+      "brotliBytes": 52920,
+      "modules": 734,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 17.366,
+        "p25": 13.3318,
+        "p75": 19.489,
+        "n": 40,
+        "ci": [
+          14.334,
+          18.771
+        ],
+        "precisionPct": 12.77
+      },
+      "compileMainMs": {
+        "median": 0.0415,
+        "p25": 0.032,
+        "p75": 0.049,
+        "n": 40,
+        "ci": [
+          0.035,
+          0.0465
+        ],
+        "precisionPct": 13.86
+      },
+      "compileBackgroundMs": {
+        "median": 17.3165,
+        "p25": 13.3025,
+        "p75": 19.437,
+        "n": 40,
+        "ci": [
+          14.296,
+          18.7235
+        ],
+        "precisionPct": 12.78
+      },
+      "evaluateMs": {
+        "median": 0.8035,
+        "p25": 0.6633,
+        "p75": 0.8983,
+        "n": 40,
+        "ci": [
+          0.697,
+          0.8725
+        ],
+        "precisionPct": 10.92
+      },
+      "requestToEvaluatedMs": {
+        "median": 20.367,
+        "p25": 16.052,
+        "p75": 23.0663,
+        "n": 40,
+        "ci": [
+          16.8805,
+          22.151
+        ],
+        "precisionPct": 12.94
+      }
+    },
+    {
+      "key": "external/terser/7",
+      "mode": "external",
+      "form": "terser",
+      "sizeIndex": 7,
+      "bytes": 1420954,
+      "brotliBytes": 90559,
+      "modules": 1450,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 40,
+      "hitMax": true,
+      "compileMs": {
+        "median": 35.242,
+        "p25": 26.4013,
+        "p75": 39.3198,
+        "n": 40,
+        "ci": [
+          27.699,
+          37.8195
+        ],
+        "precisionPct": 14.36
+      },
+      "compileMainMs": {
+        "median": 0.045,
+        "p25": 0.033,
+        "p75": 0.048,
+        "n": 40,
+        "ci": [
+          0.0395,
+          0.047
+        ],
+        "precisionPct": 8.33
+      },
+      "compileBackgroundMs": {
+        "median": 35.19,
+        "p25": 26.3658,
+        "p75": 39.277,
+        "n": 40,
+        "ci": [
+          27.661,
+          37.7715
+        ],
+        "precisionPct": 14.37
+      },
+      "evaluateMs": {
+        "median": 1.039,
+        "p25": 0.8375,
+        "p75": 1.1885,
+        "n": 40,
+        "ci": [
+          0.892,
+          1.139
+        ],
+        "precisionPct": 11.89
+      },
+      "requestToEvaluatedMs": {
+        "median": 39.2085,
+        "p25": 29.747,
+        "p75": 43.8667,
+        "n": 40,
+        "ci": [
+          30.87,
+          42.3725
+        ],
+        "precisionPct": 14.67
+      }
+    },
+    {
+      "key": "inline/unminified/0",
+      "mode": "inline",
+      "form": "unminified",
+      "sizeIndex": 0,
+      "bytes": 26533,
+      "brotliBytes": 6785,
+      "modules": 13,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 0.7185,
+        "p25": 0.5495,
+        "p75": 0.7873,
+        "n": 40,
+        "ci": [
+          0.57,
+          0.7765
+        ],
+        "precisionPct": 14.37
+      },
+      "compileMainMs": {
+        "median": 0.7185,
+        "p25": 0.5495,
+        "p75": 0.7873,
+        "n": 40,
+        "ci": [
+          0.57,
+          0.7765
+        ],
+        "precisionPct": 14.37
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 1.059,
+        "p25": 0.81,
+        "p75": 1.1508,
+        "n": 40,
+        "ci": [
+          0.8575,
+          1.1275
+        ],
+        "precisionPct": 12.75
+      },
+      "requestToEvaluatedMs": {
+        "median": 3.931,
+        "p25": 2.9478,
+        "p75": 4.3343,
+        "n": 40,
+        "ci": [
+          3.16,
+          4.172
+        ],
+        "precisionPct": 12.87
+      }
+    },
+    {
+      "key": "inline/unminified/1",
+      "mode": "inline",
+      "form": "unminified",
+      "sizeIndex": 1,
+      "bytes": 50373,
+      "brotliBytes": 10165,
+      "modules": 24,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 1.0425,
+        "p25": 0.839,
+        "p75": 1.2378,
+        "n": 40,
+        "ci": [
+          0.8595,
+          1.2005
+        ],
+        "precisionPct": 16.35
+      },
+      "compileMainMs": {
+        "median": 1.0425,
+        "p25": 0.839,
+        "p75": 1.2378,
+        "n": 40,
+        "ci": [
+          0.8595,
+          1.2005
+        ],
+        "precisionPct": 16.35
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 1.385,
+        "p25": 1.1188,
+        "p75": 1.6578,
+        "n": 40,
+        "ci": [
+          1.1585,
+          1.599
+        ],
+        "precisionPct": 15.9
+      },
+      "requestToEvaluatedMs": {
+        "median": 4.3765,
+        "p25": 3.4875,
+        "p75": 5.4415,
+        "n": 40,
+        "ci": [
+          3.767,
+          5.0755
+        ],
+        "precisionPct": 14.95
+      }
+    },
+    {
+      "key": "inline/unminified/2",
+      "mode": "inline",
+      "form": "unminified",
+      "sizeIndex": 2,
+      "bytes": 98803,
+      "brotliBytes": 14504,
+      "modules": 47,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 1.7055,
+        "p25": 1.3675,
+        "p75": 1.991,
+        "n": 40,
+        "ci": [
+          1.4315,
+          1.8725
+        ],
+        "precisionPct": 12.93
+      },
+      "compileMainMs": {
+        "median": 1.7055,
+        "p25": 1.3675,
+        "p75": 1.991,
+        "n": 40,
+        "ci": [
+          1.4315,
+          1.8725
+        ],
+        "precisionPct": 12.93
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 2.048,
+        "p25": 1.6308,
+        "p75": 2.3805,
+        "n": 40,
+        "ci": [
+          1.7135,
+          2.243
+        ],
+        "precisionPct": 12.93
+      },
+      "requestToEvaluatedMs": {
+        "median": 5.808,
+        "p25": 4.8353,
+        "p75": 7.0158,
+        "n": 40,
+        "ci": [
+          5.2405,
+          6.4385
+        ],
+        "precisionPct": 10.31
+      }
+    },
+    {
+      "key": "inline/unminified/3",
+      "mode": "inline",
+      "form": "unminified",
+      "sizeIndex": 3,
+      "bytes": 195327,
+      "brotliBytes": 20720,
+      "modules": 95,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 3.0205,
+        "p25": 2.25,
+        "p75": 3.6103,
+        "n": 40,
+        "ci": [
+          2.5945,
+          3.375
+        ],
+        "precisionPct": 12.92
+      },
+      "compileMainMs": {
+        "median": 3.0205,
+        "p25": 2.25,
+        "p75": 3.6103,
+        "n": 40,
+        "ci": [
+          2.5945,
+          3.375
+        ],
+        "precisionPct": 12.92
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 3.328,
+        "p25": 2.5103,
+        "p75": 3.9933,
+        "n": 40,
+        "ci": [
+          2.8795,
+          3.748
+        ],
+        "precisionPct": 13.05
+      },
+      "requestToEvaluatedMs": {
+        "median": 9.019,
+        "p25": 6.7643,
+        "p75": 10.415,
+        "n": 40,
+        "ci": [
+          7.503,
+          9.858
+        ],
+        "precisionPct": 13.06
+      }
+    },
+    {
+      "key": "inline/unminified/4",
+      "mode": "inline",
+      "form": "unminified",
+      "sizeIndex": 4,
+      "bytes": 387105,
+      "brotliBytes": 32564,
+      "modules": 188,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 5.4255,
+        "p25": 4.2843,
+        "p75": 6.664,
+        "n": 40,
+        "ci": [
+          4.413,
+          6.172
+        ],
+        "precisionPct": 16.21
+      },
+      "compileMainMs": {
+        "median": 5.4255,
+        "p25": 4.2843,
+        "p75": 6.664,
+        "n": 40,
+        "ci": [
+          4.413,
+          6.172
+        ],
+        "precisionPct": 16.21
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 5.818,
+        "p25": 4.6035,
+        "p75": 7.1228,
+        "n": 40,
+        "ci": [
+          4.7195,
+          6.602
+        ],
+        "precisionPct": 16.18
+      },
+      "requestToEvaluatedMs": {
+        "median": 14.4865,
+        "p25": 11.4123,
+        "p75": 17.145,
+        "n": 40,
+        "ci": [
+          11.998,
+          16.5115
+        ],
+        "precisionPct": 15.58
+      }
+    },
+    {
+      "key": "inline/unminified/5",
+      "mode": "inline",
+      "form": "unminified",
+      "sizeIndex": 5,
+      "bytes": 766177,
+      "brotliBytes": 52879,
+      "modules": 373,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 10.5275,
+        "p25": 7.6795,
+        "p75": 11.8943,
+        "n": 40,
+        "ci": [
+          8.581,
+          11.383
+        ],
+        "precisionPct": 13.31
+      },
+      "compileMainMs": {
+        "median": 10.5275,
+        "p25": 7.6795,
+        "p75": 11.8943,
+        "n": 40,
+        "ci": [
+          8.581,
+          11.383
+        ],
+        "precisionPct": 13.31
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 10.9595,
+        "p25": 8.0133,
+        "p75": 12.3908,
+        "n": 40,
+        "ci": [
+          8.9485,
+          11.849
+        ],
+        "precisionPct": 13.23
+      },
+      "requestToEvaluatedMs": {
+        "median": 25.6815,
+        "p25": 19.3523,
+        "p75": 29.742,
+        "n": 40,
+        "ci": [
+          20.7595,
+          28.4775
+        ],
+        "precisionPct": 15.03
+      }
+    },
+    {
+      "key": "inline/unminified/6",
+      "mode": "inline",
+      "form": "unminified",
+      "sizeIndex": 6,
+      "bytes": 1515104,
+      "brotliBytes": 89467,
+      "modules": 734,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 20.566,
+        "p25": 15.163,
+        "p75": 23.5223,
+        "n": 40,
+        "ci": [
+          15.871,
+          22.5985
+        ],
+        "precisionPct": 16.36
+      },
+      "compileMainMs": {
+        "median": 20.566,
+        "p25": 15.163,
+        "p75": 23.5223,
+        "n": 40,
+        "ci": [
+          15.871,
+          22.5985
+        ],
+        "precisionPct": 16.36
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 21.2365,
+        "p25": 15.6723,
+        "p75": 24.3013,
+        "n": 40,
+        "ci": [
+          16.391,
+          23.309
+        ],
+        "precisionPct": 16.29
+      },
+      "requestToEvaluatedMs": {
+        "median": 45.068,
+        "p25": 33.9928,
+        "p75": 51.9352,
+        "n": 40,
+        "ci": [
+          35.3735,
+          49.617
+        ],
+        "precisionPct": 15.8
+      }
+    },
+    {
+      "key": "inline/unminified/7",
+      "mode": "inline",
+      "form": "unminified",
+      "sizeIndex": 7,
+      "bytes": 3001805,
+      "brotliBytes": 155645,
+      "modules": 1450,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 38.895,
+        "p25": 30.8308,
+        "p75": 46.855,
+        "n": 40,
+        "ci": [
+          32.5725,
+          44.748
+        ],
+        "precisionPct": 15.65
+      },
+      "compileMainMs": {
+        "median": 38.895,
+        "p25": 30.8308,
+        "p75": 46.855,
+        "n": 40,
+        "ci": [
+          32.5725,
+          44.748
+        ],
+        "precisionPct": 15.65
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 39.821,
+        "p25": 31.545,
+        "p75": 47.8877,
+        "n": 40,
+        "ci": [
+          33.3475,
+          45.746
+        ],
+        "precisionPct": 15.57
+      },
+      "requestToEvaluatedMs": {
+        "median": 84.917,
+        "p25": 65.3825,
+        "p75": 95.257,
+        "n": 40,
+        "ci": [
+          69.5195,
+          91.8995
+        ],
+        "precisionPct": 13.18
+      }
+    },
+    {
+      "key": "inline/esbuild/0",
+      "mode": "inline",
+      "form": "esbuild",
+      "sizeIndex": 0,
+      "bytes": 12768,
+      "brotliBytes": 4678,
+      "modules": 13,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 0.584,
+        "p25": 0.459,
+        "p75": 0.6678,
+        "n": 40,
+        "ci": [
+          0.4765,
+          0.6265
+        ],
+        "precisionPct": 12.84
+      },
+      "compileMainMs": {
+        "median": 0.584,
+        "p25": 0.459,
+        "p75": 0.6678,
+        "n": 40,
+        "ci": [
+          0.4765,
+          0.6265
+        ],
+        "precisionPct": 12.84
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 0.8955,
+        "p25": 0.7018,
+        "p75": 1.0353,
+        "n": 40,
+        "ci": [
+          0.7315,
+          0.942
+        ],
+        "precisionPct": 11.75
+      },
+      "requestToEvaluatedMs": {
+        "median": 3.389,
+        "p25": 2.6872,
+        "p75": 3.8213,
+        "n": 40,
+        "ci": [
+          2.8255,
+          3.658
+        ],
+        "precisionPct": 12.28
+      }
+    },
+    {
+      "key": "inline/esbuild/1",
+      "mode": "inline",
+      "form": "esbuild",
+      "sizeIndex": 1,
+      "bytes": 24216,
+      "brotliBytes": 6928,
+      "modules": 24,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 0.8885,
+        "p25": 0.6898,
+        "p75": 0.974,
+        "n": 40,
+        "ci": [
+          0.777,
+          0.9435
+        ],
+        "precisionPct": 9.37
+      },
+      "compileMainMs": {
+        "median": 0.8885,
+        "p25": 0.6898,
+        "p75": 0.974,
+        "n": 40,
+        "ci": [
+          0.777,
+          0.9435
+        ],
+        "precisionPct": 9.37
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 1.224,
+        "p25": 0.9758,
+        "p75": 1.3623,
+        "n": 40,
+        "ci": [
+          1.04,
+          1.296
+        ],
+        "precisionPct": 10.46
+      },
+      "requestToEvaluatedMs": {
+        "median": 3.919,
+        "p25": 3.1748,
+        "p75": 4.4715,
+        "n": 40,
+        "ci": [
+          3.3665,
+          4.094
+        ],
+        "precisionPct": 9.28
+      }
+    },
+    {
+      "key": "inline/esbuild/2",
+      "mode": "inline",
+      "form": "esbuild",
+      "sizeIndex": 2,
+      "bytes": 46858,
+      "brotliBytes": 9760,
+      "modules": 47,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 1.3825,
+        "p25": 1.0708,
+        "p75": 1.6285,
+        "n": 40,
+        "ci": [
+          1.217,
+          1.5645
+        ],
+        "precisionPct": 12.57
+      },
+      "compileMainMs": {
+        "median": 1.3825,
+        "p25": 1.0708,
+        "p75": 1.6285,
+        "n": 40,
+        "ci": [
+          1.217,
+          1.5645
+        ],
+        "precisionPct": 12.57
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 1.7365,
+        "p25": 1.3225,
+        "p75": 2.0378,
+        "n": 40,
+        "ci": [
+          1.485,
+          1.9355
+        ],
+        "precisionPct": 12.97
+      },
+      "requestToEvaluatedMs": {
+        "median": 4.8265,
+        "p25": 3.6833,
+        "p75": 5.491,
+        "n": 40,
+        "ci": [
+          4.214,
+          5.2055
+        ],
+        "precisionPct": 10.27
+      }
+    },
+    {
+      "key": "inline/esbuild/3",
+      "mode": "inline",
+      "form": "esbuild",
+      "sizeIndex": 3,
+      "bytes": 92514,
+      "brotliBytes": 13539,
+      "modules": 95,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 2.382,
+        "p25": 1.8613,
+        "p75": 2.678,
+        "n": 40,
+        "ci": [
+          2.0385,
+          2.553
+        ],
+        "precisionPct": 10.8
+      },
+      "compileMainMs": {
+        "median": 2.382,
+        "p25": 1.8613,
+        "p75": 2.678,
+        "n": 40,
+        "ci": [
+          2.0385,
+          2.553
+        ],
+        "precisionPct": 10.8
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 2.678,
+        "p25": 2.106,
+        "p75": 3.0273,
+        "n": 40,
+        "ci": [
+          2.2945,
+          2.897
+        ],
+        "precisionPct": 11.25
+      },
+      "requestToEvaluatedMs": {
+        "median": 6.3515,
+        "p25": 5.0548,
+        "p75": 7.2553,
+        "n": 40,
+        "ci": [
+          5.508,
+          7.0325
+        ],
+        "precisionPct": 12
+      }
+    },
+    {
+      "key": "inline/esbuild/4",
+      "mode": "inline",
+      "form": "esbuild",
+      "sizeIndex": 4,
+      "bytes": 185324,
+      "brotliBytes": 20801,
+      "modules": 188,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 4.219,
+        "p25": 3.3445,
+        "p75": 4.9973,
+        "n": 40,
+        "ci": [
+          3.6595,
+          4.765
+        ],
+        "precisionPct": 13.1
+      },
+      "compileMainMs": {
+        "median": 4.219,
+        "p25": 3.3445,
+        "p75": 4.9973,
+        "n": 40,
+        "ci": [
+          3.6595,
+          4.765
+        ],
+        "precisionPct": 13.1
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 4.576,
+        "p25": 3.638,
+        "p75": 5.4755,
+        "n": 40,
+        "ci": [
+          4.0055,
+          5.1755
+        ],
+        "precisionPct": 12.78
+      },
+      "requestToEvaluatedMs": {
+        "median": 9.846,
+        "p25": 7.8953,
+        "p75": 11.9782,
+        "n": 40,
+        "ci": [
+          8.6565,
+          11.1365
+        ],
+        "precisionPct": 12.59
+      }
+    },
+    {
+      "key": "inline/esbuild/5",
+      "mode": "inline",
+      "form": "esbuild",
+      "sizeIndex": 5,
+      "bytes": 365261,
+      "brotliBytes": 33004,
+      "modules": 373,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 7.601,
+        "p25": 6.1903,
+        "p75": 9.0318,
+        "n": 40,
+        "ci": [
+          6.4585,
+          8.489
+        ],
+        "precisionPct": 13.36
+      },
+      "compileMainMs": {
+        "median": 7.601,
+        "p25": 6.1903,
+        "p75": 9.0318,
+        "n": 40,
+        "ci": [
+          6.4585,
+          8.489
+        ],
+        "precisionPct": 13.36
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 8.007,
+        "p25": 6.5225,
+        "p75": 9.5023,
+        "n": 40,
+        "ci": [
+          6.79,
+          8.945
+        ],
+        "precisionPct": 13.46
+      },
+      "requestToEvaluatedMs": {
+        "median": 16.0105,
+        "p25": 12.82,
+        "p75": 18.7288,
+        "n": 40,
+        "ci": [
+          13.418,
+          17.67
+        ],
+        "precisionPct": 13.28
+      }
+    },
+    {
+      "key": "inline/esbuild/6",
+      "mode": "inline",
+      "form": "esbuild",
+      "sizeIndex": 6,
+      "bytes": 724856,
+      "brotliBytes": 54552,
+      "modules": 734,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 14.7575,
+        "p25": 11.6655,
+        "p75": 17.6195,
+        "n": 40,
+        "ci": [
+          12.6415,
+          16.592
+        ],
+        "precisionPct": 13.38
+      },
+      "compileMainMs": {
+        "median": 14.7575,
+        "p25": 11.6655,
+        "p75": 17.6195,
+        "n": 40,
+        "ci": [
+          12.6415,
+          16.592
+        ],
+        "precisionPct": 13.38
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 15.315,
+        "p25": 12.1353,
+        "p75": 18.3247,
+        "n": 40,
+        "ci": [
+          13.138,
+          17.259
+        ],
+        "precisionPct": 13.45
+      },
+      "requestToEvaluatedMs": {
+        "median": 28.873,
+        "p25": 22.8095,
+        "p75": 33.9458,
+        "n": 40,
+        "ci": [
+          25.028,
+          32.712
+        ],
+        "precisionPct": 13.31
+      }
+    },
+    {
+      "key": "inline/esbuild/7",
+      "mode": "inline",
+      "form": "esbuild",
+      "sizeIndex": 7,
+      "bytes": 1436827,
+      "brotliBytes": 93143,
+      "modules": 1450,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 29.4055,
+        "p25": 24.0255,
+        "p75": 34.5665,
+        "n": 40,
+        "ci": [
+          25.341,
+          33.1165
+        ],
+        "precisionPct": 13.22
+      },
+      "compileMainMs": {
+        "median": 29.4055,
+        "p25": 24.0255,
+        "p75": 34.5665,
+        "n": 40,
+        "ci": [
+          25.341,
+          33.1165
+        ],
+        "precisionPct": 13.22
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 30.3255,
+        "p25": 24.7325,
+        "p75": 35.7928,
+        "n": 40,
+        "ci": [
+          26.1105,
+          34.045
+        ],
+        "precisionPct": 13.08
+      },
+      "requestToEvaluatedMs": {
+        "median": 51.683,
+        "p25": 42.7918,
+        "p75": 63.3288,
+        "n": 40,
+        "ci": [
+          45.674,
+          57.8535
+        ],
+        "precisionPct": 11.78
+      }
+    },
+    {
+      "key": "inline/terser/0",
+      "mode": "inline",
+      "form": "terser",
+      "sizeIndex": 0,
+      "bytes": 12586,
+      "brotliBytes": 4361,
+      "modules": 13,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 0.588,
+        "p25": 0.4738,
+        "p75": 0.6725,
+        "n": 40,
+        "ci": [
+          0.515,
+          0.6485
+        ],
+        "precisionPct": 11.35
+      },
+      "compileMainMs": {
+        "median": 0.588,
+        "p25": 0.4738,
+        "p75": 0.6725,
+        "n": 40,
+        "ci": [
+          0.515,
+          0.6485
+        ],
+        "precisionPct": 11.35
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 0.902,
+        "p25": 0.7135,
+        "p75": 1.051,
+        "n": 40,
+        "ci": [
+          0.792,
+          0.975
+        ],
+        "precisionPct": 10.14
+      },
+      "requestToEvaluatedMs": {
+        "median": 3.257,
+        "p25": 2.65,
+        "p75": 3.8888,
+        "n": 40,
+        "ci": [
+          2.93,
+          3.728
+        ],
+        "precisionPct": 12.25
+      }
+    },
+    {
+      "key": "inline/terser/1",
+      "mode": "inline",
+      "form": "terser",
+      "sizeIndex": 1,
+      "bytes": 23903,
+      "brotliBytes": 6535,
+      "modules": 24,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 0.847,
+        "p25": 0.6818,
+        "p75": 0.9965,
+        "n": 40,
+        "ci": [
+          0.7435,
+          0.968
+        ],
+        "precisionPct": 13.25
+      },
+      "compileMainMs": {
+        "median": 0.847,
+        "p25": 0.6818,
+        "p75": 0.9965,
+        "n": 40,
+        "ci": [
+          0.7435,
+          0.968
+        ],
+        "precisionPct": 13.25
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 1.1875,
+        "p25": 0.9543,
+        "p75": 1.3995,
+        "n": 40,
+        "ci": [
+          1.07,
+          1.343
+        ],
+        "precisionPct": 11.49
+      },
+      "requestToEvaluatedMs": {
+        "median": 3.8335,
+        "p25": 3.1465,
+        "p75": 4.4902,
+        "n": 40,
+        "ci": [
+          3.4135,
+          4.2645
+        ],
+        "precisionPct": 11.1
+      }
+    },
+    {
+      "key": "inline/terser/2",
+      "mode": "inline",
+      "form": "terser",
+      "sizeIndex": 2,
+      "bytes": 46261,
+      "brotliBytes": 9238,
+      "modules": 47,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 1.385,
+        "p25": 1.0378,
+        "p75": 1.6158,
+        "n": 40,
+        "ci": [
+          1.115,
+          1.5675
+        ],
+        "precisionPct": 16.34
+      },
+      "compileMainMs": {
+        "median": 1.385,
+        "p25": 1.0378,
+        "p75": 1.6158,
+        "n": 40,
+        "ci": [
+          1.115,
+          1.5675
+        ],
+        "precisionPct": 16.34
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 1.7355,
+        "p25": 1.3155,
+        "p75": 2.0618,
+        "n": 40,
+        "ci": [
+          1.381,
+          1.9335
+        ],
+        "precisionPct": 15.92
+      },
+      "requestToEvaluatedMs": {
+        "median": 4.843,
+        "p25": 3.5515,
+        "p75": 5.8068,
+        "n": 40,
+        "ci": [
+          3.933,
+          5.3345
+        ],
+        "precisionPct": 14.47
+      }
+    },
+    {
+      "key": "inline/terser/3",
+      "mode": "inline",
+      "form": "terser",
+      "sizeIndex": 3,
+      "bytes": 91388,
+      "brotliBytes": 12790,
+      "modules": 95,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 2.3415,
+        "p25": 1.7685,
+        "p75": 2.7635,
+        "n": 40,
+        "ci": [
+          1.99,
+          2.666
+        ],
+        "precisionPct": 14.44
+      },
+      "compileMainMs": {
+        "median": 2.3415,
+        "p25": 1.7685,
+        "p75": 2.7635,
+        "n": 40,
+        "ci": [
+          1.99,
+          2.666
+        ],
+        "precisionPct": 14.44
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 2.6565,
+        "p25": 2.0132,
+        "p75": 3.118,
+        "n": 40,
+        "ci": [
+          2.266,
+          3
+        ],
+        "precisionPct": 13.82
+      },
+      "requestToEvaluatedMs": {
+        "median": 6.635,
+        "p25": 4.9648,
+        "p75": 7.6223,
+        "n": 40,
+        "ci": [
+          5.5755,
+          7.09
+        ],
+        "precisionPct": 11.41
+      }
+    },
+    {
+      "key": "inline/terser/4",
+      "mode": "inline",
+      "form": "terser",
+      "sizeIndex": 4,
+      "bytes": 183188,
+      "brotliBytes": 19879,
+      "modules": 188,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 3.94,
+        "p25": 3.1983,
+        "p75": 4.7023,
+        "n": 40,
+        "ci": [
+          3.47,
+          4.364
+        ],
+        "precisionPct": 11.35
+      },
+      "compileMainMs": {
+        "median": 3.94,
+        "p25": 3.1983,
+        "p75": 4.7023,
+        "n": 40,
+        "ci": [
+          3.47,
+          4.364
+        ],
+        "precisionPct": 11.35
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 4.2905,
+        "p25": 3.5005,
+        "p75": 5.1103,
+        "n": 40,
+        "ci": [
+          3.754,
+          4.739
+        ],
+        "precisionPct": 11.48
+      },
+      "requestToEvaluatedMs": {
+        "median": 9.199,
+        "p25": 7.6555,
+        "p75": 11.3478,
+        "n": 40,
+        "ci": [
+          8.082,
+          10.163
+        ],
+        "precisionPct": 11.31
+      }
+    },
+    {
+      "key": "inline/terser/5",
+      "mode": "inline",
+      "form": "terser",
+      "sizeIndex": 5,
+      "bytes": 360887,
+      "brotliBytes": 31753,
+      "modules": 373,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 7.936,
+        "p25": 6.1368,
+        "p75": 8.9485,
+        "n": 40,
+        "ci": [
+          6.534,
+          8.689
+        ],
+        "precisionPct": 13.58
+      },
+      "compileMainMs": {
+        "median": 7.936,
+        "p25": 6.1368,
+        "p75": 8.9485,
+        "n": 40,
+        "ci": [
+          6.534,
+          8.689
+        ],
+        "precisionPct": 13.58
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 8.3545,
+        "p25": 6.477,
+        "p75": 9.474,
+        "n": 40,
+        "ci": [
+          6.873,
+          9.1375
+        ],
+        "precisionPct": 13.55
+      },
+      "requestToEvaluatedMs": {
+        "median": 16.507,
+        "p25": 12.6068,
+        "p75": 18.9645,
+        "n": 40,
+        "ci": [
+          13.5525,
+          17.912
+        ],
+        "precisionPct": 13.21
+      }
+    },
+    {
+      "key": "inline/terser/6",
+      "mode": "inline",
+      "form": "terser",
+      "sizeIndex": 6,
+      "bytes": 716514,
+      "brotliBytes": 52920,
+      "modules": 734,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 14.773,
+        "p25": 11.3982,
+        "p75": 17.525,
+        "n": 40,
+        "ci": [
+          12.5995,
+          16.201
+        ],
+        "precisionPct": 12.19
+      },
+      "compileMainMs": {
+        "median": 14.773,
+        "p25": 11.3982,
+        "p75": 17.525,
+        "n": 40,
+        "ci": [
+          12.5995,
+          16.201
+        ],
+        "precisionPct": 12.19
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 15.338,
+        "p25": 11.8673,
+        "p75": 18.2288,
+        "n": 40,
+        "ci": [
+          13.0915,
+          16.842
+        ],
+        "precisionPct": 12.23
+      },
+      "requestToEvaluatedMs": {
+        "median": 29.029,
+        "p25": 22.5535,
+        "p75": 34.1365,
+        "n": 40,
+        "ci": [
+          24.371,
+          31.3975
+        ],
+        "precisionPct": 12.1
+      }
+    },
+    {
+      "key": "inline/terser/7",
+      "mode": "inline",
+      "form": "terser",
+      "sizeIndex": 7,
+      "bytes": 1420954,
+      "brotliBytes": 90559,
+      "modules": 1450,
+      "n": 40,
+      "insufficient": false,
+      "streamedLoads": 0,
+      "hitMax": true,
+      "compileMs": {
+        "median": 29.52,
+        "p25": 23.211,
+        "p75": 33.0083,
+        "n": 40,
+        "ci": [
+          23.942,
+          32.232
+        ],
+        "precisionPct": 14.04
+      },
+      "compileMainMs": {
+        "median": 29.52,
+        "p25": 23.211,
+        "p75": 33.0083,
+        "n": 40,
+        "ci": [
+          23.942,
+          32.232
+        ],
+        "precisionPct": 14.04
+      },
+      "compileBackgroundMs": {
+        "median": 0,
+        "p25": 0,
+        "p75": 0,
+        "n": 40,
+        "ci": [
+          0,
+          0
+        ],
+        "precisionPct": null
+      },
+      "evaluateMs": {
+        "median": 30.3915,
+        "p25": 23.915,
+        "p75": 33.9405,
+        "n": 40,
+        "ci": [
+          24.6755,
+          33.2235
+        ],
+        "precisionPct": 14.06
+      },
+      "requestToEvaluatedMs": {
+        "median": 53.3325,
+        "p25": 42.116,
+        "p75": 59.6203,
+        "n": 40,
+        "ci": [
+          42.581,
+          58.323
+        ],
+        "precisionPct": 14.76
+      }
+    }
+  ],
+  "fits": [
+    {
+      "mode": "external",
+      "form": "unminified",
+      "metric": "compileMs",
+      "msPer100kB": 1.3897,
+      "interceptMs": 0.8944,
+      "r2": 0.99887,
+      "exponent": 0.8297,
+      "exponentSe": 0.0243,
+      "exponentR2": 0.99488,
+      "linear": true
+    },
+    {
+      "mode": "external",
+      "form": "unminified",
+      "metric": "evaluateMs",
+      "msPer100kB": 0.0208,
+      "interceptMs": 0.4141,
+      "r2": 0.98646,
+      "exponent": 0.1712,
+      "exponentSe": 0.0389,
+      "exponentR2": 0.764,
+      "linear": false
+    },
+    {
+      "mode": "external",
+      "form": "esbuild",
+      "metric": "compileMs",
+      "msPer100kB": 2.2324,
+      "interceptMs": 0.7038,
+      "r2": 0.99905,
+      "exponent": 0.8018,
+      "exponentSe": 0.0355,
+      "exponentR2": 0.98835,
+      "linear": true
+    },
+    {
+      "mode": "external",
+      "form": "esbuild",
+      "metric": "evaluateMs",
+      "msPer100kB": 0.0429,
+      "interceptMs": 0.3983,
+      "r2": 0.98506,
+      "exponent": 0.1852,
+      "exponentSe": 0.0346,
+      "exponentR2": 0.82677,
+      "linear": false
+    },
+    {
+      "mode": "external",
+      "form": "terser",
+      "metric": "compileMs",
+      "msPer100kB": 2.4358,
+      "interceptMs": 0.3959,
+      "r2": 0.9997,
+      "exponent": 0.8285,
+      "exponentSe": 0.0307,
+      "exponentR2": 0.99184,
+      "linear": true
+    },
+    {
+      "mode": "external",
+      "form": "terser",
+      "metric": "evaluateMs",
+      "msPer100kB": 0.0459,
+      "interceptMs": 0.4068,
+      "r2": 0.97692,
+      "exponent": 0.1773,
+      "exponentSe": 0.0421,
+      "exponentR2": 0.74703,
+      "linear": false
+    },
+    {
+      "mode": "inline",
+      "form": "unminified",
+      "metric": "compileMs",
+      "msPer100kB": 1.2886,
+      "interceptMs": 0.5066,
+      "r2": 0.99965,
+      "exponent": 0.8591,
+      "exponentSe": 0.0255,
+      "exponentR2": 0.99473,
+      "linear": true
+    },
+    {
+      "mode": "inline",
+      "form": "unminified",
+      "metric": "evaluateMs",
+      "msPer100kB": 1.3094,
+      "interceptMs": 0.8191,
+      "r2": 0.99964,
+      "exponent": 0.7844,
+      "exponentSe": 0.0378,
+      "exponentR2": 0.98627,
+      "linear": true
+    },
+    {
+      "mode": "inline",
+      "form": "esbuild",
+      "metric": "compileMs",
+      "msPer100kB": 2.0111,
+      "interceptMs": 0.3907,
+      "r2": 0.99984,
+      "exponent": 0.8293,
+      "exponentSe": 0.0249,
+      "exponentR2": 0.9946,
+      "linear": true
+    },
+    {
+      "mode": "inline",
+      "form": "esbuild",
+      "metric": "evaluateMs",
+      "msPer100kB": 2.0528,
+      "interceptMs": 0.6825,
+      "r2": 0.9998,
+      "exponent": 0.746,
+      "exponentSe": 0.0377,
+      "exponentR2": 0.98493,
+      "linear": true
+    },
+    {
+      "mode": "inline",
+      "form": "terser",
+      "metric": "compileMs",
+      "msPer100kB": 2.0455,
+      "interceptMs": 0.3648,
+      "r2": 0.99978,
+      "exponent": 0.8341,
+      "exponentSe": 0.028,
+      "exponentR2": 0.99329,
+      "linear": true
+    },
+    {
+      "mode": "inline",
+      "form": "terser",
+      "metric": "evaluateMs",
+      "msPer100kB": 2.0844,
+      "interceptMs": 0.6666,
+      "r2": 0.99977,
+      "exponent": 0.749,
+      "exponentSe": 0.0401,
+      "exponentR2": 0.98309,
+      "linear": true
+    }
+  ]
+}

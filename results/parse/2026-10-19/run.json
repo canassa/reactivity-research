@@ -1,0 +1,502 @@
+{
+  "kind": "parse",
+  "date": "2026-10-19",
+  "started": "2026-10-19T11:24:21.221Z",
+  "finished": "2026-10-19T11:50:04.493Z",
+  "quick": false,
+  "options": {
+    "points": 8,
+    "fromKb": 25,
+    "toKb": 3000,
+    "seed": 1,
+    "modes": [
+      "external",
+      "inline"
+    ],
+    "minReps": 10,
+    "maxReps": 40,
+    "tol": 0.03,
+    "step": 2,
+    "maxLoad": 8,
+    "giveUpMin": 90,
+    "loadWaitS": 120,
+    "forms": [
+      "unminified",
+      "esbuild",
+      "terser"
+    ],
+    "generator": "harness/parse/generate.js",
+    "tolerance": "±3% on the 95% bootstrap interval of the median, compile and evaluate both"
+  },
+  "versions": {
+    "node": "v26.11.1",
+    "chrome": "Google Chrome 155.0.8059.79",
+    "esbuild": "0.28.2",
+    "terser": "5.51.2",
+    "brotli": "brotli 1.2.0",
+    "git": {
+      "commit": "05a2e0dc3bc32dea37d32c5d758bfed98510ca43",
+      "dirty": false
+    }
+  },
+  "machine": {
+    "hostname": "dagon",
+    "cpu": "AMD Ryzen 9 5950X 16-Core Processor",
+    "threads": 32,
+    "memoryGB": 34,
+    "governor": "powersave",
+    "availableGovernors": "performance powersave",
+    "scalingDriver": "amd-pstate-epp",
+    "curFreqKHz": 3874939,
+    "maxFreqKHz": 5084000,
+    "minFreqKHz": 550000,
+    "energyPerformancePreference": "performance",
+    "noTurbo": null,
+    "platform": "linux 6.12.112 x64"
+  },
+  "warnings": [
+    "CPU governor is \"powersave\", not \"performance\": small timings can read about 3x too high on this machine. Treat the absolute numbers with care."
+  ],
+  "chromeFlags": [
+    "--disable-background-networking",
+    "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding",
+    "--disable-backgrounding-occluded-windows",
+    "--disable-gpu",
+    "--window-size=1280,1000"
+  ],
+  "traceCategories": [
+    "blink.user_timing",
+    "devtools.timeline",
+    "disabled-by-default-devtools.timeline",
+    "v8"
+  ],
+  "cacheDefence": "unique query string per load, Cache-Control: no-store, Network.setCacheDisabled; every load's v8.compile event is checked for cacheKind/cacheRejected/consumedCacheSize and a cache notStreamedReason, and the response for fromCache; any hit aborts the run",
+  "loadsTotal": 1968,
+  "loadavg": [
+    {
+      "at": "start",
+      "load1": 5.66,
+      "load5": 20.68,
+      "load15": 43.46,
+      "waitedS": 0,
+      "skipped": false
+    },
+    {
+      "at": "round 1",
+      "load1": 7.71,
+      "load5": 18.76,
+      "load15": 41.28,
+      "waitedS": 55,
+      "skipped": false
+    },
+    {
+      "at": "round 2",
+      "load1": 7.85,
+      "load5": 16.45,
+      "load15": 38.62,
+      "waitedS": 70,
+      "skipped": false
+    },
+    {
+      "at": "round 3",
+      "load1": 7.7,
+      "load5": 16.28,
+      "load15": 38.45,
+      "waitedS": 0,
+      "skipped": false
+    },
+    {
+      "at": "round 4",
+      "load1": 7.54,
+      "load5": 15.96,
+      "load15": 38.1,
+      "waitedS": 0,
+      "skipped": false
+    },
+    {
+      "at": "round 5",
+      "load1": 7.5,
+      "load5": 15.81,
+      "load15": 37.94,
+      "waitedS": 0,
+      "skipped": false
+    },
+    {
+      "at": "round 6",
+      "load1": 7.43,
+      "load5": 15.52,
+      "load15": 37.6,
+      "waitedS": 0,
+      "skipped": false
+    },
+    {
+      "at": "round 7",
+      "load1": 7.29,
+      "load5": 15.22,
+      "load15": 37.27,
+      "waitedS": 0,
+      "skipped": false
+    },
+    {
+      "at": "round 8",
+      "load1": 7.6,
+      "load5": 14.68,
+      "load15": 36.51,
+      "waitedS": 15,
+      "skipped": false
+    },
+    {
+      "at": "round 9",
+      "load1": 11.23,
+      "load5": 14.32,
+      "load15": 33.58,
+      "waitedS": 120,
+      "skipped": true
+    },
+    {
+      "at": "round 9",
+      "load1": 15.3,
+      "load5": 17.93,
+      "load15": 32.77,
+      "waitedS": 120,
+      "skipped": true
+    },
+    {
+      "at": "round 9",
+      "load1": 15.44,
+      "load5": 17.57,
+      "load15": 30.83,
+      "waitedS": 120,
+      "skipped": true
+    },
+    {
+      "at": "round 9",
+      "load1": 11.07,
+      "load5": 16.32,
+      "load15": 28.82,
+      "waitedS": 120,
+      "skipped": true
+    },
+    {
+      "at": "round 9",
+      "load1": 7.91,
+      "load5": 15.15,
+      "load15": 28.1,
+      "waitedS": 25,
+      "skipped": false
+    },
+    {
+      "at": "round 10",
+      "load1": 7.85,
+      "load5": 14.9,
+      "load15": 27.88,
+      "waitedS": 0,
+      "skipped": false
+    },
+    {
+      "at": "round 11",
+      "load1": 7.79,
+      "load5": 14.77,
+      "load15": 27.77,
+      "waitedS": 0,
+      "skipped": false
+    },
+    {
+      "at": "round 12",
+      "load1": 7.48,
+      "load5": 14.59,
+      "load15": 27.64,
+      "waitedS": 0,
+      "skipped": false
+    },
+    {
+      "at": "round 13",
+      "load1": 7.56,
+      "load5": 14.37,
+      "load15": 27.43,
+      "waitedS": 0,
+      "skipped": false
+    },
+    {
+      "at": "round 14",
+      "load1": 44.59,
+      "load5": 25.3,
+      "load15": 29.63,
+      "waitedS": 120,
+      "skipped": true
+    },
+    {
+      "at": "round 14",
+      "load1": 56.67,
+      "load5": 37.79,
+      "load15": 33.71,
+      "waitedS": 120,
+      "skipped": true
+    },
+    {
+      "at": "round 14",
+      "load1": 35.3,
+      "load5": 34.61,
+      "load15": 32.96,
+      "waitedS": 120,
+      "skipped": true
+    },
+    {
+      "at": "round 14",
+      "load1": 41.78,
+      "load5": 37.01,
+      "load15": 34.03,
+      "waitedS": 120,
+      "skipped": true
+    },
+    {
+      "at": "round 14",
+      "load1": 51.83,
+      "load5": 42.44,
+      "load15": 36.39,
+      "waitedS": 120,
+      "skipped": true
+    },
+    {
+      "at": "round 14",
+      "load1": 11.1,
+      "load5": 31.8,
+      "load15": 33.37,
+      "waitedS": 120,
+      "skipped": true
+    },
+    {
+      "at": "round 14",
+      "load1": 7.95,
+      "load5": 29.74,
+      "load15": 32.65,
+      "waitedS": 20,
+      "skipped": false
+    },
+    {
+      "at": "round 15",
+      "load1": 7.55,
+      "load5": 29.29,
+      "load15": 32.5,
+      "waitedS": 0,
+      "skipped": false
+    },
+    {
+      "at": "round 16",
+      "load1": 7.1,
+      "load5": 28.84,
+      "load15": 32.33,
+      "waitedS": 0,
+      "skipped": false
+    },
+    {
+      "at": "round 17",
+      "load1": 6.77,
+      "load5": 28.41,
+      "load15": 32.17,
+      "waitedS": 0,
+      "skipped": false
+    },
+    {
+      "at": "round 18",
+      "load1": 6.31,
+      "load5": 27.96,
+      "load15": 32.01,
+      "waitedS": 0,
+      "skipped": false
+    },
+    {
+      "at": "round 19",
+      "load1": 6.13,
+      "load5": 27.56,
+      "load15": 31.85,
+      "waitedS": 0,
+      "skipped": false
+    },
+    {
+      "at": "round 20",
+      "load1": 5.88,
+      "load5": 27.15,
+      "load15": 31.7,
+      "waitedS": 0,
+      "skipped": false
+    },
+    {
+      "at": "end",
+      "load1": 5.28,
+      "load5": 26.32,
+      "load15": 31.38
+    }
+  ],
+  "payloads": [
+    {
+      "targetBytes": 25000,
+      "modules": 13,
+      "forms": {
+        "unminified": {
+          "bytes": 26533,
+          "brotliBytes": 6785,
+          "sha256": "6051c343951144b676d9d42826258d7cb7a8d9be68437741f3309600950fc5ce"
+        },
+        "esbuild": {
+          "bytes": 12768,
+          "brotliBytes": 4678,
+          "sha256": "e9f1e664ca18a90b24958559d74c36a8e3e8ce5c7cea01aa227bc923ff4754b7"
+        },
+        "terser": {
+          "bytes": 12586,
+          "brotliBytes": 4361,
+          "sha256": "5bae23fde794dfe87b1a21f26c53d1c48fd0b989e414391f102baaaed11207fd"
+        }
+      }
+    },
+    {
+      "targetBytes": 49541,
+      "modules": 24,
+      "forms": {
+        "unminified": {
+          "bytes": 50373,
+          "brotliBytes": 10165,
+          "sha256": "4174f0ec7548a94f1130bce650ee308d006e70f9b02666e0ba71ee6621489c54"
+        },
+        "esbuild": {
+          "bytes": 24216,
+          "brotliBytes": 6928,
+          "sha256": "302ad8e9c9b943f8d5a4256226af2733259b1ea4d744374fe7b7f83132cc2369"
+        },
+        "terser": {
+          "bytes": 23903,
+          "brotliBytes": 6535,
+          "sha256": "56893d69aed7403d05dfc5f3eca2d80973398f00ae5510124d6f0bb82e4ef93c"
+        }
+      }
+    },
+    {
+      "targetBytes": 98173,
+      "modules": 47,
+      "forms": {
+        "unminified": {
+          "bytes": 98803,
+          "brotliBytes": 14504,
+          "sha256": "2c1301608dc730a096cf206cb4af0449383d9ce794b80ee904e9070d923c8f83"
+        },
+        "esbuild": {
+          "bytes": 46858,
+          "brotliBytes": 9760,
+          "sha256": "a64d92f8db3e7c7e70966aa13cd56c3886c83b707717d73d6e7b0089103c8f5f"
+        },
+        "terser": {
+          "bytes": 46261,
+          "brotliBytes": 9238,
+          "sha256": "b3eb5f4d9b83b5aba79b17908431b721d69341cdf6db8fe7d6a7034aaceea56f"
+        }
+      }
+    },
+    {
+      "targetBytes": 194544,
+      "modules": 95,
+      "forms": {
+        "unminified": {
+          "bytes": 195327,
+          "brotliBytes": 20720,
+          "sha256": "f8da3da1263871e46df7f3eb13ca571749ecea189c0aff658c6dfb1714946b52"
+        },
+        "esbuild": {
+          "bytes": 92514,
+          "brotliBytes": 13539,
+          "sha256": "56216841cfc33da35dfb273cd6b4ded10418f4a5c46378d4ed15824cdbfe8179"
+        },
+        "terser": {
+          "bytes": 91388,
+          "brotliBytes": 12790,
+          "sha256": "dcd3c78616e308a4a5435f8531498e429124cb49b604e1d6fe05c3aa264a5574"
+        }
+      }
+    },
+    {
+      "targetBytes": 385517,
+      "modules": 188,
+      "forms": {
+        "unminified": {
+          "bytes": 387105,
+          "brotliBytes": 32564,
+          "sha256": "f56aa84c00844185fc8544921bdadfb8cbf6d7b642ab927bae8c4f5e2672635c"
+        },
+        "esbuild": {
+          "bytes": 185324,
+          "brotliBytes": 20801,
+          "sha256": "dbdfc742829f54467cb763183296e5d28121b6f06b76249864e5eb4989b74daf"
+        },
+        "terser": {
+          "bytes": 183188,
+          "brotliBytes": 19879,
+          "sha256": "2bb2a046576db3c7391493db70af5f3d64f6d0dd9803431cf04c43fbe2b35c2e"
+        }
+      }
+    },
+    {
+      "targetBytes": 763958,
+      "modules": 373,
+      "forms": {
+        "unminified": {
+          "bytes": 766177,
+          "brotliBytes": 52879,
+          "sha256": "61e28dd557bc09c58dc6d530b9ec466c643061a2220c9ccfc7e9c645463088a6"
+        },
+        "esbuild": {
+          "bytes": 365261,
+          "brotliBytes": 33004,
+          "sha256": "c97396b05f727b79a37ea5cd755ed4e445f9b42dce56999fa068b90e3573df38"
+        },
+        "terser": {
+          "bytes": 360887,
+          "brotliBytes": 31753,
+          "sha256": "069b90fe8ea30f1e32db37731b734726bdf2586022c2cdca2e1e745a2df19785"
+        }
+      }
+    },
+    {
+      "targetBytes": 1513894,
+      "modules": 734,
+      "forms": {
+        "unminified": {
+          "bytes": 1515104,
+          "brotliBytes": 89467,
+          "sha256": "66ce0310958f0bf1605a5b9f9e0326efa0ee33cd933f71918c5e37cae3ca924f"
+        },
+        "esbuild": {
+          "bytes": 724856,
+          "brotliBytes": 54552,
+          "sha256": "b3761d615d6879dea4b184f1755c00d599fa4c05a0eb11ac3e5f13a406c751cf"
+        },
+        "terser": {
+          "bytes": 716514,
+          "brotliBytes": 52920,
+          "sha256": "aa7937262e8e817ef48855ad747e810439bc500924c8b57a8975f5141f6c8640"
+        }
+      }
+    },
+    {
+      "targetBytes": 3000000,
+      "modules": 1450,
+      "forms": {
+        "unminified": {
+          "bytes": 3001805,
+          "brotliBytes": 155645,
+          "sha256": "b8347cb73b963b43251a2270f726ae572bae9bb1120a4cea2d0fb7e633f01c3a"
+        },
+        "esbuild": {
+          "bytes": 1436827,
+          "brotliBytes": 93143,
+          "sha256": "a84c8e4d6525a32e694172586317d1ed3f318db2e6dc56403188c0193955ccc3"
+        },
+        "terser": {
+          "bytes": 1420954,
+          "brotliBytes": 90559,
+          "sha256": "e7db9ce47e33317c7f1a8a4ce5aa222837e4b985e5baabd1805fcfc83220b550"
+        }
+      }
+    }
+  ]
+}
