@@ -41,7 +41,7 @@ size is built in three forms and written to `results/tmp/parse/` (gitignored):
 Every file is checked with `node --check` and run once in node with all of its modules required, and
 every load in Chrome checks that the page booted the right number of modules, so a minifier cannot
 have broken or emptied a payload. The raw size of each form is the x axis; the brotli size and the
-SHA-256 of every payload are in `run.json`. (The generated code compresses well, about 17 to 1 with
+SHA-256 of every payload are in `run.json`. (The generated code compresses well, from about 4 to 1 at 25 kB to 19 to 1 at 3 MB with
 brotli, because it is made from templates; parse time depends on the tokens, not on how well they
 compress, so this does not matter here. Compressed size is reported only for context.)
 
