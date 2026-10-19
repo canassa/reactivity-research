@@ -43,6 +43,7 @@ parse options (./rr parse; see harness/parse/README.md):
   --min-reps 10 --max-reps 40 --tol 0.03  loads per point, until the median's 95% interval is within ±tol
   --quick            3 sizes, 4 loads: for development     --out DIR   the results directory
   --chrome PATH      the Chrome binary (or $CHROME)        --taskset CPUS   pin Chrome
+  --max-load L       wait (--load-wait S, default 120) before a round for the 1-minute load to fall below L (default 1.0)
 
 serve/plots options:
   --local      no cloudflared tunnel

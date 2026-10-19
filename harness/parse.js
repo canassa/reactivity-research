@@ -1,6 +1,6 @@
 // ./rr parse [--points 8] [--from-kb 25] [--to-kb 3000] [--seed 1] [--modes external,inline]
 //            [--min-reps 10] [--max-reps 40] [--tol 0.03] [--quick] [--out DIR] [--chrome PATH]
-//            [--taskset CPUS]
+//            [--taskset CPUS] [--max-load 1.0] [--load-wait 120]
 //
 // How long does Chrome take to parse and compile JavaScript, against its size? One generated
 // program (harness/parse/generate.js) at a geometric series of sizes, each in three forms
@@ -49,6 +49,8 @@ export async function parseCommand(rest) {
     maxReps: Number(args.maxReps ?? (quick ? 4 : 40)),
     tol: Number(args.tol ?? 0.03),
     step: 2,
+    maxLoad: Number(args.maxLoad ?? 1.0),
+    loadWaitS: Number(args.loadWait ?? 120),
   };
   if (o.points < 2) throw new Error("--points must be at least 2");
   for (const m of o.modes) if (!["external", "inline"].includes(m)) throw new Error(`unknown mode "${m}" (external, inline)`);
@@ -110,7 +112,15 @@ export async function parseCommand(rest) {
 
   const chrome = await launch({ args: CHROME_FLAGS, chrome: args.chrome, taskset: args.taskset, profilePrefix: "rr-parse-" });
   const started = new Date();
-  const loadavg = [{ at: "start", ...load() }];
+  const loadavg = [];
+  // Before a round: wait up to loadWaitS for the 1-minute load average to fall below maxLoad (the
+  // project's benches do the same); a round that starts above it is recorded as noisy.
+  async function quiet(at) {
+    const t0 = Date.now();
+    while (load().load1 >= o.maxLoad && Date.now() - t0 < o.loadWaitS * 1000) await sleep(5000);
+    const l = load();
+    loadavg.push({ at, ...l, waitedS: Math.round((Date.now() - t0) / 1000), noisy: l.load1 >= o.maxLoad });
+  }
   const samples = new Map(points.map((pt) => [pt.key, []]));
   let seq = 0, loads = 0;
 
@@ -161,6 +171,7 @@ export async function parseCommand(rest) {
 
   try {
     console.log(`${points.length} points (${o.modes.join(", ")} x ${FORMS.length} forms x ${o.points} sizes), Chrome ${await chrome.version()}`);
+    await quiet("start");
     // The discarded warm-up load of every point.
     for (const pt of points) await loadOnce(pt);
     let round = 0;
@@ -168,11 +179,11 @@ export async function parseCommand(rest) {
       const active = points.filter((pt) => !settledPoint(pt));
       if (!active.length) break;
       if (round % 2) active.reverse();
+      await quiet(`round ${round + 1}`);
       for (const pt of active) {
         for (let i = 0; i < o.step && samples.get(pt.key).length < o.maxReps; i++) samples.get(pt.key).push(await loadOnce(pt));
       }
       round++;
-      loadavg.push({ at: `round ${round}`, ...load() });
       console.log(`round ${round}: ${active.length} point(s) still going, ${loads} loads`);
     }
   } finally {
@@ -180,6 +191,11 @@ export async function parseCommand(rest) {
     server.close();
   }
   loadavg.push({ at: "end", ...load() });
+  const noisy = loadavg.filter((l) => l.noisy).length;
+  if (noisy) {
+    warnings.push(`The 1-minute load average was at or above ${o.maxLoad} when ${noisy} of ${loadavg.length - 1} rounds started (highest ${Math.max(...loadavg.map((l) => l.load1))}) on a ${machine.threads}-thread machine, so other processes were competing with Chrome: timings are inflated and noisy.`);
+    console.warn(`\n!!! ${warnings[warnings.length - 1]}\n`);
+  }
 
   // Summaries.
   const ms = (us) => us / 1000;
