@@ -1,0 +1,1 @@
+{"name":"rr-parse","private":true,"type":"module","description":"Minifiers for ./rr parse","dependencies":{"esbuild":"0.28.2","terser":"5.51.2"}}
