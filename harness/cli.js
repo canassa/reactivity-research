@@ -15,6 +15,7 @@ commands:
   hub        one long-lived address for the plots and every app (reloads on code changes)
   work       count the JavaScript calls one event costs against N: local or global work
   bench      CPU time of one event and of startup against N, from Chrome traces (results/cpu/)
+  parse      how long Chrome takes to parse and compile JavaScript against its size (results/parse/)
   plots      build the plots page from results/ and serve it
   report     measure every run in runs.json (only what changed), then serve the plots
 
@@ -35,6 +36,13 @@ bench options (./rr bench <scenario|all> <framework|all|a,b>; see harness/bench/
   --max-load L       redo a batch whose 1-minute load is above L (default 1.0)
   --remote HOST      run it on HOST over ssh at this pushed commit, copy results/cpu/ back
   --out DIR          the results directory (default results/cpu/<date>-<scenario>)
+
+parse options (./rr parse; see harness/parse/README.md):
+  --points 8 --from-kb 25 --to-kb 3000   unminified sizes, a geometric series
+  --seed S           the generator's seed (default 1)      --modes external,inline
+  --min-reps 10 --max-reps 40 --tol 0.03  loads per point, until the median's 95% interval is within ±tol
+  --quick            3 sizes, 4 loads: for development     --out DIR   the results directory
+  --chrome PATH      the Chrome binary (or $CHROME)        --taskset CPUS   pin Chrome
 
 serve/plots options:
   --local      no cloudflared tunnel
@@ -64,6 +72,8 @@ export async function main(argv) {
         return await (await import("./work.js")).workCommand(rest);
       case "bench":
         return await (await import("./bench.js")).benchCommand(rest);
+      case "parse":
+        return await (await import("./parse.js")).parseCommand(rest);
       case "plots":
         return await (await import("./plots.js")).plotsCommand(rest);
       case "help":
