@@ -43,6 +43,19 @@ export function collect(only) {
   return [...scenarios].map(([name, variants]) => ({ name, variants: [...variants.values()], work: latestWork(name), cpu: latestCpu(name) }));
 }
 
+// The latest ./rr parse run (results/parse/<date>[-n]/): its run.json and summary.json (not the
+// samples), or null.
+function latestParse() {
+  const base = path.join(RESULTS, "parse");
+  if (!fs.existsSync(base)) return null;
+  const dirs = fs.readdirSync(base).filter((d) => fs.existsSync(path.join(base, d, "run.json")) && fs.existsSync(path.join(base, d, "summary.json")))
+    .sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+  if (!dirs.length) return null;
+  const dir = dirs[dirs.length - 1];
+  const read = (f) => JSON.parse(fs.readFileSync(path.join(base, dir, f), "utf8"));
+  return { dir, run: read("run.json"), summary: read("summary.json") };
+}
+
 // The latest ./rr bench run of a scenario (results/cpu/<date>-<scenario>[-…]/): its run.json and
 // summary.json (not the samples), or null.
 function latestCpu(scenario) {
@@ -68,6 +81,11 @@ function latestWork(scenario) {
   const dir = dirs[dirs.length - 1];
   const read = (f) => JSON.parse(fs.readFileSync(path.join(base, dir, f), "utf8"));
   return { dir, run: read("run.json"), records: read("work.json").map(({ runs, ...r }) => r) };
+}
+
+// What the page embeds: the scenarios, and the parse-time run when results/parse/ has one.
+export function pageData(only) {
+  return { scenarios: collect(only), parse: only ? null : latestParse() };
 }
 
 export function page(data) {
@@ -98,9 +116,9 @@ ${client}
 export async function plotsCommand(rest) {
   const args = parseArgs(rest, ["local"]);
   const only = args._[0] ? args._[0].split(",") : null;
-  const scenarios = collect(only);
-  if (scenarios.length === 0) throw new Error(`no results${only ? ` for ${only.join(", ")}` : ""} in results/ (run ./rr measure first)`);
-  const html = page({ scenarios });
+  const { scenarios, parse } = pageData(only);
+  if (scenarios.length === 0 && !parse) throw new Error(`no results${only ? ` for ${only.join(", ")}` : ""} in results/ (run ./rr measure first)`);
+  const html = page({ scenarios, parse });
   if (args.out) {
     fs.writeFileSync(path.resolve(args.out), html);
     console.log(`wrote ${path.relative(ROOT, path.resolve(args.out)) || args.out}`);
@@ -108,12 +126,12 @@ export async function plotsCommand(rest) {
   }
   // Rebuilt from results/ on every request, so new results appear on reload.
   await serveUntilInterrupted((req, res) => {
-    const fresh = collect(only);
+    const fresh = pageData(only);
     res.writeHead(200, { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" });
-    res.end(fresh.length ? page({ scenarios: fresh }) : html);
+    res.end(fresh.scenarios.length || fresh.parse ? page(fresh) : html);
   }, {
     port: args.port ?? 0,
     local: !!args.local,
-    what: `serving plots for ${scenarios.map((s) => `${s.name} (${s.variants.map((v) => v.name).join(", ")})`).join("; ")}`,
+    what: `serving plots for ${[...scenarios.map((s) => `${s.name} (${s.variants.map((v) => v.name).join(", ")})`), ...(parse ? [`parse time (results/parse/${parse.dir})`] : [])].join("; ")}`,
   });
 }

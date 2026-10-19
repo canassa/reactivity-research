@@ -17,7 +17,7 @@ import { listScenarios, loadScenario, loadEmitters, appDir, variantName, ROOT } 
 import { buildApp } from "./generate.js";
 import { codeHash } from "./measure.js";
 import { serveHandler, send, TYPES } from "./serve.js";
-import { collect, page } from "./plots.js";
+import { pageData, page } from "./plots.js";
 
 const port = Number(process.argv[2]);
 const sets = new Map(); // "<scenario>/<nN-sS>" → Promise<{ handler, variants }>
@@ -104,8 +104,8 @@ const server = http.createServer(async (req, res) => {
     if (parts.length === 0) return send(res, 200, await index(), TYPES[".html"]);
     if (parts[0] === "plots") {
       if (!url.pathname.endsWith("/")) { res.writeHead(302, { location: "/plots/" }); return res.end(); }
-      const scenarios = collect(null);
-      return send(res, 200, scenarios.length ? page({ scenarios }) : "no results yet: run ./rr report", TYPES[".html"]);
+      const data = pageData(null);
+      return send(res, 200, data.scenarios.length || data.parse ? page(data) : "no results yet: run ./rr report", TYPES[".html"]);
     }
     if (parts[0] === "apps" && parts.length >= 3) {
       const [, name, ns] = parts;

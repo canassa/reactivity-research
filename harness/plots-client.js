@@ -13,7 +13,7 @@
     ...DATA.scenarios.flatMap((sc) => Object.keys(sc.cpu?.run.variants || {}))])];
   const colorOfName = (n) => SLOTS[NAMES.indexOf(n) % SLOTS.length];
   // Which view is shown: a scenario's name, or "compare". Kept in the URL hash.
-  const views = () => [...DATA.scenarios.map((sc) => sc.name), ...(DATA.scenarios.length > 1 ? ["compare"] : [])];
+  const views = () => [...DATA.scenarios.map((sc) => sc.name), ...(DATA.scenarios.length > 1 ? ["compare"] : []), ...(DATA.parse ? [PARSE_VIEW] : [])];
   let view = decodeURIComponent(location.hash.slice(1)) || "";
 
   const el = (tag, attrs = {}, ...kids) => {
@@ -591,22 +591,128 @@
     ];
   }
 
+  // ---- parse time: how long Chrome takes to parse and compile JavaScript, against its size.
+  const PARSE_VIEW = "parse time";
+  const PARSE_FORMS = [["unminified", "unminified"], ["esbuild", "esbuild"], ["terser", "esbuild + terser"]];
+  const PARSE_COLORS = { unminified: "var(--s1)", esbuild: "var(--s2)", terser: "var(--s3)" };
+  let parseMode = "external";
+
+  // x: raw bytes (linear), y: milliseconds (linear), one line per form, the 95% interval of each
+  // median drawn as an error bar.
+  function parseChart({ series, unit = "ms", width = 560, height = 300 }) {
+    const W = width, H = height, L = 52, R = 16, T = 24, B = 38;
+    const xTicks = niceTicks(Math.max(...series.flatMap((s) => s.points.map((p) => p.x))) / 1000).map((t) => t * 1000);
+    const yTicks = niceTicks(Math.max(...series.flatMap((s) => s.points.map((p) => p.hi))));
+    const xTop = xTicks[xTicks.length - 1], yTop = yTicks[yTicks.length - 1];
+    const X = (x) => L + (x / xTop) * (W - L - R);
+    const Y = (y) => T + (1 - y / yTop) * (H - T - B);
+    const yFmt = (v) => (v >= 10 ? fmt(v) : String(+v.toFixed(1)));
+    const svg = sv("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+    for (const t of yTicks) {
+      svg.append(sv("line", { class: "gridline", x1: L, x2: W - R, y1: Y(t), y2: Y(t) }));
+      svg.append(sv("text", { x: L - 6, y: Y(t) + 4, "text-anchor": "end", text: yFmt(t) }));
+    }
+    for (const t of xTicks) svg.append(sv("text", { x: X(t), y: H - B + 16, "text-anchor": "middle", text: t >= 1e6 ? t / 1e6 + " MB" : t / 1000 + " kB" }));
+    svg.append(sv("text", { x: (L + W - R) / 2, y: H - 4, "text-anchor": "middle", text: "raw script size (bytes of that form)" }));
+    svg.append(sv("text", { x: L - 6, y: 11, "text-anchor": "end", text: unit }));
+    svg.append(sv("line", { class: "axis", x1: L, x2: W - R, y1: Y(0), y2: Y(0) }));
+    series.forEach((s, si) => {
+      const g = sv("g", { class: "series", "data-s": si });
+      svg.append(g);
+      g.addEventListener("pointerenter", () => highlight(svg.parentNode, si));
+      g.addEventListener("pointerleave", () => highlight(svg.parentNode, null));
+      g.append(sv("polyline", { points: s.points.map((p) => `${X(p.x)},${Y(p.y)}`).join(" "), fill: "none", stroke: s.color, "stroke-width": 2, "stroke-linejoin": "round" }));
+      for (const p of s.points) {
+        g.append(sv("line", { x1: X(p.x), x2: X(p.x), y1: Y(p.lo), y2: Y(p.hi), stroke: s.color, "stroke-width": 1.5 }));
+        for (const v of [p.lo, p.hi]) g.append(sv("line", { x1: X(p.x) - 3, x2: X(p.x) + 3, y1: Y(v), y2: Y(v), stroke: s.color, "stroke-width": 1.5 }));
+        g.append(sv("circle", { cx: X(p.x), cy: Y(p.y), r: 3.5, fill: s.color, stroke: "var(--card)", "stroke-width": 1.5 }));
+        const hit = sv("circle", { cx: X(p.x), cy: Y(p.y), r: 9, fill: "transparent" });
+        hit.addEventListener("pointermove", (e) => showTip(e, `${s.name}: ${fmt(p.x)} bytes`, [
+          [s.color, `${yFmt(p.y)} ${unit}`, `median of ${p.n}`],
+          [s.color, `${p.lo.toFixed(2)}–${p.hi.toFixed(2)} ${unit}`, `95% interval (±${p.precisionPct}%)`],
+        ]));
+        hit.addEventListener("pointerleave", hideTip);
+        g.append(hit);
+      }
+    });
+    return svg;
+  }
+
+  function renderParse() {
+    const P = DATA.parse, run = P.run, rows = P.summary.points.filter((p) => p.mode === parseMode);
+    const fits = P.summary.fits.filter((f) => f.mode === parseMode);
+    const modes = [...new Set(P.summary.points.map((p) => p.mode))];
+    const fitOf = (form, metric) => fits.find((f) => f.form === form && f.metric === metric);
+    const num = (x, d = 1) => (x == null ? "—" : x.toFixed(d));
+    const formRows = (form) => rows.filter((r) => r.form === form).sort((a, b) => a.bytes - b.bytes);
+    const series = (metric) => PARSE_FORMS.map(([form, name]) => ({
+      name, color: PARSE_COLORS[form],
+      points: formRows(form).map((r) => ({ x: r.bytes, y: r[metric].median, lo: r[metric].ci[0], hi: r[metric].ci[1], n: r[metric].n, precisionPct: r[metric].precisionPct })),
+    }));
+    const linear = PARSE_FORMS.every(([form]) => fitOf(form, "compileMs")?.linear);
+    const compileText = PARSE_FORMS.map(([form, name]) => `${num(fitOf(form, "compileMs").msPer100kB, 1)} ms per 100 kB of ${name}`).join(", ");
+    const evalText = PARSE_FORMS.map(([form, name]) => `${num(fitOf(form, "evaluateMs").msPer100kB, 2)} (${name})`).join(", ");
+    const exps = PARSE_FORMS.map(([form]) => fitOf(form, "compileMs").exponent);
+    const expText = `${num(Math.min(...exps), 2)}–${num(Math.max(...exps), 2)}`;
+    const big = (form) => formRows(form)[formRows(form).length - 1];
+    const perByteRatio = fitOf("esbuild", "compileMs").msPer100kB / fitOf("unminified", "compileMs").msPer100kB;
+    const governorWarning = run.warnings?.length ? el("p", { class: "note", style: "color:var(--s8);font-weight:600", text: "Warning: " + run.warnings.join(" ") }) : null;
+    const git = run.versions.git ? run.versions.git.commit.slice(0, 7) + (run.versions.git.dirty ? " (dirty)" : "") : "?";
+    const source = () => el("div", { class: "source" },
+      el("div", { text: `Results: results/parse/${P.dir} · commit ${git} · ${run.options.points} sizes × 3 forms × modes ${run.options.modes.join(", ")} · seed ${run.options.seed} · ${run.loadsTotal} loads · stop at ±${run.options.tol * 100}% (${run.options.minReps}–${run.options.maxReps} loads per point)` }),
+      el("div", { text: `${run.versions.chrome} · Node ${run.versions.node} · esbuild ${run.versions.esbuild} · terser ${run.versions.terser} · ${run.machine.hostname}, ${run.machine.cpu} · CPU governor: ${run.machine.governor}` }));
+    const card = (title, note, body) => el("section", { class: "card" }, el("h3", { text: title }), note ? el("p", { class: "note", text: note }) : null, body, source());
+    const chartCard = (title, note, metric) => {
+      const s = series(metric);
+      const root = el("div", { class: "chart" }, parseChart({ series: s }));
+      return card(title, note, [hoverLegend(s.map((x) => [x.name, x.color]), root), root]);
+    };
+    const pointRows = PARSE_FORMS.flatMap(([form, name]) => formRows(form).map((r) => [
+      name, fmt(r.bytes), fmt(r.brotliBytes), r.n + (r.hitMax ? "*" : ""),
+      `${num(r.compileMs.median, 2)} [${num(r.compileMs.ci[0], 2)}, ${num(r.compileMs.ci[1], 2)}] ±${num(r.compileMs.precisionPct, 1)}%`,
+      num((r.compileMs.median / r.bytes) * 1e5, 2),
+      `${num(r.evaluateMs.median, 2)} [${num(r.evaluateMs.ci[0], 2)}, ${num(r.evaluateMs.ci[1], 2)}] ±${num(r.evaluateMs.precisionPct, 1)}%`,
+      parseMode === "external" ? `${num(r.compileBackgroundMs?.median, 2)} / ${num(r.compileMainMs?.median, 2)}` : "—",
+    ]));
+    const fitRows = PARSE_FORMS.flatMap(([form, name]) => ["compileMs", "evaluateMs"].map((m) => {
+      const f = fitOf(form, m);
+      return [name, m === "compileMs" ? "compile" : "evaluate", num(f.msPer100kB, 3), num(f.interceptMs, 2), num(f.r2, 4), `${num(f.exponent, 3)} ± ${num(f.exponentSe, 3)}`, f.linear ? "yes" : "no"];
+    }));
+    const answer = `Chrome ${run.versions.chrome.replace(/^.*?(\d+\.\d+\.\d+\.\d+).*$/, "$1")} parses and compiles ${compileText} (the slope of a straight line through the medians of ${run.options.points} sizes, ${parseMode} script, ${fmt(formRows("unminified")[0].bytes)} B to ${fmt(big("unminified").bytes)} B unminified). The relation is ${linear ? "linear" : "not (quite) linear"}: the power-law exponent is ${expText}, where 1 is linear. Per byte, minified code costs ${num(perByteRatio, 1)}× as much as unminified code, but it has ${num(big("unminified").bytes / big("esbuild").bytes, 1)}× fewer bytes, so the same program takes ${num((big("esbuild").compileMs.median / big("unminified").compileMs.median) * 100, 0)}% of the time once minified. Running the top level (evaluate) grows far more slowly, ${evalText} ms per 100 kB: the generated program only registers its modules there, so what grows with size is parsing, not running.`;
+    return [
+      el("h2", { text: "Parse and compile time against script size" }),
+      el("p", { class: "lead", text: answer }),
+      governorWarning,
+      el("div", { class: "controls" }, modes.map((m) => el("label", {}, el("input", { type: "radio", name: "parsemode", value: m, ...(parseMode === m ? { checked: "" } : {}), onchange: () => { parseMode = m; render(); } }),
+        m === "external" ? "external script (streamed, parsed off the main thread)" : "inline script (all on the main thread)"))),
+      chartCard("Compile time", parseMode === "external"
+        ? "v8.parseOnBackground (the worker thread that parses the streamed script) plus v8.compile (the main thread, which only finishes a streamed script). Median of fresh page loads; bars are the 95% bootstrap interval of the median."
+        : "v8.compile on the main thread: the whole parse and compile of the script in the page. Median of fresh page loads; bars are the 95% bootstrap interval of the median.", "compileMs"),
+      chartCard("Evaluate time", "EvaluateScript on the main thread: running the script's top level (it defines and registers modules and boots two) plus compiling the functions that run needs" + (parseMode === "inline" ? ", and here the whole compile too, which EvaluateScript contains when the script is not streamed." : ", on top of the compile above, which the worker thread did already."), "evaluateMs"),
+      card("Straight-line and power-law fits", "ms = intercept + slope × bytes through the medians; the exponent is the slope of ln ms against ln bytes (1 means linear). Linear here means |exponent − 1| ≤ 0.1 and R² ≥ 0.99.",
+        table(["form", "metric", "ms per 100 kB", "intercept ms", "R²", "exponent ± se", "linear"], fitRows)),
+      card("Every point", "Median [95% interval] ±half-width as a percentage of the median, in ms. * = stopped at the maximum number of loads without reaching the precision. Last column: the worker thread's parse / the main thread's compile in ms (external only). Brotli is the size on the wire, for context; parse time follows the raw bytes.",
+        table(["form", "raw bytes", "brotli bytes", "loads", "compile ms", "compile ms / 100 kB", "evaluate ms", "background / main"], pointRows)),
+    ];
+  }
+
   function render() {
     hideTip();
     const total = DATA.scenarios.reduce((a, s) => a + s.variants.length, 0);
-    if (!views().includes(view)) view = DATA.scenarios[0].name;
+    if (!views().includes(view)) view = views()[0];
     const tabs = el("nav", { class: "tabs" }, views().map((v) => el("a", {
       href: "#" + encodeURIComponent(v), class: v === view ? "on" : "",
       onclick: (e) => { e.preventDefault(); view = v; history.replaceState(null, "", "#" + encodeURIComponent(v)); render(); },
-    }, v === "compare" ? "Compare scenarios" : v)));
+    }, v === "compare" ? "Compare scenarios" : v === PARSE_VIEW ? "Parse time" : v)));
     app.replaceChildren(
       el("h1", { text: "How many bytes does a reactive UI ship?" }),
-      el("p", { class: "lead", text: `Everything the browser downloads, HTML + JavaScript, against the size of the app. ${DATA.scenarios.length} scenario(s), ${NAMES.length} framework variant(s); the latest run per variant and scenario.` }),
+      ...(view === PARSE_VIEW ? [] : [
+        el("p", { class: "lead", text: `Everything the browser downloads, HTML + JavaScript, against the size of the app. ${DATA.scenarios.length} scenario(s), ${NAMES.length} framework variant(s); the latest run per variant and scenario.` }),
       el("div", { class: "controls" },
         el("label", {}, el("input", { type: "radio", name: "mode", value: "br", ...(mode === "br" ? { checked: "" } : {}), onchange: () => { mode = "br"; render(); } }), "compressed (brotli 11)"),
-        el("label", {}, el("input", { type: "radio", name: "mode", value: "raw", ...(mode === "raw" ? { checked: "" } : {}), onchange: () => { mode = "raw"; render(); } }), "raw")),
+        el("label", {}, el("input", { type: "radio", name: "mode", value: "raw", ...(mode === "raw" ? { checked: "" } : {}), onchange: () => { mode = "raw"; render(); } }), "raw"))]),
       tabs,
-      ...(view === "compare" ? renderCompare() : renderScenario(DATA.scenarios.find((sc) => sc.name === view))));
+      ...(view === PARSE_VIEW ? renderParse() : view === "compare" ? renderCompare() : renderScenario(DATA.scenarios.find((sc) => sc.name === view))));
   }
   window.addEventListener("hashchange", () => { view = decodeURIComponent(location.hash.slice(1)); render(); });
   render();
