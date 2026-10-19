@@ -67,7 +67,8 @@ export function regress(xs, ys) {
 // Fit median ms against raw bytes. Two fits:
 //   linear     ms = a + b·bytes          → msPer100kB = b·1e5, the fixed cost a, and R²
 //   power law  ln ms = c + k·ln bytes    → k = 1 means linear, k > 1 super-linear; with its standard error
-// `points`: [{ bytes, ms }]. "Linear" here means |k − 1| ≤ 0.1 and R² ≥ 0.99.
+// `points`: [{ bytes, ms }]. "Linear" here means the straight line explains the medians (R² ≥ 0.99); a fixed cost
+// (the intercept) pulls the exponent below 1 without making the relation less of a straight line.
 export function fit(points) {
   const lin = regress(points.map((p) => p.bytes), points.map((p) => p.ms));
   const pow = regress(points.map((p) => Math.log(p.bytes)), points.map((p) => Math.log(p.ms)));
@@ -75,6 +76,6 @@ export function fit(points) {
   return {
     msPer100kB: r(lin.slope * 1e5, 4), interceptMs: r(lin.intercept, 4), r2: r(lin.r2, 5),
     exponent: r(pow.slope, 4), exponentSe: r(pow.slopeSe, 4), exponentR2: r(pow.r2, 5),
-    linear: Math.abs(pow.slope - 1) <= 0.1 && lin.r2 >= 0.99,
+    linear: lin.r2 >= 0.99,
   };
 }

@@ -116,14 +116,14 @@ Following `harness/bench/README.md` (`bench/lib/stats.js`):
 - Loads are taken in rounds of 2 that visit every point still running, in alternating order, so a
   drift in the machine (a warming browser, a load burst) lands on all points and not on whichever
   ran last.
-- A point stops when the 95% bootstrap interval of the median (2000 resamples) is within ±3% of the
+- A round only runs when the 1-minute load average is below `--max-load` (default 8; the machine is shared, and a load above that made every load 3 to 5 times slower and bimodal in a first attempt); otherwise the command waits, up to `--give-up-min`. A point stops when the 95% bootstrap interval of the median (2000 resamples) is within ±3% of the
   median for **both** compile and evaluate, with at least 10 and at most 40 loads. A point that
   reached the maximum without the precision is marked (`hitMax`).
 - Reported per point: median, interval, ± precision (half the interval as a percentage of the
   median), n.
 - Per form and metric, two fits through the medians: a straight line (`ms = a + b·bytes`, giving
   ms per 100 kB, the fixed cost `a` and R²) and a power law (`ln ms = c + k·ln bytes`, with the
-  exponent's standard error). The relation is called linear when `|k - 1| <= 0.1` and `R² >= 0.99`.
+  exponent's standard error). The relation is called linear when the straight line has `R² >= 0.99`; a fixed cost `a` pulls the exponent below 1 without making it less linear.
 
 ## The machine
 

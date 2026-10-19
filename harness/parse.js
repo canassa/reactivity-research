@@ -1,6 +1,6 @@
 // ./rr parse [--points 8] [--from-kb 25] [--to-kb 3000] [--seed 1] [--modes external,inline]
 //            [--min-reps 10] [--max-reps 40] [--tol 0.03] [--quick] [--out DIR] [--chrome PATH]
-//            [--taskset CPUS] [--max-load 1.0] [--load-wait 120]
+//            [--taskset CPUS] [--max-load 8] [--load-wait 120] [--give-up-min 90]
 //
 // How long does Chrome take to parse and compile JavaScript, against its size? One generated
 // program (harness/parse/generate.js) at a geometric series of sizes, each in three forms
@@ -49,7 +49,8 @@ export async function parseCommand(rest) {
     maxReps: Number(args.maxReps ?? (quick ? 4 : 40)),
     tol: Number(args.tol ?? 0.03),
     step: 2,
-    maxLoad: Number(args.maxLoad ?? 1.0),
+    maxLoad: Number(args.maxLoad ?? 8),
+    giveUpMin: Number(args.giveUpMin ?? 90),
     loadWaitS: Number(args.loadWait ?? 120),
   };
   if (o.points < 2) throw new Error("--points must be at least 2");
@@ -114,12 +115,14 @@ export async function parseCommand(rest) {
   const started = new Date();
   const loadavg = [];
   // Before a round: wait up to loadWaitS for the 1-minute load average to fall below maxLoad (the
-  // project's benches do the same); a round that starts above it is recorded as noisy.
+  // project's benches do the same). A round is only run when the machine is quiet: on this shared
+  // machine a load above that made every load 3 to 5 times slower and bimodal. Returns whether it is.
   async function quiet(at) {
     const t0 = Date.now();
     while (load().load1 >= o.maxLoad && Date.now() - t0 < o.loadWaitS * 1000) await sleep(5000);
     const l = load();
-    loadavg.push({ at, ...l, waitedS: Math.round((Date.now() - t0) / 1000), noisy: l.load1 >= o.maxLoad });
+    loadavg.push({ at, ...l, waitedS: Math.round((Date.now() - t0) / 1000), skipped: l.load1 >= o.maxLoad });
+    return l.load1 < o.maxLoad;
   }
   const samples = new Map(points.map((pt) => [pt.key, []]));
   let seq = 0, loads = 0;
@@ -171,6 +174,7 @@ export async function parseCommand(rest) {
 
   try {
     console.log(`${points.length} points (${o.modes.join(", ")} x ${FORMS.length} forms x ${o.points} sizes), Chrome ${await chrome.version()}`);
+    const began = Date.now();
     await quiet("start");
     // The discarded warm-up load of every point.
     for (const pt of points) await loadOnce(pt);
@@ -179,7 +183,14 @@ export async function parseCommand(rest) {
       const active = points.filter((pt) => !settledPoint(pt));
       if (!active.length) break;
       if (round % 2) active.reverse();
-      await quiet(`round ${round + 1}`);
+      if (!(await quiet(`round ${round + 1}`))) {
+        if (Date.now() - began > o.giveUpMin * 60000) {
+          warnings.push(`Gave up after ${o.giveUpMin} minutes without a quiet machine (1-minute load below ${o.maxLoad}); points with fewer than ${o.minReps} loads are marked insufficient.`);
+          break;
+        }
+        console.log(`machine busy (load ${load().load1}), round skipped`);
+        continue;
+      }
       for (const pt of active) {
         for (let i = 0; i < o.step && samples.get(pt.key).length < o.maxReps; i++) samples.get(pt.key).push(await loadOnce(pt));
       }
@@ -191,11 +202,9 @@ export async function parseCommand(rest) {
     server.close();
   }
   loadavg.push({ at: "end", ...load() });
-  const noisy = loadavg.filter((l) => l.noisy).length;
-  if (noisy) {
-    warnings.push(`The 1-minute load average was at or above ${o.maxLoad} when ${noisy} of ${loadavg.length - 1} rounds started (highest ${Math.max(...loadavg.map((l) => l.load1))}) on a ${machine.threads}-thread machine, so other processes were competing with Chrome: timings are inflated and noisy.`);
-    console.warn(`\n!!! ${warnings[warnings.length - 1]}\n`);
-  }
+  const skipped = loadavg.filter((l) => l.skipped).length;
+  console.log(`${skipped} round start(s) skipped because the machine was busy (load at or above ${o.maxLoad})`);
+  for (const w of warnings.slice(1)) console.warn(`\n!!! ${w}\n`);
 
   // Summaries.
   const ms = (us) => us / 1000;
@@ -204,7 +213,7 @@ export async function parseCommand(rest) {
   for (const pt of points) {
     const s = samples.get(pt.key);
     const row = {
-      key: pt.key, mode: pt.mode, form: pt.form, sizeIndex: pt.index, bytes: pt.bytes, brotliBytes: payloads[pt.index].forms[pt.form].brotli, modules: pt.modules, n: s.length,
+      key: pt.key, mode: pt.mode, form: pt.form, sizeIndex: pt.index, bytes: pt.bytes, brotliBytes: payloads[pt.index].forms[pt.form].brotli, modules: pt.modules, n: s.length, insufficient: s.length < o.minReps,
       streamedLoads: s.filter((x) => x.streamed).length, hitMax: s.length >= o.maxReps && !(isPrecise(s.map((x) => x.compileUs), o.tol) && isPrecise(s.map((x) => x.evaluateUs), o.tol)),
     };
     for (const m of metrics) {
