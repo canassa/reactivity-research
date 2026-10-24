@@ -63,6 +63,12 @@
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3],
       "options": { "lists": ["all", "none"] }
+    },
+    "beni-inline": {
+      "$comment": "lists=none only: browser-inline does not compile a For yet, so every app with a keyed list is refused at build time (frameworks/beni-inline/README.md).",
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3],
+      "options": { "lists": "none" }
     }
   },
   "big-component": {
@@ -85,6 +91,12 @@
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3],
       "options": { "lists": ["all", "none"] }
+    },
+    "beni-inline": {
+      "$comment": "lists=none only: browser-inline does not compile a For yet, so every app with a keyed list is refused at build time (frameworks/beni-inline/README.md).",
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3],
+      "options": { "lists": "none" }
     },
     "tea-local": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
