@@ -7,8 +7,8 @@ own production build, so its setups are on the `framework` track. One browser pl
 measured today:
 
 - [`beni-inline`](../beni-inline/): `browser-inline`, The Elm Architecture program compiled
-  whole at its constructor's call, with no task kernel (in progress: its first slice compiles
-  only the minimal view).
+  whole at its constructor's call, with no task kernel (in progress: slice S1, holes and
+  handlers, has no keyed lists yet).
 
 Two earlier platforms, `browser-tea` (TEA over compiled templates, rendered once per task) and
 `browser-direct` (the same program compiled to direct DOM writes, one function per message),
@@ -23,12 +23,13 @@ The dashboard's source, also shared, is `scenarios/shared-components/shared/beni
 
 ## The pinned compiler
 
-- **Commit:** `ca8b52fb0d3ac96b30a75eab687879524b81c2b1`, beni's `master` on 2026-10-17, the
-  merge of `browser-inline`'s first slice (`COMMIT` in `beni.js`). It was `6a1b567fa` before;
-  the results of 2026-10-16 and earlier were measured with that.
+- **Commit:** `2556986c68fa4d20a97245c83b0123f6ca7c1539`, beni's `master` on 2026-10-24, where
+  the owner closed `browser-inline`'s slice S1 (`COMMIT` in `beni.js`). Before it, `ca8b52fb0`
+  (2026-10-17, the first slice, which built no generated app), and before that `6a1b567fa`; the
+  results of 2026-10-16 and earlier were measured with `6a1b567fa`.
 - **Build:** beni's own instructions (`docs/getting-started.md`): its flake's dev shell
   (Zig 0.17.0, Node 24, pinned by its `flake.lock`) and `zig build -Doptimize=ReleaseFast`.
-- **Identity:** `beni version` prints `beni 0.1.0-m1 413cf0a70977a86b0211218aa3ffa166`, a build
+- **Identity:** `beni version` prints `beni 0.1.0-m1 36b93dcdce3d0a071bf39f0eb21d22e8`, a build
   id derived from the compiler's sources; `versions()` records it with the binary's sha256.
 
 Build it once (needs the network once, for the sources and beni's Nix toolchain):
@@ -38,8 +39,8 @@ frameworks/beni/install.sh                       # sources from GitHub
 BENI_REPO=~/src/beni frameworks/beni/install.sh  # or fetched from a local clone, which it leaves alone
 ```
 
-It clones exactly that commit into `compiler/ca8b52fb0d3a/` (gitignored, and named so the
-measurement hash never reads it) and builds `compiler/ca8b52fb0d3a/zig-out/bin/beni`. To move
+It clones exactly that commit into `compiler/2556986c68fa/` (gitignored, and named so the
+measurement hash never reads it) and builds `compiler/2556986c68fa/zig-out/bin/beni`. To move
 to another commit, change `COMMIT` in `beni.js` and run it again. After that every app builds
 offline.
 
@@ -98,6 +99,6 @@ its top and in the setup's README. Every generated module is laid out exactly as
 writes it:
 
 ```sh
-cp -r generated/shared-components/n16-s1/beni-inline/src /tmp/src && frameworks/beni/compiler/ca8b52fb0d3a/zig-out/bin/beni fmt /tmp/src
+cp -r generated/shared-components/n16-s1/beni-inline/src /tmp/src && frameworks/beni/compiler/2556986c68fa/zig-out/bin/beni fmt /tmp/src
 diff -r generated/shared-components/n16-s1/beni-inline/src /tmp/src   # no output
 ```

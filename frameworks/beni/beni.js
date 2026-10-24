@@ -25,7 +25,7 @@ import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 
-export const COMMIT = "ca8b52fb0d3ac96b30a75eab687879524b81c2b1";
+export const COMMIT = "2556986c68fa4d20a97245c83b0123f6ca7c1539";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const COMPILER = path.join(HERE, "compiler", COMMIT.slice(0, 12), "zig-out", "bin", "beni");
