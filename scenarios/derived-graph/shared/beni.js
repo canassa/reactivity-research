@@ -660,11 +660,18 @@ find items id =
 
 
 --| The server changed some items: those it names are replaced where they stand, new ones are
---| appended, and the removed ones go.
+--| appended, and the removed ones go. Each kept item takes a copy of its upsert: two kept items
+--| with one id would otherwise hold the same record, and a write of one would change the other.
 pub serverItems : List Item, List Int, Model → Model
 serverItems upsert remove model =
     kept = List.filter model.items λitem → not (List.member remove item.id)
-    replaced = List.map kept λitem → Maybe.withDefault (find upsert item.id) item
+    replaced = List.map kept λitem →
+        case find upsert item.id of
+            Just changed →
+                Record.copy changed
+
+            Nothing →
+                item
     fresh =
         List.filter upsert λitem →
             not (List.member remove item.id) && find model.items item.id == Nothing
