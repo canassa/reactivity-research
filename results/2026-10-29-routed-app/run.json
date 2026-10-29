@@ -1,0 +1,565 @@
+{
+  "scenario": "routed-app",
+  "date": "2026-10-29",
+  "sizes": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "scenarioOptions": {},
+  "variants": {
+    "vanilla": {
+      "emitter": "vanilla",
+      "framework": "vanilla",
+      "label": "vanilla",
+      "track": "real",
+      "emitterOptions": {},
+      "style": {
+        "shell": "src/app.js: global state as one plain object, the route, the nav bar, the menu built on open; go(route) disposes the page and mounts the next, one delegated click listener on the app element",
+        "pages": "one module per page exporting mount(a) -> { el, render, push, dispose }, written out from its description; state as plain objects in the closure (s page, t tab panel, m modal); nothing interpreted",
+        "rendering": "one idempotent render() per page that writes every binding from the state (setText/setValue write only what differs); a handler changes the state and calls it, or a.changed() after a write to global state",
+        "lists": "sync() in src/lib.js (the only generic helper, runtime): keyed by data-key, nodes kept across reorders",
+        "conditionals": "created and removed after a comment anchor; tab panels and the modal built when selected or opened with fresh state",
+        "events": "one delegated click, input and change listener per page on its <main>, switching on data-role; number inputs send only integers within range",
+        "time": "one setInterval per mounted time-driven field, started when its page or tab panel is built, cleared when it is left",
+        "externalEvents": "receive() in app.js; pagePush reaches only the page shown, through its push; lists replaced never mutated, message items copied",
+        "build": "Vite, no framework plugin, no module-preload polyfill, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "f57caf45ccc60691"
+    },
+    "solid": {
+      "emitter": "solid",
+      "framework": "solid",
+      "label": "Solid 1",
+      "track": "framework",
+      "emitterOptions": {
+        "routing": "dynamic"
+      },
+      "style": {
+        "routing": "in-app route signal in the app store; <Dynamic> over a table of page components in App resolves the page the route names; no router library",
+        "components": "one component per page (src/pages/PN.jsx), with its tab panels and modal as components of their own in the same file; written from the description, nothing interpreted at runtime; the nav bar and the menu read a table of (id, title)",
+        "localState": "a createStore created inside the page, tab panel and modal component, so it starts fresh on every mount; a panel or modal gets the page's store (and a setter) as props only if it reads (or writes) it; the modal remounts on every open (a counting signal and <Show keyed>)",
+        "globalState": "one createStore per mount, plus the route and menu signals, shared through a context; read directly by the bindings that need a field",
+        "conditionals": "<Switch>/<Match> for the active tab panel (at most four), <Show> for the modal, the menu, conditional sections and validation errors",
+        "lists": "<For>",
+        "time": "setInterval in the component that owns the time-driven field, cleared with onCleanup",
+        "externalEvents": "store.receive(msg); pagePush goes to the handler a mounted feed page subscribed (onCleanup unsubscribes); serverSet is a path set; snapshot is reconcile(structuredClone(global), { key: 'id' }); dispatched items are copied, never adopted",
+        "writes": "path setters on the stores; click messages with several ops in batch; list items found by id",
+        "derived": "plain expressions in the JSX, one fine-grained binding each",
+        "events": "onClick/onInput (delegated), onChange for checkboxes and selects; number inputs send only integers within range",
+        "build": "Vite + vite-plugin-solid, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "ef7d2bba6821d41e"
+    },
+    "solid-routing=switch": {
+      "emitter": "solid",
+      "framework": "solid",
+      "label": "Solid 1",
+      "track": "framework",
+      "emitterOptions": {
+        "routing": "switch"
+      },
+      "style": {
+        "routing": "in-app route signal in the app store; <Switch> with one <Match> per page in App; no router library",
+        "components": "one component per page (src/pages/PN.jsx), with its tab panels and modal as components of their own in the same file; written from the description, nothing interpreted at runtime; the nav bar and the menu read a table of (id, title)",
+        "localState": "a createStore created inside the page, tab panel and modal component, so it starts fresh on every mount; a panel or modal gets the page's store (and a setter) as props only if it reads (or writes) it; the modal remounts on every open (a counting signal and <Show keyed>)",
+        "globalState": "one createStore per mount, plus the route and menu signals, shared through a context; read directly by the bindings that need a field",
+        "conditionals": "<Switch>/<Match> for the active tab panel (at most four), <Show> for the modal, the menu, conditional sections and validation errors",
+        "lists": "<For>",
+        "time": "setInterval in the component that owns the time-driven field, cleared with onCleanup",
+        "externalEvents": "store.receive(msg); pagePush goes to the handler a mounted feed page subscribed (onCleanup unsubscribes); serverSet is a path set; snapshot is reconcile(structuredClone(global), { key: 'id' }); dispatched items are copied, never adopted",
+        "writes": "path setters on the stores; click messages with several ops in batch; list items found by id",
+        "derived": "plain expressions in the JSX, one fine-grained binding each",
+        "events": "onClick/onInput (delegated), onChange for checkboxes and selects; number inputs send only integers within range",
+        "build": "Vite + vite-plugin-solid, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "ef7d2bba6821d41e"
+    },
+    "elm": {
+      "emitter": "elm",
+      "framework": "elm",
+      "label": "Elm 0.19.3",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "TEA with Browser.element: Main holds { route, menu, global, page }; page is a custom type with a constructor per page carrying that page's model, replaced by the new page's init on navigation (page-local state resets); Global is a module of its own",
+        "pages": "one module per page (Model, Msg, init, update, view, subscriptions), written out from its description; one flat Msg for the page, its tabs and its modal; Go String for links",
+        "tabsAndModal": "tab : Tab, a custom type holding the active panel's record (selecting builds its init); modal : Maybe Form; messages for an unmounted panel or modal are no-ops",
+        "globalState": "update : Msg -> Global -> Model -> ( Model, Global ) when the page writes a global field, else Msg -> Model -> Model; Main forwards GotPage to the page shown and ignores it otherwise",
+        "routing": "in-app state: a route field and a case on the Page custom type; links and the nav bar send Navigate / GotPage (Page.Go route); no URL",
+        "types": "int Int, bool Bool, text and enum String (options as data in the view, a case for cycle), list a List of a type alias per list built by its positional constructor",
+        "derived": "computed in view; an if is a let binding of the view function",
+        "conditionals": "a view function per conditional section, called as Ui.when condition (viewSection …)",
+        "lists": "Html.Keyed (Keyed.ul / Keyed.ol) with a viewXItem function per list; the app's children are Keyed.node keyed by shell, menu and route id",
+        "time": "Time.every in the page's subscriptions (and the active tab's), forwarded by Main.subscriptions only for the page shown",
+        "externalEvents": "one incoming port; Json.Decode into the app's messages (deepLink → Navigate, serverSet → SetX, notify → Notify, snapshot → Snapshot, pagePush → the feed page's Pushed)",
+        "events": "onInput for text inputs and selects, onClick for buttons and checkboxes, Ui.onNumberInput (an integer in range, else no message) for number inputs",
+        "formatting": "as elm-format 0.8.8 writes it where practical; elm.json lists only the dependencies the app imports",
+        "build": "elm make --optimize, then uglify-js compress (pure_funcs) and mangle passes, as the Elm guide recommends"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "a19dc71ee1ae780c"
+    },
+    "tea-dirtybits": {
+      "emitter": "tea-dirtybits",
+      "framework": "tea-dirtybits",
+      "label": "TEA + dirty bits (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "components": "one module per page (bits, one reducer for the page, its tabs and its modal, initial local state, mount function with a static template whose bound elements are found by data-role, emptiness or a marker); tab panels and the modal are units of their own, mounted by a slot; nothing interpreted at runtime",
+        "lifetime": "only the shell and the page shown (with its open tab and modal) are built; a slot mounts a unit when its key appears and, when it changes, runs the unit's stop (clears its interval, stops its nested slot) and removes its root; the 'All pages' menu is a slot too, built only while open",
+        "state": "one immutable TEA model { route, menu, global, page } with the reference's shape; page-local state is replaced by the next page's initial state on navigation",
+        "updates": "reducers are tables of arms by message tag; each arm returns the compile-time dirty bits of what it wrote and the new model; one dirty word per event (the six global fields are its low bits, the page's own fields follow), so a global write marks bits and the mounted page's static patch tests only its own",
+        "externalEvents": "through the same reducer (send): navigate and deepLink replace the page, serverSet/notify/snapshot mark the global bits, pagePush reaches the arm of the page shown (dropped otherwise)",
+        "time": "one setInterval per mounted time-driven field, started when its unit mounts and cleared by the unit's stop; a tick is a message to the page's reducer",
+        "routing": "plain in-app state: a route field, buttons that send navigate, a slot that mounts the page",
+        "lists": "keyed by id: changed rows patched, gone rows removed, misplaced nodes moved in one walk",
+        "conditionals": "branches built once with the template, swapped for an empty comment while hidden, with their own nested patch",
+        "events": "addEventListener on each element; the handler sends a constant message (or one carrying the control's value)",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "ba61fac0b0aed62f"
+    },
+    "tea-inline": {
+      "emitter": "tea-inline",
+      "framework": "tea-inline",
+      "label": "TEA inline (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "track": "prototype: no framework implements this strategy",
+        "components": "one module per page (its tabs and modal inside, sharing its state); a unit is a markup string and a function over its elements (E[n]), built when shown and disposed when it leaves; the shell lives as long as the app",
+        "lifetime": "up() builds a unit and gives it a list of disposers; down() runs them once: its nodes, its timers (every) and its entries in the reader groups outside it (reg: global fields, the page's fields)",
+        "routing": "in-app state: a route number, the page built on go(); one delegated click listener for the nav bar, the menu and the pages' links",
+        "messages": "erased for DOM events: each update arm is inlined into the action its control calls, which writes the unit's fields in place",
+        "updates": "each action schedules the binding groups of the fields it writes (known at compile time): the unit's own, the page's, and for global fields the groups registered outside every unit (GR); one microtask flush",
+        "lists": "page-local lists edit rows in place (add) and remove by replacing the array; global lists are replaced and their groups reconcile by id",
+        "externalEvents": "receive(msg): serverSet and notify write the global field and schedule its readers; snapshot replaces the global state and schedules all readers; pagePush calls the arm of the page shown",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "74025432511ad1a1"
+    },
+    "digest": {
+      "emitter": "digest",
+      "framework": "digest",
+      "label": "digest (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "approach": "compiled dirty checking with mounting components: a page is a widget with its own binding list; an event digests the list it came from plus the lists of the mounted components that read what it wrote; navigation ends every component but the shell",
+        "components": "one function per page, written out in full from that page's description, with its tab panels and modal as functions inside it; calling one mounts it with fresh state; no shared factories, no data rows, no interpreter",
+        "state": "plain mutable variables: locals of the page's, tab's or modal's function (so they start fresh on each mount and are gone with it), module variables for global fields",
+        "lifetime": "a component is a binding list with its root node and its cleanups; ending it removes the node, empties the list, leaves every set it joined, clears its timer and drops its feed subscription; navigation ends every mounted component but the shell",
+        "globals": "each global field some component reads has a Set of the binding lists that read it (a component joins when it mounts); a handler or external event that writes it digests that set; fields nobody reads have no set",
+        "templates": "one static HTML string per page, tab panel and modal, in the function that mounts it (texts escaped at build time, no end tags at its end); nodes are found by their position in the template, once",
+        "routing": "in-app state: a route variable, a nav bar of the first pages and a menu built when opened; every link, nav and menu button shares one handler that reads the target's data-key",
+        "time": "one setInterval per mounted time-driven field, started when its component mounts and cleared when it ends",
+        "events": "one delegated click and input listener on the app element that calls the target's handler",
+        "build": "Vite production build, no plugin, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "6cfe58ff0ce8d38a"
+    },
+    "tea-local": {
+      "emitter": "tea-local",
+      "framework": "tea-local",
+      "label": "tea-local (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "components": "the shell, every page, every tab panel and every modal is a component instance (src/routed.js) with its model in a closure, its reducer (a jump table by message tag, one arm per message, written out from its kind and ops), its own static template and binding list; pages are factories in a table, tab panels and modals factories nested in their page's, the way a child component is written inside its parent",
+        "lifetime": "the shell's patch calls the page slot with the route, the page's patch calls a slot with the tab and another with the modal flag: a new key destroys the child instance (unwatches the instances it reads, clears its timers, destroys its own slots) and removes its node, then makes the next; page, tab and modal state therefore start fresh each time, and only the shell and the page shown exist",
+        "globalState": "one instance with no DOM; the shell and every mounted component that reads a global field watch it; writes are messages to it (a generic arm per operation, numbered in order of first use, after serverSet's four and Notify)",
+        "crossInstance": "commands run before the reducer arm: a link sends the shell Go, a control that writes global state sends the global instance its message, a modal's confirm sends its page a Confirm message carrying the modal's values (the page closes the modal); reducers stay pure",
+        "time": "a time-driven field is one setInterval started when its component is made and cleared by its destroy; its message is its own Tick",
+        "externalEvents": "deepLink sends the shell Go; serverSet, notify send the global instance its messages and snapshot replaces its model; pagePush sends the page shown its Notify (and nothing when another page is shown)",
+        "lists": "runtime keyed list by item.id: patch changed rows, one forward placement pass when order or membership changes; the global lists are bound the same way where a page shows them",
+        "dom": "one static template per component (trailing end tags left out) inserted by insertAdjacentHTML at its place (a page at the end of the app, a panel after its tab bar, a modal at the end of its page), elements addressed by document order; one template per list row, cloned per new item; the menu is built when opened",
+        "conditionals": "node in the template; while hidden, an empty text node holds its place",
+        "events": "tags 0, 1, 2, … for the template's controls in document order (then each list row's), attached by position by the runtime's wire; messages are sent as send(tag, value); number inputs send valueAsNumber and the reducer takes integers within range only",
+        "build": "Vite production build, no framework plugin, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "fc3c67401de04cd7"
+    },
+    "marko": {
+      "emitter": "marko",
+      "framework": "marko",
+      "label": "Marko 6",
+      "track": "real",
+      "emitterOptions": {},
+      "style": {
+        "routing": "in-app route <let> in the root template; an <if>/<else if> chain with one branch per page (each given only the globals it uses) mounts the page the route names and destroys the one it leaves; no router; the nav bar and the menu read static tables of (id, title)",
+        "sharedHelpers": "nextId is one module, src/list.js, imported by the pages and panels that add list items",
+        "components": "one tag per page (src/tags/page-pN.marko), with its tab panels (page-pN-tK) and modal (page-pN-modal) as tags of their own; written from the description, nothing interpreted at runtime",
+        "localState": "<let>s in the page, panel and modal tags, created when the tag mounts and gone when it is destroyed; the active tab's panel and the open modal are <if> branches, so they start fresh each time",
+        "globalState": "<let>s in the root template, passed down as attributes (no context API): read-only as name=name, written as name:=name into a controllable <let/name:=input.name>; a page passes its panels and modal what they use the same way",
+        "numberInputs": "the int-field tag: a controllable <let> plus a <let/pending> for an edit that is not a valid integer in range",
+        "time": "<lifecycle> in the tag that owns the field: setInterval in onMount, clearInterval in onDestroy",
+        "externalEvents": "app.marko <return>s a function (the root's tag variable) that assigns the root's <let>s; pagePush goes to the handler a mounted feed page set in the root's feeds Map from its <lifecycle> (onDestroy deletes it); dispatched items are copied, never adopted",
+        "writes": "assignments in onClick handlers with immutable list updates; list items found by id",
+        "derived": "plain expressions in the markup",
+        "conditionals": "<if> for conditional sections, validation errors, the menu, the active tab and the modal",
+        "lists": "<for … by=\"id\"> for keyed lists, <for> over the static tables of pages",
+        "events": "handlers in markup (onClick, checkedChange); value:=, checked:= and <select value:=> for controlled inputs",
+        "build": "Vite + @marko/vite (linked: false), production mode, client-only mount, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "694aded6e8c20062"
+    },
+    "react": {
+      "emitter": "react",
+      "framework": "react",
+      "label": "React 19",
+      "track": "real",
+      "emitterOptions": {
+        "compiler": "off"
+      },
+      "style": {
+        "routing": "in-app route state in App; the page component looked up in a table by route and rendered as <Page />; no router library",
+        "components": "one function component per page (src/pages/PN.jsx), with its tab panels and modal as components of their own in the same file; written from the description, nothing interpreted at runtime; the nav bar and the menu map over a table of (id, title)",
+        "localState": "one useState object per page, tab panel and modal component, so it starts fresh on every mount; a panel or modal gets the page's state (and setter) as props only if it reads (or writes) it; the modal has a key counted per open, so every open mounts it afresh; a ref notes that it closed, so its handlers that close it or write outside it do nothing afterwards",
+        "globalState": "the route, the menu and the global state as one useState object in App, shared through a context with the external events; pages use usePage(id), whose global setter and navigation are updaters that ignore a page no longer shown",
+        "writes": "updater functions, one per state a message writes (an object spread, or a copy updated in order for several ops); list items found by id",
+        "conditionals": "&& in JSX for the active tab panel, the modal, the menu, conditional sections and validation errors",
+        "lists": ".map with key={item.id}",
+        "time": "setInterval in a useEffect of the component that owns the time-driven field, cleared by its cleanup",
+        "externalEvents": "a subscription in a useEffect in App (deepLink, serverSet, notify, snapshot); a page with a feed subscribes in its own effect and takes its pagePush events",
+        "derived": "plain expressions in the JSX, no manual memoization",
+        "inputs": "controlled, onChange; number inputs send only integers within range and keep a draft of other text, dropped by every write of the field",
+        "compiler": "none (create-vite's react template)",
+        "build": "Vite + @vitejs/plugin-react, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "b9d039433b36734d"
+    },
+    "react-compiler=on": {
+      "emitter": "react",
+      "framework": "react",
+      "label": "React 19",
+      "track": "real",
+      "emitterOptions": {
+        "compiler": "on"
+      },
+      "style": {
+        "routing": "in-app route state in App; the page component looked up in a table by route and rendered as <Page />; no router library",
+        "components": "one function component per page (src/pages/PN.jsx), with its tab panels and modal as components of their own in the same file; written from the description, nothing interpreted at runtime; the nav bar and the menu map over a table of (id, title)",
+        "localState": "one useState object per page, tab panel and modal component, so it starts fresh on every mount; a panel or modal gets the page's state (and setter) as props only if it reads (or writes) it; the modal has a key counted per open, so every open mounts it afresh; a ref notes that it closed, so its handlers that close it or write outside it do nothing afterwards",
+        "globalState": "the route, the menu and the global state as one useState object in App, shared through a context with the external events; pages use usePage(id), whose global setter and navigation are updaters that ignore a page no longer shown",
+        "writes": "updater functions, one per state a message writes (an object spread, or a copy updated in order for several ops); list items found by id",
+        "conditionals": "&& in JSX for the active tab panel, the modal, the menu, conditional sections and validation errors",
+        "lists": ".map with key={item.id}",
+        "time": "setInterval in a useEffect of the component that owns the time-driven field, cleared by its cleanup",
+        "externalEvents": "a subscription in a useEffect in App (deepLink, serverSet, notify, snapshot); a page with a feed subscribes in its own effect and takes its pagePush events",
+        "derived": "plain expressions in the JSX, no manual memoization",
+        "inputs": "controlled, onChange; number inputs send only integers within range and keep a draft of other text, dropped by every write of the field",
+        "compiler": "React Compiler (babel-plugin-react-compiler through @rolldown/plugin-babel)",
+        "build": "Vite + @vitejs/plugin-react, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "b9d039433b36734d"
+    }
+  },
+  "frameworks": {
+    "vanilla": {
+      "label": "vanilla",
+      "track": "real",
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "solid": {
+      "label": "Solid 1",
+      "track": "framework",
+      "versions": {
+        "solid-js": "1.9.17",
+        "babel-preset-solid": "1.9.16",
+        "babel-plugin-jsx-dom-expressions": "0.40.11",
+        "@babel/core": "7.29.7",
+        "vite-plugin-solid": "2.11.14",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "elm": {
+      "label": "Elm 0.19.3",
+      "track": "framework",
+      "versions": {
+        "elm (compiler, npm installer)": "0.19.3-0",
+        "@elm_binaries/linux_x64": "0.19.3-0",
+        "uglify-js": "3.19.3",
+        "elm/browser": "1.0.2",
+        "elm/core": "1.0.5",
+        "elm/html": "1.0.1",
+        "elm/json": "1.1.4",
+        "elm/regex": "1.0.0",
+        "elm/time": "1.0.0",
+        "elm/url": "1.0.0",
+        "elm/virtual-dom": "1.0.5"
+      }
+    },
+    "tea-dirtybits": {
+      "label": "TEA + dirty bits (prototype)",
+      "track": "prototype",
+      "versions": {
+        "tea-dirtybits runtime": "prototype (frameworks/tea-dirtybits/template)",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-inline": {
+      "label": "TEA inline (prototype)",
+      "track": "prototype",
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "digest": {
+      "label": "digest (prototype)",
+      "track": "prototype",
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-local": {
+      "label": "tea-local (prototype)",
+      "track": "prototype",
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "marko": {
+      "label": "Marko 6",
+      "track": "real",
+      "versions": {
+        "marko": "6.4.6",
+        "@marko/compiler": "5.42.12",
+        "@marko/vite": "6.1.13",
+        "@babel/core": null,
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "react": {
+      "label": "React 19",
+      "track": "real",
+      "versions": {
+        "react": "19.3.1",
+        "react-dom": "19.3.1",
+        "scheduler": "0.28.0",
+        "@vitejs/plugin-react": "6.1.2",
+        "vite": "8.3.5",
+        "rolldown (bundler and Oxc minifier)": "1.2.16",
+        "babel-plugin-react-compiler (compiler=on)": "1.0.0",
+        "@rolldown/plugin-babel (compiler=on)": "0.2.4",
+        "@babel/core (compiler=on)": "7.29.7"
+      }
+    }
+  },
+  "versions": {
+    "node": "v26.11.1",
+    "brotli": "1.2.0 (node:zlib)",
+    "platform": "linux 6.12.112 x64",
+    "git": {
+      "commit": "49f60adc69c1b7e2b85c212102586bc88748f724",
+      "dirty": true
+    }
+  },
+  "compression": {
+    "brotli": {
+      "quality": 11,
+      "lgwin": 24,
+      "mode": "generic"
+    },
+    "html": "not minified",
+    "js": "minified by the framework's production build"
+  },
+  "attribution": "source maps: node_modules → runtime; unmapped bundler output → tooling (counted with runtime); the adapter file → adapter (excluded); everything else → app. Brotli split: runtime = brotli(runtime+tooling); app = brotli(app JS) − runtime.",
+  "reused": 0
+}
