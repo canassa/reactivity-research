@@ -47,7 +47,8 @@ function stepExpression(step) {
     else if (step.do === "type") {
       const t = document.querySelector(step.target);
       t.focus();
-      t.value = step.value;
+      // The prototype's setter, as the serve panel types (React ignores an assignment on the element).
+      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(t), "value").set.call(t, step.value);
       if (t.type !== "number") t.setSelectionRange(step.value.length, step.value.length);
       t.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText", data: step.value.slice(-1) || null }));
     } else if (step.do === "select") {

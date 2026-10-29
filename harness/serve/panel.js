@@ -334,7 +334,10 @@ function fire(step, t) {
       return t.click();
     case "type":
       t.focus();
-      t.value = step.value;
+      // Through the prototype's setter, as typing changes the value: a framework may watch the
+      // property on the element itself (React's value tracker does, and ignores an input event
+      // that follows a value assigned on the element from script).
+      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(t), "value").set.call(t, step.value);
       if (t.type !== "number") t.setSelectionRange(step.value.length, step.value.length);
       t.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText", data: step.value.slice(-1) || null }));
       return;
