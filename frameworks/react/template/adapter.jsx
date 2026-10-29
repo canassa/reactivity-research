@@ -64,10 +64,20 @@ function dispatch(msg) {
 }
 
 // User events are discrete: React renders their updates synchronously, in a microtask after the
-// event. flushSync() with no callback renders any such work still pending.
+// event. flushSync() with no callback renders any such work still pending. An update from
+// anywhere else (the app's own timers) has the default priority: React's scheduler renders it in
+// a MessageChannel task, posted when the update was made, so a message posted now arrives after
+// that render (default-priority renders are not time-sliced).
 function settled() {
   flushSync();
-  return Promise.resolve();
+  return new Promise((resolve) => {
+    const { port1, port2 } = new MessageChannel();
+    port1.onmessage = () => {
+      port1.close();
+      resolve();
+    };
+    port2.postMessage(0);
+  });
 }
 
 function dispose() {

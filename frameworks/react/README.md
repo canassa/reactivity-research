@@ -83,6 +83,10 @@ does nothing in production).
   are current before the caller goes on in the same task.
 - `settled()`: user events are discrete, and React renders their updates synchronously in a
   microtask after the event; `flushSync()` with no callback renders any such work still pending.
+  Updates from anywhere else (the app's own timers) have the default priority and render in a
+  `MessageChannel` task of React's scheduler, posted when the update was made; `settled()` then
+  waits for a `MessageChannel` message of its own, which arrives after that render
+  (default-priority renders are not time-sliced).
 - `dispose()`: `root.unmount()`, then the workaround below.
 
 **Known dependency on an undocumented ReactDOM detail.** `createRoot` calls
