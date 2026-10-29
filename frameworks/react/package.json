@@ -1,0 +1,15 @@
+{
+  "name": "rr-framework-react",
+  "private": true,
+  "type": "module",
+  "description": "Pinned React 19 toolchain shared by every React emitter: create-vite 9.3.3's react template, and its react-compiler variant",
+  "dependencies": {
+    "@babel/core": "7.29.7",
+    "@rolldown/plugin-babel": "0.2.4",
+    "@vitejs/plugin-react": "6.1.2",
+    "babel-plugin-react-compiler": "1.0.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "vite": "8.3.5"
+  }
+}
