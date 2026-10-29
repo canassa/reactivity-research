@@ -188,6 +188,11 @@
     "marko": {
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3]
+    },
+    "react": {
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3],
+      "options": { "compiler": ["off", "on"] }
     }
   },
   "derived-graph": {
