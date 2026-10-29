@@ -1,0 +1,542 @@
+{
+  "scenario": "big-table",
+  "date": "2026-10-29",
+  "sizes": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "scenarioOptions": {
+    "rows": 1000
+  },
+  "variants": {
+    "solid": {
+      "emitter": "solid",
+      "framework": "solid",
+      "label": "Solid 1",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "components": "one component per table, in its own file, written from the table's description; row builder, handlers, computed cells and formatting calls are its own code; no column descriptors",
+        "state": "one createStore for the page holding every table's { rows, selected, nextId, rng }, shared through a context; tables use path setters on their slice (index path for updateEvery, row filter for toggle and bump, produce for swap, new arrays for create, append, remove, sort)",
+        "externalEvents": "store.receive(msg); serverRows and snapshot through reconcile(…, { key: 'id' }); serverUpdate one path set per change in a batch",
+        "lists": "<For> over the rows store array, as js-framework-benchmark's keyed/solid",
+        "selection": "createSelector per table with select; classList or aria-selected for the marker",
+        "cells": "table 1: textContent on elements whose only child is the text, as js-framework-benchmark's entry, the row id captured once; tables 2 to N: JSX children ({row.x})",
+        "events": "onClick (delegated) for buttons and links, onChange for checkboxes",
+        "build": "Vite + vite-plugin-solid, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "00ebe20cc42eda6b"
+    },
+    "elm": {
+      "emitter": "elm",
+      "framework": "elm",
+      "label": "Elm 0.19.3",
+      "track": "framework",
+      "emitterOptions": {},
+      "style": {
+        "architecture": "TEA with Browser.element: Main holds { table1, …, tableN }, one update, one view; GotTable<i> wraps each module's Msg (Html.map)",
+        "components": "a module per table (Table<i>) with its own Model (rows : Array Row, selected : Maybe Int where the table has select, nextId, rng), Row record (a typed field per data column), Msg (a constructor per toolbar button and row control, plus ServerRows, ServerSet<Column> and ServerDelete), update (a case branch per message as record updates), newRow (one Park-Miller draw per generated cell in a let chain), view and decoders; Ui holds generic helpers (attributes, next/pick/between/build, number and date formatting, rows helpers)",
+        "prng": "in the model (rng, advanced by Ui.next), as the js-framework-benchmark entry keeps its Random.Seed there; initial rows built at start-up by the table's own newRow",
+        "rows": "Html.Keyed.node \"tbody\" with ( String.fromInt row.id, lazy2 viewRow isSelected row ) per row (lazy where no select), rows in an Array as in the js-framework-benchmark entry",
+        "lazy": "Html.Lazy on every row (as the js-framework-benchmark entry does) and on every table (Html.map GotTable<i> (lazy Table<i>.view model.table<i>)), so an event in one table does not diff the others",
+        "types": "int, number, date: Int; flag: Bool; label, text, status: String (status options as an Array String, cycled by Ui.cycle)",
+        "derived": "computed cells are expressions over row in the row view; an if is a let binding of viewRow",
+        "events": "onClick on buttons, links and checkboxes; no custom decoders",
+        "selection": "class marker via classList [ ( \"selected\", isSelected ) ]; aria-selected via Ui.ariaSelected, which renders no attribute while unselected",
+        "externalEvents": "one incoming port; Json.Decode: each table's external kind decodes serverRows, serverUpdate (a constructor per data column) and serverDelete into its own messages; snapshot into GotSnapshot with a decoder per table, an andMap pipeline in Main",
+        "formatting": "as elm-format 0.8.8 writes it; elm.json lists only the dependencies the app imports",
+        "build": "elm make --optimize, then uglify-js compress (pure_funcs) and mangle passes, as the Elm guide recommends"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "0d1a92975ce5f707"
+    },
+    "tea-local": {
+      "emitter": "tea-local",
+      "framework": "tea-local",
+      "label": "tea-local (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "components": "one component instance per table (factory inlined: each table is a block of the page function with its own pools, row builder, row template, patch and reducer arms); its model { rows, selected, nextId, rng } lives in the instance's closure; rows are plain objects and DOM nodes, not instances",
+        "updates": "the table's binding list: the rows (keyed list, written only when the model's rows array changed), each row's cells (a patch per row object that changed), the selection marker (moved between two rows found by key); every DOM write skipped when unchanged; batched in a microtask",
+        "reducer": "a jump table by constructor tag, one arm per operation and per row control written out from the table's description; tags 0-2 are the external events serverRows, serverUpdate, serverDelete, then the toolbar, then the row controls at base + their column",
+        "events": "toolbar buttons wired by position (wire); the rows' controls by one delegated click listener on the table body, sending the control's column constructor with the row key",
+        "externalEvents": "serverRows, serverUpdate and serverDelete are messages to the table's instance (routed by table id); a snapshot sets every instance's model",
+        "lists": "runtime keyed list (src/table.js) whose rows are the tr nodes: patch changed rows, one forward placement pass when order or membership changes",
+        "dom": "the table's markup as one static template (trailing end tags left out), the row as a template cloned per new row, placeholders for dynamic texts",
+        "build": "Vite production build, no framework plugin, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "9531c0d8d4b65f9a"
+    },
+    "vanilla": {
+      "emitter": "vanilla",
+      "framework": "vanilla",
+      "label": "vanilla",
+      "track": "real",
+      "emitterOptions": {},
+      "style": {
+        "model": "js-framework-benchmark's vanillajs-keyed, once per table",
+        "components": "one module per table, written out from its description: its row template, row builder, cell setters, operations, row controls, sort comparators and computed expressions are that table's own code; nothing interpreted",
+        "rows": "a <tr> template (innerHTML of static cells) cloned with cloneNode(true); dynamic cells written through their placeholder text nodes",
+        "state": "plain mutable state in each table's closure: rows (records carrying their <tr>), nextId, rng (Park–Miller, as the README specifies) and, for tables with select, the selected <tr> (the selection itself)",
+        "events": "one delegated click listener per table section, switching on data-role; row controls find their <tr> with closest and their record with find/findIndex",
+        "updates": "direct DOM operations: textContent = '' to clear, a detached <tbody> while an empty table fills, two insertBefore for a swap, the previous selected <tr> unmarked, sort moves the <tr>s in one forward pass",
+        "externalEvents": "serverRows, serverDelete and snapshot through a small generic keyed reconciler (src/lib.js, counted as runtime) that keeps every <tr> whose id stays and rewrites only changed cells, fed copies of the message's rows (payloads stay read-only); serverUpdate through the column's setter",
+        "helpers": "src/util.js: the PRNG step, thousands grouping, currency, percent and date formatters (app code)",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "5cf8cfa295a6d99a"
+    },
+    "digest": {
+      "emitter": "digest",
+      "framework": "digest",
+      "label": "digest (prototype)",
+      "track": "prototype",
+      "emitterOptions": {
+        "rowDigest": "changed"
+      },
+      "style": {
+        "approach": "compiled dirty checking with one binding list per table (its rows' reconciler) and one per row; an event digests the list of the control it came from, so a row control costs the same at any number of rows and tables",
+        "components": "one function per table, written out in full from its description (state, pools, row builder, template, toolbar handlers, row template, row bindings, row controls' handlers); no column descriptors, no op tables, no interpreter",
+        "rowDigest": "changed: the table digest runs a row list only for a new or replaced row; every in-place edit (every k-th, serverUpdate, the previously selected row) digests its rows by hand",
+        "lists": "a table's list holds the rows' reconciler; a row has its own list; no dependencies between lists (tables share nothing); the reconciler re-checks a row only when it is new or its object was replaced, in-place edits digest their rows themselves",
+        "state": "plain mutable object per table with the protocol's fields (rows, selected, nextId, rng); rows are plain objects edited in place; initial rows built at start-up by the table's own row builder; snapshots are deep-copied and assigned",
+        "templates": "one static HTML string per table (heading, toolbar, header) and one per row; end tags omitted where the next tag closes them; the row is cloned from a prototype; nodes are found by position, bindings by distance from the previous one",
+        "handlers": "one arrow function per control, given to the controls in document order; generic helpers for swap, every k-th row, ordering and selecting a row",
+        "keyedLists": "keyed by id, reconciled in place by the runtime; a node out of place whose next sibling is the row's is left, so a swap moves two nodes",
+        "selection": "a per-row binding of the marker property (className or ariaSelected), written only on change; a select digests the new row (as any control) and the row that was selected; the reconciler drops the selection when its row is gone",
+        "events": "one delegated click and input listener that calls the closest control's handler",
+        "derived": "computed cells are compiled to JavaScript inside the row's bindings; formats are small shared functions",
+        "build": "Vite production build, no plugin, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "b8441b86726c18a9"
+    },
+    "digest-row-digest=all": {
+      "emitter": "digest",
+      "framework": "digest",
+      "label": "digest (prototype)",
+      "track": "prototype",
+      "emitterOptions": {
+        "rowDigest": "all"
+      },
+      "style": {
+        "approach": "compiled dirty checking with one binding list per table (its rows' reconciler) and one per row; an event digests the list of the control it came from, so a row control costs the same at any number of rows and tables",
+        "components": "one function per table, written out in full from its description (state, pools, row builder, template, toolbar handlers, row template, row bindings, row controls' handlers); no column descriptors, no op tables, no interpreter",
+        "rowDigest": "all: the table digest runs every row list, and a row control belongs to the table list (as in the other digest runtimes), so no by-hand row digest exists",
+        "lists": "a table's list holds the rows' reconciler; a row has its own list; no dependencies between lists (tables share nothing); the reconciler re-checks a row only when it is new or its object was replaced, in-place edits digest their rows themselves",
+        "state": "plain mutable object per table with the protocol's fields (rows, selected, nextId, rng); rows are plain objects edited in place; initial rows built at start-up by the table's own row builder; snapshots are deep-copied and assigned",
+        "templates": "one static HTML string per table (heading, toolbar, header) and one per row; end tags omitted where the next tag closes them; the row is cloned from a prototype; nodes are found by position, bindings by distance from the previous one",
+        "handlers": "one arrow function per control, given to the controls in document order; generic helpers for swap, every k-th row, ordering and selecting a row",
+        "keyedLists": "keyed by id, reconciled in place by the runtime; a node out of place whose next sibling is the row's is left, so a swap moves two nodes",
+        "selection": "a per-row binding of the marker property (className or ariaSelected), written only on change; a select digests the new row (as any control) and the row that was selected; the reconciler drops the selection when its row is gone",
+        "events": "one delegated click and input listener that calls the closest control's handler",
+        "derived": "computed cells are compiled to JavaScript inside the row's bindings; formats are small shared functions",
+        "build": "Vite production build, no plugin, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "b8441b86726c18a9"
+    },
+    "tea-dirtybits": {
+      "emitter": "tea-dirtybits",
+      "framework": "tea-dirtybits",
+      "label": "TEA + dirty bits (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "components": "one module per table (pools, row builder with the PRNG draws written out, reducer arms by message tag, row template and static row patch, click handler, initial state), each written from that table's description; nothing interpreted at runtime",
+        "state": "one immutable TEA model (the reference's shape); the app reducer routes messages to the tables' reducers",
+        "dirtyBits": "per table: rows 1, selected 2, gone 4, moved 8, added 16; per row: one bit per data column from 32 up; an arm returns [bits, fields, payload] with the compile-time bits of what it wrote and the rows it touched; a second event in one tick files bit 1 (reconcile the list)",
+        "rows": "select marks two rows, remove drops one node, swap moves two, append builds the new rows, toggle, bump and updateEvery patch only the edited rows' cells (the column's bit); create, sort, clear and serverRows reconcile the keyed list (new rows built, changed items patched, gone rows removed, one walk moves misplaced nodes)",
+        "rowBuilding": "one cloned template per table (parsed once); bound cells found by position; a static row patch with a test per cell",
+        "events": "delegated: one click listener per table, a switch on data-role sending a numbered message; a row's control sends the row's id ({table, type, id}); the arm finds the row with findIndex and does nothing when it is gone",
+        "externalEvents": "through the same send: serverRows reconciles the list, serverUpdate and serverDelete name the rows touched, snapshot files bits 3 for every table",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "1767a1295b05fc59"
+    },
+    "tea-inline": {
+      "emitter": "tea-inline",
+      "framework": "tea-inline",
+      "label": "TEA inline (prototype)",
+      "track": "prototype",
+      "emitterOptions": {},
+      "style": {
+        "track": "prototype: no framework implements this strategy",
+        "components": "one module per table, each written out from its own description; DOM built once from one static HTML string, rows cloned from one row template per table; elements referred to by their place in document order (E[n])",
+        "messages": "erased for DOM events: each update arm is inlined into the action its control calls, which writes the table's state in place",
+        "updates": "each action schedules the bindings that read what it writes (known at compile time): the list for a replaced array, a row's set for an edited item, add/drop/swap for in-place row edits",
+        "selection": "each row has a mark binding reading s.selected === item.id; select schedules the marks of the old and the new row only (looked up by id), never one per row",
+        "lists": "keyed by id (rows.js): reconcile on a replaced array (nothing reused: the body is emptied in one go; else one forward pass), add/drop/swap for in-place edits, rows whose item is the same object are not repainted",
+        "externalEvents": "receive(msg): serverRows, serverUpdate, serverDelete and snapshot move copies of the message's data into the table state and schedule its list or the touched rows",
+        "build": "Vite with no framework plugin, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "19c3937274594fc2"
+    },
+    "marko": {
+      "emitter": "marko",
+      "framework": "marko",
+      "label": "Marko 6",
+      "track": "real",
+      "emitterOptions": {},
+      "style": {
+        "components": "one tag per table (src/tags/<id>-table.marko), written from the table's description; row builder, handlers, computed cells and formatting calls are its own code; no column descriptors",
+        "state": "each table owns its { rows, selected, nextId, rng } as <let>s in its own tag; immutable updates (map, filter, toSorted, slice for swap); row controls find their row by id",
+        "externalEvents": "every table <return>s a function for its own events (tag variable); app.marko <return>s the function the adapter calls: routes server events by msg.table, snapshot to every table",
+        "lists": "<for|row| of=rows by=\"id\">, as js-framework-benchmark's Marko entry",
+        "selection": "the expression selected === row.id in the row's class or attribute marker (Marko compiles it to a selector)",
+        "cells": "${} text in plain elements; computed cells and formatting calls inline in the row",
+        "events": "handlers in markup (onClick); checked/checkedChange for the row checkboxes",
+        "build": "Vite + @marko/vite (linked: false), production mode, client-only mount, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "b3131b5f287337d5"
+    },
+    "react": {
+      "emitter": "react",
+      "framework": "react",
+      "label": "React 19",
+      "track": "real",
+      "emitterOptions": {
+        "compiler": "off"
+      },
+      "style": {
+        "components": "one component per table, in its own file, written from the table's description; row builder, handlers, computed cells and formatting calls are its own code; no column descriptors; rows inline in the table's .map",
+        "state": "lifted up: one useState in App holding every table's { rows, selected, nextId, rng }, shared through a context; tables use a useTable(id) hook and updater functions on their slice; immutable updates keep unchanged row objects; the row builder is a pure function returning rows, rng and nextId",
+        "externalEvents": "a subscription in a useEffect; receive(tables, msg) is a pure function of the state",
+        "lists": ".map over the rows with key={row.id}",
+        "selection": "computed per row during render: className or aria-selected, undefined when unselected",
+        "derived": "computed during render, no manual memoization (no memo on rows)",
+        "events": "onClick for buttons and links, onChange for the controlled row checkboxes",
+        "compiler": "none (create-vite's react template)",
+        "build": "Vite + @vitejs/plugin-react, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "2a0c92b79521a067"
+    },
+    "react-compiler=on": {
+      "emitter": "react",
+      "framework": "react",
+      "label": "React 19",
+      "track": "real",
+      "emitterOptions": {
+        "compiler": "on"
+      },
+      "style": {
+        "components": "one component per table, in its own file, written from the table's description; row builder, handlers, computed cells and formatting calls are its own code; no column descriptors; rows inline in the table's .map",
+        "state": "lifted up: one useState in App holding every table's { rows, selected, nextId, rng }, shared through a context; tables use a useTable(id) hook and updater functions on their slice; immutable updates keep unchanged row objects; the row builder is a pure function returning rows, rng and nextId",
+        "externalEvents": "a subscription in a useEffect; receive(tables, msg) is a pure function of the state",
+        "lists": ".map over the rows with key={row.id}",
+        "selection": "computed per row during render: className or aria-selected, undefined when unselected",
+        "derived": "computed during render, no manual memoization (no memo on rows)",
+        "events": "onClick for buttons and links, onChange for the controlled row checkboxes",
+        "compiler": "React Compiler (babel-plugin-react-compiler through @rolldown/plugin-babel)",
+        "build": "Vite + @vitejs/plugin-react, production defaults, hidden source maps"
+      },
+      "sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "code": "2a0c92b79521a067"
+    }
+  },
+  "frameworks": {
+    "solid": {
+      "label": "Solid 1",
+      "track": "framework",
+      "versions": {
+        "solid-js": "1.9.17",
+        "babel-preset-solid": "1.9.16",
+        "babel-plugin-jsx-dom-expressions": "0.40.11",
+        "@babel/core": "7.29.7",
+        "vite-plugin-solid": "2.11.14",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "elm": {
+      "label": "Elm 0.19.3",
+      "track": "framework",
+      "versions": {
+        "elm (compiler, npm installer)": "0.19.3-0",
+        "@elm_binaries/linux_x64": "0.19.3-0",
+        "uglify-js": "3.19.3",
+        "elm/browser": "1.0.2",
+        "elm/core": "1.0.5",
+        "elm/html": "1.0.1",
+        "elm/json": "1.1.4",
+        "elm/regex": "1.0.0",
+        "elm/time": "1.0.0",
+        "elm/url": "1.0.0",
+        "elm/virtual-dom": "1.0.5"
+      }
+    },
+    "tea-local": {
+      "label": "tea-local (prototype)",
+      "track": "prototype",
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "vanilla": {
+      "label": "vanilla",
+      "track": "real",
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "digest": {
+      "label": "digest (prototype)",
+      "track": "prototype",
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-dirtybits": {
+      "label": "TEA + dirty bits (prototype)",
+      "track": "prototype",
+      "versions": {
+        "tea-dirtybits runtime": "prototype (frameworks/tea-dirtybits/template)",
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "tea-inline": {
+      "label": "TEA inline (prototype)",
+      "track": "prototype",
+      "versions": {
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "marko": {
+      "label": "Marko 6",
+      "track": "real",
+      "versions": {
+        "marko": "6.4.6",
+        "@marko/compiler": "5.42.12",
+        "@marko/vite": "6.1.13",
+        "@babel/core": null,
+        "vite": "8.3.4",
+        "rolldown (bundler and Oxc minifier)": "1.2.14"
+      }
+    },
+    "react": {
+      "label": "React 19",
+      "track": "real",
+      "versions": {
+        "react": "19.3.1",
+        "react-dom": "19.3.1",
+        "scheduler": "0.28.0",
+        "@vitejs/plugin-react": "6.1.2",
+        "vite": "8.3.5",
+        "rolldown (bundler and Oxc minifier)": "1.2.16",
+        "babel-plugin-react-compiler (compiler=on)": "1.0.0",
+        "@rolldown/plugin-babel (compiler=on)": "0.2.4",
+        "@babel/core (compiler=on)": "7.29.7"
+      }
+    }
+  },
+  "versions": {
+    "node": "v26.11.1",
+    "brotli": "1.2.0 (node:zlib)",
+    "platform": "linux 6.12.112 x64",
+    "git": {
+      "commit": "1c5875b5819a91abffc4c4b101accd232079a8b2",
+      "dirty": true
+    }
+  },
+  "compression": {
+    "brotli": {
+      "quality": 11,
+      "lgwin": 24,
+      "mode": "generic"
+    },
+    "html": "not minified",
+    "js": "minified by the framework's production build"
+  },
+  "attribution": "source maps: node_modules → runtime; unmapped bundler output → tooling (counted with runtime); the adapter file → adapter (excluded); everything else → app. Brotli split: runtime = brotli(runtime+tooling); app = brotli(app JS) − runtime.",
+  "reused": 0
+}
