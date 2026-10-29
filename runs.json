@@ -30,6 +30,12 @@
       "$comment": "Only state=local (the default) is measured, here and in unique-components and big-component: the root-state variants cannot clear a number input's pending edit inside a tag, so a same-value write from the root leaves stale text (see frameworks/marko/README.md).",
       "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
       "seeds": [1, 2, 3]
+    },
+    "react": {
+      "$comment": "compiler=off is create-vite's react template, compiler=on its react-compiler template; the source is the same (frameworks/react/README.md).",
+      "sizes": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "seeds": [1, 2, 3],
+      "options": { "compiler": ["off", "on"] }
     }
   },
   "unique-components": {
